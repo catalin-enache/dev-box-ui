@@ -22,6 +22,7 @@
     "babelify": "^7.3.0",
     "browserify": "^14.4.0",
     "cross-env": "^5.0.1",
+    "loose-envify": "^1.3.1",
     "uglify-es": "^3.0.25"
   },
   "dependencies": {
@@ -35,11 +36,14 @@
     ]
   },
   "scripts": {
-    "build:vendors:dev": "browserify -r react -r react-dom -r prop-types -o vendors/vendors.js",
-    "build:lib:dev": "cross-env NODE_PATH=./src browserify --debug -o dist/js/lib.js -r lib -x react -x react-dom -x prop-types",
+    "build:vendors:dev":  "                              browserify -r react -r react-dom -r prop-types -o vendors/vendors.js",
+    "build:vendors:prod": "cross-env NODE_ENV=production browserify -r react -r react-dom -r prop-types -t [ loose-envify purge --NODE_ENV production ] | uglifyjs --compress=unused,dead_code -o vendors/vendors.min.js",
 
-    "build:demo": "cross-env NODE_PATH=./src browserify --debug -x react -x react-dom -x prop-types -x lib -o demo/js/demo.js demo.js",
+    "build:lib:dev":  "cross-env NODE_PATH=./src browserify --debug -o dist/js/lib.js -r lib -x react -x react-dom -x prop-types",
 
-    "build:prod": "cross-env NODE_ENV=production browserify -t [ envify purge --NODE_ENV production ] src/app.js | uglifyes --compress=unused,dead_code -o dist/app.js"
+    "build:demo": "cross-env NODE_PATH=./src browserify --debug -x react -x react-dom -x prop-types -x lib -o demo/js/demo.js demo.js"
+
+
+
   }
 }

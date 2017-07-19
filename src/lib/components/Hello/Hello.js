@@ -7,7 +7,7 @@ export default class Hello extends React.Component {
     render() {
         return (
             <div>
-                Hello {this.props.name}
+                Hello {this.props.name || 'Nobody'}
                 <List items={['one', 'two']}/>
             </div>
         );

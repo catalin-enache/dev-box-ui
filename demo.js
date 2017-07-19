@@ -6,7 +6,7 @@ import { Hello } from 'lib';
 class App extends React.Component {
     render() {
         return (
-            <Hello name="John" />
+            <Hello />
         );
     }
 }
