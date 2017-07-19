@@ -9,6 +9,10 @@
     "type": "git",
     "url": "https://github.com/catalin-enache/dev-box-ui.git"
   },
+  "files": [
+    "dist/",
+    "src/"
+  ],
   "devDependencies": {
     "babel-cli": "^6.24.1",
     "babel-core": "^6.25.0",
@@ -32,10 +36,9 @@
   },
   "scripts": {
     "build:vendors:dev": "browserify -r react -r react-dom -r prop-types -o vendors/vendors.js",
-    "build:lib": "cross-env NODE_PATH=./src browserify -o dist/js/lib.js -r ./src/index.js -x react -x react-dom -x prop-types",
+    "build:lib:dev": "cross-env NODE_PATH=./src browserify --debug -o dist/js/lib.js -r lib -x react -x react-dom -x prop-types",
 
-    "build:demo": "browserify -x react -x react-dom -x prop-types -x ./src/index.js -o demo/js/demo.js demo.js",
-
+    "build:demo": "cross-env NODE_PATH=./src browserify --debug -x react -x react-dom -x prop-types -x lib -o demo/js/demo.js demo.js",
 
     "build:prod": "cross-env NODE_ENV=production browserify -t [ envify purge --NODE_ENV production ] src/app.js | uglifyes --compress=unused,dead_code -o dist/app.js"
   }

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import List from 'lib/List/List';
+import { List } from 'lib';
 
 export default class Hello extends React.Component {
     render() {

@@ -1,12 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-// import DBU from './src/index';
-const DBU = require('./src/index');
+import { Hello } from 'lib';
+// const DBU = require('lib');
 
 class App extends React.Component {
     render() {
         return (
-            <DBU.Hello name="John" />
+            <Hello name="John" />
         );
     }
 }
