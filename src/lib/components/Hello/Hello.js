@@ -5,6 +5,9 @@ import { List } from 'lib';
 
 export default class Hello extends React.Component {
     render() {
+        if (process.env.NODE_ENV !== 'production') {
+            console.log('rendering Hello component');
+        }
         return (
             <div>
                 Hello {this.props.name || 'Nobody'}
