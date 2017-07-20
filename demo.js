@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Hello } from 'lib';
-// const DBU = require('lib');
+import { Hello } from './src/lib';
 
 class App extends React.Component {
     render() {

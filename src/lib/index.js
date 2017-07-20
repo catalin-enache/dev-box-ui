@@ -1,5 +1,5 @@
-import Hello from 'lib/components/Hello/Hello';
-import List from 'lib/components/List/List';
+import Hello from './components/Hello/Hello';
+import List from './components/List/List';
 
 export {
     Hello,

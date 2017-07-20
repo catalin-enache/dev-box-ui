@@ -1,6 +1,6 @@
 {
   "name": "dev-box-ui",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "private": true,
   "author": "catalinenache78@gmail.com",
   "license": "MIT",
@@ -36,13 +36,13 @@
     ]
   },
   "scripts": {
-    "build:vendors:dev":  "                              browserify -r react -r react-dom -r prop-types -o vendors/vendors.js",
-    "build:vendors:prod": "cross-env NODE_ENV=production browserify -r react -r react-dom -r prop-types -t [ loose-envify purge --NODE_ENV production ] | uglifyjs --compress=unused,dead_code -o vendors/vendors.min.js",
+    "build:vendors:dev":  "                               browserify -r react -r react-dom -r prop-types                        -o vendors/vendors.js",
+    "build:vendors:prod": "cross-env NODE_ENV=production  browserify -r react -r react-dom -r prop-types                        -t [ loose-envify purge --NODE_ENV production ] | uglifyjs --compress=unused,dead_code -o vendors/vendors.min.js",
 
-    "build:lib:dev":   "cross-env                     NODE_PATH=./src browserify -r lib -x react -x react-dom -x prop-types --debug -o dist/js/lib.js",
-    "build:lib:prod":  "cross-env NODE_ENV=production NODE_PATH=./src browserify -r lib -x react -x react-dom -x prop-types -t [ loose-envify purge --NODE_ENV production ] | uglifyjs --compress=unused,dead_code -o dist/js/lib.min.js",
+    "build:lib:dev":   "cross-env                         browserify -r ./src/lib/ -x react -x react-dom -x prop-types          --debug -o dist/js/lib.js",
+    "build:lib:prod":  "cross-env NODE_ENV=production     browserify -r ./src/lib/ -x react -x react-dom -x prop-types          -t [ loose-envify purge --NODE_ENV production ] | uglifyjs --compress=unused,dead_code -o dist/js/lib.min.js",
 
-    "build:demo": "cross-env NODE_PATH=./src browserify -x react -x react-dom -x prop-types -x lib --debug -o demo/js/demo.js demo.js"
+    "build:demo": "cross-env                              browserify -x react -x react-dom -x prop-types -x ./src/lib/          --debug -o demo/js/demo.js demo.js"
 
 
 
