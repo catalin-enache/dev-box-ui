@@ -4,7 +4,7 @@
   "private": true,
   "author": "catalinenache78@gmail.com",
   "license": "MIT",
-  "main": "./src/lib/index.js",
+  "main": "./dist/js/lib.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/catalin-enache/dev-box-ui.git"
