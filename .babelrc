@@ -2,7 +2,7 @@
   "presets": [
     ["env", {
       "targets": {
-        "chrome": 52
+        "safari": 10
       }
     }], "react"
   ]

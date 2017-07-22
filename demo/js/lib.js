@@ -268,7 +268,7 @@ List.propTypes = {
     items: _propTypes2.default.array
 };
 
-},{"prop-types":"prop-types","react":"react"}],"/src/lib":[function(require,module,exports){
+},{"prop-types":"prop-types","react":"react"}],"dev-box-ui":[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
