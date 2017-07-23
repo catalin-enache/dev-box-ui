@@ -37,10 +37,10 @@
     ]
   },
   "scripts": {
-    "build:vendors:dev": "                                           browserify -r react -r react-dom -r prop-types                                   -o vendors/js/vendors.js",
+    "build:vendors:dev": "                                            browserify -r react -r react-dom -r prop-types                                   -o vendors/js/vendors.js",
     "build:vendors:prod": "cross-env NODE_ENV=production              browserify -r react -r react-dom -r prop-types                                   -g [ loose-envify purge --NODE_ENV production ] | uglifyjs --compress=unused,dead_code -o vendors/js/vendors.min.js",
-    "build:dev-box-ui:dist:dev": "                                  browserify -r ./src/lib/:dev-box-ui -x react -x react-dom -x prop-types          --debug -o build/dist/js/dev-box-ui.js",
-    "build:dev-box-ui:dist:prod": "cross-env NODE_ENV=production     browserify -r ./src/lib/:dev-box-ui -x react -x react-dom -x prop-types          -g [ loose-envify purge --NODE_ENV production ] | uglifyjs --compress=unused,dead_code -o build/dist/js/dev-box-ui.min.js",
+    "build:dev-box-ui:dist:dev": "                                    browserify -r ./src/lib/:dev-box-ui -x react -x react-dom -x prop-types          --debug -o build/dist/js/dev-box-ui.js",
+    "build:dev-box-ui:dist:prod": "cross-env NODE_ENV=production      browserify -r ./src/lib/:dev-box-ui -x react -x react-dom -x prop-types          -g [ loose-envify purge --NODE_ENV production ] | uglifyjs --compress=unused,dead_code -o build/dist/js/dev-box-ui.min.js",
     "build:demo": "                                                   browserify -x react -x react-dom -x prop-types -x dev-box-ui                     --debug -o demo/js/demo.js demo.js",
     "build:babel:release": "babel ./src --out-dir ./build/src --ignore *.spec.js"
   }
