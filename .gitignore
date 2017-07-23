@@ -27,18 +27,13 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 
-build
 node_modules
 bower_components
 ncp-debug.log
 npm-debug.log
 
-.sass-cache
-
 play.*
 test.*
-
-**/__pycache__/*
 
 **/.DS_Store
 .DS_Store
