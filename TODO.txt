@@ -1,0 +1,4 @@
+1.
+Does build:lib:dev/prod works without -x react ... ?
+2.
+Why dev-box-ui min still contains NODE_ENV in test app ?
