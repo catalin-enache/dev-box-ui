@@ -11,9 +11,6 @@ const styles = (theme) => ({
   }
 });
 
-const theme = {
-    secondaryTextColor: 'maroon'
-};
 
 class List extends React.Component {
     render() {
@@ -34,4 +31,4 @@ List.propTypes = {
     classes: PropTypes.object
 };
 
-export default withThemeWrapper(theme)(injectSheet(styles)(List));
+export default withThemeWrapper({})(injectSheet(styles)(List));

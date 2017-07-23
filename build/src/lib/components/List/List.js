@@ -32,10 +32,6 @@ const styles = theme => ({
     }
 });
 
-const theme = {
-    secondaryTextColor: 'maroon'
-};
-
 class List extends _react2.default.Component {
     render() {
         return _react2.default.createElement(
@@ -59,4 +55,4 @@ List.propTypes = {
     classes: _propTypes2.default.object
 };
 
-exports.default = (0, _withThemeWrapper2.default)(theme)((0, _reactJss2.default)(styles)(List));
+exports.default = (0, _withThemeWrapper2.default)({})((0, _reactJss2.default)(styles)(List));

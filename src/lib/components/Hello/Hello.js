@@ -11,10 +11,6 @@ const styles = (theme) => ({
   }
 });
 
-const theme = {
-    primaryTextColor: 'magenta'
-};
-
 class Hello extends React.Component {
     render() {
         if (process.env.NODE_ENV !== 'production') {
@@ -34,5 +30,5 @@ Hello.propTypes = {
     classes: PropTypes.object
 };
 
-export default withThemeWrapper(theme)(injectSheet(styles)(Hello));
+export default withThemeWrapper({})(injectSheet(styles)(Hello));
 

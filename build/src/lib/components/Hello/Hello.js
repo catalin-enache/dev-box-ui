@@ -32,10 +32,6 @@ const styles = theme => ({
     }
 });
 
-const theme = {
-    primaryTextColor: 'magenta'
-};
-
 class Hello extends _react2.default.Component {
     render() {
         if (process.env.NODE_ENV !== 'production') {
@@ -56,4 +52,4 @@ Hello.propTypes = {
     classes: _propTypes2.default.object
 };
 
-exports.default = (0, _withThemeWrapper2.default)(theme)((0, _reactJss2.default)(styles)(Hello));
+exports.default = (0, _withThemeWrapper2.default)({})((0, _reactJss2.default)(styles)(Hello));
