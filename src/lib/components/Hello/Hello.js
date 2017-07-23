@@ -3,12 +3,17 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import List from '../List/List';
 import injectSheet from 'react-jss';
+import withThemeWrapper from '../../HOC/withThemeWrapper';
 
 const styles = (theme) => ({
   hello: {
     color: theme.primaryTextColor || 'orange'
   }
 });
+
+const theme = {
+    primaryTextColor: 'magenta'
+};
 
 class Hello extends React.Component {
     render() {
@@ -29,5 +34,5 @@ Hello.propTypes = {
     classes: PropTypes.object
 };
 
-export default injectSheet(styles)(Hello);
+export default withThemeWrapper(theme)(injectSheet(styles)(Hello));
 

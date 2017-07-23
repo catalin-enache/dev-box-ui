@@ -16,7 +16,25 @@ var _List = require('../List/List');
 
 var _List2 = _interopRequireDefault(_List);
 
+var _reactJss = require('react-jss');
+
+var _reactJss2 = _interopRequireDefault(_reactJss);
+
+var _withThemeWrapper = require('../../HOC/withThemeWrapper');
+
+var _withThemeWrapper2 = _interopRequireDefault(_withThemeWrapper);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+const styles = theme => ({
+    hello: {
+        color: theme.primaryTextColor || 'orange'
+    }
+});
+
+const theme = {
+    primaryTextColor: 'magenta'
+};
 
 class Hello extends _react2.default.Component {
     render() {
@@ -25,7 +43,7 @@ class Hello extends _react2.default.Component {
         }
         return _react2.default.createElement(
             'div',
-            null,
+            { className: this.props.classes.hello },
             'Hello ',
             this.props.name || 'Nobody',
             _react2.default.createElement(_List2.default, { items: ['one', 'two'] })
@@ -33,7 +51,9 @@ class Hello extends _react2.default.Component {
     }
 }
 
-exports.default = Hello;
 Hello.propTypes = {
-    name: _propTypes2.default.string.isRequired
+    name: _propTypes2.default.string.isRequired,
+    classes: _propTypes2.default.object
 };
+
+exports.default = (0, _withThemeWrapper2.default)(theme)((0, _reactJss2.default)(styles)(Hello));
