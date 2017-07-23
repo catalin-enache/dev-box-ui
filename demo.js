@@ -1,6 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Hello } from 'dev-box-ui';
+import { ThemeProvider } from 'react-jss';
+
+const theme = {
+    primaryTextColor: 'green',
+    secondaryTextColor: 'blue'
+};
 
 class App extends React.Component {
     render() {
@@ -11,5 +17,7 @@ class App extends React.Component {
 }
 
 ReactDOM.render((
-    <App />
+    <ThemeProvider theme={theme}>
+        <App />
+    </ThemeProvider>
 ), document.getElementById('app'));
