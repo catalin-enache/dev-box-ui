@@ -28,35 +28,14 @@ var _spinner = require('react-icons/lib/fa/spinner');
 
 var _spinner2 = _interopRequireDefault(_spinner);
 
+var _commonStyles = require('../../../styles/commonStyles');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const styles = theme => ({
+const styles = theme => Object.assign({}, (0, _commonStyles.getCommonStyles)(), {
     hello: {
         color: theme.primaryTextColor || 'orange'
-    },
-
-    '@keyframes fa-spin': {
-        '0%': {
-            transform: 'rotate(0deg)'
-        },
-
-        '100%': {
-            transform: 'rotate(359deg)'
-        }
-    },
-
-    faSpin: {
-        animation: 'fa-spin 2s infinite linear',
-        animationName: 'fa-spin',
-        animationDuration: '2s',
-        animationTimingFunction: 'linear',
-        animationDelay: 'initial',
-        animationIterationCount: 'infinite',
-        animationDirection: 'initial',
-        animationFillMode: 'initial',
-        animationPlayState: 'initial'
     }
-
 });
 
 class Hello extends _react2.default.Component {
@@ -69,7 +48,7 @@ class Hello extends _react2.default.Component {
             { className: this.props.classes.hello },
             'Hello ',
             this.props.name || 'Nobody',
-            _react2.default.createElement(_spinner2.default, { className: this.props.classes.faSpin, size: 24, color: 'indianred' }),
+            _react2.default.createElement(_spinner2.default, { className: this.props.classes.faSpin }),
             _react2.default.createElement(_List2.default, { items: ['one', 'two'] })
         );
     }
