@@ -24,6 +24,10 @@ var _withThemeWrapper = require('../../HOC/withThemeWrapper');
 
 var _withThemeWrapper2 = _interopRequireDefault(_withThemeWrapper);
 
+var _beer = require('react-icons/lib/fa/beer');
+
+var _beer2 = _interopRequireDefault(_beer);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 const styles = theme => ({
@@ -42,6 +46,7 @@ class Hello extends _react2.default.Component {
             { className: this.props.classes.hello },
             'Hello ',
             this.props.name || 'Nobody',
+            _react2.default.createElement(_beer2.default, { size: 24, color: 'indianred' }),
             _react2.default.createElement(_List2.default, { items: ['one', 'two'] })
         );
     }

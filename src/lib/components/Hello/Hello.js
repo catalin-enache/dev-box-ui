@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import List from '../List/List';
 import injectSheet from 'react-jss';
 import withThemeWrapper from '../../HOC/withThemeWrapper';
+import FaBeer from 'react-icons/lib/fa/beer';
 
 const styles = (theme) => ({
   hello: {
@@ -19,6 +20,7 @@ class Hello extends React.Component {
         return (
                 <div className={this.props.classes.hello}>
                     Hello {this.props.name || 'Nobody'}
+                    <FaBeer size={24} color='indianred' />
                     <List items={['one', 'two']}/>
                 </div>
         );
