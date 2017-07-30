@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Hello } from 'dev-box-ui';
-import { ThemeProvider } from 'react-jss';
+import { Hello, ThemeProvider } from 'dev-box-ui';
 
 const theme = {
     primaryTextColor: 'green',
