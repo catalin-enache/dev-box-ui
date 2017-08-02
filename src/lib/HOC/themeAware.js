@@ -1,5 +1,6 @@
 import React from 'react';
-import injectSheet, { ThemeProvider } from 'react-jss';
+import injectSheet from 'react-jss';
+import { ThemeProvider, themeListener } from '../theming/theming';
 
 const defaultTheme = {};
 
@@ -16,6 +17,6 @@ export default function themeAware({ theme = defaultTheme, styles } = {}) {
        }
        ThemeAware.displayName = `ThemeAware(${Component.displayName ||
            Component.name || 'Component'})`;
-       return styles ? injectSheet(styles)(ThemeAware) : ThemeAware;
+       return styles ? injectSheet(styles, {}, themeListener)(ThemeAware) : ThemeAware;
     }
 }

@@ -1,6 +1,6 @@
 import Hello from './components/Hello/Hello';
 import List from './components/List/List';
-import { ThemeProvider } from 'react-jss';
+import { ThemeProvider } from './theming/theming';
 import { getCommonStyles, setCommonStyles } from "../styles/commonStyles";
 
 export {
@@ -8,4 +8,4 @@ export {
     ThemeProvider,
     Hello,
     List
-}
+};
