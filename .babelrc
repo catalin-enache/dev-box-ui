@@ -1,9 +1,9 @@
 {
   "presets": [
-    ["env", {
-      "targets": {
-        "safari": 10
-      }
-    }], "react"
+    ["env", { "targets": { "safari": 10 }}],
+    "react"
+  ],
+  "plugins": [
+    ["transform-object-rest-spread", { "useBuiltIns": true }]
   ]
 }

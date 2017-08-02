@@ -2,16 +2,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import List from '../List/List';
-import injectSheet from 'react-jss';
-import withThemeWrapper from '../../HOC/withThemeWrapper';
+import themeAware from '../../HOC/themeAware';
 import FaSpinner from 'react-icons/lib/fa/spinner';
 import { getCommonStyles } from "../../../styles/commonStyles";
 
-const styles = (theme) => (Object.assign({}, getCommonStyles(), {
+const styles = (theme) => ({
+  ...getCommonStyles(),
   hello: {
     color: theme.primaryTextColor || 'orange'
   }
-}));
+});
 
 class Hello extends React.Component {
     render() {
@@ -33,5 +33,5 @@ Hello.propTypes = {
     classes: PropTypes.object
 };
 
-export default withThemeWrapper({})(injectSheet(styles)(Hello));
+export default themeAware({ styles })(Hello);
 

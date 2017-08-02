@@ -1,9 +1,8 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import injectSheet from 'react-jss';
 import color from 'color';
-import withThemeWrapper from '../../HOC/withThemeWrapper';
+import themeAware from '../../HOC/themeAware';
 
 const styles = (theme) => ({
   list: {
@@ -31,4 +30,4 @@ List.propTypes = {
     classes: PropTypes.object
 };
 
-export default withThemeWrapper({})(injectSheet(styles)(List));
+export default themeAware({ styles })(List);
