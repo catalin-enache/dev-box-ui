@@ -1,22 +1,45 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Hello, ThemeProvider } from 'dev-box-ui';
+import { Hello, List, ThemeProvider, getTheme } from 'dev-box-ui';
 
-const theme = {
-    primaryTextColor: 'green',
-    secondaryTextColor: 'blue'
+const defaultTheme = getTheme();
+
+const customTheme = {
+    primaryTextColor: 'brown',
+    secondaryTextColor: 'green'
 };
 
 class App extends React.Component {
+    constructor(props, context) {
+        super(props, context);
+        this.state = {
+            theme: defaultTheme
+        }
+    }
+
+    componentDidMount() {
+        setInterval(() => {
+            this.setState({
+                theme: this.state.theme === defaultTheme ?
+                    customTheme :
+                    defaultTheme
+            })
+        }, 1000);
+    }
+
     render() {
         return (
-            <Hello />
+            <ThemeProvider theme={this.state.theme}>
+                <div>
+                    <Hello />
+                    <List items={['three', 'four']} />
+                    <List items={['three', 'four']} />
+                </div>
+            </ThemeProvider>
         );
     }
 }
 
 ReactDOM.render((
-    <ThemeProvider theme={theme}>
-        <App />
-    </ThemeProvider>
+    <App />
 ), document.getElementById('app'));

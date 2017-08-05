@@ -1,10 +1,20 @@
 import Hello from './components/Hello/Hello';
 import List from './components/List/List';
 import { ThemeProvider } from './theming/theming';
-import { getCommonStyles, setCommonStyles } from "../styles/commonStyles";
+import defaultTheme from './styles/defaultTheme'
+
+let customTheme;
+
+function getTheme() {
+    return customTheme || defaultTheme;
+}
+
+function setTheme(theme) {
+    customTheme = theme;
+}
 
 export {
-    getCommonStyles, setCommonStyles,
+    getTheme, setTheme,
     ThemeProvider,
     Hello,
     List
