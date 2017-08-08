@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "color": "^2.0.0",
+    "hoist-non-react-statics": "^2.2.2",
     "prop-types": "^15.5.10",
     "react-icons": "^2.2.5",
     "react-jss": "^7.0.2"

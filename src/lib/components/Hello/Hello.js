@@ -5,8 +5,7 @@ import List from '../List/List';
 import themeAware from '../../HOC/themeAware';
 import FaSpinner from 'react-icons/lib/fa/spinner';
 
-const styles = (theme) => {
-    console.log('theme received in Hello styles', theme);
+const style = (theme) => {
     return {
       hello: {
         color: theme.primaryTextColor || 'orange'
@@ -24,6 +23,7 @@ class Hello extends React.Component {
                     Hello {this.props.name || 'Nobody'}
                     <FaSpinner className={this.props.classes.faSpin} />
                     <List items={['one', 'two']} />
+                    <List items={['one', 'two']} />
                 </div>
         );
     }
@@ -34,5 +34,5 @@ Hello.propTypes = {
     classes: PropTypes.object
 };
 
-export default themeAware({ styles })(Hello);
+export default themeAware({ style })(Hello);
 
