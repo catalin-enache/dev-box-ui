@@ -3,18 +3,8 @@ import List from './components/List/List';
 import { ThemeProvider } from './theming/theming';
 import defaultTheme from './styles/defaultTheme'
 
-let customTheme;
-
-function getTheme() {
-    return customTheme || defaultTheme;
-}
-
-function setTheme(theme) {
-    customTheme = theme;
-}
-
 export {
-    getTheme, setTheme,
+    defaultTheme,
     ThemeProvider,
     Hello,
     List
