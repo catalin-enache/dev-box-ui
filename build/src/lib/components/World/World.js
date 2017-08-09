@@ -16,10 +16,6 @@ var _List = require('../List/List');
 
 var _List2 = _interopRequireDefault(_List);
 
-var _World = require('../World/World');
-
-var _World2 = _interopRequireDefault(_World);
-
 var _themeAware = require('../../HOC/themeAware');
 
 var _themeAware2 = _interopRequireDefault(_themeAware);
@@ -32,13 +28,13 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 const style = theme => {
     return {
-        hello: {
+        world: {
             color: theme.primaryTextColor || 'orange'
         }
     };
 };
 
-class Hello extends _react2.default.Component {
+class World extends _react2.default.Component {
     render() {
         if (process.env.NODE_ENV !== 'production') {
             console.log('rendering Hello component');
@@ -46,20 +42,16 @@ class Hello extends _react2.default.Component {
         return _react2.default.createElement(
             'div',
             { className: this.props.classes.hello },
-            'Hello ',
-            this.props.name || 'Nobody',
-            _react2.default.createElement(_spinner2.default, { className: this.props.classes.faSpin }),
-            _react2.default.createElement(_List2.default, { items: ['one', 'two'] }),
-            _react2.default.createElement(_List2.default, { items: ['one', 'two'] }),
-            _react2.default.createElement(_World2.default, null),
-            _react2.default.createElement(_World2.default, null)
+            'World ------------',
+            _react2.default.createElement(_List2.default, { items: ['five', 'six'] }),
+            _react2.default.createElement(_List2.default, { items: ['five', 'six'] }),
+            '------------------'
         );
     }
 }
 
-Hello.propTypes = {
-    name: _propTypes2.default.string.isRequired,
+World.propTypes = {
     classes: _propTypes2.default.object
 };
 
-exports.default = (0, _themeAware2.default)({ style })(Hello);
+exports.default = (0, _themeAware2.default)({ style })(World);

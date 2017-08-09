@@ -12,25 +12,23 @@ var _propTypes = require('prop-types');
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _reactJss = require('react-jss');
-
-var _reactJss2 = _interopRequireDefault(_reactJss);
-
 var _color = require('color');
 
 var _color2 = _interopRequireDefault(_color);
 
-var _withThemeWrapper = require('../../HOC/withThemeWrapper');
+var _themeAware = require('../../HOC/themeAware');
 
-var _withThemeWrapper2 = _interopRequireDefault(_withThemeWrapper);
+var _themeAware2 = _interopRequireDefault(_themeAware);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const styles = theme => ({
-    list: {
-        color: (0, _color2.default)(theme.secondaryTextColor || 'orange').lighten(0.5).hex()
-    }
-});
+const style = theme => {
+    return {
+        list: {
+            color: (0, _color2.default)(theme.secondaryTextColor || 'orange').lighten(0.5).hex()
+        }
+    };
+};
 
 class List extends _react2.default.Component {
     render() {
@@ -55,4 +53,4 @@ List.propTypes = {
     classes: _propTypes2.default.object
 };
 
-exports.default = (0, _withThemeWrapper2.default)({})((0, _reactJss2.default)(styles)(List));
+exports.default = (0, _themeAware2.default)({ style })(List);

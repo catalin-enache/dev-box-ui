@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.List = exports.Hello = exports.ThemeProvider = exports.setCommonStyles = exports.getCommonStyles = undefined;
+exports.List = exports.Hello = exports.ThemeProvider = exports.setTheme = exports.getTheme = undefined;
 
 var _Hello = require('./components/Hello/Hello');
 
@@ -13,14 +13,26 @@ var _List = require('./components/List/List');
 
 var _List2 = _interopRequireDefault(_List);
 
-var _reactJss = require('react-jss');
+var _theming = require('./theming/theming');
 
-var _commonStyles = require('../styles/commonStyles');
+var _defaultTheme = require('./styles/defaultTheme');
+
+var _defaultTheme2 = _interopRequireDefault(_defaultTheme);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.getCommonStyles = _commonStyles.getCommonStyles;
-exports.setCommonStyles = _commonStyles.setCommonStyles;
-exports.ThemeProvider = _reactJss.ThemeProvider;
+let customTheme;
+
+function getTheme() {
+    return customTheme || _defaultTheme2.default;
+}
+
+function setTheme(theme) {
+    customTheme = theme;
+}
+
+exports.getTheme = getTheme;
+exports.setTheme = setTheme;
+exports.ThemeProvider = _theming.ThemeProvider;
 exports.Hello = _Hello2.default;
 exports.List = _List2.default;
