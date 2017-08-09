@@ -32,6 +32,8 @@ class App extends React.Component {
             <ThemeProvider theme={this.state.theme}>
                 <div>
                     <Hello />
+                    <Hello />
+                    <Hello />
                     <List items={['three', 'four']} />
                     <List items={['three', 'four']} />
                 </div>
