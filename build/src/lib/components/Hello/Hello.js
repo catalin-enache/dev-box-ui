@@ -1,7 +1,7 @@
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 
 var _react = require('react');
@@ -31,35 +31,35 @@ var _spinner2 = _interopRequireDefault(_spinner);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 const style = theme => {
-    return {
-        hello: {
-            color: theme.primaryTextColor || 'orange'
-        }
-    };
+  return {
+    hello: {
+      color: theme.primaryTextColor || 'orange'
+    }
+  };
 };
 
 class Hello extends _react2.default.Component {
-    render() {
-        if (process.env.NODE_ENV !== 'production') {
-            console.log('rendering Hello component');
-        }
-        return _react2.default.createElement(
-            'div',
-            { className: this.props.classes.hello },
-            'Hello ',
-            this.props.name || 'Nobody',
-            _react2.default.createElement(_spinner2.default, { className: this.props.classes.faSpin }),
-            _react2.default.createElement(_List2.default, { items: ['one', 'two'] }),
-            _react2.default.createElement(_List2.default, { items: ['one', 'two'] }),
-            _react2.default.createElement(_World2.default, null),
-            _react2.default.createElement(_World2.default, null)
-        );
+  render() {
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('rendering Hello component');
     }
+    return _react2.default.createElement(
+      'div',
+      { className: this.props.classes.hello },
+      'Hello ',
+      this.props.name || 'Nobody',
+      _react2.default.createElement(_spinner2.default, { className: this.props.classes.faSpin }),
+      _react2.default.createElement(_List2.default, { items: ['one', 'two'] }),
+      _react2.default.createElement(_List2.default, { items: ['one', 'two'] }),
+      _react2.default.createElement(_World2.default, null),
+      _react2.default.createElement(_World2.default, null)
+    );
+  }
 }
 
 Hello.propTypes = {
-    name: _propTypes2.default.string.isRequired,
-    classes: _propTypes2.default.object
+  name: _propTypes2.default.string.isRequired,
+  classes: _propTypes2.default.object
 };
 
 exports.default = (0, _themeAware2.default)({ style })(Hello);

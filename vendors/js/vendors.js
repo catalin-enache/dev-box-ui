@@ -3942,7 +3942,7 @@ function jssCompose() {
   }
   return { onProcessStyle: onProcessStyle };
 }
-},{"warning":251}],43:[function(require,module,exports){
+},{"warning":250}],43:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -4593,7 +4593,7 @@ function jssExtend() {
 
   return { onProcessStyle: onProcessStyle };
 }
-},{"warning":251}],48:[function(require,module,exports){
+},{"warning":250}],48:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -4898,7 +4898,7 @@ function jssNested() {
 
   return { onProcessStyle: onProcessStyle };
 }
-},{"warning":251}],50:[function(require,module,exports){
+},{"warning":250}],50:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -5320,7 +5320,7 @@ var PluginsRegistry = function () {
 }();
 
 exports['default'] = PluginsRegistry;
-},{"warning":251}],55:[function(require,module,exports){
+},{"warning":250}],55:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -5628,7 +5628,7 @@ var SheetsManager = function () {
 }();
 
 exports['default'] = SheetsManager;
-},{"warning":251}],57:[function(require,module,exports){
+},{"warning":250}],57:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6418,7 +6418,7 @@ var DomRenderer = function () {
 }();
 
 exports['default'] = DomRenderer;
-},{"../sheets":69,"warning":251}],62:[function(require,module,exports){
+},{"../sheets":69,"warning":250}],62:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7094,7 +7094,7 @@ function createRule() {
 
   return new _StyleRule2['default'](name, declCopy, options);
 }
-},{"../rules/StyleRule":67,"../utils/cloneStyle":70,"warning":251}],73:[function(require,module,exports){
+},{"../rules/StyleRule":67,"../utils/cloneStyle":70,"warning":250}],73:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -24703,7 +24703,7 @@ exports['default'] = function (stylesOrCreator, InnerComponent) {
     };
   }, _temp;
 };
-},{"./compose":213,"./contextTypes":214,"./getDisplayName":216,"./jss":218,"./ns":219,"react":"react","theming":250}],216:[function(require,module,exports){
+},{"./compose":213,"./contextTypes":214,"./getDisplayName":216,"./jss":218,"./ns":219,"react":"react","theming":"theming"}],216:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -27384,55 +27384,6 @@ function createWithTheme() {
   };
 }
 },{"./channel":246,"./create-theme-listener":247,"react":"react"}],250:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.themeListener = exports.ThemeProvider = exports.withTheme = exports.channel = undefined;
-exports.createTheming = createTheming;
-
-var _createThemeProvider = require('./create-theme-provider');
-
-var _createThemeProvider2 = _interopRequireDefault(_createThemeProvider);
-
-var _createWithTheme = require('./create-with-theme');
-
-var _createWithTheme2 = _interopRequireDefault(_createWithTheme);
-
-var _createThemeListener = require('./create-theme-listener');
-
-var _createThemeListener2 = _interopRequireDefault(_createThemeListener);
-
-var _channel = require('./channel');
-
-var _channel2 = _interopRequireDefault(_channel);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var channel = exports.channel = _channel2.default;
-var withTheme = exports.withTheme = (0, _createWithTheme2.default)();
-var ThemeProvider = exports.ThemeProvider = (0, _createThemeProvider2.default)();
-var themeListener = exports.themeListener = (0, _createThemeListener2.default)();
-function createTheming() {
-  var customChannel = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _channel2.default;
-
-  return {
-    channel: customChannel,
-    withTheme: (0, _createWithTheme2.default)(customChannel),
-    ThemeProvider: (0, _createThemeProvider2.default)(customChannel),
-    themeListener: (0, _createThemeListener2.default)(customChannel)
-  };
-}
-
-exports.default = {
-  channel: _channel2.default,
-  withTheme: withTheme,
-  ThemeProvider: ThemeProvider,
-  themeListener: themeListener,
-  createTheming: createTheming
-};
-},{"./channel":246,"./create-theme-listener":247,"./create-theme-provider":248,"./create-with-theme":249}],251:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014-2015, Facebook, Inc.
@@ -28147,9 +28098,58 @@ Object.defineProperty(exports, 'default', {
 });
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-},{"./JssProvider":212,"./injectSheet":217,"./jss":218,"theming":250}],"react":[function(require,module,exports){
+},{"./JssProvider":212,"./injectSheet":217,"./jss":218,"theming":"theming"}],"react":[function(require,module,exports){
 'use strict';
 
 module.exports = require('./lib/React');
 
-},{"./lib/React":222}]},{},[]);
+},{"./lib/React":222}],"theming":[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.themeListener = exports.ThemeProvider = exports.withTheme = exports.channel = undefined;
+exports.createTheming = createTheming;
+
+var _createThemeProvider = require('./create-theme-provider');
+
+var _createThemeProvider2 = _interopRequireDefault(_createThemeProvider);
+
+var _createWithTheme = require('./create-with-theme');
+
+var _createWithTheme2 = _interopRequireDefault(_createWithTheme);
+
+var _createThemeListener = require('./create-theme-listener');
+
+var _createThemeListener2 = _interopRequireDefault(_createThemeListener);
+
+var _channel = require('./channel');
+
+var _channel2 = _interopRequireDefault(_channel);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var channel = exports.channel = _channel2.default;
+var withTheme = exports.withTheme = (0, _createWithTheme2.default)();
+var ThemeProvider = exports.ThemeProvider = (0, _createThemeProvider2.default)();
+var themeListener = exports.themeListener = (0, _createThemeListener2.default)();
+function createTheming() {
+  var customChannel = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _channel2.default;
+
+  return {
+    channel: customChannel,
+    withTheme: (0, _createWithTheme2.default)(customChannel),
+    ThemeProvider: (0, _createThemeProvider2.default)(customChannel),
+    themeListener: (0, _createThemeListener2.default)(customChannel)
+  };
+}
+
+exports.default = {
+  channel: _channel2.default,
+  withTheme: withTheme,
+  ThemeProvider: ThemeProvider,
+  themeListener: themeListener,
+  createTheming: createTheming
+};
+},{"./channel":246,"./create-theme-listener":247,"./create-theme-provider":248,"./create-with-theme":249}]},{},[]);

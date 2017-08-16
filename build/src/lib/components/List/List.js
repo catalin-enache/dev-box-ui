@@ -1,7 +1,7 @@
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 
 var _react = require('react');
@@ -23,34 +23,34 @@ var _themeAware2 = _interopRequireDefault(_themeAware);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 const style = theme => {
-    return {
-        list: {
-            color: (0, _color2.default)(theme.secondaryTextColor || 'orange').lighten(0.5).hex()
-        }
-    };
+  return {
+    list: {
+      color: (0, _color2.default)(theme.secondaryTextColor || 'orange').lighten(0.5).hex()
+    }
+  };
 };
 
 class List extends _react2.default.Component {
-    render() {
-        return _react2.default.createElement(
-            'ul',
-            { className: this.props.classes.list },
-            this.props.items.map(item => _react2.default.createElement(
-                'li',
-                { key: item },
-                item
-            ))
-        );
-    }
+  render() {
+    return _react2.default.createElement(
+      'ul',
+      { className: this.props.classes.list },
+      this.props.items.map(item => _react2.default.createElement(
+        'li',
+        { key: item },
+        item
+      ))
+    );
+  }
 }
 
 List.defaultProps = {
-    items: []
+  items: []
 };
 
 List.propTypes = {
-    items: _propTypes2.default.array,
-    classes: _propTypes2.default.object
+  items: _propTypes2.default.array,
+  classes: _propTypes2.default.object
 };
 
 exports.default = (0, _themeAware2.default)({ style })(List);

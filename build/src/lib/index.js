@@ -1,9 +1,9 @@
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
-exports.List = exports.Hello = exports.ThemeProvider = exports.defaultTheme = undefined;
+exports.List = exports.Hello = exports.theming = exports.defaultTheme = undefined;
 
 var _Hello = require('./components/Hello/Hello');
 
@@ -22,6 +22,6 @@ var _defaultTheme2 = _interopRequireDefault(_defaultTheme);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.defaultTheme = _defaultTheme2.default;
-exports.ThemeProvider = _theming.ThemeProvider;
+exports.theming = _theming.theming;
 exports.Hello = _Hello2.default;
 exports.List = _List2.default;

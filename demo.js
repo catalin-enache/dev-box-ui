@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Hello, List, ThemeProvider, defaultTheme} from 'dev-box-ui';
+import {Hello, List, theming, defaultTheme} from 'dev-box-ui';
+
+const { ThemeProvider } = theming;
 
 const customTheme = {
   primaryTextColor: 'brown',
