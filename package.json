@@ -15,6 +15,7 @@
   "devDependencies": {
     "babel-cli": "^6.24.1",
     "babel-core": "^6.25.0",
+    "babel-eslint": "^7.2.3",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-preset-env": "^1.6.0",
@@ -24,6 +25,11 @@
     "browserify": "^14.4.0",
     "bundle-collapser": "^1.2.1",
     "cross-env": "^5.0.1",
+    "eslint": "^4.4.1",
+    "eslint-config-airbnb": "^15.1.0",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-jsx-a11y": "^6.0.2",
+    "eslint-plugin-react": "^7.2.1",
     "loose-envify": "^1.3.1",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
@@ -48,6 +54,7 @@
     ]
   },
   "scripts": {
+    "eslint": "eslint src",
     "build:vendors:dev": "                                                      browserify                          -r react -r react-dom -r prop-types -r color -r react-jss -r theming -r hoist-non-react-statics                                               -o vendors/js/vendors.js",
     "build:vendors:prod": "cross-env NODE_ENV=production                        browserify                          -r react -r react-dom -r prop-types -r color -r react-jss -r theming -r hoist-non-react-statics                                               -g [ loose-envify purge --NODE_ENV production ] -g uglifyify -p bundle-collapser/plugin | uglifyjs --compress=unused,dead_code --mangle -o vendors/js/vendors.min.js",
     "build:dev-box-ui-no-deps:dist:dev": "                                      browserify -r ./src/lib/:dev-box-ui -x react -x react-dom -x prop-types -x color -x react-jss -x theming -x hoist-non-react-statics                                               --debug -o build/dist/js/dev-box-ui-no-deps.js",

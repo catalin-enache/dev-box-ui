@@ -20,10 +20,6 @@ var _themeAware = require('../../HOC/themeAware');
 
 var _themeAware2 = _interopRequireDefault(_themeAware);
 
-var _spinner = require('react-icons/lib/fa/spinner');
-
-var _spinner2 = _interopRequireDefault(_spinner);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 const style = theme => {
@@ -37,6 +33,7 @@ const style = theme => {
 class World extends _react2.default.Component {
   render() {
     if (process.env.NODE_ENV !== 'production') {
+      /* eslint no-console: 0 */
       console.log('rendering Hello component');
     }
     return _react2.default.createElement(

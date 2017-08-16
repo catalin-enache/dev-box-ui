@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Hello, List, theming, defaultTheme} from 'dev-box-ui';
+import { Hello, List, theming, defaultTheme } from 'dev-box-ui';
 
 const { ThemeProvider } = theming;
 
@@ -14,7 +14,7 @@ class App extends React.Component {
     super(props, context);
     this.state = {
       theme: defaultTheme
-    }
+    };
   }
 
   componentDidMount() {
@@ -23,7 +23,7 @@ class App extends React.Component {
         theme: this.state.theme === defaultTheme ?
           customTheme :
           defaultTheme
-      })
+      });
     }, 1000);
   }
 

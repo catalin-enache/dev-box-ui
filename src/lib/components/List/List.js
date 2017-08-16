@@ -15,7 +15,7 @@ class List extends React.Component {
   render() {
     return (
       <ul className={this.props.classes.list}>
-        {this.props.items.map((item) => <li key={item}>{item}</li>)}
+        {this.props.items.map(item => <li key={item}>{item}</li>)}
       </ul>
     );
   }
@@ -30,4 +30,4 @@ List.propTypes = {
   classes: PropTypes.object
 };
 
-export default themeAware({style})(List);
+export default themeAware({ style })(List);

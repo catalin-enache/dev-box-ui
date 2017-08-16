@@ -1,9 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import FaSpinner from 'react-icons/lib/fa/spinner';
 import List from '../List/List';
 import World from '../World/World';
 import themeAware from '../../HOC/themeAware';
-import FaSpinner from 'react-icons/lib/fa/spinner';
+
 
 const style = (theme) => {
   return {
@@ -16,6 +17,7 @@ const style = (theme) => {
 class Hello extends React.Component {
   render() {
     if (process.env.NODE_ENV !== 'production') {
+      /* eslint no-console: 0 */
       console.log('rendering Hello component');
     }
     return (
@@ -36,5 +38,5 @@ Hello.propTypes = {
   classes: PropTypes.object
 };
 
-export default themeAware({style})(Hello);
+export default themeAware({ style })(Hello);
 

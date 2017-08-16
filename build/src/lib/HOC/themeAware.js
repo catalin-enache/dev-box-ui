@@ -13,25 +13,23 @@ var _reactJss = require('react-jss');
 
 var _reactJss2 = _interopRequireDefault(_reactJss);
 
-var _theming = require('../theming/theming');
-
 var _hoistNonReactStatics = require('hoist-non-react-statics');
 
 var _hoistNonReactStatics2 = _interopRequireDefault(_hoistNonReactStatics);
+
+var _theming = require('../theming/theming');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 const { ThemeProvider } = _theming.theming;
 
 function themeAware({ theme, style }) {
-
   return function themeAwareInner(Component) {
-
     const ToRender = style ? (0, _reactJss2.default)(style, { theming: _theming.theming })(Component) : Component;
 
     class ThemeAware extends _react2.default.Component {
       render() {
-        return !!theme ? _react2.default.createElement(
+        return theme ? _react2.default.createElement(
           ThemeProvider,
           { theme: theme },
           _react2.default.createElement(ToRender, this.props)
