@@ -24465,6 +24465,8 @@ var _react2 = _interopRequireDefault(_react);
 
 var _theming = require('theming');
 
+var _theming2 = _interopRequireDefault(_theming);
+
 var _jss = require('./jss');
 
 var _jss2 = _interopRequireDefault(_jss);
@@ -24494,6 +24496,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
 // Like a Symbol
 var dynamicStylesNs = Math.random();
@@ -24541,6 +24545,12 @@ exports['default'] = function (stylesOrCreator, InnerComponent) {
 
   var isThemingEnabled = typeof stylesOrCreator === 'function';
 
+  var _options$theming = options.theming,
+      theming = _options$theming === undefined ? _theming2['default'] : _options$theming,
+      sheetOptions = _objectWithoutProperties(options, ['theming']);
+
+  var themeListener = theming.themeListener;
+
   var displayName = 'Jss(' + (0, _getDisplayName2['default'])(InnerComponent) + ')';
   var noTheme = {};
   var manager = new _jss.SheetsManager();
@@ -24556,7 +24566,7 @@ exports['default'] = function (stylesOrCreator, InnerComponent) {
 
       _initialiseProps.call(_this);
 
-      var theme = isThemingEnabled ? _theming.themeListener.initial(context) : noTheme;
+      var theme = isThemingEnabled ? themeListener.initial(context) : noTheme;
 
       _this.state = _this.createState({ theme: theme });
       return _this;
@@ -24573,7 +24583,7 @@ exports['default'] = function (stylesOrCreator, InnerComponent) {
 
         if (!staticSheet) {
           var styles = getStyles(stylesOrCreator, theme);
-          staticSheet = this.jss.createStyleSheet(styles, _extends({}, options, this.context[ns.sheetOptions], {
+          staticSheet = this.jss.createStyleSheet(styles, _extends({}, sheetOptions, this.context[ns.sheetOptions], {
             meta: displayName + ', ' + (isThemingEnabled ? 'Themed' : 'Unthemed') + ', Static'
           }));
           this.manager.add(theme, staticSheet);
@@ -24582,7 +24592,7 @@ exports['default'] = function (stylesOrCreator, InnerComponent) {
         } else dynamicStyles = staticSheet[dynamicStylesNs];
 
         if (dynamicStyles) {
-          dynamicSheet = this.jss.createStyleSheet(dynamicStyles, _extends({}, options, this.context[ns.sheetOptions], {
+          dynamicSheet = this.jss.createStyleSheet(dynamicStyles, _extends({}, sheetOptions, this.context[ns.sheetOptions], {
             meta: displayName + ', ' + (isThemingEnabled ? 'Themed' : 'Unthemed') + ', Dynamic',
             link: true
           }));
@@ -24615,7 +24625,7 @@ exports['default'] = function (stylesOrCreator, InnerComponent) {
       key: 'componentDidMount',
       value: function componentDidMount() {
         if (isThemingEnabled) {
-          this.unsubscribe = _theming.themeListener.subscribe(this.context, this.setTheme);
+          this.unsubscribe = themeListener.subscribe(this.context, this.setTheme);
         }
       }
     }, {
@@ -24685,7 +24695,7 @@ exports['default'] = function (stylesOrCreator, InnerComponent) {
     }]);
 
     return Jss;
-  }(_react.Component), _class.displayName = displayName, _class.InnerComponent = InnerComponent, _class.contextTypes = _extends({}, _contextTypes2['default'], isThemingEnabled && _theming.themeListener.contextTypes), _class.defaultProps = InnerComponent.defaultProps, _initialiseProps = function _initialiseProps() {
+  }(_react.Component), _class.displayName = displayName, _class.InnerComponent = InnerComponent, _class.contextTypes = _extends({}, _contextTypes2['default'], isThemingEnabled && themeListener.contextTypes), _class.defaultProps = InnerComponent.defaultProps, _initialiseProps = function _initialiseProps() {
     var _this2 = this;
 
     this.setTheme = function (theme) {
@@ -28094,6 +28104,12 @@ Object.defineProperty(exports, 'withTheme', {
   enumerable: true,
   get: function get() {
     return _theming.withTheme;
+  }
+});
+Object.defineProperty(exports, 'createTheming', {
+  enumerable: true,
+  get: function get() {
+    return _theming.createTheming;
   }
 });
 

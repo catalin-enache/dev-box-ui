@@ -1,13 +1,12 @@
-
 let commonStyles = {
 
   '@keyframes fa-spin': {
     '0%': {
-        transform: 'rotate(0deg)'
+      transform: 'rotate(0deg)'
     },
 
     '100%': {
-        transform: 'rotate(359deg)'
+      transform: 'rotate(359deg)'
     }
   },
 
@@ -26,9 +25,9 @@ let commonStyles = {
 };
 
 export function getCommonStyles() {
-    return commonStyles;
+  return commonStyles;
 }
 
 export function setCommonStyles(style) {
-    commonStyles = style;
+  commonStyles = style;
 }

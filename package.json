@@ -36,7 +36,7 @@
     "hoist-non-react-statics": "^2.2.2",
     "prop-types": "^15.5.10",
     "react-icons": "^2.2.5",
-    "react-jss": "^7.0.2"
+    "react-jss": "^7.1.0"
   },
   "peerDependencies": {
     "react": "^15.6.1",

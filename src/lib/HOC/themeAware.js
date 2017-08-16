@@ -1,32 +1,32 @@
 import React from 'react';
 import injectSheet from 'react-jss';
-import { ThemeProvider } from '../theming/theming';
+import {ThemeProvider} from '../theming/theming';
 import hoistNonReactStatics from 'hoist-non-react-statics';
 
-export default function themeAware({ theme, style }) {
+export default function themeAware({theme, style}) {
 
-    return function themeAwareInner(Component) {
+  return function themeAwareInner(Component) {
 
-        const ToRender = style ? injectSheet(style)(Component) : Component;
+    const ToRender = style ? injectSheet(style)(Component) : Component;
 
-        class ThemeAware extends React.Component {
-            render() {
-                return (
-                    !!theme ?
-                    <ThemeProvider theme={theme}>
-                        <ToRender {...this.props} />
-                    </ThemeProvider> :
-                    <ToRender {...this.props} />
-                );
-            }
-        }
+    class ThemeAware extends React.Component {
+      render() {
+        return (
+          !!theme ?
+            <ThemeProvider theme={theme}>
+              <ToRender {...this.props} />
+            </ThemeProvider> :
+            <ToRender {...this.props} />
+        );
+      }
+    }
 
-        ThemeAware.displayName = `ThemeAware(${
-            Component.displayName ||
-            Component.name ||
-            'Component'
-        })`;
+    ThemeAware.displayName = `ThemeAware(${
+    Component.displayName ||
+    Component.name ||
+    'Component'
+      })`;
 
-        return hoistNonReactStatics(ThemeAware, Component)
-    };
+    return hoistNonReactStatics(ThemeAware, Component)
+  };
 }
