@@ -7,9 +7,7 @@
     "arrow-body-style": [0],
     "import/no-unresolved": 0,
     "import/extensions": 0,
-    "import/no-extraneous-dependencies": 0,
-    "react/jsx-uses-react": "error",
-    "react/jsx-uses-vars": "error"
+    "import/no-extraneous-dependencies": 0
   },
   "env": {
     "browser": true,
@@ -24,5 +22,5 @@
   "plugins": [
     "react"
   ],
-  "extends": ["airbnb-base"]
+  "extends": ["airbnb-base", "plugin:react/recommended"]
 }
