@@ -1,6 +1,6 @@
-let commonStyles = {
+const commonAnimations = {
 
-  '@keyframes fa-spin': {
+  '@keyframes dbuAnimationSpin': {
     '0%': {
       transform: 'rotate(0deg)'
     },
@@ -10,9 +10,9 @@ let commonStyles = {
     }
   },
 
-  faSpin: {
-    animation: 'fa-spin 2s infinite linear',
-    animationName: 'fa-spin',
+  dbuAnimationSpin: {
+    animation: 'dbuAnimationSpin 2s infinite linear',
+    animationName: 'dbuAnimationSpin',
     animationDuration: '2s',
     animationTimingFunction: 'linear',
     animationDelay: 'initial',
@@ -24,10 +24,4 @@ let commonStyles = {
 
 };
 
-export function getCommonStyles() {
-  return commonStyles;
-}
-
-export function setCommonStyles(style) {
-  commonStyles = style;
-}
+export default commonAnimations;

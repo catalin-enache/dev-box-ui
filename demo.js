@@ -6,7 +6,8 @@ const { ThemeProvider } = theming;
 
 const customTheme = {
   primaryTextColor: 'brown',
-  secondaryTextColor: 'green'
+  secondaryTextColor: 'green',
+  animations: defaultTheme.animations
 };
 
 class App extends React.Component {

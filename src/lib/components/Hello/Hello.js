@@ -16,16 +16,17 @@ const style = (theme) => {
 
 class Hello extends React.Component {
   render() {
+    const { theme } = this.props;
     if (process.env.NODE_ENV !== 'production') {
       /* eslint no-console: 0 */
-      console.log('rendering Hello component');
+      console.log('rendering Hello component', theme);
     }
     return (
-      <div className={this.props.classes.hello}>
-        Hello {this.props.name || 'Nobody'}
-        <FaSpinner className={this.props.classes.faSpin}/>
-        <List items={['one', 'two']}/>
-        <List items={['one', 'two']}/>
+      <div className={ this.props.classes.hello }>
+        Hello { this.props.name || 'Nobody' }
+        <FaSpinner className={ theme.animations.dbuAnimationSpin }/>
+        <List items={ ['one', 'two'] }/>
+        <List items={ ['one', 'two'] }/>
         <World/>
         <World/>
       </div>
@@ -34,6 +35,7 @@ class Hello extends React.Component {
 }
 
 Hello.propTypes = {
+  theme: PropTypes.object,
   name: PropTypes.string.isRequired,
   classes: PropTypes.object
 };
