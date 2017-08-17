@@ -6,10 +6,10 @@ import World from '../World/World';
 import themeAware from '../../HOC/themeAware';
 
 
-const style = (theme) => {
+const style = ({ vars }) => {
   return {
     hello: {
-      color: theme.primaryTextColor || 'orange'
+      color: vars.colors.primaryTextColor || 'orange'
     }
   };
 };

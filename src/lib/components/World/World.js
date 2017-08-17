@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import List from '../List/List';
 import themeAware from '../../HOC/themeAware';
 
-const style = (theme) => {
+const style = ({ vars }) => {
   return {
     world: {
-      color: theme.primaryTextColor || 'orange'
+      color: vars.colors.primaryTextColor || 'orange'
     }
   };
 };

@@ -5,8 +5,12 @@ import { Hello, List, theming, defaultTheme } from 'dev-box-ui';
 const { ThemeProvider } = theming;
 
 const customTheme = {
-  primaryTextColor: 'brown',
-  secondaryTextColor: 'green',
+  vars: {
+    colors: {
+      primaryTextColor: 'brown',
+      secondaryTextColor: 'green',
+    }
+  },
   animations: defaultTheme.animations
 };
 
