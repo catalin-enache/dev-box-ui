@@ -30,6 +30,7 @@
     "eslint-plugin-import": "^2.7.0",
     "eslint-plugin-jsx-a11y": "^6.0.2",
     "eslint-plugin-react": "^7.2.1",
+    "http-server": "latest",
     "loose-envify": "^1.3.1",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
@@ -54,6 +55,7 @@
     ]
   },
   "scripts": {
+    "serve": "node node_modules/http-server/bin/http-server -a 0.0.0.0 -p 8001 -c-1",
     "eslint": "eslint src",
     "build:vendors:dev": "                                                      browserify                          -r react -r react-dom -r prop-types -r color -r react-jss -r theming -r hoist-non-react-statics                                               -o vendors/js/vendors.js",
     "build:vendors:prod": "cross-env NODE_ENV=production                        browserify                          -r react -r react-dom -r prop-types -r color -r react-jss -r theming -r hoist-non-react-statics                                               -g [ loose-envify purge --NODE_ENV production ] -g uglifyify -p bundle-collapser/plugin | uglifyjs --compress=unused,dead_code --mangle -o vendors/js/vendors.min.js",
