@@ -15,6 +15,8 @@ for (let i = 0; i < 100; i += 1) {
 console.warn('warning');
 console.error('error');
 
+throw new Error('on purpose');
+
 
 const { ThemeProvider } = theming;
 

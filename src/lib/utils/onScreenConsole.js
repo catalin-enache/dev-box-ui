@@ -37,7 +37,7 @@ function captureConsole(consoleElm, options) {
       const color = {
         log: '#000',
         warn: 'orange',
-        error: 'red'
+        error: 'darkred'
       }[action];
 
       return `<pre style="color: ${color}">${message}</pre>`;
@@ -45,6 +45,12 @@ function captureConsole(consoleElm, options) {
   };
   ['log', 'warn', 'error'].forEach((action) => {
     console[action] = handler.bind(console, action);
+  });
+  window.addEventListener('error', (evt) => {
+    // eslint no-console: 0
+    console.error(`"${evt.message}" from ${evt.filename}:${evt.lineno}`);
+    console.error(evt, evt.error.stack);
+    // evt.preventDefault();
   });
   consoleLog('console captured');
 }
