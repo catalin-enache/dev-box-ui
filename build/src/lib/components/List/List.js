@@ -22,10 +22,10 @@ var _themeAware2 = _interopRequireDefault(_themeAware);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const style = theme => {
+const style = ({ vars }) => {
   return {
     list: {
-      color: (0, _color2.default)(theme.secondaryTextColor || 'orange').lighten(0.5).hex()
+      color: (0, _color2.default)(vars.colors.secondaryTextColor || 'orange').lighten(0.5).hex()
     }
   };
 };

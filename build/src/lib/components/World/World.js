@@ -22,10 +22,10 @@ var _themeAware2 = _interopRequireDefault(_themeAware);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const style = theme => {
+const style = ({ vars }) => {
   return {
     world: {
-      color: theme.primaryTextColor || 'orange'
+      color: vars.colors.primaryTextColor || 'orange'
     }
   };
 };

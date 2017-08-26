@@ -3,11 +3,9 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getCommonStyles = getCommonStyles;
-exports.setCommonStyles = setCommonStyles;
-let commonStyles = {
+const commonAnimations = {
 
-  '@keyframes fa-spin': {
+  '@keyframes dbuAnimationSpin': {
     '0%': {
       transform: 'rotate(0deg)'
     },
@@ -17,9 +15,9 @@ let commonStyles = {
     }
   },
 
-  faSpin: {
-    animation: 'fa-spin 2s infinite linear',
-    animationName: 'fa-spin',
+  dbuAnimationSpin: {
+    animation: 'dbuAnimationSpin 2s infinite linear',
+    animationName: 'dbuAnimationSpin',
     animationDuration: '2s',
     animationTimingFunction: 'linear',
     animationDelay: 'initial',
@@ -31,10 +29,4 @@ let commonStyles = {
 
 };
 
-function getCommonStyles() {
-  return commonStyles;
-}
-
-function setCommonStyles(style) {
-  commonStyles = style;
-}
+exports.default = commonAnimations;

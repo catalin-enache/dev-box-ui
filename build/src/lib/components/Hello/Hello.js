@@ -30,26 +30,27 @@ var _themeAware2 = _interopRequireDefault(_themeAware);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const style = theme => {
+const style = ({ vars }) => {
   return {
     hello: {
-      color: theme.primaryTextColor || 'orange'
+      color: vars.colors.primaryTextColor || 'orange'
     }
   };
 };
 
 class Hello extends _react2.default.Component {
   render() {
+    const { theme } = this.props;
     if (process.env.NODE_ENV !== 'production') {
       /* eslint no-console: 0 */
-      console.log('rendering Hello component');
+      console.log('rendering Hello component', theme);
     }
     return _react2.default.createElement(
       'div',
       { className: this.props.classes.hello },
       'Hello ',
       this.props.name || 'Nobody',
-      _react2.default.createElement(_spinner2.default, { className: this.props.classes.faSpin }),
+      _react2.default.createElement(_spinner2.default, { className: theme.animations.dbuAnimationSpin }),
       _react2.default.createElement(_List2.default, { items: ['one', 'two'] }),
       _react2.default.createElement(_List2.default, { items: ['one', 'two'] }),
       _react2.default.createElement(_World2.default, null),
@@ -59,6 +60,7 @@ class Hello extends _react2.default.Component {
 }
 
 Hello.propTypes = {
+  theme: _propTypes2.default.object,
   name: _propTypes2.default.string.isRequired,
   classes: _propTypes2.default.object
 };
