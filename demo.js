@@ -1,6 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Hello, List, theming, defaultTheme } from 'dev-box-ui';
+import {
+  onScreenConsole,
+  Hello,
+  List,
+  theming,
+  defaultTheme
+} from 'dev-box-ui';
+
+onScreenConsole({ buttonStyle: { }, consoleStyle: { }, options: { rtl: false } });
+for (let i = 0; i < 100; i += 1) {
+  console.log('foo', 'bar', 5, null, undefined, new Map([[2, 7]]), new Set([4, 5]), [8,9,10],  function(){console.log('bla')}, { a: { b: { c: [1, function(){console.log('inline')}] } } });
+}
+console.warn('warning');
+console.error('error');
+
 
 const { ThemeProvider } = theming;
 
@@ -23,13 +37,13 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    setInterval(() => {
-      this.setState({
-        theme: this.state.theme === defaultTheme ?
-          customTheme :
-          defaultTheme
-      });
-    }, 1000);
+    // setInterval(() => {
+    //   this.setState({
+    //     theme: this.state.theme === defaultTheme ?
+    //       customTheme :
+    //       defaultTheme
+    //   });
+    // }, 1000);
   }
 
   render() {
