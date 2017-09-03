@@ -1,0 +1,13 @@
+=============================================== Testing ================================================
+
+general links:
+https://x-team.com/blog/setting-up-javascript-testing-tools-for-es6/
+https://developers.google.com/web/updates/2017/06/headless-karma-mocha-chai
+
+used modules:
+https://github.com/Nikku/karma-browserify
+
+other possible modules to consider:
+https://github.com/babel/karma-babel-preprocessor
+https://github.com/webpack-contrib/karma-webpack
+https://github.com/squidfunk/karma-viewport
