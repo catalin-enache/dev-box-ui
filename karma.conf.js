@@ -11,9 +11,10 @@ module.exports = function (config) {
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO, // LOG_DEBUG LOG_INFO
+    browsers: ['Chrome'],
     // browsers: ['mobile', 'desktop'],
     // browsers: ['Chrome', 'Safari'],
-    browsers: ['ChromeHeadless'],
+    // browsers: ['ChromesHeadless'],
     customLaunchers: {
       mobile: {
         base: 'Chrome',
