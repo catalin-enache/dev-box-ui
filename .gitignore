@@ -34,6 +34,7 @@ npm-debug.log
 
 play.*
 test.*
+test/tests.js
 
 **/.DS_Store
 .DS_Store

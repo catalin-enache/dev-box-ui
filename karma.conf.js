@@ -2,16 +2,18 @@ module.exports = function (config) {
   config.set({
     frameworks: ['browserify', 'mocha', 'chai'],
     preprocessors: {
-      'src/**/*.spec.js': ['browserify']
+      // 'src/**/*.spec.js': ['browserify']
+      'test/tests.js': ['browserify']
     },
-    files: ['src/**/*.spec.js'],
+    // files: ['src/**/*.spec.js'],
+    files: ['test/tests.js'],
     reporters: ['mocha'],
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO, // LOG_DEBUG LOG_INFO
-    browsers: ['mobile', 'desktop'],
+    // browsers: ['mobile', 'desktop'],
     // browsers: ['Chrome', 'Safari'],
-    // browsers: ['ChromeHeadless'],
+    browsers: ['ChromeHeadless'],
     customLaunchers: {
       mobile: {
         base: 'Chrome',
@@ -23,7 +25,7 @@ module.exports = function (config) {
       }
     },
     autoWatch: false,
-    singleRun: false,
+    singleRun: true,
     concurrency: Infinity,
     client: {
       // clearContext: true,

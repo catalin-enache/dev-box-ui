@@ -31,6 +31,7 @@
     "eslint-plugin-import": "^2.7.0",
     "eslint-plugin-jsx-a11y": "^6.0.2",
     "eslint-plugin-react": "^7.2.1",
+    "glob": "^7.1.2",
     "http-server": "latest",
     "karma": "^1.7.0",
     "karma-browserify": "^5.1.1",
@@ -64,7 +65,7 @@
     ]
   },
   "scripts": {
-    "test": "karma start",
+    "test": "node ./test/collect.js && karma start",
     "serve": "http-server -a 0.0.0.0 -p 8001 -c-1",
     "eslint": "eslint src",
     "build:vendors:dev": "                                                      browserify                          -r react -r react-dom -r prop-types -r color -r react-jss -r theming -r hoist-non-react-statics                                               -o vendors/js/vendors.js",
