@@ -2,11 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {
   onScreenConsole,
-  Hello,
-  List,
   theming,
   defaultTheme
 } from 'dev-box-ui';
+import App from './app';
 
 onScreenConsole({ buttonStyle: { }, consoleStyle: { }, options: { rtl: false } });
 for (let i = 0; i < 100; i += 1) {
@@ -27,7 +26,7 @@ const customTheme = {
   animations: defaultTheme.animations
 };
 
-class App extends React.Component {
+class Demo extends React.Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
@@ -48,18 +47,12 @@ class App extends React.Component {
   render() {
     return (
       <ThemeProvider theme={this.state.theme}>
-        <div>
-          <Hello/>
-          <Hello/>
-          <Hello/>
-          <List items={['three', 'four']}/>
-          <List items={['three', 'four']}/>
-        </div>
+        <App />
       </ThemeProvider>
     );
   }
 }
 
 ReactDOM.render((
-  <App/>
-), document.getElementById('app'));
+  <Demo/>
+), document.getElementById('demo'));
