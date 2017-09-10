@@ -1,4 +1,4 @@
-import { createTheming } from 'theming';
+import { createTheming } from 'react-jss';
 
 const theming = createTheming('__DBU_THEMING__');
 
