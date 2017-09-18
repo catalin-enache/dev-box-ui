@@ -1,5 +1,6 @@
 
-const commonVars = {
+const commonVars = dir => ({
+  dir,
   colors: {
     primaryTextColor: 'green',
     secondaryTextColor: 'blue'
@@ -14,6 +15,6 @@ const commonVars = {
     },
     cols: 12
   }
-};
+});
 
 export default commonVars;

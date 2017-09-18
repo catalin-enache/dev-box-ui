@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {
   onScreenConsole,
+  registerLocaleChange,
   theming,
   defaultTheme
 } from 'dev-box-ui';
@@ -16,32 +17,57 @@ import App from './app';
 
 const { ThemeProvider } = theming;
 
+
 const customTheme = {
-  vars: {
-    colors: {
-      primaryTextColor: 'brown',
-      secondaryTextColor: 'green',
+  ...defaultTheme,
+  ltr: {
+    ...defaultTheme.ltr,
+    vars: {
+      ...defaultTheme.ltr.vars,
+      colors: {
+        primaryTextColor: 'brown',
+        secondaryTextColor: 'green',
+      }
     }
   },
-  animations: defaultTheme.animations
+  rtl: {
+    ...defaultTheme.rtl,
+    vars: {
+      ...defaultTheme.ltr.vars,
+      colors: {
+        primaryTextColor: 'brown',
+        secondaryTextColor: 'green',
+      }
+    }
+  }
 };
 
 class Demo extends React.Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
-      theme: defaultTheme
+      theme: defaultTheme[registerLocaleChange.getCurrentLocale().dir]
     };
+    this.handleLocaleChange = this.handleLocaleChange.bind(this);
+  }
+
+  handleLocaleChange(locale) {
+    this.setState({
+      theme: defaultTheme[locale.dir]
+    });
   }
 
   componentDidMount() {
-    // setInterval(() => {
-    //   this.setState({
-    //     theme: this.state.theme === defaultTheme ?
-    //       customTheme :
-    //       defaultTheme
-    //   });
-    // }, 1000);
+    registerLocaleChange(this.handleLocaleChange);
+
+    setInterval(() => {
+      const dir = registerLocaleChange.getCurrentLocale().dir;
+      // this.setState({
+      //   theme: this.state.theme === defaultTheme[dir] ?
+      //     customTheme[dir] :
+      //     defaultTheme[dir]
+      // });
+    }, 1000);
   }
 
   render() {

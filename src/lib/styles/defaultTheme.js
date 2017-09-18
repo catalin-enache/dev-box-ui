@@ -1,21 +1,31 @@
 import { jss } from 'react-jss';
-import commonAnimations from './commonAnimations';
 import commonVars from './commonVars';
+import commonAnimations from './commonAnimations';
 import commonClasses from './commonClasses';
 
-const animations = jss.createStyleSheet(commonAnimations, {
-  meta: 'commonAnimations'
-}).attach();
+const defaultTheme = ['ltr', 'rtl'].reduce((acc, dir) => {
+  const commonVarsDir = commonVars(dir);
 
-const common = jss.createStyleSheet(commonClasses, {
-  meta: 'commonClasses'
-}).attach();
+  const commonAnimationsDir = jss.createStyleSheet(
+    commonAnimations(commonVarsDir), {
+      meta: `commonAnimations_${dir}`
+    }
+  ).attach();
 
-const defaultTheme = {
-  vars: commonVars,
-  animations: animations.classes,
-  common: common.classes
-};
+  const commonClassesDir = jss.createStyleSheet(
+    commonClasses(commonVarsDir), {
+      meta: `commonClasses_${dir}`
+    }
+  ).attach();
+
+  acc[dir] = {
+    vars: commonVarsDir,
+    animations: commonAnimationsDir.classes,
+    common: commonClassesDir.classes
+  };
+
+  return acc;
+}, {});
 
 export default defaultTheme;
 
