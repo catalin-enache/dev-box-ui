@@ -5,9 +5,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.theming = exports.createTheming = undefined;
 
-var _theming = require('theming');
+var _reactJss = require('react-jss');
 
-const theming = (0, _theming.createTheming)('__DBU_THEMING__');
+const theming = (0, _reactJss.createTheming)('__DBU_THEMING__');
 
-exports.createTheming = _theming.createTheming;
+exports.createTheming = _reactJss.createTheming;
 exports.theming = theming;

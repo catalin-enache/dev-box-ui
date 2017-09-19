@@ -15,7 +15,7 @@ class World extends React.Component {
   render() {
     if (process.env.NODE_ENV !== 'production') {
       /* eslint no-console: 0 */
-      console.log('rendering Hello component');
+      // console.log('rendering Hello component');
     }
     return (
       <div className={this.props.classes.hello}>

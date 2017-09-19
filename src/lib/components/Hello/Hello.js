@@ -19,7 +19,7 @@ class Hello extends React.Component {
     const { theme } = this.props;
     if (process.env.NODE_ENV !== 'production') {
       /* eslint no-console: 0 */
-      console.log('rendering Hello component', theme);
+      // console.log('rendering Hello component', theme);
     }
     return (
       <div className={ this.props.classes.hello }>

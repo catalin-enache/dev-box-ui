@@ -25,7 +25,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 const style = ({ vars }) => {
   return {
     list: {
-      color: (0, _color2.default)(vars.colors.secondaryTextColor || 'orange').lighten(0.5).hex()
+      // color: color(vars.colors.secondaryTextColor || 'orange').lighten(0.5).hex()
+      color: vars.dir === 'ltr' ? 'green' : 'red'
     }
   };
 };

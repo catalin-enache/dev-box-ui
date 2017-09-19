@@ -1,8 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import PropTypes from 'prop-types';
 import {
   onScreenConsole,
   registerLocaleChange,
+  localeAware,
   theming,
   defaultTheme
 } from 'dev-box-ui';
@@ -18,66 +20,50 @@ import App from './app';
 const { ThemeProvider } = theming;
 
 
-const customTheme = {
-  ...defaultTheme,
-  ltr: {
-    ...defaultTheme.ltr,
-    vars: {
-      ...defaultTheme.ltr.vars,
-      colors: {
-        primaryTextColor: 'brown',
-        secondaryTextColor: 'green',
-      }
-    }
-  },
-  rtl: {
-    ...defaultTheme.rtl,
-    vars: {
-      ...defaultTheme.ltr.vars,
-      colors: {
-        primaryTextColor: 'brown',
-        secondaryTextColor: 'green',
-      }
-    }
-  }
-};
+// const customTheme = {
+//   ...defaultTheme,
+//   ltr: {
+//     ...defaultTheme.ltr,
+//     vars: {
+//       ...defaultTheme.ltr.vars,
+//       colors: {
+//         primaryTextColor: 'brown',
+//         secondaryTextColor: 'green',
+//       }
+//     }
+//   },
+//   rtl: {
+//     ...defaultTheme.rtl,
+//     vars: {
+//       ...defaultTheme.ltr.vars,
+//       colors: {
+//         primaryTextColor: 'brown',
+//         secondaryTextColor: 'green',
+//       }
+//     }
+//   }
+// };
 
-class Demo extends React.Component {
-  constructor(props, context) {
-    super(props, context);
-    this.state = {
-      theme: defaultTheme[registerLocaleChange.getCurrentLocale().dir]
-    };
-    this.handleLocaleChange = this.handleLocaleChange.bind(this);
-  }
-
-  handleLocaleChange(locale) {
-    this.setState({
-      theme: defaultTheme[locale.dir]
-    });
-  }
-
-  componentDidMount() {
-    registerLocaleChange(this.handleLocaleChange);
-
-    setInterval(() => {
-      const dir = registerLocaleChange.getCurrentLocale().dir;
-      // this.setState({
-      //   theme: this.state.theme === defaultTheme[dir] ?
-      //     customTheme[dir] :
-      //     defaultTheme[dir]
-      // });
-    }, 1000);
+let Demo = class Demo extends React.Component {
+  componentWillReceiveProps(nextProps) {
+    console.log('Demo#componentWillReceiveProps', this.props.locale === nextProps.locale, nextProps.locale);
   }
 
   render() {
+    const { locale: { dir } } = this.props;
     return (
-      <ThemeProvider theme={this.state.theme}>
+      <ThemeProvider theme={defaultTheme[dir]}>
         <App />
       </ThemeProvider>
     );
   }
-}
+};
+
+Demo.propTypes = {
+  locale: PropTypes.object
+};
+
+Demo = localeAware(Demo);
 
 ReactDOM.render((
   <Demo/>
