@@ -1,23 +1,28 @@
 import React from 'react';
 import hoistNonReactStatics from 'hoist-non-react-statics';
 import {
-  registerLocaleChange
+  localeService
 } from 'dev-box-ui';
 
 export default function localeAware(Component) {
-  class LocaleAware extends React.PureComponent {
+  class LocaleAware extends React.Component {
     constructor(props, context) {
       super(props, context);
       this.handleLocaleChange = this.handleLocaleChange.bind(this);
       this.unregisterLocaleChange = null;
+      this.state = {
+        locale: localeService.locale
+      };
     }
 
-    handleLocaleChange() {
-      this.forceUpdate();
+    handleLocaleChange(locale) {
+      this.state.locale !== locale && this.setState({
+        locale
+      });
     }
 
     componentDidMount() {
-      this.unregisterLocaleChange = registerLocaleChange(this.handleLocaleChange);
+      this.unregisterLocaleChange = localeService.onLocaleChange(this.handleLocaleChange);
     }
 
     componentWillUnmount() {
@@ -25,9 +30,9 @@ export default function localeAware(Component) {
     }
 
     render() {
-      const locale = registerLocaleChange.getCurrentLocale();
+      const { locale } = this.state;
       return (
-        <Component { ...this.props } locale={locale} />
+        <Component { ...this.props } locale={ locale } />
       );
     }
   }

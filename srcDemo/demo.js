@@ -45,10 +45,6 @@ const { ThemeProvider } = theming;
 // };
 
 let Demo = class Demo extends React.Component {
-  componentWillReceiveProps(nextProps) {
-    console.log('Demo#componentWillReceiveProps', this.props.locale === nextProps.locale, nextProps.locale);
-  }
-
   render() {
     const { locale: { dir } } = this.props;
     return (
