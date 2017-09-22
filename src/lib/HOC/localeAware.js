@@ -1,11 +1,10 @@
 import React from 'react';
 import hoistNonReactStatics from 'hoist-non-react-statics';
-import {
-  localeService
-} from 'dev-box-ui';
+import localeService from './../services/LocaleService';
+import i18nService from './../services/I18nService';
 
 export default function localeAware(Component) {
-  class LocaleAware extends React.Component {
+  class LocaleAware extends React.PureComponent {
     constructor(props, context) {
       super(props, context);
       this.handleLocaleChange = this.handleLocaleChange.bind(this);
@@ -32,7 +31,10 @@ export default function localeAware(Component) {
     render() {
       const { locale } = this.state;
       return (
-        <Component { ...this.props } locale={ locale } />
+        <Component { ...this.props }
+          locale={ locale }
+          translations={ i18nService.currentLangTranslations }
+        />
       );
     }
   }

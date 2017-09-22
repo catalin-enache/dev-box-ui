@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import {
   onScreenConsole,
-  registerLocaleChange,
   localeAware,
   theming,
   defaultTheme
@@ -19,33 +18,12 @@ import App from './app';
 
 const { ThemeProvider } = theming;
 
-
-// const customTheme = {
-//   ...defaultTheme,
-//   ltr: {
-//     ...defaultTheme.ltr,
-//     vars: {
-//       ...defaultTheme.ltr.vars,
-//       colors: {
-//         primaryTextColor: 'brown',
-//         secondaryTextColor: 'green',
-//       }
-//     }
-//   },
-//   rtl: {
-//     ...defaultTheme.rtl,
-//     vars: {
-//       ...defaultTheme.ltr.vars,
-//       colors: {
-//         primaryTextColor: 'brown',
-//         secondaryTextColor: 'green',
-//       }
-//     }
-//   }
-// };
-
 let Demo = class Demo extends React.Component {
   render() {
+    if (process.env.NODE_ENV !== 'production') {
+      /* eslint no-console: 0 */
+      console.log('rendering Demo component');
+    }
     const { locale: { dir } } = this.props;
     return (
       <ThemeProvider theme={defaultTheme[dir]}>

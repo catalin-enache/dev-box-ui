@@ -25,6 +25,10 @@ class App extends React.Component {
   }
 
   render() {
+    if (process.env.NODE_ENV !== 'production') {
+      /* eslint no-console: 0 */
+      console.log('rendering App component');
+    }
     const screensKeys = Object.keys(screens);
     const links = screensKeys
       .map((screen, idx) => <a key={idx} href={`#${screen}`}>{screen}</a>);

@@ -4,6 +4,18 @@ import FaSpinner from 'react-icons/lib/fa/spinner';
 import List from '../List/List';
 import World from '../World/World';
 import themeAware from '../../HOC/themeAware';
+import localeAware from '../../HOC/localeAware';
+import i18nService from './../../services/I18nService';
+import template from '../../utils/template';
+
+i18nService.registerTranslations({
+  en: {
+    'Hello': template`Hello ${'age'} ${'name'}`
+  },
+  sp: {
+    'Hello': template`Hola ${'age'} ${'name'}`
+  }
+});
 
 
 const style = ({ vars }) => {
@@ -14,16 +26,16 @@ const style = ({ vars }) => {
   };
 };
 
-class Hello extends React.Component {
+class Hello extends React.PureComponent {
   render() {
-    const { theme } = this.props;
+    const { theme, translations } = this.props;
     if (process.env.NODE_ENV !== 'production') {
       /* eslint no-console: 0 */
-      // console.log('rendering Hello component', theme);
+      console.log('rendering Hello component');
     }
     return (
       <div className={ this.props.classes.hello }>
-        Hello { this.props.name || 'Nobody' }
+        {translations.Hello({ age: 22, name: this.props.name || 'Nobody' })}
         <FaSpinner className={ theme.animations.dbuAnimationSpin }/>
         <List items={ ['one', 'two'] }/>
         <List items={ ['one', 'two'] }/>
@@ -35,10 +47,11 @@ class Hello extends React.Component {
 }
 
 Hello.propTypes = {
+  translations: PropTypes.object,
   theme: PropTypes.object,
   name: PropTypes.string.isRequired,
   classes: PropTypes.object
 };
 
-export default themeAware({ style })(Hello);
+export default themeAware({ style })(localeAware(Hello));
 

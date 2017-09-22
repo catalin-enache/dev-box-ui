@@ -10,7 +10,7 @@ export default function themeAware({ theme, style }) {
   return function themeAwareInner(Component) {
     const ToRender = style ? injectSheet(style, { theming })(Component) : Component;
 
-    class ThemeAware extends React.Component {
+    class ThemeAware extends React.PureComponent {
       render() {
         return (
           theme ?
