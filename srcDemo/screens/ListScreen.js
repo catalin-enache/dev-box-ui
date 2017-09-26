@@ -1,8 +1,8 @@
 import React from 'react';
 import {
-  List
+  List,
+  themeAware
 } from 'dev-box-ui';
-import themeAware from '../../src/lib/HOC/themeAware';
 
 const style = ({ vars }) => {
   return {

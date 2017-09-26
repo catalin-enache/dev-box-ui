@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import cn from 'classnames';
-import themeAware from '../src/lib/HOC/themeAware';
+import { themeAware } from 'dev-box-ui';
 import screens from './screens';
 
 const style = ({ vars }) => {

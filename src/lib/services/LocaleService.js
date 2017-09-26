@@ -34,7 +34,7 @@ class LocaleService {
   onLocaleChange(callback) {
     this._callbacks.push(callback);
     callback(this.locale);
-    return function unregisterLocaleChange() {
+    return () => {
       this._callbacks = this._callbacks.filter(cb => cb !== callback);
     };
   }
