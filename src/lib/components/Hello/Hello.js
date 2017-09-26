@@ -17,6 +17,8 @@ i18nService.registerTranslations({
   }
 });
 
+const listItems = ['one', 'two'];
+
 
 const style = ({ vars }) => {
   return {
@@ -31,16 +33,16 @@ class Hello extends React.PureComponent {
     const { theme, translations } = this.props;
     if (process.env.NODE_ENV !== 'production') {
       /* eslint no-console: 0 */
-      console.log('rendering Hello component');
+      // console.log('rendering Hello component');
     }
     return (
       <div className={ this.props.classes.hello }>
         {translations.Hello({ age: 22, name: this.props.name || 'Nobody' })}
         <FaSpinner className={ theme.animations.dbuAnimationSpin }/>
-        <List items={ ['one', 'two'] }/>
-        <List items={ ['one', 'two'] }/>
-        <World/>
-        <World/>
+        <List items={ listItems }/>
+        <List items={ listItems }/>
+        <World />
+        <World />
       </div>
     );
   }

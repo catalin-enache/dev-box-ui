@@ -22,7 +22,7 @@ let Demo = class Demo extends React.Component {
   render() {
     if (process.env.NODE_ENV !== 'production') {
       /* eslint no-console: 0 */
-      console.log('rendering Demo component');
+      // console.log('rendering Demo component');
     }
     const { locale: { dir } } = this.props;
     return (

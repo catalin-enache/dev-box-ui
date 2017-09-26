@@ -11,7 +11,7 @@ const style = ({ vars }) => {
   };
 };
 
-class World extends React.Component {
+class World extends React.PureComponent {
   render() {
     if (process.env.NODE_ENV !== 'production') {
       /* eslint no-console: 0 */

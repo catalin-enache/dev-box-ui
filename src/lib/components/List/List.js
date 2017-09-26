@@ -2,6 +2,18 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import color from 'color';
 import themeAware from '../../HOC/themeAware';
+import localeAware from '../../HOC/localeAware';
+import i18nService from './../../services/I18nService';
+import template from '../../utils/template';
+
+i18nService.registerTranslations({
+  en: {
+    'list': template`list`
+  },
+  sp: {
+    'list': template`lista`
+  }
+});
 
 const style = ({ vars }) => {
   return {
@@ -12,12 +24,19 @@ const style = ({ vars }) => {
   };
 };
 
-class List extends React.Component {
+class List extends React.PureComponent {
   render() {
+    if (process.env.NODE_ENV !== 'production') {
+      /* eslint no-console: 0 */
+      // console.log('rendering List component');
+    }
     return (
-      <ul className={this.props.classes.list}>
-        {this.props.items.map(item => <li key={item}>{item}</li>)}
-      </ul>
+      <div>
+        {this.props.translations.list()}
+        <ul className={this.props.classes.list}>
+          {this.props.items.map(item => <li key={item}>{item}</li>)}
+        </ul>
+      </div>
     );
   }
 }
@@ -31,4 +50,4 @@ List.propTypes = {
   classes: PropTypes.object
 };
 
-export default themeAware({ style })(List);
+export default themeAware({ style })(localeAware(List));
