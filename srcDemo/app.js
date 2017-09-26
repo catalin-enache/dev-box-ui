@@ -30,8 +30,15 @@ class App extends React.Component {
       // console.log('rendering App component');
     }
     const screensKeys = Object.keys(screens);
-    const links = screensKeys
-      .map((screen, idx) => <a key={idx} href={`#${screen}`}>{screen}</a>);
+    const links = <ul>
+      {
+        screensKeys.map((screen, idx) => (
+          <li key={idx}>
+            <a key={idx} href={`#${screen}`}>{screen}</a>
+          </li>
+        ))
+      }
+    </ul>;
     const Screen = screens[(window.location.hash || `#${screensKeys[0]}`).replace('#', '')];
     const {
       classes: {
