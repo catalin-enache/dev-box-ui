@@ -11,14 +11,12 @@ const { ThemeProvider } = theming;
 
 describe('World', () => {
   it('renders world', (done) => {
-    const div = document.createElement('div');
-    document.body.appendChild(div);
     ReactDOM.render(
-      <ThemeProvider theme={defaultTheme}>
+      <ThemeProvider theme={defaultTheme.ltr}>
         <div>
           <World/>
         </div>
-      </ThemeProvider>, div
+      </ThemeProvider>, document.querySelector('#testing')
     );
     setTimeout(() => {
       done();

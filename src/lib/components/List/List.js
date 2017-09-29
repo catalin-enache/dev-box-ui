@@ -4,6 +4,7 @@ import color from 'color';
 import themeAware from '../../HOC/themeAware';
 import localeAware from '../../HOC/localeAware';
 import i18nService from './../../services/I18nService';
+import localeService from './../../services/LocaleService';
 import template from '../../utils/template';
 
 i18nService.registerTranslations({

@@ -25,8 +25,8 @@ module.exports = function (config) {
         flags: ['--window-size=1280,1080']
       }
     },
-    autoWatch: false,
-    singleRun: true,
+    autoWatch: true,
+    singleRun: false,
     concurrency: Infinity,
     client: {
       // clearContext: true,

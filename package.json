@@ -46,7 +46,8 @@
     "react-dom": "^15.6.1",
     "rimraf": "^2.6.1",
     "uglify-es": "^3.0.25",
-    "uglifyify": "^4.0.3"
+    "uglifyify": "^4.0.3",
+    "watchify": "^3.9.0"
   },
   "dependencies": {
     "classnames": "^2.2.5",

@@ -27,6 +27,12 @@ class LocaleService {
     });
   }
 
+  set locale(localeObj) {
+    Object.keys(localeObj).forEach((key) => {
+      this._rootElement.setAttribute(key, localeObj[key]);
+    });
+  }
+
   get locale() {
     return this._locale;
   }
