@@ -1,9 +1,19 @@
 
+const defaultLocale = {
+  dir: 'ltr',
+  lang: 'en'
+};
+
 class LocaleService {
   constructor() {
     this._callbacks = [];
-    this._localeAttrs = ['dir', 'lang'];
+    this._localeAttrs = Object.keys(defaultLocale);
     this._rootElement = window.document.documentElement;
+    this._localeAttrs.forEach((attr) => {
+      if (!this._rootElement.getAttribute(attr)) {
+        this._rootElement.setAttribute(attr, defaultLocale[attr]);
+      }
+    });
     this._locale = this._localeAttrs.reduce((acc, attr) => {
       acc[attr] = this._rootElement.getAttribute(attr);
       return acc;

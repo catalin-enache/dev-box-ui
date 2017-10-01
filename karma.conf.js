@@ -33,6 +33,7 @@ module.exports = function (config) {
       mocha: {
         reporter: 'html', // change Karma's debug.html to the mocha web reporter
         checkLeaks: true,
+        ignoreLeaks: false,
         timeout: 2000
       }
     },

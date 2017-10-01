@@ -1,9 +1,4 @@
 import { beforeEach, afterEach } from 'mocha';
-import {
-  localeService
-} from './index';
-
-localeService.locale = { dir: 'ltr', lang: 'sp' };
 
 beforeEach(function () {
   const div = document.createElement('div');
