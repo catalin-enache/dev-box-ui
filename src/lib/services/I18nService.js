@@ -13,6 +13,10 @@ class I18nService {
     this._locale = locale;
   }
 
+  clearTranslations(lang) {
+    delete this._translations[lang];
+  }
+
   registerTranslations(translations) {
     this._translations = Object.keys(translations).reduce((acc, lang) => {
       acc[lang] = {
@@ -20,7 +24,7 @@ class I18nService {
         ...translations[lang]
       };
       return acc;
-    }, {});
+    }, this._translations);
   }
 
   translate(msg) {

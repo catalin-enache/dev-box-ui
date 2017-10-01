@@ -12,19 +12,22 @@ export default function localeAware(Component) {
       this.state = {
         locale: localeService.locale
       };
+      this._mounted = false;
     }
 
     handleLocaleChange(locale) {
-      this.state.locale !== locale && this.setState({
+      this._mounted && this.state.locale !== locale && this.setState({
         locale
       });
     }
 
     componentDidMount() {
       this.unregisterLocaleChange = localeService.onLocaleChange(this.handleLocaleChange);
+      this._mounted = true;
     }
 
     componentWillUnmount() {
+      this._mounted = false;
       this.unregisterLocaleChange();
     }
 

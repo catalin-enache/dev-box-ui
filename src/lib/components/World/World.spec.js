@@ -19,6 +19,7 @@ describe('World', () => {
       </ThemeProvider>, document.querySelector('#testing')
     );
     setTimeout(() => {
+      ReactDOM.unmountComponentAtNode(document.querySelector('#testing'));
       done();
     }, 1000);
   });
