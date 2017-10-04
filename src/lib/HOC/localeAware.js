@@ -13,6 +13,7 @@ export default function localeAware(Component) {
         locale: localeService.locale
       };
       this._mounted = false;
+      this._component = null;
     }
 
     handleLocaleChange(locale) {
@@ -37,6 +38,7 @@ export default function localeAware(Component) {
         <Component { ...this.props }
           locale={ locale }
           translations={ i18nService.currentLangTranslations }
+          ref={ comp => this._component = comp }
         />
       );
     }
