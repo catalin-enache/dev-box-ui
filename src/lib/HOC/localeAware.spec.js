@@ -74,9 +74,11 @@ describe('localeAware', () => {
         expect(nextProps.translations.one).to.equal(lang2Translations1[lang2].one);
       } else if (localeService.locale.lang === 'en') {
         // lang switching circle finished
-        unsubscribe();
-        ReactDOM.unmountComponentAtNode(testing);
-        done();
+        setTimeout(() => {
+          unsubscribe();
+          ReactDOM.unmountComponentAtNode(testing);
+          done();
+        }, 0);
       }
     };
 

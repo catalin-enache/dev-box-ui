@@ -5,6 +5,7 @@ const buttonTop = '5px';
 
 let consoleMessages = [];
 const consoleLog = console.log.bind(console);
+const consoleOriginal = {};
 
 function captureConsole(consoleElm, options) {
   const { indent = 2, showLastOnly = false } = options;
@@ -44,6 +45,7 @@ function captureConsole(consoleElm, options) {
     }).join('\n');
   };
   ['log', 'warn', 'error'].forEach((action) => {
+    consoleOriginal[action] = console[action];
     console[action] = handler.bind(console, action);
   });
   window.addEventListener('error', (evt) => {
@@ -53,6 +55,12 @@ function captureConsole(consoleElm, options) {
     // evt.preventDefault();
   });
   consoleLog('console captured');
+  return function releaseConsole() {
+    ['log', 'warn', 'error'].forEach((action) => {
+      console[action] = consoleOriginal[action];
+    });
+    consoleLog('console released');
+  };
 }
 
 function createConsole({
@@ -139,5 +147,13 @@ export default function onScreenConsole({
   });
 
   document.body.appendChild(button);
-  captureConsole(console, options);
+  const releaseConsole = captureConsole(console, options);
+
+  return function release() {
+    if (button.contains(console)) {
+      button.removeChild(console);
+    }
+    document.body.removeChild(button);
+    releaseConsole();
+  };
 }
