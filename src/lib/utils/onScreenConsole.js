@@ -114,6 +114,13 @@ function createButton({
   return button;
 }
 
+/**
+onScreenConsole({
+  buttonStyle = { position, width, height, top, start, background },
+  consoleStyle = { width, height, background },
+  options = { rtl: false, indent, showLastOnly }
+})
+*/
 export default function onScreenConsole({
   buttonStyle = {},
   consoleStyle = {},
@@ -150,9 +157,6 @@ export default function onScreenConsole({
   const releaseConsole = captureConsole(console, options);
 
   return function release() {
-    if (button.contains(console)) {
-      button.removeChild(console);
-    }
     document.body.removeChild(button);
     releaseConsole();
   };
