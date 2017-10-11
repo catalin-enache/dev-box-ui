@@ -29,9 +29,11 @@ module.exports = function (config) {
     singleRun: false,
     concurrency: Infinity,
     coverageReporter: {
+      dir: 'coverage',
       reporters: [
         { type: 'text' },
-        { type: 'json', dir: 'coverage', file: 'coverage.json' }
+        { type: 'json', subdir: 'json', file: 'coverage.json' },
+        { type: 'html', subdir: 'html' }
       ],
     },
     client: {
@@ -45,17 +47,9 @@ module.exports = function (config) {
     },
     browserify: {
       debug: true,
-      transform: ['babelify', ['browserify-istanbul', {
-        ignore: [
-          '**/*.spec.js',
-          '**/src/lib/styles/**',
-          '**/src/lib/theming/**',
-          '**/src/lib/index.js',
-          '**/src/lib/components/**',
-          '**/test/**'
-        ],
-        defaultIgnore: false
-      }]]
-    }
+      transform: [
+        'babelify'
+      ]
+    },
   });
 };

@@ -16,6 +16,7 @@
     "babel-cli": "^6.26.0",
     "babel-core": "^6.25.0",
     "babel-eslint": "^7.2.3",
+    "babel-plugin-istanbul": "^4.1.5",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-preset-env": "^1.6.0",
@@ -69,8 +70,8 @@
     ]
   },
   "scripts": {
-    "test:watch": "node ./test/collect.js && karma start",
-    "test": "node ./test/collect.js && karma start --single-run",
+    "test:watch": "node ./test/collect.js && cross-env NODE_ENV=test karma start",
+    "test": "node ./test/collect.js && cross-env NODE_ENV=test karma start --single-run",
     "serve": "http-server -a 0.0.0.0 -p 8001 -c-1",
     "eslint": "eslint src",
     "build:vendors:dev": "                                                      browserify                          -r react -r react-dom -r prop-types -r color -r react-jss -r theming -r hoist-non-react-statics -r classnames                       -o vendors/js/vendors.js",

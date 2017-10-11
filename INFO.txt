@@ -12,6 +12,42 @@ https://github.com/babel/karma-babel-preprocessor
 https://github.com/webpack-contrib/karma-webpack
 https://github.com/squidfunk/karma-viewport
 
+using babel-plugin-istanbul
+https://github.com/istanbuljs/babel-plugin-istanbul#integrations
+https://github.com/kt3k/example-karma-browserify-babel-istanbul/blob/master/karma.conf.js
+in .babelrc:
+"env": {
+  "test": {
+    "plugins": [
+      ["istanbul", {
+        "exclude": [
+          "**/*.spec.js",
+          ...
+          "**/test/**"
+        ]
+      }]
+    ]
+  }
+}
+
+using browserify-istanbul transformer
+https://github.com/devongovett/browserify-istanbul
+in karma.conf.js:
+browserify: {
+ debug: true,
+ transform: ['babelify', ['browserify-istanbul', {
+   ignore: [
+     '**/*.spec.js',
+      ...
+     '**/test/**'
+   ],
+   defaultIgnore: false
+ }]]
+}
+in package.json:
+"test": "node ./test/collect.js && cross-env NODE_ENV=test karma start --single-run",
+
+
 =============================== Safari issues on Mac ============================
 to prevent remembering previous tabs between tests run:
 defaults write com.apple.Safari ApplePersistenceIgnoreState YES
