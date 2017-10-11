@@ -29,6 +29,7 @@ crashlytics-build.properties
 
 node_modules
 bower_components
+coverage
 ncp-debug.log
 npm-debug.log
 

@@ -7,7 +7,7 @@ module.exports = function (config) {
     },
     // files: ['src/**/*.spec.js'],
     files: ['test/tests.js'],
-    reporters: ['mocha'],
+    reporters: ['mocha', 'coverage'],
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO, // LOG_DEBUG LOG_INFO
@@ -28,6 +28,12 @@ module.exports = function (config) {
     autoWatch: true,
     singleRun: false,
     concurrency: Infinity,
+    coverageReporter: {
+      reporters: [
+        { type: 'text' },
+        { type: 'json', dir: 'coverage', file: 'coverage.json' }
+      ],
+    },
     client: {
       // clearContext: true,
       mocha: {
@@ -38,7 +44,18 @@ module.exports = function (config) {
       }
     },
     browserify: {
-      debug: true
+      debug: true,
+      transform: ['babelify', ['browserify-istanbul', {
+        ignore: [
+          '**/*.spec.js',
+          '**/src/lib/styles/**',
+          '**/src/lib/theming/**',
+          '**/src/lib/index.js',
+          '**/src/lib/components/**',
+          '**/test/**'
+        ],
+        defaultIgnore: false
+      }]]
     }
   });
 };
