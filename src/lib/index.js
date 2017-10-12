@@ -3,7 +3,7 @@ import List from './components/List/List';
 import onScreenConsole from './utils/onScreenConsole';
 import localeService from './services/LocaleService';
 import i18nService from './services/I18nService';
-import { theming } from './theming/theming';
+import { theming, createTheming } from './theming/theming';
 import localeAware from './HOC/localeAware';
 import themeAware from './HOC/themeAware';
 import defaultTheme from './styles/defaultTheme';
@@ -18,6 +18,7 @@ export {
   template,
   defaultTheme,
   theming,
+  createTheming,
   Hello,
   List
 };
