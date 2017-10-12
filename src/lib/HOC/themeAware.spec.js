@@ -2,13 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import { expect } from 'chai';
-import localeAware from './localeAware';
 import themeAware from './themeAware';
-import i18nService from '../services/I18nService';
-import localeService from '../services/LocaleService';
 import {
-  theming,
-  defaultTheme
+  theming
 } from './../index';
 
 const { ThemeProvider } = theming;
@@ -87,44 +83,45 @@ App.propTypes = {
 };
 
 describe('themeAware', () => {
-  it('does something', (done) => {
-    const compInitialProps = (props) => {
-      // console.log('compInitialProps', 'props.classes', props.classes, 'props.theme', props.theme);
-      expect(props.theme).to.equal(theme1);
-      expect(props.theme.vars.color).to.equal('red');
-      expect(props.classes.testStyle.startsWith('testStyle')).to.equal(true);
-    };
+  it(`component receives theme and classes in constructor
+      and when theme changes in componentWillReceiveProps`, (done) => {
+      const compInitialProps = (props) => {
+        // console.log('compInitialProps', 'props.classes', props.classes, 'props.theme', props.theme);
+        expect(props.theme).to.equal(theme1);
+        expect(props.theme.vars.color).to.equal('red');
+        expect(props.classes.testStyle.startsWith('testStyle')).to.equal(true);
+      };
 
-    let compReceivedPropsCalled = false;
+      let compReceivedPropsCalled = false;
 
-    const compReceivedProps = (props) => {
-      // console.log('compReceivedProps', 'props.classes', props.classes, 'props.theme', props.theme);
-      compReceivedPropsCalled = true;
-      expect(props.theme).to.equal(theme2);
-      expect(props.theme.vars.color).to.equal('blue');
-      expect(props.classes.testStyle.startsWith('testStyle')).to.equal(true);
-    };
+      const compReceivedProps = (props) => {
+        // console.log('compReceivedProps', 'props.classes', props.classes, 'props.theme', props.theme);
+        compReceivedPropsCalled = true;
+        expect(props.theme).to.equal(theme2);
+        expect(props.theme.vars.color).to.equal('blue');
+        expect(props.classes.testStyle.startsWith('testStyle')).to.equal(true);
+      };
 
-    const appReady = (app) => {
-      if (!app) return;
-      expect(app.constructor.name).to.equal('App');
+      const appReady = (app) => {
+        if (!app) return;
+        expect(app.constructor.name).to.equal('App');
 
-      app.changeTheme(theme2, () => {
-        setTimeout(() => {
-          expect(compReceivedPropsCalled).to.equal(true);
-          ReactDOM.unmountComponentAtNode(testing);
-          done();
-        }, 0);
-      });
-    };
+        app.changeTheme(theme2, () => {
+          setTimeout(() => {
+            expect(compReceivedPropsCalled).to.equal(true);
+            ReactDOM.unmountComponentAtNode(testing);
+            done();
+          }, 0);
+        });
+      };
 
-    const testing = document.querySelector('#testing');
+      const testing = document.querySelector('#testing');
 
-    ReactDOM.render(
-      <App ref={appReady}
-        compInitialProps={compInitialProps}
-        compReceivedProps={compReceivedProps}
-      />, testing
-    );
-  });
+      ReactDOM.render(
+        <App ref={appReady}
+          compInitialProps={compInitialProps}
+          compReceivedProps={compReceivedProps}
+        />, testing
+      );
+    });
 });
