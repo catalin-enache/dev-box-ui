@@ -37,7 +37,6 @@ let TestComp = class TestComp extends React.PureComponent {
     this.props.compInitialProps(this.props);
   }
   render() {
-    // console.log('TestComp#render this.props', this.props);
     return <div className={this.props.classes.testStyle}>themeAware TestComp {this.props.theme.vars.color} </div>;
   }
 };
@@ -83,10 +82,9 @@ App.propTypes = {
 };
 
 describe('themeAware', () => {
-  it(`component receives theme and classes in constructor
+  it(`component receives theme and classes when mounted
       and when theme changes in componentWillReceiveProps`, (done) => {
       const compInitialProps = (props) => {
-        // console.log('compInitialProps', 'props.classes', props.classes, 'props.theme', props.theme);
         expect(props.theme).to.equal(theme1);
         expect(props.theme.vars.color).to.equal('red');
         expect(props.classes.testStyle.startsWith('testStyle')).to.equal(true);
@@ -95,7 +93,6 @@ describe('themeAware', () => {
       let compReceivedPropsCalled = false;
 
       const compReceivedProps = (props) => {
-        // console.log('compReceivedProps', 'props.classes', props.classes, 'props.theme', props.theme);
         compReceivedPropsCalled = true;
         expect(props.theme).to.equal(theme2);
         expect(props.theme.vars.color).to.equal('blue');
