@@ -27,7 +27,7 @@ function themeAware({ theme, style }) {
   return function themeAwareInner(Component) {
     const ToRender = style ? (0, _reactJss2.default)(style, { theming: _theming.theming })(Component) : Component;
 
-    class ThemeAware extends _react2.default.Component {
+    class ThemeAware extends _react2.default.PureComponent {
       render() {
         return theme ? _react2.default.createElement(
           ThemeProvider,

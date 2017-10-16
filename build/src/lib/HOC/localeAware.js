@@ -16,28 +16,52 @@ var _hoistNonReactStatics = require('hoist-non-react-statics');
 
 var _hoistNonReactStatics2 = _interopRequireDefault(_hoistNonReactStatics);
 
-var _devBoxUi = require('dev-box-ui');
+var _LocaleService = require('./../services/LocaleService');
+
+var _LocaleService2 = _interopRequireDefault(_LocaleService);
+
+var _I18nService = require('./../services/I18nService');
+
+var _I18nService2 = _interopRequireDefault(_I18nService);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function localeAware(Component) {
-  class LocaleAware extends _react2.default.Component {
+  class LocaleAware extends _react2.default.PureComponent {
     constructor(props, context) {
       super(props, context);
       this.handleLocaleChange = this.handleLocaleChange.bind(this);
+      this.unregisterLocaleChange = null;
+      this.state = {
+        locale: _LocaleService2.default.locale
+      };
+      this._mounted = false;
+      this._component = null;
     }
 
-    handleLocaleChange() {
-      this.forceUpdate();
+    handleLocaleChange(locale) {
+      this._mounted && this.state.locale !== locale && this.setState({
+        locale
+      });
     }
 
     componentDidMount() {
-      (0, _devBoxUi.registerLocaleChange)(this.handleLocaleChange);
+      this.unregisterLocaleChange = _LocaleService2.default.onLocaleChange(this.handleLocaleChange);
+      this._mounted = true;
+    }
+
+    componentWillUnmount() {
+      this._mounted = false;
+      this.unregisterLocaleChange();
     }
 
     render() {
-      const locale = _devBoxUi.registerLocaleChange.getCurrentLocale();
-      return _react2.default.createElement(Component, _extends({}, this.props, { locale: locale }));
+      const { locale } = this.state;
+      return _react2.default.createElement(Component, _extends({}, this.props, {
+        locale: locale,
+        translations: _I18nService2.default.currentLangTranslations,
+        ref: comp => this._component = comp
+      }));
     }
   }
 

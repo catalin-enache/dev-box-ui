@@ -25,16 +25,16 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 const style = ({ vars }) => {
   return {
     world: {
-      color: vars.colors.primaryTextColor || 'orange'
+      color: vars.colors.primaryColor || 'orange'
     }
   };
 };
 
-class World extends _react2.default.Component {
+class World extends _react2.default.PureComponent {
   render() {
     if (process.env.NODE_ENV !== 'production') {
       /* eslint no-console: 0 */
-      console.log('rendering Hello component');
+      // console.log('rendering Hello component');
     }
     return _react2.default.createElement(
       'div',
