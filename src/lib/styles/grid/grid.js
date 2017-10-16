@@ -1,6 +1,6 @@
 
-export default function grid(commonVars) {
-  const { dir, grid: { cols, breakpoints } } = commonVars;
+export default function grid(themeVars) {
+  const { dir, grid: { cols, breakpoints } } = themeVars;
   const start = dir === 'ltr' ? 'left' : 'right';
   /*  eslint no-unused-vars: 0 */
   const end = dir === 'ltr' ? 'right' : 'left';

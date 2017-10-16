@@ -1,6 +1,6 @@
 
 
-const formInput = (commonVars) => {
+const formInput = (themeVars) => {
   const {
     dimensions: {
       formInputHeight,
@@ -13,7 +13,7 @@ const formInput = (commonVars) => {
       formInputBorderColor,
       formInputBackgroundColor
     }
-  } = commonVars;
+  } = themeVars;
   return {
     width: '100%',
     height: formInputHeight,
@@ -32,8 +32,8 @@ const formInput = (commonVars) => {
   };
 };
 
-export default function form(commonVars) {
+export default function form(themeVars) {
   return {
-    formInput: formInput(commonVars)
+    formInput: formInput(themeVars)
   };
 }

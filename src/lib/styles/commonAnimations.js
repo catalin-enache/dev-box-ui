@@ -1,5 +1,5 @@
-const commonAnimations = (commonVars) => {
-  const { dir } = commonVars;
+const commonAnimations = (themeVars) => {
+  const { dir } = themeVars;
   return {
     [`@keyframes dbuAnimationSpin_${dir}`]: {
       '0%': {

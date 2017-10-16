@@ -1,10 +1,10 @@
 import grid from './grid/grid';
 import form from './form/form';
 
-const commonClasses = (commonVars) => {
+const commonClasses = (themeVars) => {
   return {
-    ...grid(commonVars),
-    ...form(commonVars)
+    ...grid(themeVars),
+    ...form(themeVars)
   };
 };
 
