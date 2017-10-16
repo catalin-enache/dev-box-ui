@@ -4,7 +4,14 @@ const formInput = (themeVars) => {
   const {
     dimensions: {
       formInputHeight,
-      formInputBorderWidth,
+      formInputBorderTopWidth,
+      formInputBorderRightWidth,
+      formInputBorderBottomWidth,
+      formInputBorderLeftWidth,
+      formInputBorderTopLeftRadius,
+      formInputBorderTopRightRadius,
+      formInputBorderBottomLeftRadius,
+      formInputBorderBottomRightRadius,
       formInputPaddingStartEnd,
       formInputFontSize
     },
@@ -22,10 +29,14 @@ const formInput = (themeVars) => {
     boxSizing: 'border-box',
     color: formInputColor,
     backgroundColor: formInputBackgroundColor,
-    borderTop: 'none',
-    borderLeft: 'none',
-    borderRight: 'none',
-    borderBottom: `${formInputBorderWidth}px solid ${formInputBorderColor}`,
+    borderTop: `${formInputBorderTopWidth}px solid ${formInputBorderColor}`,
+    borderRight: `${formInputBorderRightWidth}px solid ${formInputBorderColor}`,
+    borderLeft: `${formInputBorderLeftWidth}px solid ${formInputBorderColor}`,
+    borderBottom: `${formInputBorderBottomWidth}px solid ${formInputBorderColor}`,
+    borderTopLeftRadius: formInputBorderTopLeftRadius,
+    borderTopRightRadius: formInputBorderTopRightRadius,
+    borderBottomLeftRadius: formInputBorderBottomLeftRadius,
+    borderBottomRightRadius: formInputBorderBottomRightRadius,
     '&:focus': {
       outline: 'none'
     }

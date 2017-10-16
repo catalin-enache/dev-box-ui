@@ -13,7 +13,14 @@ const commonVars = dir => ({
     formInputFontSize: 16,
     formInputPaddingStartEnd: 5,
     formInputBorderRadius: 0,
-    formInputBorderWidth: 1
+    formInputBorderTopWidth: 0,
+    formInputBorderRightWidth: 0,
+    formInputBorderBottomWidth: 1,
+    formInputBorderLeftWidth: 0,
+    formInputBorderTopLeftRadius: 0,
+    formInputBorderTopRightRadius: 0,
+    formInputBorderBottomLeftRadius: 0,
+    formInputBorderBottomRightRadius: 0,
   },
   grid: {
     breakpoints: {
