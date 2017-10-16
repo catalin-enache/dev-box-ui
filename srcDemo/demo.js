@@ -5,9 +5,12 @@ import {
   // onScreenConsole,
   localeAware,
   theming,
-  defaultTheme
+  theme,
+  themeVars
 } from 'dev-box-ui';
 import App from './app';
+
+const currentTheme = theme(themeVars);
 
 // onScreenConsole();
 
@@ -21,7 +24,7 @@ let Demo = class Demo extends React.Component {
     }
     const { locale: { dir } } = this.props;
     return (
-      <ThemeProvider theme={defaultTheme[dir]}>
+      <ThemeProvider theme={currentTheme[dir]}>
         <App />
       </ThemeProvider>
     );

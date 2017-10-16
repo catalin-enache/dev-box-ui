@@ -3,16 +3,19 @@ import ReactDOM from 'react-dom';
 import { describe, it } from 'mocha';
 import {
   theming,
-  defaultTheme
+  theme,
+  themeVars
 } from './../../index';
 import World from './World';
+
+const currentTheme = theme(themeVars);
 
 const { ThemeProvider } = theming;
 
 describe('World', () => {
   it('renders world', (done) => {
     ReactDOM.render(
-      <ThemeProvider theme={defaultTheme.ltr}>
+      <ThemeProvider theme={currentTheme.ltr}>
         <div>
           <World/>
         </div>
