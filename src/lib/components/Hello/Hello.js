@@ -23,7 +23,7 @@ const listItems = ['one', 'two'];
 const style = ({ vars }) => {
   return {
     hello: {
-      color: vars.colors.primaryTextColor || 'orange'
+      color: vars.colors.primaryColor || 'orange'
     }
   };
 };

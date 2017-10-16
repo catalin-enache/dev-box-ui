@@ -6,7 +6,7 @@ import themeAware from '../../HOC/themeAware';
 const style = ({ vars }) => {
   return {
     world: {
-      color: vars.colors.primaryTextColor || 'orange'
+      color: vars.colors.primaryColor || 'orange'
     }
   };
 };

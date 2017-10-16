@@ -1,5 +1,6 @@
 import Hello from './components/Hello/Hello';
 import List from './components/List/List';
+import FormInputNumber from './components/FormInputNumber/FormInputNumber';
 import onScreenConsole from './utils/onScreenConsole';
 import localeService from './services/LocaleService';
 import i18nService from './services/I18nService';
@@ -20,5 +21,6 @@ export {
   theming,
   createTheming,
   Hello,
-  List
+  List,
+  FormInputNumber
 };

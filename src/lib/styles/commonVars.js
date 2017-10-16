@@ -2,8 +2,18 @@
 const commonVars = dir => ({
   dir,
   colors: {
-    primaryTextColor: 'green',
-    secondaryTextColor: 'blue'
+    primaryColor: 'green',
+    secondaryColor: 'blue',
+    formInputColor: 'black',
+    formInputBorderColor: 'grey',
+    formInputBackgroundColor: 'white'
+  },
+  dimensions: {
+    formInputHeight: 26,
+    formInputFontSize: 16,
+    formInputPaddingStartEnd: 5,
+    formInputBorderRadius: 0,
+    formInputBorderWidth: 1
   },
   grid: {
     breakpoints: {

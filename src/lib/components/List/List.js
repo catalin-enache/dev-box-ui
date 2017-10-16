@@ -19,7 +19,7 @@ i18nService.registerTranslations({
 const style = ({ vars }) => {
   return {
     list: {
-      // color: color(vars.colors.secondaryTextColor || 'orange').lighten(0.5).hex()
+      // color: color(vars.colors.secondaryColor || 'orange').lighten(0.5).hex()
       color: vars.dir === 'ltr' ? 'green' : 'red'
     }
   };
