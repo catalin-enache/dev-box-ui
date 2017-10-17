@@ -1,4 +1,6 @@
 
+const borderRadius = 5;
+
 const commonVars = dir => ({
   dir,
   colors: {
@@ -9,18 +11,18 @@ const commonVars = dir => ({
     formInputBackgroundColor: 'white'
   },
   dimensions: {
+    borderRadius,
     formInputHeight: 26,
     formInputFontSize: 16,
     formInputPaddingStartEnd: 5,
-    formInputBorderRadius: 0,
     formInputBorderTopWidth: 0,
     formInputBorderRightWidth: 0,
     formInputBorderBottomWidth: 1,
     formInputBorderLeftWidth: 0,
-    formInputBorderTopLeftRadius: 0,
-    formInputBorderTopRightRadius: 0,
-    formInputBorderBottomLeftRadius: 0,
-    formInputBorderBottomRightRadius: 0,
+    formInputBorderTopLeftRadius: borderRadius,
+    formInputBorderTopRightRadius: borderRadius,
+    formInputBorderBottomLeftRadius: borderRadius,
+    formInputBorderBottomRightRadius: borderRadius,
   },
   grid: {
     breakpoints: {
