@@ -7,7 +7,7 @@
   "main": "./build/src/lib/index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/catalin-enache/dev-box-ui-sass.git"
+    "url": "https://github.com/catalin-enache/dev-box-ui.git"
   },
   "files": [
     "build/"
