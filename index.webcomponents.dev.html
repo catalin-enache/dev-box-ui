@@ -1,0 +1,48 @@
+<!doctype html>
+<html dir="ltr" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+</head>
+<body>
+<dbu-web-component-dummy-parent></dbu-web-component-dummy-parent>
+<script src="build/dist/js/dev-box-ui-webcomponents.js"></script>
+<script>
+  (async function(callback) {
+    const undefinedElements = document.querySelectorAll(':not(:defined)');
+    const promises = [...undefinedElements].map(
+      element => customElements.whenDefined(element.localName)
+    );
+    await Promise.all(promises);
+    callback();
+  })(() => {
+    console.log('all defined');
+    console.log('name', Object.getPrototypeOf(document.querySelector('dbu-web-component-dummy-parent')).constructor.name);
+  });
+
+</script>
+<script>
+  const {
+    getDBUWebComponentDummy,
+    getDBUWebComponentDummyParent
+  } = require('dev-box-ui-webcomponents');
+  const [
+    DBUWebComponentDummy,
+    DBUWebComponentDummyParent
+  ] = [
+    getDBUWebComponentDummy(window),
+    getDBUWebComponentDummyParent(window)
+  ];
+  DBUWebComponentDummy.componentStyle += `
+    b {
+      color: orange;
+      font-style: oblique;
+    }
+  `;
+  [
+    DBUWebComponentDummy,
+    DBUWebComponentDummyParent
+  ].forEach((component) => component.registerSelf());
+</script>
+</body>
+</html>
