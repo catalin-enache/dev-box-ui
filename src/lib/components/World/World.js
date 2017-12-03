@@ -1,15 +1,6 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
 import List from '../List/List';
-import themeAware from '../../HOC/themeAware';
-
-const style = ({ vars }) => {
-  return {
-    world: {
-      color: vars.colors.primaryColor || 'orange'
-    }
-  };
-};
 
 class World extends React.PureComponent {
   render() {
@@ -18,7 +9,7 @@ class World extends React.PureComponent {
       // console.log('rendering Hello component');
     }
     return (
-      <div className={this.props.classes.hello}>
+      <div>
         World ------------
         <List items={['five', 'six']}/>
         <List items={['five', 'six']}/>
@@ -29,8 +20,7 @@ class World extends React.PureComponent {
 }
 
 World.propTypes = {
-  classes: PropTypes.object
 };
 
-export default themeAware({ style })(World);
+export default World;
 

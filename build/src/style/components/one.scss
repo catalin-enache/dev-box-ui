@@ -1,0 +1,15 @@
+.one {
+  color: $primaryColor;
+  background-color: $secondaryColor;
+  float: $start;
+  @include if-ltr {
+		li {
+			font-weight: bold;
+		}
+	}
+  @include if-rtl {
+		li {
+			font-style: italic;
+		}
+	}
+}

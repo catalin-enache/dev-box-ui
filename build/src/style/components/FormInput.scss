@@ -1,0 +1,58 @@
+.dbu-form-input {
+  display: inline;
+  width: 100%;
+  height: $form-input-height;
+  padding-top: $form-input-padding-top;
+  padding-bottom: $form-input-padding-bottom;
+  padding-#{$start}: $form-input-padding-start;
+  padding-#{$end}: $form-input-padding-end;
+  color: $form-input-text-color;
+  background-color: $form-input-background-color;
+  border-style: $form-input-border-style;
+  border-color: $form-input-border-color;
+  border-top-width: $form-input-border-top-width;
+  border-bottom-width: $form-input-border-bottom-width;
+  border-#{$start}-width: $form-input-border-start-width;
+  border-#{$end}-width: $form-input-border-end-width;
+  border-top-#{$start}-radius: $form-input-border-top-start-radius;
+  border-top-#{$end}-radius: $form-input-border-top-end-radius;
+  border-bottom-#{$start}-radius: $form-input-border-bottom-start-radius;
+  border-bottom-#{$end}-radius: $form-input-border-bottom-end-radius;
+  font-size: $form-input-font-size;
+  font-family: $form-input-font-family;
+  font-weight: $form-input-font-weight;
+  font-style: $form-input-font-style;
+  font-kerning: $form-input-font-kerning;
+  box-sizing: $form-input-box-sizing;
+
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  unicode-bidi: bidi-override;
+
+  &:focus {
+    color: $form-input-focus-text-color;
+    background-color: $form-input-focus-background-color;
+    border-color: $form-input-focus-border-color;
+    outline: none;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: .5;
+  }
+
+  &.dbu-warning {
+    color: $form-input-warning-text-color;
+    background-color: $form-input-warning-background-color;
+    border-color: $form-input-warning-border-color;
+  }
+
+  &.dbu-error {
+    color: $form-input-error-text-color;
+    background-color: $form-input-error-background-color;
+    border-color: $form-input-error-border-color;
+  }
+}
+

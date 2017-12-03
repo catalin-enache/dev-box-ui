@@ -24,10 +24,6 @@ var _World = require('../World/World');
 
 var _World2 = _interopRequireDefault(_World);
 
-var _themeAware = require('../../HOC/themeAware');
-
-var _themeAware2 = _interopRequireDefault(_themeAware);
-
 var _localeAware = require('../../HOC/localeAware');
 
 var _localeAware2 = _interopRequireDefault(_localeAware);
@@ -44,35 +40,27 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 _I18nService2.default.registerTranslations({
   en: {
-    'Hello': _template2.default`Hello ${'age'} ${'name'}`
+    Hello: _template2.default`Hello ${'age'} ${'name'}`
   },
   sp: {
-    'Hello': _template2.default`Hola ${'age'} ${'name'}`
+    Hello: _template2.default`Hola ${'age'} ${'name'}`
   }
 });
 
 const listItems = ['one', 'two'];
 
-const style = ({ vars }) => {
-  return {
-    hello: {
-      color: vars.colors.primaryColor || 'orange'
-    }
-  };
-};
-
 class Hello extends _react2.default.PureComponent {
   render() {
-    const { theme, translations } = this.props;
+    const { translations } = this.props;
     if (process.env.NODE_ENV !== 'production') {
       /* eslint no-console: 0 */
       // console.log('rendering Hello component');
     }
     return _react2.default.createElement(
       'div',
-      { className: this.props.classes.hello },
+      null,
       translations.Hello({ age: 22, name: this.props.name || 'Nobody' }),
-      _react2.default.createElement(_spinner2.default, { className: theme.animations.dbuAnimationSpin }),
+      _react2.default.createElement(_spinner2.default, null),
       _react2.default.createElement(_List2.default, { items: listItems }),
       _react2.default.createElement(_List2.default, { items: listItems }),
       _react2.default.createElement(_World2.default, null),
@@ -83,9 +71,7 @@ class Hello extends _react2.default.PureComponent {
 
 Hello.propTypes = {
   translations: _propTypes2.default.object,
-  theme: _propTypes2.default.object,
-  name: _propTypes2.default.string.isRequired,
-  classes: _propTypes2.default.object
+  name: _propTypes2.default.string.isRequired
 };
 
-exports.default = (0, _themeAware2.default)({ style })((0, _localeAware2.default)(Hello));
+exports.default = (0, _localeAware2.default)(Hello);

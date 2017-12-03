@@ -1,3 +1,4 @@
+/* eslint no-console: 0 */
 
 const buttonHeight = '25px';
 const buttonStart = '5px';

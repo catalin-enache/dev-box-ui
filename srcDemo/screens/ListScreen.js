@@ -1,16 +1,7 @@
 import React from 'react';
 import {
-  List,
-  themeAware
+  List
 } from 'dev-box-ui';
-
-const style = ({ vars }) => {
-  return {
-    screen: {
-      color: vars.colors.primaryTextColor || 'orange'
-    }
-  };
-};
 
 class ListScreen extends React.Component {
   render() {
@@ -23,4 +14,4 @@ class ListScreen extends React.Component {
   }
 }
 
-export default themeAware({ style })(ListScreen);
+export default ListScreen;

@@ -1,16 +1,7 @@
 import React from 'react';
 import {
-  Hello,
-  themeAware
+  Hello
 } from 'dev-box-ui';
-
-const style = ({ vars }) => {
-  return {
-    screen: {
-      color: vars.colors.primaryTextColor || 'orange'
-    }
-  };
-};
 
 class HelloScreen extends React.Component {
   render() {
@@ -20,10 +11,10 @@ class HelloScreen extends React.Component {
     }
     return (
       <div>
-        <Hello/>
+        <Hello />
       </div>
     );
   }
 }
 
-export default themeAware({ style })(HelloScreen);
+export default HelloScreen;

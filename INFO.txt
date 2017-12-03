@@ -51,3 +51,7 @@ in package.json:
 =============================== Safari issues on Mac ============================
 to prevent remembering previous tabs between tests run:
 defaults write com.apple.Safari ApplePersistenceIgnoreState YES
+
+=============================== directional SASS ============================
+
+https://github.com/tysonmatanich/directional-scss

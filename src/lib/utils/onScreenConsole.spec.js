@@ -2,6 +2,8 @@ import { describe, it } from 'mocha';
 import { expect } from 'chai';
 import onScreenConsole from './onScreenConsole';
 
+/* eslint no-console: 0 */
+/* eslint func-names: 0 */
 
 const firstMessage = `foo, bar, 5, , , Map ([[2,7]]), Set ([4,5]), [
   8,
@@ -65,7 +67,11 @@ describe('onScreenConsole', () => {
         }, 0);
       }, 0);
 
-      console.log('foo', 'bar', 5, null, undefined, new Map([[2, 7]]), new Set([4, 5]), [8, 9, 10], function () { console.log('bla'); }, { a: { b: { c: [1, function () { console.log('inline'); }] } } });
+      console.log('foo', 'bar', 5, null, undefined,
+        new Map([[2, 7]]), new Set([4, 5]), [8, 9, 10],
+        function () { console.log('bla'); },
+        { a: { b: { c: [1, function () { console.log('inline'); }] } } }
+      );
       console.warn('warning');
       console.error('error');
     });

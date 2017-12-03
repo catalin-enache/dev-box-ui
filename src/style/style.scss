@@ -1,0 +1,14 @@
+
+$dir: ltr;
+html[dir=#{$dir}] {
+  @import "setup";
+  @import "./utils/browsers_overrides";
+  @import "../style/components/index";
+}
+
+$dir: rtl;
+html[dir=#{$dir}] {
+  @import "setup";
+  @import "./utils/browsers_overrides";
+  @import "../style/components/index";
+}

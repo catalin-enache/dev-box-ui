@@ -1,0 +1,53 @@
+
+
+// ===================== Colors ============================
+$warning-text-color: darkorange;
+$warning-border-color: darkorange;
+$error-text-color: #af0000;
+$error-border-color: #af0000;
+
+$form-input-text-color: #333;
+$form-input-background-color: #fff;
+$form-input-border-color: #ededed;
+
+$form-input-focus-text-color: #333;
+$form-input-focus-background-color: #fff;
+$form-input-focus-border-color: #dcdcdc;
+
+$form-input-warning-text-color: $warning-text-color;
+$form-input-warning-background-color: #fff;
+$form-input-warning-border-color: $warning-border-color;
+
+$form-input-error-text-color: $error-text-color;
+$form-input-error-background-color: #fff;
+$form-input-error-border-color: $error-border-color;
+
+// ===================== Dimensions ============================
+
+$border-radius: 0px;
+
+$form-input-font-size: 16px;
+$form-input-font-weight: normal;
+$form-input-height: 26px;
+$form-input-border-top-width: 1px;
+$form-input-border-end-width: 1px;
+$form-input-border-bottom-width: 1px;
+$form-input-border-start-width: 1px;
+$form-input-border-top-start-radius: $border-radius;
+$form-input-border-top-end-radius: $border-radius;
+$form-input-border-bottom-start-radius: $border-radius;
+$form-input-border-bottom-end-radius: $border-radius;
+$form-input-padding-top: 3px;
+$form-input-padding-end: 5px;
+$form-input-padding-bottom: 3px;
+$form-input-padding-start: 5px;
+
+// ===================== Miscellaneous ============================
+
+$form-input-border-style: solid;
+$form-input-font-style: normal;
+$form-input-font-kerning: normal;
+$form-input-font-family: "Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
+$form-input-box-sizing: border-box;
+
+

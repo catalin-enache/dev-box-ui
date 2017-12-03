@@ -1,35 +1,42 @@
 import React from 'react';
 import {
-  FormInputNumber,
-  themeAware
+  FormInputNumber
 } from 'dev-box-ui';
 
-const style = ({ vars }) => {
-  return {
-    screen: {
-      color: vars.colors.primaryTextColor || 'orange'
-    },
-    formInputNumber: {
-      '&:focus': {
-        color: 'red',
-        boxShadow: '3px 3px 3px #888888'
-      }
-    }
-  };
-};
 
 class FormInputNumberScreen extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      inputValue: -7.08
+    };
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  handleChange(inputValue) {
+    const valueToSendBack = Number(inputValue.toPrecision(16));
+    this.setState({
+      inputValue: valueToSendBack
+    });
+  }
+
   render() {
-    const { theme, classes } = this.props;
     return (
       <div>
-        <FormInputNumber inputExtraClasses={[
-          theme.common.withoutBorderBottomLeftRadius,
-          classes.formInputNumber
-        ]} />
+        <FormInputNumber
+          value={this.state.inputValue}
+          onChange={this.handleChange}
+          defaultDecPoint=","
+          defaultThousandsSeparator="."
+        />
+        <FormInputNumber
+          value={this.state.inputValue}
+          onChange={this.handleChange}
+        />
+        <p>{this.state.inputValue}{'\u00A0'}</p>
       </div>
     );
   }
 }
 
-export default themeAware({ style })(FormInputNumberScreen);
+export default FormInputNumberScreen;
