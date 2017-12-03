@@ -12,7 +12,7 @@ export default function getDBUWebComponentDummyParent(win) {
   const DBUWebComponentDummy = getDBUWebComponentDummy(win);
 
   const { document } = win;
-  DBUWebComponentDummy.registerSelf();
+
   const template = document.createElement('template');
   template.innerHTML = `
     <style>
@@ -30,6 +30,11 @@ export default function getDBUWebComponentDummyParent(win) {
 
     static get template() {
       return template;
+    }
+
+    static registerSelf() {
+      super.registerSelf();
+      DBUWebComponentDummy.registerSelf();
     }
   }
 
