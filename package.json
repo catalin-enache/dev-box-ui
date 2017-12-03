@@ -1,6 +1,6 @@
 {
   "name": "dev-box-ui",
-  "version": "0.0.39",
+  "version": "0.0.40",
   "private": true,
   "author": "catalinenache78@gmail.com",
   "license": "MIT",
@@ -87,6 +87,8 @@
     "build:dev-box-ui-with-deps:dist:dev": "                                    browserify -r ./src/lib/:dev-box-ui -x react -x react-dom                                                                              --debug -o build/dist/js/dev-box-ui-with-deps.js",
     "build:dev-box-ui-with-deps:dist:prod": "cross-env NODE_ENV=production      browserify -r ./src/lib/:dev-box-ui -x react -x react-dom                                                                              -g [ loose-envify purge --NODE_ENV production ] -g uglifyify -p bundle-collapser/plugin | uglifyjs --compress=unused,dead_code --mangle -o build/dist/js/dev-box-ui-with-deps.min.js",
     "build:dev-box-ui-with-deps:list": "                                        browserify -r ./src/lib/:dev-box-ui -x react -x react-dom                                                                              --list | node scripts/depsReporter.js",
+    "build:dev-box-ui-webcomponents:dev": "                                     browserify -r ./src/lib/webcomponents                                                                                                  --debug -o build/dist/js/dev-box-ui-webcomponents.js",
+    "build:dev-box-ui-webcomponents:prod": "cross-env NODE_ENV=production       browserify -r ./src/lib/webcomponents                                                                                                  -g [ loose-envify purge --NODE_ENV production ] -g uglifyify -p bundle-collapser/plugin | uglifyjs --compress=unused,dead_code --mangle -o build/dist/js/dev-box-ui-webcomponents.min.js",
     "build:demo": "                                                             browserify                          -x react -x react-dom -x prop-types -x dev-box-ui                                                  --debug -o demo/js/demo.js srcDemo/demo.js",
     "build:demo:list": "                                                        browserify                          -x react -x react-dom -x prop-types -x dev-box-ui                                                  --list | node scripts/depsReporter.js",
     "build:babel:release": "babel ./src --out-dir ./build/src --ignore *.spec.js && npm run copy:style",
