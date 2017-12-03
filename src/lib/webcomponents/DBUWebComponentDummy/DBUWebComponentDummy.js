@@ -5,7 +5,7 @@ console.log('importing getDBUWebComponent');
 
 export const cache = new WeakMap();
 
-export default function getDBUWebComponent(win) {
+export default function getDBUWebComponentDummy(win) {
   if (cache.has(win)) return cache.get(win);
 
   const { DBUWebComponentBase, defineCommonStaticMethods } = getDBUWebComponentBase(win);
@@ -25,9 +25,9 @@ export default function getDBUWebComponent(win) {
     <slot></slot>
   `;
 
-  class DBUWebComponent extends DBUWebComponentBase {
+  class DBUWebComponentDummy extends DBUWebComponentBase {
     static get componentName() {
-      return 'dbu-web-component';
+      return 'dbu-web-component-dummy';
     }
 
     static get template() {
@@ -35,9 +35,9 @@ export default function getDBUWebComponent(win) {
     }
   }
 
-  defineCommonStaticMethods(DBUWebComponent);
+  defineCommonStaticMethods(DBUWebComponentDummy);
 
-  cache.set(win, DBUWebComponent);
+  cache.set(win, DBUWebComponentDummy);
 
   return cache.get(win);
 }

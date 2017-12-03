@@ -28,6 +28,9 @@ function getDBUWebComponent(win) {
       display: block;
       color: maroon;
     }
+    b {
+      text-shadow: var(--b-text-shadow, none);
+    }
     </style>
     <b>I'm in shadow dom!</b>
     <slot></slot>

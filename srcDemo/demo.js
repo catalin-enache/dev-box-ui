@@ -7,15 +7,15 @@ import {
 } from 'dev-box-ui';
 import App from './app';
 
-// import getDBUWebComponent from '../build/src/lib/webcomponents/DBUWebComponent/DBUWebComponent';
-// import getDBUWebComponentParent from '../build/src/lib/webcomponents/DBUWebComponentParent/DBUWebComponentParent';
-import getDBUWebComponent from '../src/lib/webcomponents/DBUWebComponent/DBUWebComponent';
-import getDBUWebComponentParent from '../src/lib/webcomponents/DBUWebComponentParent/DBUWebComponentParent';
+// import getDBUWebComponentDummy from '../build/src/lib/webcomponents/DBUWebComponentDummy/DBUWebComponentDummy';
+// import getDBUWebComponentDummyParent from '../build/src/lib/webcomponents/DBUWebComponentDummyParent/DBUWebComponentDummyParent';
+import getDBUWebComponentDummy from '../src/lib/webcomponents/DBUWebComponentDummy/DBUWebComponentDummy';
+import getDBUWebComponentDummyParent from '../src/lib/webcomponents/DBUWebComponentDummyParent/DBUWebComponentDummyParent';
 
-const DBUWebComponent = getDBUWebComponent(window);
-const DBUWebComponentParent = getDBUWebComponentParent(window);
+const DBUWebComponentDummy = getDBUWebComponentDummy(window);
+const DBUWebComponentDummyParent = getDBUWebComponentDummyParent(window);
 
-DBUWebComponent.componentStyle += `
+DBUWebComponentDummy.componentStyle += `
   b {
     color: orange;
     font-style: oblique;
@@ -23,8 +23,8 @@ DBUWebComponent.componentStyle += `
 `;
 
 setTimeout(() => {
-  DBUWebComponent.registerSelf();
-  DBUWebComponentParent.registerSelf();
+  DBUWebComponentDummy.registerSelf();
+  DBUWebComponentDummyParent.registerSelf();
 }, 2000);
 
 const iframe = document.createElement('iframe');
@@ -36,12 +36,12 @@ iframe.onload = function (evt) {
   target.contentWindow.document.write(`
     <html>
     <body>
-      <dbu-web-component
+      <dbu-web-component-dummy
         style="color: blue"
       >
         <span>hello world 3</span>
-      </dbu-web-component>
-      <dbu-web-component-parent></dbu-web-component-parent>
+      </dbu-web-component-dummy>
+      <dbu-web-component-dummy-parent></dbu-web-component-dummy-parent>
     </body>
     <script>
       window.onmessage = function (msg) {
@@ -53,11 +53,11 @@ iframe.onload = function (evt) {
   `);
   target.contentWindow.postMessage('hello', '*')
 
-  const DBUWebComponent2 = getDBUWebComponent(target.contentWindow);
-  const DBUWebComponentParent2 = getDBUWebComponentParent(target.contentWindow);
+  const DBUWebComponentDummy2 = getDBUWebComponentDummy(target.contentWindow);
+  const DBUWebComponentDummyParent2 = getDBUWebComponentDummyParent(target.contentWindow);
   setTimeout(() => {
-    DBUWebComponent2.registerSelf();
-    DBUWebComponentParent2.registerSelf();
+    DBUWebComponentDummy2.registerSelf();
+    DBUWebComponentDummyParent2.registerSelf();
 
     setTimeout(() => {
       // target.remove();
