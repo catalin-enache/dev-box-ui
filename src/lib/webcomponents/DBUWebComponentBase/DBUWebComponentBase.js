@@ -1,4 +1,6 @@
 
+import LocaleService from '../../services/LocaleService';
+
 console.log('importing getDBUWebComponentBase');
 
 export const cache = new WeakMap();
@@ -30,6 +32,8 @@ export default function getDBUWebComponentBase(win) {
         const shadowRoot = this.attachShadow({ mode: 'open' });
         shadowRoot.appendChild(template.content.cloneNode(true));
       }
+      this.onLocaleChange && (this.onLocaleChange = this.onLocaleChange.bind(this));
+      this.unregisterLocaleChange = null;
     }
 
     connectedCallback() {
@@ -37,7 +41,18 @@ export default function getDBUWebComponentBase(win) {
         const componentInstanceStyle = this.getAttribute('componentInstanceStyle');
         this.shadowRoot.querySelector('style').innerHTML = componentInstanceStyle;
       }
+      if (this.onLocaleChange) {
+        this.unregisterLocaleChange =
+          LocaleService.onLocaleChange(this.onLocaleChange);
+      }
     }
+
+    disconnectedCallback() {
+      if (this.onLocaleChange) {
+        this.unregisterLocaleChange();
+      }
+    }
+
   }
 
   function defineCommonStaticMethods(klass) {

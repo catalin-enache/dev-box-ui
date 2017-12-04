@@ -33,6 +33,10 @@ export default function getDBUWebComponentDummy(win) {
     static get template() {
       return template;
     }
+
+    onLocaleChange(locale) {
+      console.log('onLocaleChange', locale);
+    }
   }
 
   defineCommonStaticMethods(DBUWebComponentDummy);
