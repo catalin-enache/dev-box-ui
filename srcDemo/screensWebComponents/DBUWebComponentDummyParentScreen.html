@@ -3,18 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <style>
-    dbu-web-component-dummy.custom {
-      --b-text-shadow: 2px 2px 2px #cccc00;
-    }
-    dbu-web-component-dummy.custom2 {
-      --b-text-shadow: 2px 2px 2px #0000cc;
-    }
-  </style>
 </head>
 <body>
-<dbu-web-component-dummy class="custom"></dbu-web-component-dummy>
-<dbu-web-component-dummy class="custom2"></dbu-web-component-dummy>
+<dbu-web-component-dummy-parent>hello</dbu-web-component-dummy-parent>
 <script src="../../build/dist/js/dev-box-ui-webcomponents.js"></script>
 <script>
   (async function(callback) {
@@ -25,9 +16,9 @@
     await Promise.all(promises);
     callback();
   })(() => {
-    console.log('all defined');
-    console.log('name', Object.getPrototypeOf(document.querySelector('dbu-web-component-dummy')).constructor.name);
+
   });
+
 </script>
 <script>
   const {
@@ -47,7 +38,6 @@
       font-style: oblique;
     }
   `;
-  console.log('DBUWebComponentDummy.componentStyle', DBUWebComponentDummy.componentStyle);
   [
     DBUWebComponentDummy,
     DBUWebComponentDummyParent

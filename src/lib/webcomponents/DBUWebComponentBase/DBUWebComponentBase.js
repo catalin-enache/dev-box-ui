@@ -19,6 +19,10 @@ export default function getDBUWebComponentBase(win) {
       return template;
     }
 
+    static get dependencies() {
+      return [];
+    }
+
     constructor() {
       super();
       const { template } = this.constructor;
@@ -49,6 +53,8 @@ export default function getDBUWebComponentBase(win) {
     });
     klass.registerSelf = () => {
       const componentName = klass.componentName;
+      const dependencies = klass.dependencies;
+      dependencies.forEach((dependency) => dependency.registerSelf());
       if (customElements.get(componentName)) return;
       customElements.define(componentName, klass);
     };

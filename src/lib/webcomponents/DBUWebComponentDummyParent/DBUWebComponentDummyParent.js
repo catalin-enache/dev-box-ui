@@ -18,9 +18,8 @@ export default function getDBUWebComponentDummyParent(win) {
     <style>
     :host {display: block;}
     </style>
-    <b>I'm in shadow dom! (parent)</b>
-    <dbu-web-component-dummy>aaa</dbu-web-component-dummy>
-    <slot></slot>
+    <b>I'm in shadow dom! (DBUWebComponentDummyParent)</b>
+    <dbu-web-component-dummy><slot></slot></dbu-web-component-dummy>
   `;
 
   class DBUWebComponentDummyParent extends DBUWebComponentBase {
@@ -32,10 +31,10 @@ export default function getDBUWebComponentDummyParent(win) {
       return template;
     }
 
-    static registerSelf() {
-      super.registerSelf();
-      DBUWebComponentDummy.registerSelf();
+    static get dependencies() {
+      return [DBUWebComponentDummy];
     }
+
   }
 
   defineCommonStaticMethods(DBUWebComponentDummyParent);

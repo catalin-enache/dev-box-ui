@@ -21,8 +21,8 @@ export default function getDBUWebComponentDummy(win) {
       text-shadow: var(--b-text-shadow, none);
     }
     </style>
-    <b>I'm in shadow dom!</b>
-    <slot></slot>
+    <b>I'm in shadow dom! (DBUWebComponentDummy)</b>
+    [<slot></slot>]
   `;
 
   class DBUWebComponentDummy extends DBUWebComponentBase {
