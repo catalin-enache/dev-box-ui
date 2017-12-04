@@ -9,20 +9,16 @@ import App from './app';
 
 // import getDBUWebComponentDummy from '../build/src/lib/webcomponents/DBUWebComponentDummy/DBUWebComponentDummy';
 // import getDBUWebComponentDummyParent from '../build/src/lib/webcomponents/DBUWebComponentDummyParent/DBUWebComponentDummyParent';
+import dbuWebComponentsSetUp from '../src/lib/webcomponents/DBUWebComponentsSetup/DBUWebComponentsSetup';
 import getDBUWebComponentDummy from '../src/lib/webcomponents/DBUWebComponentDummy/DBUWebComponentDummy';
 import getDBUWebComponentDummyParent from '../src/lib/webcomponents/DBUWebComponentDummyParent/DBUWebComponentDummyParent';
 
-
-window.DBUWebComponents = {
-  'dbu-web-component-dummy': {
-    componentStyle: `
-       b {
-        color: orange;
-        font-style: oblique;
-        }
-    `
+dbuWebComponentsSetUp(window).appendStyle('dbu-web-component-dummy', `
+  b {
+    color: deepskyblue;
+    font-style: oblique;
   }
-};
+`);
 
 const DBUWebComponentDummy = getDBUWebComponentDummy(window);
 const DBUWebComponentDummyParent = getDBUWebComponentDummyParent(window);
@@ -57,8 +53,14 @@ iframe.onload = function (evt) {
     </script>
     </html>
   `);
-  target.contentWindow.postMessage('hello', '*')
+  target.contentWindow.postMessage('hello', '*');
 
+  dbuWebComponentsSetUp(target.contentWindow).appendStyle('dbu-web-component-dummy', `
+    b {
+      font-style: oblique;
+      opacity: 0.5;
+    }
+  `);
   const DBUWebComponentDummy2 = getDBUWebComponentDummy(target.contentWindow);
   const DBUWebComponentDummyParent2 = getDBUWebComponentDummyParent(target.contentWindow);
   setTimeout(() => {

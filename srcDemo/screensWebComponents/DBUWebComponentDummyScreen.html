@@ -30,26 +30,24 @@
   });
 </script>
 <script>
-  window.DBUWebComponents = {
-    'dbu-web-component-dummy': {
-      componentStyle: `
-         b {
-          color: orange;
-          font-style: oblique;
-          border-radius: var(--b-radius, 0px);
-        }
-      `
-    }
-  };
   const {
+    dbuWebComponentsSetUp,
     getDBUWebComponentDummy
   } = require('dev-box-ui-webcomponents');
+
+  dbuWebComponentsSetUp(window).appendStyle('dbu-web-component-dummy', `
+    b {
+      color: orange;
+      font-style: oblique;
+      border-radius: var(--b-radius, 0px);
+    }
+  `);
+
   const [
     DBUWebComponentDummy
   ] = [
     getDBUWebComponentDummy(window)
   ];
-
 
   [
     DBUWebComponentDummy

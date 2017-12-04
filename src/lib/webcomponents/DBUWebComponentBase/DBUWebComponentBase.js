@@ -90,6 +90,7 @@ export default function getDBUWebComponentBase(win) {
       enumerable: true,
       configurable: true
     });
+
     klass.registerSelf = () => {
       const componentName = klass.componentName;
       const dependencies = klass.dependencies;

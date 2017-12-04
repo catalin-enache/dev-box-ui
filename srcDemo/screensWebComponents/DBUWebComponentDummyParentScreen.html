@@ -3,9 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <style>
+    dbu-web-component-dummy-parent {
+      --dbu-web-component-dummy-parent-border-radius: 10px;
+      --dbu-web-component-dummy-parent-bg-color: gray;
+      --dbu-web-component-dummy-parent-color: red;
+    }
+  </style>
 </head>
 <body>
 <dbu-web-component-dummy-parent>hello</dbu-web-component-dummy-parent>
+<dbu-web-component-dummy>hello</dbu-web-component-dummy>
 <script src="../../build/dist/js/dev-box-ui-webcomponents.js"></script>
 <script>
   (async function(callback) {
@@ -20,20 +28,19 @@
   });
 </script>
 <script>
-  window.DBUWebComponents = {
-    'dbu-web-component-dummy': {
-      componentStyle: `
-         b {
-          color: red;
-          font-style: oblique;
-          }
-      `
-    }
-  };
-
   const {
+    dbuWebComponentsSetUp,
     getDBUWebComponentDummyParent
   } = require('dev-box-ui-webcomponents');
+
+  dbuWebComponentsSetUp(window).appendStyle('dbu-web-component-dummy', `
+    b {
+      color: var(--dbu-web-component-dummy-parent-color, inherit);
+      font-style: oblique;
+      border-radius: var(--dbu-web-component-dummy-parent-border-radius, 0px);
+      background-color: var(--dbu-web-component-dummy-parent-bg-color, transparent);
+    }
+  `);
 
   const [
     DBUWebComponentDummyParent
