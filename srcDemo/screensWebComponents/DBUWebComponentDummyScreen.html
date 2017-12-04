@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -9,6 +9,7 @@
     }
     dbu-web-component-dummy.custom2 {
       --b-text-shadow: 2px 2px 2px #0000cc;
+      --b-radius: 5px;
     }
   </style>
 </head>
@@ -29,27 +30,29 @@
   });
 </script>
 <script>
+  window.DBUWebComponents = {
+    'dbu-web-component-dummy': {
+      componentStyle: `
+         b {
+          color: orange;
+          font-style: oblique;
+          border-radius: var(--b-radius, 0px);
+        }
+      `
+    }
+  };
   const {
-    getDBUWebComponentDummy,
-    getDBUWebComponentDummyParent
+    getDBUWebComponentDummy
   } = require('dev-box-ui-webcomponents');
   const [
-    DBUWebComponentDummy,
-    DBUWebComponentDummyParent
+    DBUWebComponentDummy
   ] = [
-    getDBUWebComponentDummy(window),
-    getDBUWebComponentDummyParent(window)
+    getDBUWebComponentDummy(window)
   ];
-  DBUWebComponentDummy.componentStyle += `
-    b {
-      color: orange;
-      font-style: oblique;
-    }
-  `;
+
 
   [
-    DBUWebComponentDummy,
-    DBUWebComponentDummyParent
+    DBUWebComponentDummy
   ].forEach((component) => component.registerSelf());
 </script>
 </body>

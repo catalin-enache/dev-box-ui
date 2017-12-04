@@ -18,28 +18,30 @@
   })(() => {
 
   });
-
 </script>
 <script>
+  window.DBUWebComponents = {
+    'dbu-web-component-dummy': {
+      componentStyle: `
+         b {
+          color: red;
+          font-style: oblique;
+          }
+      `
+    }
+  };
+
   const {
-    getDBUWebComponentDummy,
     getDBUWebComponentDummyParent
   } = require('dev-box-ui-webcomponents');
+
   const [
-    DBUWebComponentDummy,
     DBUWebComponentDummyParent
   ] = [
-    getDBUWebComponentDummy(window),
     getDBUWebComponentDummyParent(window)
   ];
-  DBUWebComponentDummy.componentStyle += `
-    b {
-      color: orange;
-      font-style: oblique;
-    }
-  `;
+
   [
-    DBUWebComponentDummy,
     DBUWebComponentDummyParent
   ].forEach((component) => component.registerSelf());
 </script>

@@ -12,15 +12,21 @@ import App from './app';
 import getDBUWebComponentDummy from '../src/lib/webcomponents/DBUWebComponentDummy/DBUWebComponentDummy';
 import getDBUWebComponentDummyParent from '../src/lib/webcomponents/DBUWebComponentDummyParent/DBUWebComponentDummyParent';
 
+
+window.DBUWebComponents = {
+  'dbu-web-component-dummy': {
+    componentStyle: `
+       b {
+        color: orange;
+        font-style: oblique;
+        }
+    `
+  }
+};
+
 const DBUWebComponentDummy = getDBUWebComponentDummy(window);
 const DBUWebComponentDummyParent = getDBUWebComponentDummyParent(window);
 
-DBUWebComponentDummy.componentStyle += `
-  b {
-    color: orange;
-    font-style: oblique;
-  }
-`;
 
 setTimeout(() => {
   DBUWebComponentDummy.registerSelf();

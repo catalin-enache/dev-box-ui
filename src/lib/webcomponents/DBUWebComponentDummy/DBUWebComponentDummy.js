@@ -10,6 +10,7 @@ export default function getDBUWebComponentDummy(win) {
 
   const { DBUWebComponentBase, defineCommonStaticMethods } = getDBUWebComponentBase(win);
   const { document } = win;
+
   const template = document.createElement('template');
   template.innerHTML = `
     <style>
@@ -17,12 +18,42 @@ export default function getDBUWebComponentDummy(win) {
       display: block;
       color: maroon;
     }
-    b {
+    
+    :host b {
       text-shadow: var(--b-text-shadow, none);
     }
+    
+    :host([dir=rtl]) b {
+      text-decoration: underline;
+      padding: 5px;
+      border: 1px solid red;
+    }
+    :host([dir=ltr]) b {
+      text-decoration: overline;
+      padding: 5px;
+      border: 1px solid green;
+    }
+    
+    :host([dir=rtl]) span[x-has-slot] {
+      float: left;
+    }
+    
+    :host([dir=ltr]) span[x-has-slot] {
+      float: right;
+    }
+    
+    :host([dir=ltr]) *[dir=rtl] {
+      display: none;
+    }
+    :host([dir=rtl]) *[dir=ltr] {
+      display: none;
+    }
+    
     </style>
-    <b>I'm in shadow dom! (DBUWebComponentDummy)</b>
-    [<slot></slot>]
+    
+    <b dir="ltr">I'm in shadow dom! ltr (DBUWebComponentDummy)</b>
+    <span x-has-slot><span>[</span><slot></slot><span>]</span></span>
+    <b dir="rtl">I'm in shadow dom! rtl (DBUWebComponentDummy)</b>
   `;
 
   class DBUWebComponentDummy extends DBUWebComponentBase {

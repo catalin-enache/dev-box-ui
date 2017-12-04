@@ -13,7 +13,6 @@ class DBUWebComponentDummyScreen extends React.Component {
 
         <dbu-web-component-dummy
           style={{ color: 'blue' }}
-          componentInstanceStyle="b{color:deepskyblue;}"
         >
           <span>hello world 2</span>
         </dbu-web-component-dummy>

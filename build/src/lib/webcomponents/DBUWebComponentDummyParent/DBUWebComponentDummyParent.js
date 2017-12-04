@@ -25,15 +25,14 @@ function getDBUWebComponentDummyParent(win) {
   const DBUWebComponentDummy = (0, _DBUWebComponentDummy2.default)(win);
 
   const { document } = win;
-  DBUWebComponentDummy.registerSelf();
+
   const template = document.createElement('template');
   template.innerHTML = `
     <style>
     :host {display: block;}
     </style>
-    <b>I'm in shadow dom! (parent)</b>
-    <dbu-web-component-dummy>aaa</dbu-web-component-dummy>
-    <slot></slot>
+    <b>I'm in shadow dom! (DBUWebComponentDummyParent)</b>
+    <dbu-web-component-dummy><slot></slot></dbu-web-component-dummy>
   `;
 
   class DBUWebComponentDummyParent extends DBUWebComponentBase {
@@ -44,6 +43,11 @@ function getDBUWebComponentDummyParent(win) {
     static get template() {
       return template;
     }
+
+    static get dependencies() {
+      return [DBUWebComponentDummy];
+    }
+
   }
 
   defineCommonStaticMethods(DBUWebComponentDummyParent);

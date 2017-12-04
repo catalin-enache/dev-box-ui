@@ -25,32 +25,56 @@ export default function getDBUWebComponentBase(win) {
       return [];
     }
 
+    static get useShadow() {
+      return true;
+    }
+
     constructor() {
       super();
-      const { template } = this.constructor;
-      if (template) {
-        const shadowRoot = this.attachShadow({ mode: 'open' });
-        shadowRoot.appendChild(template.content.cloneNode(true));
+      const { useShadow } = this.constructor;
+      if (useShadow) {
+        this.attachShadow({ mode: 'open' });
       }
+      this._insertTemplate();
+
+      this.connectedCallback = this.connectedCallback.bind(this);
+      this.disconnectedCallback = this.disconnectedCallback.bind(this);
+      this._handleLocaleChange = this._handleLocaleChange.bind(this);
       this.onLocaleChange && (this.onLocaleChange = this.onLocaleChange.bind(this));
       this.unregisterLocaleChange = null;
     }
 
     connectedCallback() {
-      if (this.hasAttribute('componentInstanceStyle')) {
-        const componentInstanceStyle = this.getAttribute('componentInstanceStyle');
-        this.shadowRoot.querySelector('style').innerHTML = componentInstanceStyle;
-      }
-      if (this.onLocaleChange) {
-        this.unregisterLocaleChange =
-          LocaleService.onLocaleChange(this.onLocaleChange);
-      }
+
+      window.addEventListener('beforeunload', this.disconnectedCallback, false);
+
+      this.unregisterLocaleChange =
+        LocaleService.onLocaleChange(this._handleLocaleChange);
     }
 
     disconnectedCallback() {
-      if (this.onLocaleChange) {
-        this.unregisterLocaleChange();
+      this.unregisterLocaleChange();
+      window.removeEventListener('beforeunload', this.disconnectedCallback, false);
+    }
+
+    get childrenTree() {
+      return this.constructor.useShadow ? this.shadowRoot : this;
+    }
+
+    _insertTemplate() {
+      const { template } = this.constructor;
+
+      if (template) {
+        this.childrenTree.appendChild(template.content.cloneNode(true));
       }
+    }
+
+    _handleLocaleChange(locale) {
+      this.childrenTree.innerHTML = '';
+      this._insertTemplate();
+      this.setAttribute('dir', locale.dir);
+      this.setAttribute('lang', locale.lang);
+      this.onLocaleChange && this.onLocaleChange(locale);
     }
 
   }
@@ -71,6 +95,10 @@ export default function getDBUWebComponentBase(win) {
       const dependencies = klass.dependencies;
       dependencies.forEach((dependency) => dependency.registerSelf());
       if (customElements.get(componentName)) return;
+      const componentStyle = ((win.DBUWebComponents || {})[componentName] || {}).componentStyle;
+      if (componentStyle) {
+        klass.componentStyle += componentStyle;
+      }
       customElements.define(componentName, klass);
     };
   }
