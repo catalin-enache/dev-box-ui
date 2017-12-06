@@ -88,3 +88,5 @@ function getDBUWebComponentDummy(win) {
     return DBUWebComponentDummy;
   });
 }
+
+getDBUWebComponentDummy.registrationName = registrationName;

@@ -29,28 +29,26 @@
 </script>
 <script>
   const {
-    dbuWebComponentsSetUp,
-    getDBUWebComponentDummyParent
+    quickSetupAndLoad
   } = require('dev-box-ui-webcomponents');
-
-  dbuWebComponentsSetUp(window).appendStyle('dbu-web-component-dummy', `
-    b {
-      color: var(--dbu-web-component-dummy-parent-color, inherit);
-      font-style: oblique;
-      border-radius: var(--dbu-web-component-dummy-parent-border-radius, 0px);
-      background-color: var(--dbu-web-component-dummy-parent-bg-color, transparent);
+  const {
+    'dbu-web-component-dummy-parent': dbuWebComponentDummyParentClass,
+  } = quickSetupAndLoad(window)([
+    {
+      registrationName: 'dbu-web-component-dummy',
+      componentStyle: `
+       b {
+         color: var(--dbu-web-component-dummy-parent-color, inherit);
+         font-style: oblique;
+         border-radius: var(--dbu-web-component-dummy-parent-border-radius, 0px);
+         background-color: var(--dbu-web-component-dummy-parent-bg-color, transparent);
+       }
+      `
+    },
+    {
+      registrationName: 'dbu-web-component-dummy-parent'
     }
-  `);
-
-  const [
-    DBUWebComponentDummyParent
-  ] = [
-    getDBUWebComponentDummyParent(window)
-  ];
-
-  [
-    DBUWebComponentDummyParent
-  ].forEach((component) => component.registerSelf());
+  ]);
 </script>
 </body>
 </html>

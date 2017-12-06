@@ -57,3 +57,5 @@ function getDBUWebComponentDummyParent(win) {
     return DBUWebComponentDummyParent;
   });
 }
+
+getDBUWebComponentDummyParent.registrationName = registrationName;

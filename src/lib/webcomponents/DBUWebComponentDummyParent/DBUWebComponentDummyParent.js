@@ -43,3 +43,5 @@ export default function getDBUWebComponentDummyParent(win) {
   });
 }
 
+getDBUWebComponentDummyParent.registrationName = registrationName;
+

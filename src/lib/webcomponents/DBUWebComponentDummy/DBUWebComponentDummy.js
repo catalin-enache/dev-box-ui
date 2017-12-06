@@ -2,8 +2,6 @@
 import getDBUWebComponentBase from '../DBUWebComponentBase/DBUWebComponentBase';
 import ensureSingleRegistration from '../internals/ensureSingleRegistration';
 
-console.log('importing getDBUWebComponent');
-
 const registrationName = 'dbu-web-component-dummy';
 
 export default function getDBUWebComponentDummy(win) {
@@ -66,7 +64,7 @@ export default function getDBUWebComponentDummy(win) {
       }
 
       onLocaleChange(locale) {
-        console.log('onLocaleChange', locale);
+        // console.log('onLocaleChange', locale);
       }
     }
 
@@ -75,4 +73,6 @@ export default function getDBUWebComponentDummy(win) {
     return DBUWebComponentDummy;
   });
 }
+
+getDBUWebComponentDummy.registrationName = registrationName;
 

@@ -2,8 +2,6 @@
 import LocaleService from '../../services/LocaleService';
 import ensureSingleRegistration from '../internals/ensureSingleRegistration';
 
-console.log('importing getDBUWebComponentBase');
-
 const registrationName = 'DBUWebComponentBase';
 
 export default function getDBUWebComponentBase(win) {
