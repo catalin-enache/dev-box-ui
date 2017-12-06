@@ -1,0 +1,5 @@
+html[dir=ltr] .main-nav {
+  float: left; }
+
+html[dir=rtl] .main-nav {
+  float: right; }

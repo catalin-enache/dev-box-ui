@@ -78,6 +78,7 @@
     "build:developing": "npm run build:style && npm run build:dev-box-ui-no-deps:dist:dev && npm run build:demo",
     "build:style": "node-sass src/style/style.scss build/dist/style/style.css",
     "build:style:demo": "node-sass srcDemo/style/style.scss build/dist/style/style.css",
+    "build:style:demo:styleForScreens": "node-sass srcDemo/styleForScreens/styleForScreens.scss srcDemo/styleForScreens/styleForScreens.css",
     "build:vendors:dev": "                                                      browserify                          -r react -r react-dom -r prop-types -r hoist-non-react-statics -r classnames                       -o vendors/js/vendors.js",
     "build:vendors:prod": "cross-env NODE_ENV=production                        browserify                          -r react -r react-dom -r prop-types -r hoist-non-react-statics -r classnames                       -g [ loose-envify purge --NODE_ENV production ] -g uglifyify -p bundle-collapser/plugin | uglifyjs --compress=unused,dead_code --mangle -o vendors/js/vendors.min.js",
     "build:vendors:list": "                                                     browserify                          -r react -r react-dom -r prop-types -r hoist-non-react-statics -r classnames                       --list | node scripts/depsReporter.js",

@@ -1,0 +1,16 @@
+
+
+$dir: ltr;
+$start: left;
+$end: right;
+html[dir=#{$dir}] {
+  @import "layout";
+}
+
+
+$dir: rtl;
+$start: right;
+$end: left;
+html[dir=#{$dir}] {
+  @import "layout";
+}
