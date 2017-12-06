@@ -2,76 +2,128 @@ html, body {
   margin: 0px;
   padding: 0px;
   width: 100%;
-  height: 100%;
-  box-sizing: border-box;
-  border: 5px solid gray; }
+  height: 100%; }
+
+* {
+  box-sizing: border-box; }
+
+* {
+  background-color: rgba(255, 0, 0, 0.2); }
+
+* * {
+  background-color: rgba(0, 255, 0, 0.2); }
+
+* * * {
+  background-color: rgba(0, 0, 255, 0.2); }
+
+* * * * {
+  background-color: rgba(255, 0, 255, 0.2); }
+
+* * * * * {
+  background-color: rgba(0, 255, 255, 0.2); }
+
+* * * * * * {
+  background-color: rgba(255, 255, 0, 0.2); }
+
+* * * * * * * {
+  background-color: rgba(255, 0, 0, 0.2); }
+
+* * * * * * * * {
+  background-color: rgba(0, 255, 0, 0.2); }
+
+* * * * * * * * * {
+  background-color: rgba(0, 0, 255, 0.2); }
+
+* * * * * * * * * * {
+  background-color: rgba(255, 0, 255, 0.2); }
+
+* * * * * * * * * * * {
+  background-color: rgba(0, 255, 255, 0.2); }
+
+* * * * * * * * * * * * {
+  background-color: rgba(255, 255, 0, 0.2); }
+
+* * * * * * * * * * * * * {
+  background-color: rgba(255, 0, 0, 0.2); }
+
+* * * * * * * * * * * * * * {
+  background-color: rgba(0, 255, 0, 0.2); }
+
+* * * * * * * * * * * * * * * {
+  background-color: rgba(0, 0, 255, 0.2); }
+
+html[dir=ltr] ul, html[dir=ltr] li {
+  margin: 0px;
+  padding: 0px;
+  list-style: none; }
 
 html[dir=ltr] .main-nav {
-  height: 100px;
-  border: 2px solid green;
-  box-sizing: border-box; }
+  height: 100px; }
 
 html[dir=ltr] #demo {
-  height: calc(100% - 100px);
-  border: 2px solid blue;
-  box-sizing: border-box; }
+  height: calc(100% - 100px); }
   html[dir=ltr] #demo .demo-wrapper {
     display: flex;
     height: 100%;
-    border: 2px solid orange;
-    box-sizing: border-box; }
+    /* 1: fix ios iframe weird behaviour which makes its height auto-sizing according with content */ }
     html[dir=ltr] #demo .demo-wrapper .demo-links {
       overflow: auto;
       width: 20%;
-      height: 100%;
-      border: 2px solid gray;
-      box-sizing: border-box; }
+      height: 100%; }
     html[dir=ltr] #demo .demo-wrapper .demo-area {
       width: 80%;
       height: 100%;
-      border: 2px solid gray;
-      box-sizing: border-box; }
+      overflow: auto;
+      /* 1 */
+      -webkit-overflow-scrolling: touch;
+      /* 1 */
+      /* 1: prevents double scrollbar (from iframe and from iframe's wrapper)  */ }
       html[dir=ltr] #demo .demo-wrapper .demo-area > div {
         height: 100%;
         overflow: auto;
-        border: 3px solid red;
-        box-sizing: border-box; }
+        -webkit-overflow-scrolling: touch; }
       html[dir=ltr] #demo .demo-wrapper .demo-area > iframe {
+        width: 100%;
         height: 100%;
-        border: 3px solid red;
-        box-sizing: border-box; }
+        margin: -4px 0px 0px 0px;
+        /* 1 */
+        padding: 0px;
+        border: none; }
+
+html[dir=rtl] ul, html[dir=rtl] li {
+  margin: 0px;
+  padding: 0px;
+  list-style: none; }
 
 html[dir=rtl] .main-nav {
-  height: 100px;
-  border: 2px solid green;
-  box-sizing: border-box; }
+  height: 100px; }
 
 html[dir=rtl] #demo {
-  height: calc(100% - 100px);
-  border: 2px solid blue;
-  box-sizing: border-box; }
+  height: calc(100% - 100px); }
   html[dir=rtl] #demo .demo-wrapper {
     display: flex;
     height: 100%;
-    border: 2px solid orange;
-    box-sizing: border-box; }
+    /* 1: fix ios iframe weird behaviour which makes its height auto-sizing according with content */ }
     html[dir=rtl] #demo .demo-wrapper .demo-links {
       overflow: auto;
       width: 20%;
-      height: 100%;
-      border: 2px solid gray;
-      box-sizing: border-box; }
+      height: 100%; }
     html[dir=rtl] #demo .demo-wrapper .demo-area {
       width: 80%;
       height: 100%;
-      border: 2px solid gray;
-      box-sizing: border-box; }
+      overflow: auto;
+      /* 1 */
+      -webkit-overflow-scrolling: touch;
+      /* 1 */
+      /* 1: prevents double scrollbar (from iframe and from iframe's wrapper)  */ }
       html[dir=rtl] #demo .demo-wrapper .demo-area > div {
         height: 100%;
         overflow: auto;
-        border: 3px solid red;
-        box-sizing: border-box; }
+        -webkit-overflow-scrolling: touch; }
       html[dir=rtl] #demo .demo-wrapper .demo-area > iframe {
+        width: 100%;
         height: 100%;
-        border: 3px solid red;
-        box-sizing: border-box; }
+        margin: -4px 0px 0px 0px;
+        /* 1 */
+        padding: 0px;
+        border: none; }

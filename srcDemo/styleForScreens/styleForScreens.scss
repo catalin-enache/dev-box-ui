@@ -3,14 +3,19 @@ html, body {
   padding: 0px;
   width: 100%;
   height: 100%;
-  box-sizing: border-box;
-  border: 5px solid gray;
 }
+
+* {
+  box-sizing: border-box;
+}
+
+@import "debug";
 
 $dir: ltr;
 $start: left;
 $end: right;
 html[dir=#{$dir}] {
+  @import "reset";
   @import "layout";
 }
 
@@ -19,5 +24,6 @@ $dir: rtl;
 $start: right;
 $end: left;
 html[dir=#{$dir}] {
+  @import "reset";
   @import "layout";
 }
