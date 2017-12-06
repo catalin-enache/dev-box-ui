@@ -3,7 +3,11 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getDBUWebComponentDummyParent = exports.getDBUWebComponentDummy = undefined;
+exports.getDBUWebComponentDummyParent = exports.getDBUWebComponentDummy = exports.dbuWebComponentsSetUp = undefined;
+
+var _DBUWebComponentsSetup = require('./DBUWebComponentsSetup/DBUWebComponentsSetup');
+
+var _DBUWebComponentsSetup2 = _interopRequireDefault(_DBUWebComponentsSetup);
 
 var _DBUWebComponentDummy = require('./DBUWebComponentDummy/DBUWebComponentDummy');
 
@@ -15,5 +19,6 @@ var _DBUWebComponentDummyParent2 = _interopRequireDefault(_DBUWebComponentDummyP
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+exports.dbuWebComponentsSetUp = _DBUWebComponentsSetup2.default;
 exports.getDBUWebComponentDummy = _DBUWebComponentDummy2.default;
 exports.getDBUWebComponentDummyParent = _DBUWebComponentDummyParent2.default;
