@@ -24,7 +24,7 @@ mainNav.innerHTML = `
 const isWebComponentScreen = window.location.pathname.includes('.webcomponents.');
 if (isWebComponentScreen) {
   const isProd = window.location.pathname.includes('.prod.');
-  const webcomponentsLinks = document.querySelector('.webcomponents-links');
+  const webcomponentsLinks = document.querySelector('.demo-links');
   const webcomponentsLinksData = {
     DBUWebComponentDummyParentScreen: 'dbu-web-component-dummy-parent',
     DBUWebComponentDummyScreen: 'dbu-web-component-dummy'

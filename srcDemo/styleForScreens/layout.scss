@@ -1,3 +1,50 @@
+
+$main-nav-height: 100px;
+
 .main-nav {
-  float: $start;
+  height: $main-nav-height;
+  border: 2px solid green;
+  box-sizing: border-box;
+}
+
+#demo {
+  height: calc(100% - #{$main-nav-height});
+  border: 2px solid blue;
+  box-sizing: border-box;
+
+  .demo-wrapper {
+    display: flex;
+    height: 100%;
+    border: 2px solid orange;
+    box-sizing: border-box;
+
+    .demo-links {
+      overflow: auto;
+      width: 20%;
+      height: 100%;
+      border: 2px solid gray;
+      box-sizing: border-box;
+    }
+
+    .demo-area {
+      width: 80%;
+      height: 100%;
+      border: 2px solid gray;
+      box-sizing: border-box;
+
+      > div {
+        height: 100%;
+        overflow: auto;
+        border: 3px solid red;
+        box-sizing: border-box;
+      }
+
+      > iframe {
+        height: 100%;
+        border: 3px solid red;
+        box-sizing: border-box;
+      }
+
+    }
+  }
 }

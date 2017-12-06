@@ -73,7 +73,7 @@ iframe.onload = function (evt) {
   }, 2000);
 };
 
-document.body.appendChild(iframe);
+// document.body.appendChild(iframe);
 
 
 // onScreenConsole({ options: { showLastOnly: false } });

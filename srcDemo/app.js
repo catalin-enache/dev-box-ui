@@ -33,11 +33,11 @@ class App extends React.Component {
     }
 
     return (
-      <div>
-        <div>
+      <div className="demo-wrapper">
+        <div className="demo-links">
           {links}
         </div>
-        <div>
+        <div className="demo-area">
           <Screen/>
         </div>
       </div>
