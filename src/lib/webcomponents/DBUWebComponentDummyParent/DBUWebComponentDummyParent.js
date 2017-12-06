@@ -23,7 +23,7 @@ export default function getDBUWebComponentDummyParent(win) {
     `;
 
     class DBUWebComponentDummyParent extends DBUWebComponentBase {
-      static get componentName() {
+      static get registrationName() {
         return registrationName;
       }
 

@@ -1,13 +1,13 @@
 
 
-const appendStyle = (win) => (componentName, componentStyle) => {
+const appendStyle = (win) => (registrationName, componentStyle) => {
   if (!win.DBUWebComponents) {
     win.DBUWebComponents = {};
   }
   win.DBUWebComponents = {
     ...win.DBUWebComponents,
-    [componentName]: {
-      ...win.DBUWebComponents[componentName],
+    [registrationName]: {
+      ...win.DBUWebComponents[registrationName],
       componentStyle
     }
   };

@@ -37,7 +37,7 @@ function getDBUWebComponent(win) {
   `;
 
   class DBUWebComponent extends DBUWebComponentBase {
-    static get componentName() {
+    static get registrationName() {
       return 'dbu-web-component';
     }
 

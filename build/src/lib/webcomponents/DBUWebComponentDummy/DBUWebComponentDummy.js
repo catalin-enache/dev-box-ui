@@ -70,7 +70,7 @@ function getDBUWebComponentDummy(win) {
     `;
 
     class DBUWebComponentDummy extends DBUWebComponentBase {
-      static get componentName() {
+      static get registrationName() {
         return registrationName;
       }
 

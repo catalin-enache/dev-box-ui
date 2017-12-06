@@ -101,16 +101,16 @@ function getDBUWebComponentBase(win) {
       });
 
       klass.registerSelf = () => {
-        const componentName = klass.componentName;
+        const registrationName = klass.registrationName;
         const dependencies = klass.dependencies;
         dependencies.forEach(dependency => dependency.registerSelf());
-        if (customElements.get(componentName)) return componentName;
-        const componentStyle = ((win.DBUWebComponents || {})[componentName] || {}).componentStyle;
+        if (customElements.get(registrationName)) return registrationName;
+        const componentStyle = ((win.DBUWebComponents || {})[registrationName] || {}).componentStyle;
         if (componentStyle) {
           klass.componentStyle += componentStyle;
         }
-        customElements.define(componentName, klass);
-        return componentName;
+        customElements.define(registrationName, klass);
+        return registrationName;
       };
     }
 

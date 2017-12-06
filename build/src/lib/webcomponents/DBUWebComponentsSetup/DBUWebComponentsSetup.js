@@ -6,12 +6,12 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = dbuWebComponentsSetUp;
 
 
-const appendStyle = win => (componentName, componentStyle) => {
+const appendStyle = win => (registrationName, componentStyle) => {
   if (!win.DBUWebComponents) {
     win.DBUWebComponents = {};
   }
   win.DBUWebComponents = Object.assign({}, win.DBUWebComponents, {
-    [componentName]: Object.assign({}, win.DBUWebComponents[componentName], {
+    [registrationName]: Object.assign({}, win.DBUWebComponents[registrationName], {
       componentStyle
     })
   });
