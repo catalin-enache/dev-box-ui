@@ -43,6 +43,8 @@ $main-nav-height: 100px;
         height: 100%;
         border: 3px solid red;
         box-sizing: border-box;
+        //-webkit-overflow-scrolling: touch !important;
+        //overflow-y: scroll !important;
       }
 
     }
