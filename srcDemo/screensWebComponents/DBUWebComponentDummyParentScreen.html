@@ -14,41 +14,35 @@
 <body>
 <dbu-web-component-dummy-parent>hello</dbu-web-component-dummy-parent>
 <dbu-web-component-dummy>hello</dbu-web-component-dummy>
-<script src="../../build/dist/js/dev-box-ui-webcomponents.js"></script>
 <script>
-  (async function(callback) {
-    const undefinedElements = document.querySelectorAll(':not(:defined)');
-    const promises = [...undefinedElements].map(
-      element => customElements.whenDefined(element.localName)
-    );
-    await Promise.all(promises);
-    callback();
-  })(() => {
+  window.onDBUWebComponentsDistLibLoaded = function defineDBUWebComponents() {
+    const {
+      quickSetupAndLoad
+    } = require('dev-box-ui-webcomponents');
+    const {
+      'dbu-web-component-dummy-parent': dbuWebComponentDummyParentClass,
+    } = quickSetupAndLoad(window)([
+      {
+        registrationName: 'dbu-web-component-dummy',
+        componentStyle: `
+         b {
+           color: var(--dbu-web-component-dummy-parent-color, inherit);
+           font-style: oblique;
+           border-radius: var(--dbu-web-component-dummy-parent-border-radius, 0px);
+           background-color: var(--dbu-web-component-dummy-parent-bg-color, transparent);
+         }
+        `
+      },
+      {
+        registrationName: 'dbu-web-component-dummy-parent'
+      }
+    ]);
+  }
 
-  });
+  window.onDBUWebComponentsDefined = function() {
+    console.log('dbu web-components defined');
+  };
 </script>
-<script>
-  const {
-    quickSetupAndLoad
-  } = require('dev-box-ui-webcomponents');
-  const {
-    'dbu-web-component-dummy-parent': dbuWebComponentDummyParentClass,
-  } = quickSetupAndLoad(window)([
-    {
-      registrationName: 'dbu-web-component-dummy',
-      componentStyle: `
-       b {
-         color: var(--dbu-web-component-dummy-parent-color, inherit);
-         font-style: oblique;
-         border-radius: var(--dbu-web-component-dummy-parent-border-radius, 0px);
-         background-color: var(--dbu-web-component-dummy-parent-bg-color, transparent);
-       }
-      `
-    },
-    {
-      registrationName: 'dbu-web-component-dummy-parent'
-    }
-  ]);
-</script>
+<script src="loadDBUWebComponentsDistLib.js"></script>
 </body>
 </html>

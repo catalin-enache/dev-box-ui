@@ -18,40 +18,31 @@
 <dbu-web-component-dummy class="custom2">hello</dbu-web-component-dummy>
 <script src="../../build/dist/js/dev-box-ui-webcomponents.js"></script>
 <script>
-  (async function(callback) {
-    const undefinedElements = document.querySelectorAll(':not(:defined)');
-    const promises = [...undefinedElements].map(
-      element => customElements.whenDefined(element.localName)
-    );
-    await Promise.all(promises);
-    callback();
-  })(() => {
 
-  });
+  window.onDBUWebComponentsDistLibLoaded = function defineDBUWebComponents() {
+    const {
+      quickSetupAndLoad
+    } = require('dev-box-ui-webcomponents');
+    const {
+      'dbu-web-component-dummy': dbuWebComponentDummyClass,
+    } = quickSetupAndLoad(window)([
+      {
+        registrationName: 'dbu-web-component-dummy',
+        componentStyle: `
+         b {
+            color: orange;
+            font-style: oblique;
+            border-radius: var(--b-radius, 0px);
+          }
+        `
+      }
+    ]);
+  }
+
+  window.onDBUWebComponentsDefined = function() {
+    console.log('dbu web-components defined');
+  };
 </script>
-<script>
-  const {
-    dbuWebComponentsSetUp,
-    getDBUWebComponentDummy
-  } = require('dev-box-ui-webcomponents');
-
-  dbuWebComponentsSetUp(window).appendStyle('dbu-web-component-dummy', `
-    b {
-      color: orange;
-      font-style: oblique;
-      border-radius: var(--b-radius, 0px);
-    }
-  `);
-
-  const [
-    DBUWebComponentDummy
-  ] = [
-    getDBUWebComponentDummy(window)
-  ];
-
-  [
-    DBUWebComponentDummy
-  ].forEach((component) => component.registerSelf());
-</script>
+<script src="loadDBUWebComponentsDistLib.js"></script>
 </body>
 </html>
