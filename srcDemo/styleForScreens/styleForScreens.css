@@ -59,6 +59,22 @@ html[dir=ltr] ul, html[dir=ltr] li {
 
 html[dir=ltr] .main-nav {
   height: 100px; }
+  html[dir=ltr] .main-nav ul {
+    display: flex; }
+    @media (max-width: 800px) {
+      html[dir=ltr] .main-nav ul {
+        flex-wrap: wrap; } }
+    html[dir=ltr] .main-nav ul li {
+      flex: 1 0;
+      padding: 5px;
+      text-align: center; }
+      @media (max-width: 800px) {
+        html[dir=ltr] .main-nav ul li {
+          flex: 0 0 100%; } }
+      html[dir=ltr] .main-nav ul li:not(:last-child) {
+        border-right: 1px solid black; }
+      html[dir=ltr] .main-nav ul li a {
+        text-decoration: none; }
 
 html[dir=ltr] #demo {
   height: calc(100% - 100px); }
@@ -97,6 +113,22 @@ html[dir=rtl] ul, html[dir=rtl] li {
 
 html[dir=rtl] .main-nav {
   height: 100px; }
+  html[dir=rtl] .main-nav ul {
+    display: flex; }
+    @media (max-width: 800px) {
+      html[dir=rtl] .main-nav ul {
+        flex-wrap: wrap; } }
+    html[dir=rtl] .main-nav ul li {
+      flex: 1 0;
+      padding: 5px;
+      text-align: center; }
+      @media (max-width: 800px) {
+        html[dir=rtl] .main-nav ul li {
+          flex: 0 0 100%; } }
+      html[dir=rtl] .main-nav ul li:not(:last-child) {
+        border-right: 1px solid black; }
+      html[dir=rtl] .main-nav ul li a {
+        text-decoration: none; }
 
 html[dir=rtl] #demo {
   height: calc(100% - 100px); }

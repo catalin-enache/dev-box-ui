@@ -3,6 +3,31 @@ $main-nav-height: 100px;
 
 .main-nav {
   height: $main-nav-height;
+
+  ul {
+    display: flex;
+
+    @media (max-width: 800px) {
+      flex-wrap: wrap;
+    }
+
+    li {
+      flex: 1 0;
+      @media (max-width: 800px) {
+        flex: 0 0 100%;
+      }
+      padding: 5px;
+      text-align: center;
+
+      &:not(:last-child) {
+        border-right: 1px solid black;
+      }
+
+      a {
+        text-decoration: none;
+      }
+    }
+  }
 }
 
 #demo {
@@ -39,7 +64,6 @@ $main-nav-height: 100px;
         padding: 0px;
         border: none;
       }
-
     }
   }
 }

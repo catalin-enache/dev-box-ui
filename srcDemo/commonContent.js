@@ -5,16 +5,16 @@ const mainNav = document.querySelector('.main-nav');
 mainNav.innerHTML = `
 <ul>
   <li>
-    <a href="index.dev.html">index.dev.html</a>
+    <a href="index.dev.html">Dev</a>
   </li>
   <li>
-    <a href="index.prod.html">index.prod.html</a>
+    <a href="index.prod.html">Prod</a>
   </li>
   <li>
-    <a href="index.webcomponents.dev.html">index.webcomponents.dev.html</a>
+    <a href="index.webcomponents.dev.html">Webcomponents Dev</a>
   </li>
   <li>
-    <a href="index.webcomponents.prod.html">index.webcomponents.prod.html</a>
+    <a href="index.webcomponents.prod.html">Webcomponents Prod</a>
   </li>
 </ul>
 `;
