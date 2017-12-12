@@ -5,16 +5,10 @@ const mainNav = document.querySelector('.main-nav');
 mainNav.innerHTML = `
 <ul>
   <li>
-    <a href="index.dev.html">Dev</a>
+    React Components (<a href="index.dev.html">Dev</a> | <a href="index.prod.html">Prod</a>)
   </li>
   <li>
-    <a href="index.prod.html">Prod</a>
-  </li>
-  <li>
-    <a href="index.webcomponents.dev.html">Webcomponents Dev</a>
-  </li>
-  <li>
-    <a href="index.webcomponents.prod.html">Webcomponents Prod</a>
+    Web Components (<a href="index.webcomponents.dev.html">Dev</a> | <a href="index.webcomponents.prod.html">Prod</a>)
   </li>
 </ul>
 `;

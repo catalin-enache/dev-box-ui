@@ -5,14 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <style>
     dbu-web-component-dummy-parent {
-      --dbu-web-component-dummy-parent-border-radius: 10px;
-      --dbu-web-component-dummy-parent-bg-color: gray;
-      --dbu-web-component-dummy-parent-color: red;
+      --dbu-web-component-dummy-border-radius: 10px;
+      --dbu-web-component-dummy-bg-color: gray;
+      --dbu-web-component-dummy-color: blue;
+    }
+    dbu-web-component-dummy-parent.second {
+      --dbu-web-component-dummy-color: orange;
+    }
+
+    dbu-web-component-dummy {
+      --dbu-web-component-dummy-border-radius: 20px;
+      /*--dbu-web-component-dummy-color: green;*/
     }
   </style>
 </head>
 <body>
 <dbu-web-component-dummy-parent>hello</dbu-web-component-dummy-parent>
+<dbu-web-component-dummy-parent class="second">hello</dbu-web-component-dummy-parent>
 <dbu-web-component-dummy>hello</dbu-web-component-dummy>
 <p>p</p>
 <p>p</p>
@@ -57,10 +66,10 @@
         registrationName: 'dbu-web-component-dummy',
         componentStyle: `
          b {
-           color: var(--dbu-web-component-dummy-parent-color, inherit);
+           color: var(--dbu-web-component-dummy-color, inherit);
            font-style: oblique;
-           border-radius: var(--dbu-web-component-dummy-parent-border-radius, 0px);
-           background-color: var(--dbu-web-component-dummy-parent-bg-color, transparent);
+           border-radius: var(--dbu-web-component-dummy-border-radius, 0px);
+           background-color: var(--dbu-web-component-dummy-bg-color, transparent);
          }
         `
       },
