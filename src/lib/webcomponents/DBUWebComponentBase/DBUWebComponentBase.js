@@ -89,12 +89,16 @@ export default function getDBUWebComponentBase(win) {
       klass.registerSelf = () => {
         const registrationName = klass.registrationName;
         const dependencies = klass.dependencies;
+        // Make sure our dependencies are registered before we register self
         dependencies.forEach((dependency) => dependency.registerSelf());
+        // Don't try to register self if already registered
         if (customElements.get(registrationName)) return registrationName;
+        // Give a chance to override web-component style if provided before being registered.
         const componentStyle = ((win.DBUWebComponents || {})[registrationName] || {}).componentStyle;
         if (componentStyle) {
           klass.componentStyle += componentStyle;
         }
+        // Do registration
         customElements.define(registrationName, klass);
         return registrationName;
       };
