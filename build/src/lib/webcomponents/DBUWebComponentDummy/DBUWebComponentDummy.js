@@ -15,8 +15,6 @@ var _ensureSingleRegistration2 = _interopRequireDefault(_ensureSingleRegistratio
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-console.log('importing getDBUWebComponent');
-
 const registrationName = 'dbu-web-component-dummy';
 
 function getDBUWebComponentDummy(win) {
@@ -79,7 +77,7 @@ function getDBUWebComponentDummy(win) {
       }
 
       onLocaleChange(locale) {
-        console.log('onLocaleChange', locale);
+        // console.log('onLocaleChange', locale);
       }
     }
 

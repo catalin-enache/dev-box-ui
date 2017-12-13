@@ -15,8 +15,6 @@ var _ensureSingleRegistration2 = _interopRequireDefault(_ensureSingleRegistratio
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-console.log('importing getDBUWebComponentBase');
-
 const registrationName = 'DBUWebComponentBase';
 
 function getDBUWebComponentBase(win) {
@@ -56,6 +54,7 @@ function getDBUWebComponentBase(win) {
       }
 
       connectedCallback() {
+        console.log('connected', this.constructor.registrationName);
         window.addEventListener('beforeunload', this.disconnectedCallback, false);
 
         this.unregisterLocaleChange = _LocaleService2.default.onLocaleChange(this._handleLocaleChange);
@@ -103,12 +102,16 @@ function getDBUWebComponentBase(win) {
       klass.registerSelf = () => {
         const registrationName = klass.registrationName;
         const dependencies = klass.dependencies;
+        // Make sure our dependencies are registered before we register self
         dependencies.forEach(dependency => dependency.registerSelf());
+        // Don't try to register self if already registered
         if (customElements.get(registrationName)) return registrationName;
+        // Give a chance to override web-component style if provided before being registered.
         const componentStyle = ((win.DBUWebComponents || {})[registrationName] || {}).componentStyle;
         if (componentStyle) {
           klass.componentStyle += componentStyle;
         }
+        // Do registration
         customElements.define(registrationName, klass);
         return registrationName;
       };
