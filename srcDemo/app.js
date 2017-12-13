@@ -15,7 +15,7 @@ let IFrameScreen = class IFrameScreen extends React.Component {
   }
 
   render() {
-    const isProd = window.location.pathname.includes('.prod.');
+    const isProd = !window.location.pathname.includes('.dev.');
     const windowLocationHash = window.location.hash.replace('#', '');
     return (
       <iframe
