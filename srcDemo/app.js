@@ -20,7 +20,7 @@ let IFrameScreen = class IFrameScreen extends React.Component {
     return (
       <iframe
         ref={(node) => this.iframeNode = node}
-        src={`srcDemo/screensWebComponents/${windowLocationHash}?production=${isProd ? '1' : '0'}`} />
+        src={`srcDemo/screens/${windowLocationHash}?production=${isProd ? '1' : '0'}`} />
     );
   }
 };
@@ -32,6 +32,16 @@ IFrameScreen.propTypes = {
 };
 IFrameScreen = localeAware(IFrameScreen);
 
+const screenLinkNames = {
+  HelloScreen: 'Hello - React',
+  ListScreen: 'List - React',
+  FormInputScreen: 'Form Input - React',
+  FormInputNumberScreen: 'Form Input Number - React',
+  Draggable: 'Draggable - React',
+  DBUWebComponentDummyScreen: 'Dummy - React',
+  'DBUWebComponentDummyScreen.html': 'Dummy - Web Component',
+  'DBUWebComponentDummyParentScreen.html': 'Dummy Parent - Web Component'
+};
 
 class App extends React.Component {
   componentDidMount() {
@@ -60,7 +70,7 @@ class App extends React.Component {
       {
         screensKeys.map((screen, idx) => (
           <li key={idx}>
-            <a key={idx} href={`#${screen}`}>{screen}</a>
+            <a key={idx} href={`#${screen}`}>{screenLinkNames[screen] || screen}</a>
           </li>
         ))
       }
