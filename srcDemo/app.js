@@ -20,7 +20,6 @@ let IFrameScreen = class IFrameScreen extends React.Component {
     return (
       <iframe
         ref={(node) => this.iframeNode = node}
-        onLoad={(evt) => console.log('iframe loaded')}
         src={`srcDemo/screensWebComponents/${windowLocationHash}?production=${isProd ? '1' : '0'}`} />
     );
   }
@@ -89,10 +88,5 @@ class App extends React.Component {
     );
   }
 }
-
-App.propTypes = {
-  classes: PropTypes.object,
-  theme: PropTypes.object
-};
 
 export default App;

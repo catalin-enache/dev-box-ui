@@ -4,7 +4,7 @@ import localeService from './../services/LocaleService';
 import i18nService from './../services/I18nService';
 
 export default function localeAware(Component) {
-  class LocaleAware extends React.PureComponent {
+  class LocaleAware extends React.Component {
     constructor(props, context) {
       super(props, context);
       this.handleLocaleChange = this.handleLocaleChange.bind(this);
