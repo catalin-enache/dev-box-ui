@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import screens from './screens';
+import { screens, screenLinkNames } from './screens';
 import localeAware from '../src/lib/HOC/localeAware';
 
 let IFrameScreen = class IFrameScreen extends React.Component {
@@ -31,17 +31,6 @@ IFrameScreen.propTypes = {
   })
 };
 IFrameScreen = localeAware(IFrameScreen);
-
-const screenLinkNames = {
-  HelloScreen: 'Hello - React',
-  ListScreen: 'List - React',
-  FormInputScreen: 'Form Input - React',
-  FormInputNumberScreen: 'Form Input Number - React',
-  Draggable: 'Draggable - React',
-  DBUWebComponentDummyScreen: 'Dummy - React',
-  'DBUWebComponentDummyScreen.html': 'Dummy - Web Component',
-  'DBUWebComponentDummyParentScreen.html': 'Dummy Parent - Web Component'
-};
 
 class App extends React.Component {
   componentDidMount() {
