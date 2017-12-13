@@ -65,8 +65,6 @@ export default function getDBUWebComponentBase(win) {
       }
 
       _handleLocaleChange(locale) {
-        this.childrenTree.innerHTML = '';
-        this._insertTemplate();
         this.setAttribute('dir', locale.dir);
         this.setAttribute('lang', locale.lang);
         this.onLocaleChange && this.onLocaleChange(locale);

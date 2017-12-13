@@ -1,18 +1,38 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import screens from './screens';
+import localeAware from '../src/lib/HOC/localeAware';
 
-class IFrameScreen extends React.Component {
+let IFrameScreen = class IFrameScreen extends React.Component {
+  constructor(props) {
+    super(props);
+    this.iframeNode = null;
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { locale: { dir } } = nextProps;
+    this.iframeNode.contentWindow.postMessage(`changeDir ${dir}`, '*');
+  }
+
   render() {
     const isProd = window.location.pathname.includes('.prod.');
     const windowLocationHash = window.location.hash.replace('#', '');
     return (
       <iframe
+        ref={(node) => this.iframeNode = node}
         onLoad={(evt) => console.log('iframe loaded')}
         src={`srcDemo/screensWebComponents/${windowLocationHash}?production=${isProd ? '1' : '0'}`} />
     );
   }
-}
+};
+IFrameScreen.propTypes = {
+  locale: PropTypes.shape({
+    dir: PropTypes.string,
+    lang: PropTypes.string
+  })
+};
+IFrameScreen = localeAware(IFrameScreen);
+
 
 class App extends React.Component {
   componentDidMount() {
@@ -21,6 +41,14 @@ class App extends React.Component {
 
   onHashChange() {
     this.forceUpdate();
+  }
+
+  toggleAppDir(evt) {
+    evt.preventDefault();
+    const documentElement = window.document.documentElement;
+    const currentDir = documentElement.getAttribute('dir');
+    const nextDir = currentDir === 'ltr' ? 'rtl' : 'ltr';
+    documentElement.setAttribute('dir', nextDir);
   }
 
   render() {
@@ -49,6 +77,9 @@ class App extends React.Component {
     return (
       <div className="demo-wrapper">
         <div className="demo-links">
+          <div className="locale-dir-switch">
+            <a href="#" onClick={this.toggleAppDir}>Toggle Locale Dir</a>
+          </div>
           {links}
         </div>
         <div className="demo-area">

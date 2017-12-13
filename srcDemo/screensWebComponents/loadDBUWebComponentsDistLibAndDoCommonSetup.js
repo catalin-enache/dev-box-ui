@@ -13,10 +13,18 @@ document.querySelector('head').appendChild(script);
   const undefinedElements =
     [...document.querySelectorAll(':not(:defined)')]
       .map((element) => (element.localName));
-  console.log('undefined elements so far', undefinedElements);
+  console.log(':not(:defined) elements so far', undefinedElements);
   const promises = [...undefinedElements].map(elementLocalName => customElements.whenDefined(elementLocalName));
   await Promise.all(promises);
   callback();
 })(() => {
   window.onDBUWebComponentsDefined();
 });
+
+window.onmessage = function (msg) {
+  const [message, value] = msg.data.split(' ');
+  if (message === 'changeDir') {
+    const dir = value;
+    window.document.documentElement.setAttribute('dir', dir);
+  }
+};
