@@ -11,5 +11,7 @@ export default {
   FormInputScreen,
   FormInputNumberScreen,
   Draggable,
-  DBUWebComponentDummyScreen
+  DBUWebComponentDummyScreen,
+  'DBUWebComponentDummyScreen.html': null,
+  'DBUWebComponentDummyParentScreen.html': null
 };

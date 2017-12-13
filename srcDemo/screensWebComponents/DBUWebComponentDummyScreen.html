@@ -16,7 +16,6 @@
 <body>
 <dbu-web-component-dummy class="custom">hello</dbu-web-component-dummy>
 <dbu-web-component-dummy class="custom2">hello</dbu-web-component-dummy>
-<script src="../../build/dist/js/dev-box-ui-webcomponents.js"></script>
 <script>
 
   window.onDBUWebComponentsDistLibLoaded = function defineDBUWebComponents() {
@@ -37,7 +36,7 @@
         `
       }
     ]);
-  }
+  };
 
   window.onDBUWebComponentsDefined = function() {
     console.log('dbu web-components defined');
