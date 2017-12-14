@@ -81,6 +81,34 @@ class DraggableScreen extends React.Component {
   render() {
     return (
       <div className="demo-screen"> { /* standard template requirement */ }
+        <pre><code className="html">
+          {`
+            <p>draggable</p>
+            <span>react</span>
+          `}
+        </code></pre>
+        <pre><code className="javascript">
+          {`
+            class Car extends SuperClass {
+              constructor() {
+                super();
+              }
+
+              onInit() {
+                this.do(() => {
+                  console.log(print);
+                });
+              }
+            }
+          `}
+        </code></pre>
+        <pre><code className="css">
+          {`
+            body {
+              color: red;
+            }
+          `}
+        </code></pre>
         <Draggable style={{ border: '1px solid blue', width: 200, height: 200, overflowX: 'scroll', overflowY: 'scroll' }}>
           {this.state.draggableContent}
         </Draggable>

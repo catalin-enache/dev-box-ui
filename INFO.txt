@@ -63,3 +63,5 @@ https://github.com/tysonmatanich/directional-scss
 =============================== code highlight ============================
 
 https://highlightjs.org/usage/
+https://highlightjs.org/download/
+http://highlightjs.readthedocs.io/en/latest/api.html#inithighlightingonload

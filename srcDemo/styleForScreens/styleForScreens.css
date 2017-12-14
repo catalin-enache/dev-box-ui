@@ -20,6 +20,12 @@ html[dir=ltr] ul, html[dir=ltr] li {
   padding: 0px;
   list-style: none; }
 
+html[dir=ltr] pre {
+  margin: 0px;
+  padding: 0px; }
+  html[dir=ltr] pre code {
+    background-color: transparent; }
+
 html[dir=ltr] #demo {
   height: 100%; }
   html[dir=ltr] #demo .head-link {
@@ -110,6 +116,7 @@ html[dir=ltr] #demo {
             color: #f2f2f2; }
       html[dir=ltr] #demo > div .demo-wrapper .demo-area {
         padding-left: 300px;
+        position: relative;
         width: 100%;
         height: 100%;
         overflow: auto;
@@ -146,6 +153,12 @@ html[dir=rtl] ul, html[dir=rtl] li {
   margin: 0px;
   padding: 0px;
   list-style: none; }
+
+html[dir=rtl] pre {
+  margin: 0px;
+  padding: 0px; }
+  html[dir=rtl] pre code {
+    background-color: transparent; }
 
 html[dir=rtl] #demo {
   height: 100%; }
@@ -237,6 +250,7 @@ html[dir=rtl] #demo {
             color: #f2f2f2; }
       html[dir=rtl] #demo > div .demo-wrapper .demo-area {
         padding-right: 300px;
+        position: relative;
         width: 100%;
         height: 100%;
         overflow: auto;

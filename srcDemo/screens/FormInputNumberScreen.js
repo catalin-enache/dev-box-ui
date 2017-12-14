@@ -23,6 +23,34 @@ class FormInputNumberScreen extends React.Component {
   render() {
     return (
       <div className="demo-screen"> { /* standard template requirement */ }
+        <pre><code className="html">
+          {`
+            <p>form input number</p>
+            <span>react</span>
+          `}
+        </code></pre>
+        <pre><code className="javascript">
+          {`
+            class Machine extends SuperClass {
+              constructor() {
+                super();
+              }
+
+              onInit() {
+                this.do(() => {
+                  console.log(print);
+                });
+              }
+            }
+          `}
+        </code></pre>
+        <pre><code className="css">
+          {`
+            html[dir=ltr] {
+              color: red;
+            }
+          `}
+        </code></pre>
         <FormInputNumber
           value={this.state.inputValue}
           onChange={this.handleChange}

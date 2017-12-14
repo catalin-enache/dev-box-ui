@@ -1,6 +1,4 @@
 
-$link-color: black;
-
 a {
   color: $link-color;
   text-decoration: none;
@@ -10,4 +8,13 @@ ul, li {
   margin: 0px;
   padding: 0px;
   list-style: none;
+}
+
+pre {
+  margin: 0px;
+  padding: 0px;
+  code {
+    background-color: transparent;
+  }
+
 }

@@ -34,13 +34,24 @@ IFrameScreen.propTypes = {
 };
 IFrameScreen = localeAware(IFrameScreen);
 
+function highlightBlock() {
+  [...document.querySelectorAll('pre code')].forEach((block) => {
+    window.hljs && window.hljs.highlightBlock(block);
+  });
+}
+
 class App extends React.Component {
   componentDidMount() {
     window.addEventListener('hashchange', this.onHashChange.bind(this));
+    highlightBlock();
   }
 
   onHashChange() {
     this.forceUpdate();
+  }
+
+  componentDidUpdate() {
+    highlightBlock();
   }
 
   toggleAppDir(evt) {
