@@ -5,104 +5,115 @@ $demo-links-width: 300px;
 $links-toggle-label-width: 100px;
 $github-link-width: $links-toggle-label-width;
 
-.page-header {
-  height: $page-header-height;
-  box-sizing: border-box;
-  @media (max-width: $mobile-break-point) {
-    padding-#{$start}: $links-toggle-label-width;
-  }
-
-  h2 {
-    display: inline-block;
-    width: calc(100% - #{$github-link-width});
-    height: $page-header-height;
-    line-height: $page-header-height;
-    text-align: center;
-    vertical-align: top;
-    margin: 0px;
-    padding: 0px;
-  }
-
-  a {
-    display: inline-block;
-    width: $github-link-width;
-    height: $page-header-height;
-    line-height: $page-header-height;
-    text-align: center;
-    vertical-align: top;
-    margin: 0px;
-    padding: 0px;
-  }
-}
-
 #demo {
-  height: calc(100% - #{$page-header-height});
 
-  .demo-wrapper {
-    position: relative;
+  height: 100%;
+
+  > div {
     height: 100%;
 
-    #links-toggle-label {
-      position: absolute;
-      display: none;
+    .page-header {
+      height: $page-header-height;
+      box-sizing: border-box;
+
       @media (max-width: $mobile-break-point) {
-        display: block;
-        width: $links-toggle-label-width;
+        padding-#{$start}: $links-toggle-label-width;
+      }
+
+      h2 {
+        display: inline-block;
+        width: calc(100% - #{$github-link-width});
         height: $page-header-height;
         line-height: $page-header-height;
         text-align: center;
-        top: -$page-header-height;
+        vertical-align: top;
+        margin: 0px;
+        padding: 0px;
+      }
+
+      a {
+        display: inline-block;
+        width: $github-link-width;
+        height: $page-header-height;
+        line-height: $page-header-height;
+        text-align: center;
+        vertical-align: top;
+        margin: 0px;
+        padding: 0px;
       }
     }
 
-    #links-toggle {
-      display: none;
 
-      &:checked + .demo-links {
+
+    .demo-wrapper {
+      position: relative;
+      height: calc(100% - #{$page-header-height});
+
+      #links-toggle-label {
+        position: absolute;
+        display: none;
         @media (max-width: $mobile-break-point) {
-          width: 100%;
           display: block;
+          cursor: pointer;
+          width: $links-toggle-label-width;
+          height: $page-header-height;
+          line-height: $page-header-height;
+          text-align: center;
+          top: -$page-header-height;
         }
       }
 
-    }
-
-    .demo-links {
-      position: absolute;
-      z-index: 1;
-      overflow: auto;
-      width: $demo-links-width;
-      height: 100%;
-      @media (max-width: $mobile-break-point) {
+      #links-toggle {
         display: none;
-      }
-    }
 
-    /* 1: fix ios iframe weird behaviour which makes its height auto-sizing according with content */
-    .demo-area {
-      padding-#{$start}: $demo-links-width;
-      @media (max-width: $mobile-break-point) {
-        padding-#{$start}: 0px;
-      }
-      width: 100%;
-      height: 100%;
-      overflow: auto; /* 1 */
-      -webkit-overflow-scrolling: touch; /* 1 */
+        &:checked + .demo-links {
+          @media (max-width: $mobile-break-point) {
+            width: 100%;
+            display: block;
+          }
+        }
 
-      > div {
-        height: 100%;
+      }
+
+      .demo-links {
+        position: absolute;
+        z-index: 1;
         overflow: auto;
-        -webkit-overflow-scrolling: touch;
+        width: $demo-links-width;
+        height: 100%;
+        @media (max-width: $mobile-break-point) {
+          display: none;
+        }
       }
 
-      /* 1: prevents double scrollbar (from iframe and from iframe's wrapper)  */
-      > iframe {
+      /* 1: fix ios iframe weird behaviour which makes its height auto-sizing according with content */
+      .demo-area {
+        padding-#{$start}: $demo-links-width;
+        @media (max-width: $mobile-break-point) {
+          padding-#{$start}: 0px;
+        }
         width: 100%;
         height: 100%;
-        margin: 0px 0px -5px 0px; /* 1 */
-        padding: 0px;
-        border: none;
+        overflow: auto; /* 1 */
+        -webkit-overflow-scrolling: touch; /* 1 */
+
+        > div {
+          height: 100%;
+          overflow: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+
+        /* 1: prevents double scrollbar (from iframe and from iframe's wrapper)  */
+        > iframe {
+          width: 100%;
+          height: 100%;
+          margin: 0px 0px -5px 0px; /* 1 */
+          padding: 0px;
+          border: none;
+        }
       }
     }
   }
+
+
 }

@@ -80,7 +80,7 @@ class DraggableScreen extends React.Component {
 
   render() {
     return (
-      <div>
+      <div className="demo-screen">
         <Draggable style={{ border: '1px solid blue', width: 200, height: 200, overflowX: 'scroll', overflowY: 'scroll' }}>
           {this.state.draggableContent}
         </Draggable>

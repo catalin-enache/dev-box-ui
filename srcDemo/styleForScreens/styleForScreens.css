@@ -2,7 +2,9 @@ html, body {
   margin: 0px;
   padding: 0px;
   width: 100%;
-  height: 100%; }
+  height: 100%;
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px; }
 
 * {
   box-sizing: border-box; }
@@ -52,174 +54,192 @@ html, body {
 * * * * * * * * * * * * * * * {
   background-color: rgba(0, 0, 255, 0.2); }
 
+html[dir=ltr] a {
+  color: black;
+  text-decoration: none; }
+
 html[dir=ltr] ul, html[dir=ltr] li {
   margin: 0px;
   padding: 0px;
   list-style: none; }
 
-html[dir=ltr] .page-header {
-  height: 50px;
-  box-sizing: border-box; }
-  @media (max-width: 992px) {
-    html[dir=ltr] .page-header {
-      padding-left: 100px; } }
-  html[dir=ltr] .page-header h2 {
-    display: inline-block;
-    width: calc(100% - 100px);
-    height: 50px;
-    line-height: 50px;
-    text-align: center;
-    vertical-align: top;
-    margin: 0px;
-    padding: 0px; }
-  html[dir=ltr] .page-header a {
-    display: inline-block;
-    width: 100px;
-    height: 50px;
-    line-height: 50px;
-    text-align: center;
-    vertical-align: top;
-    margin: 0px;
-    padding: 0px; }
-
 html[dir=ltr] #demo {
-  height: calc(100% - 50px); }
-  html[dir=ltr] #demo .demo-wrapper {
-    position: relative;
-    height: 100%;
-    /* 1: fix ios iframe weird behaviour which makes its height auto-sizing according with content */ }
-    html[dir=ltr] #demo .demo-wrapper #links-toggle-label {
-      position: absolute;
-      display: none; }
+  height: 100%; }
+  html[dir=ltr] #demo > div {
+    height: 100%; }
+    html[dir=ltr] #demo > div .page-header {
+      height: 50px;
+      box-sizing: border-box; }
       @media (max-width: 992px) {
-        html[dir=ltr] #demo .demo-wrapper #links-toggle-label {
-          display: block;
-          width: 100px;
-          height: 50px;
-          line-height: 50px;
-          text-align: center;
-          top: -50px; } }
-    html[dir=ltr] #demo .demo-wrapper #links-toggle {
-      display: none; }
-      @media (max-width: 992px) {
-        html[dir=ltr] #demo .demo-wrapper #links-toggle:checked + .demo-links {
-          width: 100%;
-          display: block; } }
-    html[dir=ltr] #demo .demo-wrapper .demo-links {
-      position: absolute;
-      z-index: 1;
-      overflow: auto;
-      width: 300px;
-      height: 100%; }
-      @media (max-width: 992px) {
-        html[dir=ltr] #demo .demo-wrapper .demo-links {
-          display: none; } }
-    html[dir=ltr] #demo .demo-wrapper .demo-area {
-      padding-left: 300px;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      /* 1 */
-      -webkit-overflow-scrolling: touch;
-      /* 1 */
-      /* 1: prevents double scrollbar (from iframe and from iframe's wrapper)  */ }
-      @media (max-width: 992px) {
-        html[dir=ltr] #demo .demo-wrapper .demo-area {
-          padding-left: 0px; } }
-      html[dir=ltr] #demo .demo-wrapper .demo-area > div {
-        height: 100%;
+        html[dir=ltr] #demo > div .page-header {
+          padding-left: 100px; } }
+      html[dir=ltr] #demo > div .page-header h2 {
+        display: inline-block;
+        width: calc(100% - 100px);
+        height: 50px;
+        line-height: 50px;
+        text-align: center;
+        vertical-align: top;
+        margin: 0px;
+        padding: 0px; }
+      html[dir=ltr] #demo > div .page-header a {
+        display: inline-block;
+        width: 100px;
+        height: 50px;
+        line-height: 50px;
+        text-align: center;
+        vertical-align: top;
+        margin: 0px;
+        padding: 0px; }
+    html[dir=ltr] #demo > div .demo-wrapper {
+      position: relative;
+      height: calc(100% - 50px);
+      /* 1: fix ios iframe weird behaviour which makes its height auto-sizing according with content */ }
+      html[dir=ltr] #demo > div .demo-wrapper #links-toggle-label {
+        position: absolute;
+        display: none; }
+        @media (max-width: 992px) {
+          html[dir=ltr] #demo > div .demo-wrapper #links-toggle-label {
+            display: block;
+            cursor: pointer;
+            width: 100px;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            top: -50px; } }
+      html[dir=ltr] #demo > div .demo-wrapper #links-toggle {
+        display: none; }
+        @media (max-width: 992px) {
+          html[dir=ltr] #demo > div .demo-wrapper #links-toggle:checked + .demo-links {
+            width: 100%;
+            display: block; } }
+      html[dir=ltr] #demo > div .demo-wrapper .demo-links {
+        position: absolute;
+        z-index: 1;
         overflow: auto;
-        -webkit-overflow-scrolling: touch; }
-      html[dir=ltr] #demo .demo-wrapper .demo-area > iframe {
+        width: 300px;
+        height: 100%; }
+        @media (max-width: 992px) {
+          html[dir=ltr] #demo > div .demo-wrapper .demo-links {
+            display: none; } }
+      html[dir=ltr] #demo > div .demo-wrapper .demo-area {
+        padding-left: 300px;
         width: 100%;
         height: 100%;
-        margin: 0px 0px -5px 0px;
+        overflow: auto;
         /* 1 */
-        padding: 0px;
-        border: none; }
+        -webkit-overflow-scrolling: touch;
+        /* 1 */
+        /* 1: prevents double scrollbar (from iframe and from iframe's wrapper)  */ }
+        @media (max-width: 992px) {
+          html[dir=ltr] #demo > div .demo-wrapper .demo-area {
+            padding-left: 0px; } }
+        html[dir=ltr] #demo > div .demo-wrapper .demo-area > div {
+          height: 100%;
+          overflow: auto;
+          -webkit-overflow-scrolling: touch; }
+        html[dir=ltr] #demo > div .demo-wrapper .demo-area > iframe {
+          width: 100%;
+          height: 100%;
+          margin: 0px 0px -5px 0px;
+          /* 1 */
+          padding: 0px;
+          border: none; }
+
+html[dir=ltr] .demo-screen {
+  padding: 10px; }
+
+html[dir=rtl] a {
+  color: black;
+  text-decoration: none; }
 
 html[dir=rtl] ul, html[dir=rtl] li {
   margin: 0px;
   padding: 0px;
   list-style: none; }
 
-html[dir=rtl] .page-header {
-  height: 50px;
-  box-sizing: border-box; }
-  @media (max-width: 992px) {
-    html[dir=rtl] .page-header {
-      padding-right: 100px; } }
-  html[dir=rtl] .page-header h2 {
-    display: inline-block;
-    width: calc(100% - 100px);
-    height: 50px;
-    line-height: 50px;
-    text-align: center;
-    vertical-align: top;
-    margin: 0px;
-    padding: 0px; }
-  html[dir=rtl] .page-header a {
-    display: inline-block;
-    width: 100px;
-    height: 50px;
-    line-height: 50px;
-    text-align: center;
-    vertical-align: top;
-    margin: 0px;
-    padding: 0px; }
-
 html[dir=rtl] #demo {
-  height: calc(100% - 50px); }
-  html[dir=rtl] #demo .demo-wrapper {
-    position: relative;
-    height: 100%;
-    /* 1: fix ios iframe weird behaviour which makes its height auto-sizing according with content */ }
-    html[dir=rtl] #demo .demo-wrapper #links-toggle-label {
-      position: absolute;
-      display: none; }
+  height: 100%; }
+  html[dir=rtl] #demo > div {
+    height: 100%; }
+    html[dir=rtl] #demo > div .page-header {
+      height: 50px;
+      box-sizing: border-box; }
       @media (max-width: 992px) {
-        html[dir=rtl] #demo .demo-wrapper #links-toggle-label {
-          display: block;
-          width: 100px;
-          height: 50px;
-          line-height: 50px;
-          text-align: center;
-          top: -50px; } }
-    html[dir=rtl] #demo .demo-wrapper #links-toggle {
-      display: none; }
-      @media (max-width: 992px) {
-        html[dir=rtl] #demo .demo-wrapper #links-toggle:checked + .demo-links {
-          width: 100%;
-          display: block; } }
-    html[dir=rtl] #demo .demo-wrapper .demo-links {
-      position: absolute;
-      z-index: 1;
-      overflow: auto;
-      width: 300px;
-      height: 100%; }
-      @media (max-width: 992px) {
-        html[dir=rtl] #demo .demo-wrapper .demo-links {
-          display: none; } }
-    html[dir=rtl] #demo .demo-wrapper .demo-area {
-      padding-right: 300px;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      /* 1 */
-      -webkit-overflow-scrolling: touch;
-      /* 1 */
-      /* 1: prevents double scrollbar (from iframe and from iframe's wrapper)  */ }
-      @media (max-width: 992px) {
-        html[dir=rtl] #demo .demo-wrapper .demo-area {
-          padding-right: 0px; } }
-      html[dir=rtl] #demo .demo-wrapper .demo-area > div {
-        height: 100%;
+        html[dir=rtl] #demo > div .page-header {
+          padding-right: 100px; } }
+      html[dir=rtl] #demo > div .page-header h2 {
+        display: inline-block;
+        width: calc(100% - 100px);
+        height: 50px;
+        line-height: 50px;
+        text-align: center;
+        vertical-align: top;
+        margin: 0px;
+        padding: 0px; }
+      html[dir=rtl] #demo > div .page-header a {
+        display: inline-block;
+        width: 100px;
+        height: 50px;
+        line-height: 50px;
+        text-align: center;
+        vertical-align: top;
+        margin: 0px;
+        padding: 0px; }
+    html[dir=rtl] #demo > div .demo-wrapper {
+      position: relative;
+      height: calc(100% - 50px);
+      /* 1: fix ios iframe weird behaviour which makes its height auto-sizing according with content */ }
+      html[dir=rtl] #demo > div .demo-wrapper #links-toggle-label {
+        position: absolute;
+        display: none; }
+        @media (max-width: 992px) {
+          html[dir=rtl] #demo > div .demo-wrapper #links-toggle-label {
+            display: block;
+            cursor: pointer;
+            width: 100px;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            top: -50px; } }
+      html[dir=rtl] #demo > div .demo-wrapper #links-toggle {
+        display: none; }
+        @media (max-width: 992px) {
+          html[dir=rtl] #demo > div .demo-wrapper #links-toggle:checked + .demo-links {
+            width: 100%;
+            display: block; } }
+      html[dir=rtl] #demo > div .demo-wrapper .demo-links {
+        position: absolute;
+        z-index: 1;
         overflow: auto;
-        -webkit-overflow-scrolling: touch; }
-      html[dir=rtl] #demo .demo-wrapper .demo-area > iframe {
+        width: 300px;
+        height: 100%; }
+        @media (max-width: 992px) {
+          html[dir=rtl] #demo > div .demo-wrapper .demo-links {
+            display: none; } }
+      html[dir=rtl] #demo > div .demo-wrapper .demo-area {
+        padding-right: 300px;
         width: 100%;
         height: 100%;
-        margin: 0px 0px -5px 0px;
+        overflow: auto;
         /* 1 */
-        padding: 0px;
-        border: none; }
+        -webkit-overflow-scrolling: touch;
+        /* 1 */
+        /* 1: prevents double scrollbar (from iframe and from iframe's wrapper)  */ }
+        @media (max-width: 992px) {
+          html[dir=rtl] #demo > div .demo-wrapper .demo-area {
+            padding-right: 0px; } }
+        html[dir=rtl] #demo > div .demo-wrapper .demo-area > div {
+          height: 100%;
+          overflow: auto;
+          -webkit-overflow-scrolling: touch; }
+        html[dir=rtl] #demo > div .demo-wrapper .demo-area > iframe {
+          width: 100%;
+          height: 100%;
+          margin: 0px 0px -5px 0px;
+          /* 1 */
+          padding: 0px;
+          border: none; }
+
+html[dir=rtl] .demo-screen {
+  padding: 10px; }

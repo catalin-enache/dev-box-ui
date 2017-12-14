@@ -3,7 +3,7 @@ import React from 'react';
 class DBUWebComponentDummyScreen extends React.Component {
   render() {
     return (
-      <div>
+      <div className="demo-screen">
 
         <dbu-web-component-dummy
           style={{ color: 'blue' }}

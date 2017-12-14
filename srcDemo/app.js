@@ -1,5 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import GoMarkGithub from 'react-icons/lib/go/mark-github';
+import GoThreeBars from 'react-icons/lib/go/three-bars';
 import { screens, screenLinkNames } from './screens';
 import localeAware from '../src/lib/HOC/localeAware';
 
@@ -73,25 +75,34 @@ class App extends React.Component {
     }
 
     return (
-      <div className="demo-wrapper">
-        <label id="links-toggle-label" htmlFor="links-toggle">links</label>
-        <input id="links-toggle" type="checkbox" />
-        <div className="demo-links" onClick={() => document.querySelector('#links-toggle').checked = false}>
-          <div className="locale-dir-switch">
-            <a href="#" onClick={this.toggleAppDir}>Toggle Locale Dir</a>
-          </div>
-          {links}
-          {links}
-          {links}
-          {links}
-          {links}
-          {links}
-          {links}
+      <div>
+        <div className="page-header">
+          <h2>Dev Box UI</h2><a
+            href="https://github.com/catalin-enache/dev-box-ui"
+            rel="noopener noreferrer"
+            target="_blank"><GoMarkGithub size={25} /></a>
         </div>
-        <div className="demo-area">
-          <Screen/>
+        <div className="demo-wrapper">
+          <label id="links-toggle-label" htmlFor="links-toggle"><GoThreeBars size={25} /></label>
+          <input id="links-toggle" type="checkbox" />
+          <div className="demo-links" onClick={() => document.querySelector('#links-toggle').checked = false}>
+            <div className="locale-dir-switch">
+              <a href="#" onClick={this.toggleAppDir}>Toggle Locale Dir</a>
+            </div>
+            {links}
+            {links}
+            {links}
+            {links}
+            {links}
+            {links}
+            {links}
+          </div>
+          <div className="demo-area">
+            <Screen/>
+          </div>
         </div>
       </div>
+
     );
   }
 }

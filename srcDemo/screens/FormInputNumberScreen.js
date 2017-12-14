@@ -22,7 +22,7 @@ class FormInputNumberScreen extends React.Component {
 
   render() {
     return (
-      <div>
+      <div className="demo-screen">
         <FormInputNumber
           value={this.state.inputValue}
           onChange={this.handleChange}

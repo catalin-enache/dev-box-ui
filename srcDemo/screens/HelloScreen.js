@@ -10,7 +10,7 @@ class HelloScreen extends React.Component {
       // console.log('rendering HelloScreen component');
     }
     return (
-      <div>
+      <div className="demo-screen">
         <Hello />
       </div>
     );

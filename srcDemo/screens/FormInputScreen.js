@@ -21,7 +21,7 @@ class FormInputScreen extends React.Component {
 
   render() {
     return (
-      <div>
+      <div className="demo-screen">
         <FormInput
           value={this.state.inputValue}
           onChange={this.handleChange}
