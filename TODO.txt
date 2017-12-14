@@ -1,4 +1,3 @@
-do some decent/good looking dummy webcomponents to test/prove all expectations
 
 minimal imports: import someStuff from node_modules/dev-box-ui/webcomponents/someStuff
 distribution import: put distribution in head script then import someStuff from dev-box-ui

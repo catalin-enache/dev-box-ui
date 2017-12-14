@@ -74,10 +74,18 @@ class App extends React.Component {
 
     return (
       <div className="demo-wrapper">
-        <div className="demo-links">
+        <label id="links-toggle-label" htmlFor="links-toggle">links</label>
+        <input id="links-toggle" type="checkbox" />
+        <div className="demo-links" onClick={() => document.querySelector('#links-toggle').checked = false}>
           <div className="locale-dir-switch">
             <a href="#" onClick={this.toggleAppDir}>Toggle Locale Dir</a>
           </div>
+          {links}
+          {links}
+          {links}
+          {links}
+          {links}
+          {links}
           {links}
         </div>
         <div className="demo-area">

@@ -59,3 +59,7 @@ defaults write com.apple.Safari ApplePersistenceIgnoreState YES
 =============================== directional SASS ============================
 
 https://github.com/tysonmatanich/directional-scss
+
+=============================== code highlight ============================
+
+https://highlightjs.org/usage/

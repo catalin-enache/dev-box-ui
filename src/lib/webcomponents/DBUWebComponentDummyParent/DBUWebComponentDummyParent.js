@@ -16,7 +16,11 @@ export default function getDBUWebComponentDummyParent(win) {
     const template = document.createElement('template');
     template.innerHTML = `
       <style>
-      :host {display: inline-block;}
+      :host {
+        display: inline-block;
+        width: 100%;
+        max-width: 400px;
+      }
       </style>
       <div>
         <div>
