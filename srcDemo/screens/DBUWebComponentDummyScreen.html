@@ -4,18 +4,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <style>
-    dbu-web-component-dummy.custom {
-      --b-text-shadow: 2px 2px 2px #cccc00;
+    dbu-web-component-dummy.custom-1 {
+      color: orange;
+      font-style: oblique;
+      --dummy-inner-sections-border-radius: 10px;
+      --dummy-inner-sections-bg-color: indigo;
     }
-    dbu-web-component-dummy.custom2 {
-      --b-text-shadow: 2px 2px 2px #0000cc;
-      --b-radius: 5px;
+    dbu-web-component-dummy.custom-2 {
+      --dummy-b-text-shadow: 2px 2px 2px #000000;
     }
   </style>
 </head>
 <body>
-<dbu-web-component-dummy class="custom">hello</dbu-web-component-dummy>
-<dbu-web-component-dummy class="custom2">hello</dbu-web-component-dummy>
+<dbu-web-component-dummy class="custom-1">hello</dbu-web-component-dummy>
+<dbu-web-component-dummy class="custom-2">hello</dbu-web-component-dummy>
 <script>
 
   window.onDBUWebComponentsDistLibLoaded = function defineDBUWebComponents() {
@@ -28,11 +30,9 @@
       {
         registrationName: 'dbu-web-component-dummy',
         componentStyle: `
-         b {
-            color: orange;
-            font-style: oblique;
-            border-radius: var(--b-radius, 0px);
-          }
+         #container > div {
+          background-color: var(--dummy-inner-sections-bg-color, transparent);
+         }
         `
       }
     ]);

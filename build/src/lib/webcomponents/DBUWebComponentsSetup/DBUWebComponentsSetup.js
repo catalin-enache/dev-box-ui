@@ -1,29 +1,18 @@
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = dbuWebComponentsSetUp;
 
-/*
-DBUWebComponentBase (from which all web-components inherit)
-will read componentStyle from win.DBUWebComponents
-when klass.registerSelf() is called giving a chance to override default web-component style
-just before it is registered.
-*/
-const appendStyle = win => (registrationName, componentStyle) => {
-  if (!win.DBUWebComponents) {
-    win.DBUWebComponents = {};
-  }
-  win.DBUWebComponents = Object.assign({}, win.DBUWebComponents, {
-    [registrationName]: Object.assign({}, win.DBUWebComponents[registrationName], {
-      componentStyle
-    })
-  });
-};
+var _appendStyle = require('../internals/appendStyle');
+
+var _appendStyle2 = _interopRequireDefault(_appendStyle);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function dbuWebComponentsSetUp(win) {
   return {
-    appendStyle: appendStyle(win)
+    appendStyle: (0, _appendStyle2.default)(win)
   };
 }

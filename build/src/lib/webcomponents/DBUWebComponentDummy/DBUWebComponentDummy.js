@@ -26,45 +26,77 @@ function getDBUWebComponentDummy(win) {
     template.innerHTML = `
       <style>
       :host {
-        display: block;
+        display: inline-block;
+        width: 400px;
+        height: 50px;
         color: maroon;
+        border: 1px solid gray;
+        box-sizing: border-box;
       }
       
-      :host b {
-        text-shadow: var(--b-text-shadow, none);
+      :host b, :host div[x-has-slot] span[x-slot-wrapper] {
+        unicode-bidi: bidi-override;
+        text-shadow: var(--dummy-b-text-shadow, none);
       }
-      
+
       :host([dir=rtl]) b {
         text-decoration: underline;
-        padding: 5px;
-        border: 1px solid red;
       }
+      
       :host([dir=ltr]) b {
         text-decoration: overline;
-        padding: 5px;
-        border: 1px solid green;
       }
-      
-      :host([dir=rtl]) span[x-has-slot] {
-        float: left;
-      }
-      
-      :host([dir=ltr]) span[x-has-slot] {
-        float: right;
-      }
-      
-      :host([dir=ltr]) *[dir=rtl] {
+
+      :host([dir=ltr]) #container > div[dir=rtl],
+      :host([dir=rtl]) #container > div[dir=ltr] {
         display: none;
       }
-      :host([dir=rtl]) *[dir=ltr] {
-        display: none;
+      
+      :host #container > div[x-has-slot] {
+        margin-left: 0px;
+      }
+      
+      #container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: stretch;
+      }
+      
+      #container > div {
+        border: 1px solid gray;
+        border-radius: var(--dummy-inner-sections-border-radius, 0px);
+        flex: 1 0 0%;
+        display: flex;
+        margin: 5px;
+      }
+      
+      #container > div > div {
+        margin: auto;
       }
       
       </style>
       
-      <b dir="ltr">I'm in shadow dom! ltr (DBUWebComponentDummy)</b>
-      <span x-has-slot><span>[</span><slot></slot><span>]</span></span>
-      <b dir="rtl">I'm in shadow dom! rtl (DBUWebComponentDummy)</b>
+      <div id="container">
+        <div dir="ltr">
+          <div>
+            <b>Dummy shadow</b> [LTR]
+          </div>
+        </div>
+        
+        <div x-has-slot>
+          <div>
+            <span>[</span><span x-slot-wrapper><slot></slot></span><span>]</span>
+          </div>
+        </div>
+        
+        <div dir="rtl">
+          <div>
+            <b>Dummy shadow</b> [RTL]
+          </div>
+        </div>
+      </div>
     `;
 
     class DBUWebComponentDummy extends DBUWebComponentBase {

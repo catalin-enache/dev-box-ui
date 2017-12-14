@@ -27,7 +27,7 @@ var _I18nService2 = _interopRequireDefault(_I18nService);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function localeAware(Component) {
-  class LocaleAware extends _react2.default.PureComponent {
+  class LocaleAware extends _react2.default.Component {
     constructor(props, context) {
       super(props, context);
       this.handleLocaleChange = this.handleLocaleChange.bind(this);

@@ -4,25 +4,33 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <style>
-    dbu-web-component-dummy-parent {
-      --dbu-web-component-dummy-border-radius: 10px;
-      --dbu-web-component-dummy-bg-color: gray;
-      --dbu-web-component-dummy-color: blue;
+    dbu-web-component-dummy-parent[dir=ltr] {
+      --dummy-b-bg-color: gray;
+      --dummy-b-border-radius: 0px 15px 0px 15px;
     }
-    dbu-web-component-dummy-parent.second {
-      --dbu-web-component-dummy-color: orange;
+
+    dbu-web-component-dummy-parent[dir=rtl] {
+      --dummy-b-color: deepskyblue;
+      --dummy-b-bg-color: #444;
+      --dummy-b-border-radius: 15px 0px 15px 0px;
+    }
+
+    dbu-web-component-dummy-parent.custom-1 {
+      color: green;
+      --dummy-b-color: orange;
+      --dummy-b-bg-color: blue;
     }
 
     dbu-web-component-dummy {
-      --dbu-web-component-dummy-border-radius: 20px;
-      /*--dbu-web-component-dummy-color: green;*/
+      --dummy-b-border-radius: 15px 0px 15px 0px;
+      --dummy-b-bg-color: green;
     }
   </style>
 </head>
 <body>
-<dbu-web-component-dummy-parent>hello</dbu-web-component-dummy-parent>
-<dbu-web-component-dummy-parent class="second">hello</dbu-web-component-dummy-parent>
-<dbu-web-component-dummy>hello</dbu-web-component-dummy>
+<dbu-web-component-dummy-parent>hello 1</dbu-web-component-dummy-parent>
+<dbu-web-component-dummy-parent class="custom-1">hello 2</dbu-web-component-dummy-parent>
+<dbu-web-component-dummy>hello 3</dbu-web-component-dummy>
 <p>p</p>
 <p>p</p>
 <p>p</p>
@@ -66,10 +74,9 @@
         registrationName: 'dbu-web-component-dummy',
         componentStyle: `
          b {
-           color: var(--dbu-web-component-dummy-color, inherit);
-           font-style: oblique;
-           border-radius: var(--dbu-web-component-dummy-border-radius, 0px);
-           background-color: var(--dbu-web-component-dummy-bg-color, transparent);
+           color: var(--dummy-b-color, inherit);
+           border-radius: var(--dummy-b-border-radius, 0px);
+           background-color: var(--dummy-b-bg-color, transparent);
          }
         `
       },

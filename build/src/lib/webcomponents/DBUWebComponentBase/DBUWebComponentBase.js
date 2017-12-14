@@ -54,7 +54,6 @@ function getDBUWebComponentBase(win) {
       }
 
       connectedCallback() {
-        console.log('connected', this.constructor.registrationName);
         window.addEventListener('beforeunload', this.disconnectedCallback, false);
 
         this.unregisterLocaleChange = _LocaleService2.default.onLocaleChange(this._handleLocaleChange);
@@ -78,8 +77,6 @@ function getDBUWebComponentBase(win) {
       }
 
       _handleLocaleChange(locale) {
-        this.childrenTree.innerHTML = '';
-        this._insertTemplate();
         this.setAttribute('dir', locale.dir);
         this.setAttribute('lang', locale.lang);
         this.onLocaleChange && this.onLocaleChange(locale);

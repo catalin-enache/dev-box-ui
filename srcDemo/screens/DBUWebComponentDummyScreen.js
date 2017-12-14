@@ -8,15 +8,15 @@ class DBUWebComponentDummyScreen extends React.Component {
         <dbu-web-component-dummy
           style={{ color: 'blue' }}
         >
-          <span>hello world 1</span>
+          <span>hello 1</span>
         </dbu-web-component-dummy>
 
         <dbu-web-component-dummy
           style={{ color: 'blue' }}
         >
-          <span>hello world 2</span>
+          <span>hello 2</span>
         </dbu-web-component-dummy>
-        <dbu-web-component-dummy-parent></dbu-web-component-dummy-parent>
+        <dbu-web-component-dummy-parent>hello 3</dbu-web-component-dummy-parent>
 
       </div>
     );

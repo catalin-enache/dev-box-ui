@@ -31,10 +31,16 @@ function getDBUWebComponentDummyParent(win) {
     const template = document.createElement('template');
     template.innerHTML = `
       <style>
-      :host {display: block;}
+      :host {display: inline-block;}
       </style>
-      <b>I'm in shadow dom! (DBUWebComponentDummyParent)</b>
-      <dbu-web-component-dummy><slot></slot></dbu-web-component-dummy>
+      <div>
+        <div>
+          <b>Dummy Parent shadow</b>
+        </div>
+        <div>
+          <dbu-web-component-dummy><slot></slot></dbu-web-component-dummy>
+        </div>
+      </div>
     `;
 
     class DBUWebComponentDummyParent extends DBUWebComponentBase {
