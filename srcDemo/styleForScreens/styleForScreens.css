@@ -3,56 +3,13 @@ html, body {
   padding: 0px;
   width: 100%;
   height: 100%;
+  color: #383e44;
+  -webkit-font-smoothing: antialiased;
   font-family: 'Roboto', sans-serif;
-  font-size: 14px; }
+  font-size: 15px; }
 
 * {
   box-sizing: border-box; }
-
-* {
-  background-color: rgba(255, 0, 0, 0.2); }
-
-* * {
-  background-color: rgba(0, 255, 0, 0.2); }
-
-* * * {
-  background-color: rgba(0, 0, 255, 0.2); }
-
-* * * * {
-  background-color: rgba(255, 0, 255, 0.2); }
-
-* * * * * {
-  background-color: rgba(0, 255, 255, 0.2); }
-
-* * * * * * {
-  background-color: rgba(255, 255, 0, 0.2); }
-
-* * * * * * * {
-  background-color: rgba(255, 0, 0, 0.2); }
-
-* * * * * * * * {
-  background-color: rgba(0, 255, 0, 0.2); }
-
-* * * * * * * * * {
-  background-color: rgba(0, 0, 255, 0.2); }
-
-* * * * * * * * * * {
-  background-color: rgba(255, 0, 255, 0.2); }
-
-* * * * * * * * * * * {
-  background-color: rgba(0, 255, 255, 0.2); }
-
-* * * * * * * * * * * * {
-  background-color: rgba(255, 255, 0, 0.2); }
-
-* * * * * * * * * * * * * {
-  background-color: rgba(255, 0, 0, 0.2); }
-
-* * * * * * * * * * * * * * {
-  background-color: rgba(0, 255, 0, 0.2); }
-
-* * * * * * * * * * * * * * * {
-  background-color: rgba(0, 0, 255, 0.2); }
 
 html[dir=ltr] a {
   color: black;
@@ -65,28 +22,37 @@ html[dir=ltr] ul, html[dir=ltr] li {
 
 html[dir=ltr] #demo {
   height: 100%; }
+  html[dir=ltr] #demo .head-link {
+    color: #f2f2f2; }
   html[dir=ltr] #demo > div {
     height: 100%; }
     html[dir=ltr] #demo > div .page-header {
+      position: relative;
+      z-index: 1;
       height: 50px;
-      box-sizing: border-box; }
+      box-sizing: border-box;
+      background-color: #3e454b;
+      border-top: 3px solid #2d3237;
+      border-bottom: 3px solid #2d3237;
+      box-shadow: 0 8px 6px -6px black; }
       @media (max-width: 992px) {
         html[dir=ltr] #demo > div .page-header {
           padding-left: 100px; } }
       html[dir=ltr] #demo > div .page-header h2 {
         display: inline-block;
         width: calc(100% - 100px);
-        height: 50px;
-        line-height: 50px;
+        height: 44px;
+        line-height: 44px;
         text-align: center;
         vertical-align: top;
         margin: 0px;
-        padding: 0px; }
+        padding: 0px;
+        color: #f2f2f2; }
       html[dir=ltr] #demo > div .page-header a {
         display: inline-block;
         width: 100px;
-        height: 50px;
-        line-height: 50px;
+        height: 44px;
+        line-height: 44px;
         text-align: center;
         vertical-align: top;
         margin: 0px;
@@ -97,14 +63,15 @@ html[dir=ltr] #demo {
       /* 1: fix ios iframe weird behaviour which makes its height auto-sizing according with content */ }
       html[dir=ltr] #demo > div .demo-wrapper #links-toggle-label {
         position: absolute;
+        z-index: 1;
         display: none; }
         @media (max-width: 992px) {
           html[dir=ltr] #demo > div .demo-wrapper #links-toggle-label {
             display: block;
             cursor: pointer;
             width: 100px;
-            height: 50px;
-            line-height: 50px;
+            height: 44px;
+            line-height: 44px;
             text-align: center;
             top: -50px; } }
       html[dir=ltr] #demo > div .demo-wrapper #links-toggle {
@@ -118,10 +85,29 @@ html[dir=ltr] #demo {
         z-index: 1;
         overflow: auto;
         width: 300px;
-        height: 100%; }
+        height: 100%;
+        background-color: #3e454b;
+        box-sizing: border-box;
+        border-right: 1px solid #c1c1c1; }
         @media (max-width: 992px) {
           html[dir=ltr] #demo > div .demo-wrapper .demo-links {
             display: none; } }
+        html[dir=ltr] #demo > div .demo-wrapper .demo-links .locale-dir-switch {
+          padding-left: 10px;
+          height: 30px;
+          line-height: 30px;
+          background-color: #2d3237;
+          margin-bottom: 1px; }
+          html[dir=ltr] #demo > div .demo-wrapper .demo-links .locale-dir-switch a {
+            color: #f2f2f2; }
+        html[dir=ltr] #demo > div .demo-wrapper .demo-links ul li {
+          padding-left: 10px;
+          padding-top: 5px;
+          padding-bottom: 5px; }
+          html[dir=ltr] #demo > div .demo-wrapper .demo-links ul li[x-active] {
+            background-color: #2d3237; }
+          html[dir=ltr] #demo > div .demo-wrapper .demo-links ul li a {
+            color: #f2f2f2; }
       html[dir=ltr] #demo > div .demo-wrapper .demo-area {
         padding-left: 300px;
         width: 100%;
@@ -130,6 +116,7 @@ html[dir=ltr] #demo {
         /* 1 */
         -webkit-overflow-scrolling: touch;
         /* 1 */
+        box-sizing: border-box;
         /* 1: prevents double scrollbar (from iframe and from iframe's wrapper)  */ }
         @media (max-width: 992px) {
           html[dir=ltr] #demo > div .demo-wrapper .demo-area {
@@ -147,7 +134,9 @@ html[dir=ltr] #demo {
           border: none; }
 
 html[dir=ltr] .demo-screen {
-  padding: 10px; }
+  padding: 10px;
+  background-color: #f2f2f2;
+  box-shadow: inset 0px 3px 11px 0px rgba(0, 0, 0, 0.75); }
 
 html[dir=rtl] a {
   color: black;
@@ -160,28 +149,37 @@ html[dir=rtl] ul, html[dir=rtl] li {
 
 html[dir=rtl] #demo {
   height: 100%; }
+  html[dir=rtl] #demo .head-link {
+    color: #f2f2f2; }
   html[dir=rtl] #demo > div {
     height: 100%; }
     html[dir=rtl] #demo > div .page-header {
+      position: relative;
+      z-index: 1;
       height: 50px;
-      box-sizing: border-box; }
+      box-sizing: border-box;
+      background-color: #3e454b;
+      border-top: 3px solid #2d3237;
+      border-bottom: 3px solid #2d3237;
+      box-shadow: 0 8px 6px -6px black; }
       @media (max-width: 992px) {
         html[dir=rtl] #demo > div .page-header {
           padding-right: 100px; } }
       html[dir=rtl] #demo > div .page-header h2 {
         display: inline-block;
         width: calc(100% - 100px);
-        height: 50px;
-        line-height: 50px;
+        height: 44px;
+        line-height: 44px;
         text-align: center;
         vertical-align: top;
         margin: 0px;
-        padding: 0px; }
+        padding: 0px;
+        color: #f2f2f2; }
       html[dir=rtl] #demo > div .page-header a {
         display: inline-block;
         width: 100px;
-        height: 50px;
-        line-height: 50px;
+        height: 44px;
+        line-height: 44px;
         text-align: center;
         vertical-align: top;
         margin: 0px;
@@ -192,14 +190,15 @@ html[dir=rtl] #demo {
       /* 1: fix ios iframe weird behaviour which makes its height auto-sizing according with content */ }
       html[dir=rtl] #demo > div .demo-wrapper #links-toggle-label {
         position: absolute;
+        z-index: 1;
         display: none; }
         @media (max-width: 992px) {
           html[dir=rtl] #demo > div .demo-wrapper #links-toggle-label {
             display: block;
             cursor: pointer;
             width: 100px;
-            height: 50px;
-            line-height: 50px;
+            height: 44px;
+            line-height: 44px;
             text-align: center;
             top: -50px; } }
       html[dir=rtl] #demo > div .demo-wrapper #links-toggle {
@@ -213,10 +212,29 @@ html[dir=rtl] #demo {
         z-index: 1;
         overflow: auto;
         width: 300px;
-        height: 100%; }
+        height: 100%;
+        background-color: #3e454b;
+        box-sizing: border-box;
+        border-right: 1px solid #c1c1c1; }
         @media (max-width: 992px) {
           html[dir=rtl] #demo > div .demo-wrapper .demo-links {
             display: none; } }
+        html[dir=rtl] #demo > div .demo-wrapper .demo-links .locale-dir-switch {
+          padding-right: 10px;
+          height: 30px;
+          line-height: 30px;
+          background-color: #2d3237;
+          margin-bottom: 1px; }
+          html[dir=rtl] #demo > div .demo-wrapper .demo-links .locale-dir-switch a {
+            color: #f2f2f2; }
+        html[dir=rtl] #demo > div .demo-wrapper .demo-links ul li {
+          padding-right: 10px;
+          padding-top: 5px;
+          padding-bottom: 5px; }
+          html[dir=rtl] #demo > div .demo-wrapper .demo-links ul li[x-active] {
+            background-color: #2d3237; }
+          html[dir=rtl] #demo > div .demo-wrapper .demo-links ul li a {
+            color: #f2f2f2; }
       html[dir=rtl] #demo > div .demo-wrapper .demo-area {
         padding-right: 300px;
         width: 100%;
@@ -225,6 +243,7 @@ html[dir=rtl] #demo {
         /* 1 */
         -webkit-overflow-scrolling: touch;
         /* 1 */
+        box-sizing: border-box;
         /* 1: prevents double scrollbar (from iframe and from iframe's wrapper)  */ }
         @media (max-width: 992px) {
           html[dir=rtl] #demo > div .demo-wrapper .demo-area {
@@ -242,4 +261,6 @@ html[dir=rtl] #demo {
           border: none; }
 
 html[dir=rtl] .demo-screen {
-  padding: 10px; }
+  padding: 10px;
+  background-color: #f2f2f2;
+  box-shadow: inset 0px 3px 11px 0px rgba(0, 0, 0, 0.75); }

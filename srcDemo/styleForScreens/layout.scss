@@ -1,20 +1,37 @@
 
 $page-header-height: 50px;
+$page-header-border-width: 3px;
+$header-content-height: $page-header-height - 2 * $page-header-border-width;
+
 $mobile-break-point: 992px;
 $demo-links-width: 300px;
 $links-toggle-label-width: 100px;
 $github-link-width: $links-toggle-label-width;
+$head-color: #f2f2f2;
+$head-background: #3e454b;
+$locale-dir-switch-background: #2d3237;
+$demo-area-border-color: #c1c1c1;
 
 #demo {
 
   height: 100%;
 
+  .head-link {
+    color: $head-color;
+  }
+
   > div {
     height: 100%;
 
     .page-header {
+      position: relative;
+      z-index: 1;
       height: $page-header-height;
       box-sizing: border-box;
+      background-color: $head-background;
+      border-top: 3px solid $locale-dir-switch-background;
+      border-bottom: 3px solid $locale-dir-switch-background;
+      box-shadow: 0 8px 6px -6px black;
 
       @media (max-width: $mobile-break-point) {
         padding-#{$start}: $links-toggle-label-width;
@@ -23,19 +40,20 @@ $github-link-width: $links-toggle-label-width;
       h2 {
         display: inline-block;
         width: calc(100% - #{$github-link-width});
-        height: $page-header-height;
-        line-height: $page-header-height;
+        height: $header-content-height;
+        line-height: $header-content-height;
         text-align: center;
         vertical-align: top;
         margin: 0px;
         padding: 0px;
+        color: $head-color;
       }
 
       a {
         display: inline-block;
         width: $github-link-width;
-        height: $page-header-height;
-        line-height: $page-header-height;
+        height: $header-content-height;
+        line-height: $header-content-height;
         text-align: center;
         vertical-align: top;
         margin: 0px;
@@ -43,21 +61,20 @@ $github-link-width: $links-toggle-label-width;
       }
     }
 
-
-
     .demo-wrapper {
       position: relative;
       height: calc(100% - #{$page-header-height});
 
       #links-toggle-label {
         position: absolute;
+        z-index: 1;
         display: none;
         @media (max-width: $mobile-break-point) {
           display: block;
           cursor: pointer;
           width: $links-toggle-label-width;
-          height: $page-header-height;
-          line-height: $page-header-height;
+          height: $header-content-height;
+          line-height: $header-content-height;
           text-align: center;
           top: -$page-header-height;
         }
@@ -81,9 +98,42 @@ $github-link-width: $links-toggle-label-width;
         overflow: auto;
         width: $demo-links-width;
         height: 100%;
+        background-color: $head-background;
+        box-sizing: border-box;
+        border-right: 1px solid $demo-area-border-color;
+
         @media (max-width: $mobile-break-point) {
           display: none;
         }
+
+        .locale-dir-switch {
+          padding-#{$start}: 10px;
+          height: 30px;
+          line-height: 30px;
+          background-color: $locale-dir-switch-background;
+          margin-bottom: 1px;
+          a {
+            color: $head-color;
+          }
+        }
+
+        ul {
+
+          li {
+            padding-#{$start}: 10px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+
+            &[x-active] {
+              background-color: $locale-dir-switch-background;
+            }
+
+            a {
+              color: $head-color;
+            }
+          }
+        }
+
       }
 
       /* 1: fix ios iframe weird behaviour which makes its height auto-sizing according with content */
@@ -96,6 +146,7 @@ $github-link-width: $links-toggle-label-width;
         height: 100%;
         overflow: auto; /* 1 */
         -webkit-overflow-scrolling: touch; /* 1 */
+        box-sizing: border-box;
 
         > div {
           height: 100%;
