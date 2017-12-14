@@ -1,6 +1,6 @@
 html, body {
-  margin: 0px;
-  padding: 0px;
+  margin: 0;
+  padding: 0;
   width: 100%;
   height: 100%;
   color: #383e44;
@@ -24,7 +24,8 @@ html[dir=ltr] pre {
   margin: 0px;
   padding: 0px; }
   html[dir=ltr] pre code {
-    background-color: transparent; }
+    background-color: transparent;
+    unicode-bidi: plaintext; }
 
 html[dir=ltr] #demo {
   height: 100%; }
@@ -51,8 +52,8 @@ html[dir=ltr] #demo {
         line-height: 44px;
         text-align: center;
         vertical-align: top;
-        margin: 0px;
-        padding: 0px;
+        margin: 0;
+        padding: 0;
         color: #f2f2f2; }
       html[dir=ltr] #demo > div .page-header a {
         display: inline-block;
@@ -61,8 +62,8 @@ html[dir=ltr] #demo {
         line-height: 44px;
         text-align: center;
         vertical-align: top;
-        margin: 0px;
-        padding: 0px; }
+        margin: 0;
+        padding: 0; }
     html[dir=ltr] #demo > div .demo-wrapper {
       position: relative;
       height: calc(100% - 50px);
@@ -137,7 +138,7 @@ html[dir=ltr] #demo {
           height: 100%;
           margin: 0px 0px -5px 0px;
           /* 1 */
-          padding: 0px;
+          padding: 0;
           border: none; }
 
 html[dir=ltr] .demo-screen {
@@ -158,7 +159,8 @@ html[dir=rtl] pre {
   margin: 0px;
   padding: 0px; }
   html[dir=rtl] pre code {
-    background-color: transparent; }
+    background-color: transparent;
+    unicode-bidi: plaintext; }
 
 html[dir=rtl] #demo {
   height: 100%; }
@@ -185,8 +187,8 @@ html[dir=rtl] #demo {
         line-height: 44px;
         text-align: center;
         vertical-align: top;
-        margin: 0px;
-        padding: 0px;
+        margin: 0;
+        padding: 0;
         color: #f2f2f2; }
       html[dir=rtl] #demo > div .page-header a {
         display: inline-block;
@@ -195,8 +197,8 @@ html[dir=rtl] #demo {
         line-height: 44px;
         text-align: center;
         vertical-align: top;
-        margin: 0px;
-        padding: 0px; }
+        margin: 0;
+        padding: 0; }
     html[dir=rtl] #demo > div .demo-wrapper {
       position: relative;
       height: calc(100% - 50px);
@@ -271,7 +273,7 @@ html[dir=rtl] #demo {
           height: 100%;
           margin: 0px 0px -5px 0px;
           /* 1 */
-          padding: 0px;
+          padding: 0;
           border: none; }
 
 html[dir=rtl] .demo-screen {

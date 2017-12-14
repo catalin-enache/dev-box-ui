@@ -1,4 +1,6 @@
 
+@import "vars";
+
 a {
   color: $link-color;
   text-decoration: none;
@@ -15,6 +17,8 @@ pre {
   padding: 0px;
   code {
     background-color: transparent;
+    //unicode-bidi: bidi-override;
+    unicode-bidi: plaintext;
   }
 
 }
