@@ -1,5 +1,19 @@
-minimal imports
-distribution import
-unittest web-components in iframe
-generate events helpers for unittests
+do some decent/good looking dummy webcomponents to test/prove all expectations
+
+minimal imports: import someStuff from node_modules/dev-box-ui/webcomponents/someStuff
+distribution import: put distribution in head script then import someStuff from dev-box-ui
+normal import: import someStuff from dev-box-ui
+
+
+finish demo page style maybe including foundation
+how do we show code snippets in react app and in iFrame using ace
+
+
+unittest web-components in iFrame
+create event helpers for unittests
+in unittests we should test among other things:
+  - web component can be dir aware (css in template)
+  - css vars are inherited and style can be overridden
+  - web component are not registered multiple times even if using a mix of import styles
+  - web component can use external renderers like the col renderer in a table or option renderer in select
 
