@@ -21,7 +21,7 @@ class FormInputScreen extends React.Component {
 
   render() {
     return (
-      <div className="demo-screen">
+      <div className="demo-screen"> { /* standard template requirement */ }
         <FormInput
           value={this.state.inputValue}
           onChange={this.handleChange}

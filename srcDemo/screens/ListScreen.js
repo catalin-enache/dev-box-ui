@@ -6,7 +6,7 @@ import {
 class ListScreen extends React.Component {
   render() {
     return (
-      <div className="demo-screen">
+      <div className="demo-screen"> { /* standard template requirement */ }
         <List items={['three', 'four']}/>
         <List items={['three', 'four']}/>
       </div>
