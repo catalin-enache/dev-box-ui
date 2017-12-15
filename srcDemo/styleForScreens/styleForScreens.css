@@ -152,9 +152,12 @@ html[dir=ltr] #demo {
           border: none; }
 
 html[dir=ltr] .demo-screen {
-  padding: 20px 10px 20px 10px;
+  padding: 20px 50px 20px 50px;
   background-color: #fafafa;
   box-shadow: inset 0px 3px 11px 0px rgba(0, 0, 0, 0.75); }
+  @media (max-width: 992px) {
+    html[dir=ltr] .demo-screen {
+      padding: 20px 10px 20px 10px; } }
   html[dir=ltr] .demo-screen h2.title {
     border-bottom: 1px solid #ccc;
     font-weight: 700;
@@ -282,6 +285,10 @@ html[dir=ltr] .demo-screen {
     display: block; }
   html[dir=ltr] .demo-screen .tabs #tab-40:checked ~ #content-40 {
     display: block; }
+  html[dir=ltr] .demo-screen div.properties {
+    overflow-x: auto; }
+    html[dir=ltr] .demo-screen div.properties table {
+      width: 800px; }
 
 html[dir=rtl] a {
   color: #4078c0;
@@ -424,9 +431,12 @@ html[dir=rtl] #demo {
           border: none; }
 
 html[dir=rtl] .demo-screen {
-  padding: 20px 10px 20px 10px;
+  padding: 20px 50px 20px 50px;
   background-color: #fafafa;
   box-shadow: inset 0px 3px 11px 0px rgba(0, 0, 0, 0.75); }
+  @media (max-width: 992px) {
+    html[dir=rtl] .demo-screen {
+      padding: 20px 10px 20px 10px; } }
   html[dir=rtl] .demo-screen h2.title {
     border-bottom: 1px solid #ccc;
     font-weight: 700;
@@ -554,3 +564,7 @@ html[dir=rtl] .demo-screen {
     display: block; }
   html[dir=rtl] .demo-screen .tabs #tab-40:checked ~ #content-40 {
     display: block; }
+  html[dir=rtl] .demo-screen div.properties {
+    overflow-x: auto; }
+    html[dir=rtl] .demo-screen div.properties table {
+      width: 800px; }

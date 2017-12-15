@@ -2,9 +2,13 @@
 @import "vars";
 
 .demo-screen {
-  padding: 20px 10px 20px 10px;
+  padding: 20px 50px 20px 50px;
   background-color: $demo-screen-background-color;
   box-shadow: inset 0px 3px 11px 0px rgba(0,0,0,0.75);
+
+  @media (max-width: $mobile-break-point) {
+    padding: 20px 10px 20px 10px;
+  }
 
   h2.title {
     border-bottom: 1px solid #ccc;
@@ -77,5 +81,14 @@
     }
   }
   // Tabs End
+
+  div.properties {
+    overflow-x: auto;
+
+    table {
+      width: 800px;
+    }
+
+  }
 
 }

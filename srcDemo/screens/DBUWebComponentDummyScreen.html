@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link href='https://fonts.googleapis.com/css?family=Roboto:400,100,‌​100italic,300,300ita‌​lic,400italic,500,50‌​0italic,700,700itali‌​c,900italic,900' rel='stylesheet' type='text/css' />
   <link rel="stylesheet" href="../styleForScreens/styleForScreens.css" />
+  <script src="js/helpers.js"></script>
   <!-- highlight.js -->
   <link rel="stylesheet" href="../../srcDemo/vendors/highlight/styles/atelier-heath-light.css">
   <script src="../../srcDemo/vendors/highlight/highlight.pack.js"></script>
@@ -142,6 +143,20 @@ class Car extends SuperClass {
   </div>
 
   <p>after tabs</p>
+
+  <div class="properties"></div>
+  <script>window.generateComponentPropertiesTable({
+    propertyOne: {
+      type: 'string',
+      default: 'value 1',
+      description: 'description one'
+    },
+    propertyTwo: {
+      type: 'number',
+      default: '5',
+      description: 'description two'
+    }
+  })</script>
 
 </div>
 
