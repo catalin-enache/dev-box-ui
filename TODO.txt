@@ -3,9 +3,6 @@ minimal imports: import someStuff from node_modules/dev-box-ui/webcomponents/som
 distribution import: put distribution in head script then import someStuff from dev-box-ui
 normal import: import someStuff from dev-box-ui
 
-
-finish demo page style maybe including foundation
-allow left links to have groups and sections
 make a properties table
 
 unittest web-components in iFrame
