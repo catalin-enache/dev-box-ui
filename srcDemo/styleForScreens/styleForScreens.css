@@ -147,26 +147,33 @@ html[dir=ltr] .demo-screen {
   box-shadow: inset 0px 3px 11px 0px rgba(0, 0, 0, 0.75); }
   html[dir=ltr] .demo-screen .tabs > section {
     display: none;
-    padding: 20px 0 0;
-    border-top: 1px solid #ddd; }
+    padding: 20px 10px;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px; }
   html[dir=ltr] .demo-screen .tabs > input {
     display: none; }
   html[dir=ltr] .demo-screen .tabs > label {
+    box-sizing: border-box;
     display: inline-block;
-    margin: 0 0 -1px;
-    padding: 15px 25px;
+    margin-right: 2px;
+    margin-bottom: 5px;
+    padding: 0px 25px;
+    height: 70px;
+    line-height: 70px;
     font-weight: 600;
     text-align: center;
     color: #bbb;
-    border: 1px solid transparent; }
+    border-top: 2px solid transparent;
+    background-color: #f2f2f2; }
   html[dir=ltr] .demo-screen .tabs > label:hover {
     color: #888;
     cursor: pointer; }
   html[dir=ltr] .demo-screen .tabs > input:checked + label {
     color: #555;
-    border: 1px solid #ddd;
+    height: 82px;
+    margin-bottom: -3px;
     border-top: 2px solid orange;
-    border-bottom: 1px solid #fff; }
+    border-bottom: none;
+    box-shadow: rgba(0, 0, 0, 0.12) -1px -2px 2px, rgba(0, 0, 0, 0.12) 1px -2px 2px; }
   html[dir=ltr] .demo-screen .tabs #tab-1:checked ~ #content-1 {
     display: block; }
   html[dir=ltr] .demo-screen .tabs #tab-2:checked ~ #content-2 {
@@ -384,26 +391,33 @@ html[dir=rtl] .demo-screen {
   box-shadow: inset 0px 3px 11px 0px rgba(0, 0, 0, 0.75); }
   html[dir=rtl] .demo-screen .tabs > section {
     display: none;
-    padding: 20px 0 0;
-    border-top: 1px solid #ddd; }
+    padding: 20px 10px;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px; }
   html[dir=rtl] .demo-screen .tabs > input {
     display: none; }
   html[dir=rtl] .demo-screen .tabs > label {
+    box-sizing: border-box;
     display: inline-block;
-    margin: 0 0 -1px;
-    padding: 15px 25px;
+    margin-left: 2px;
+    margin-bottom: 5px;
+    padding: 0px 25px;
+    height: 70px;
+    line-height: 70px;
     font-weight: 600;
     text-align: center;
     color: #bbb;
-    border: 1px solid transparent; }
+    border-top: 2px solid transparent;
+    background-color: #f2f2f2; }
   html[dir=rtl] .demo-screen .tabs > label:hover {
     color: #888;
     cursor: pointer; }
   html[dir=rtl] .demo-screen .tabs > input:checked + label {
     color: #555;
-    border: 1px solid #ddd;
+    height: 82px;
+    margin-bottom: -3px;
     border-top: 2px solid orange;
-    border-bottom: 1px solid #fff; }
+    border-bottom: none;
+    box-shadow: rgba(0, 0, 0, 0.12) -1px -2px 2px, rgba(0, 0, 0, 0.12) 1px -2px 2px; }
   html[dir=rtl] .demo-screen .tabs #tab-1:checked ~ #content-1 {
     display: block; }
   html[dir=rtl] .demo-screen .tabs #tab-2:checked ~ #content-2 {
