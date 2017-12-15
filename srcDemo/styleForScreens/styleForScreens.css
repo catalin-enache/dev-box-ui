@@ -145,6 +145,108 @@ html[dir=ltr] .demo-screen {
   padding: 10px;
   background-color: #f2f2f2;
   box-shadow: inset 0px 3px 11px 0px rgba(0, 0, 0, 0.75); }
+  html[dir=ltr] .demo-screen .tabs > section {
+    display: none;
+    padding: 20px 0 0;
+    border-top: 1px solid #ddd; }
+  html[dir=ltr] .demo-screen .tabs > input {
+    display: none; }
+  html[dir=ltr] .demo-screen .tabs > label {
+    display: inline-block;
+    margin: 0 0 -1px;
+    padding: 15px 25px;
+    font-weight: 600;
+    text-align: center;
+    color: #bbb;
+    border: 1px solid transparent; }
+  html[dir=ltr] .demo-screen .tabs > label:hover {
+    color: #888;
+    cursor: pointer; }
+  html[dir=ltr] .demo-screen .tabs > input:checked + label {
+    color: #555;
+    border: 1px solid #ddd;
+    border-top: 2px solid orange;
+    border-bottom: 1px solid #fff; }
+  html[dir=ltr] .demo-screen .tabs #tab-1:checked ~ #content-1 {
+    display: block; }
+  html[dir=ltr] .demo-screen .tabs #tab-2:checked ~ #content-2 {
+    display: block; }
+  html[dir=ltr] .demo-screen .tabs #tab-3:checked ~ #content-3 {
+    display: block; }
+  html[dir=ltr] .demo-screen .tabs #tab-4:checked ~ #content-4 {
+    display: block; }
+  html[dir=ltr] .demo-screen .tabs #tab-5:checked ~ #content-5 {
+    display: block; }
+  html[dir=ltr] .demo-screen .tabs #tab-6:checked ~ #content-6 {
+    display: block; }
+  html[dir=ltr] .demo-screen .tabs #tab-7:checked ~ #content-7 {
+    display: block; }
+  html[dir=ltr] .demo-screen .tabs #tab-8:checked ~ #content-8 {
+    display: block; }
+  html[dir=ltr] .demo-screen .tabs #tab-9:checked ~ #content-9 {
+    display: block; }
+  html[dir=ltr] .demo-screen .tabs #tab-10:checked ~ #content-10 {
+    display: block; }
+  html[dir=ltr] .demo-screen .tabs #tab-11:checked ~ #content-11 {
+    display: block; }
+  html[dir=ltr] .demo-screen .tabs #tab-12:checked ~ #content-12 {
+    display: block; }
+  html[dir=ltr] .demo-screen .tabs #tab-13:checked ~ #content-13 {
+    display: block; }
+  html[dir=ltr] .demo-screen .tabs #tab-14:checked ~ #content-14 {
+    display: block; }
+  html[dir=ltr] .demo-screen .tabs #tab-15:checked ~ #content-15 {
+    display: block; }
+  html[dir=ltr] .demo-screen .tabs #tab-16:checked ~ #content-16 {
+    display: block; }
+  html[dir=ltr] .demo-screen .tabs #tab-17:checked ~ #content-17 {
+    display: block; }
+  html[dir=ltr] .demo-screen .tabs #tab-18:checked ~ #content-18 {
+    display: block; }
+  html[dir=ltr] .demo-screen .tabs #tab-19:checked ~ #content-19 {
+    display: block; }
+  html[dir=ltr] .demo-screen .tabs #tab-20:checked ~ #content-20 {
+    display: block; }
+  html[dir=ltr] .demo-screen .tabs #tab-21:checked ~ #content-21 {
+    display: block; }
+  html[dir=ltr] .demo-screen .tabs #tab-22:checked ~ #content-22 {
+    display: block; }
+  html[dir=ltr] .demo-screen .tabs #tab-23:checked ~ #content-23 {
+    display: block; }
+  html[dir=ltr] .demo-screen .tabs #tab-24:checked ~ #content-24 {
+    display: block; }
+  html[dir=ltr] .demo-screen .tabs #tab-25:checked ~ #content-25 {
+    display: block; }
+  html[dir=ltr] .demo-screen .tabs #tab-26:checked ~ #content-26 {
+    display: block; }
+  html[dir=ltr] .demo-screen .tabs #tab-27:checked ~ #content-27 {
+    display: block; }
+  html[dir=ltr] .demo-screen .tabs #tab-28:checked ~ #content-28 {
+    display: block; }
+  html[dir=ltr] .demo-screen .tabs #tab-29:checked ~ #content-29 {
+    display: block; }
+  html[dir=ltr] .demo-screen .tabs #tab-30:checked ~ #content-30 {
+    display: block; }
+  html[dir=ltr] .demo-screen .tabs #tab-31:checked ~ #content-31 {
+    display: block; }
+  html[dir=ltr] .demo-screen .tabs #tab-32:checked ~ #content-32 {
+    display: block; }
+  html[dir=ltr] .demo-screen .tabs #tab-33:checked ~ #content-33 {
+    display: block; }
+  html[dir=ltr] .demo-screen .tabs #tab-34:checked ~ #content-34 {
+    display: block; }
+  html[dir=ltr] .demo-screen .tabs #tab-35:checked ~ #content-35 {
+    display: block; }
+  html[dir=ltr] .demo-screen .tabs #tab-36:checked ~ #content-36 {
+    display: block; }
+  html[dir=ltr] .demo-screen .tabs #tab-37:checked ~ #content-37 {
+    display: block; }
+  html[dir=ltr] .demo-screen .tabs #tab-38:checked ~ #content-38 {
+    display: block; }
+  html[dir=ltr] .demo-screen .tabs #tab-39:checked ~ #content-39 {
+    display: block; }
+  html[dir=ltr] .demo-screen .tabs #tab-40:checked ~ #content-40 {
+    display: block; }
 
 html[dir=rtl] a {
   color: black;
@@ -280,3 +382,105 @@ html[dir=rtl] .demo-screen {
   padding: 10px;
   background-color: #f2f2f2;
   box-shadow: inset 0px 3px 11px 0px rgba(0, 0, 0, 0.75); }
+  html[dir=rtl] .demo-screen .tabs > section {
+    display: none;
+    padding: 20px 0 0;
+    border-top: 1px solid #ddd; }
+  html[dir=rtl] .demo-screen .tabs > input {
+    display: none; }
+  html[dir=rtl] .demo-screen .tabs > label {
+    display: inline-block;
+    margin: 0 0 -1px;
+    padding: 15px 25px;
+    font-weight: 600;
+    text-align: center;
+    color: #bbb;
+    border: 1px solid transparent; }
+  html[dir=rtl] .demo-screen .tabs > label:hover {
+    color: #888;
+    cursor: pointer; }
+  html[dir=rtl] .demo-screen .tabs > input:checked + label {
+    color: #555;
+    border: 1px solid #ddd;
+    border-top: 2px solid orange;
+    border-bottom: 1px solid #fff; }
+  html[dir=rtl] .demo-screen .tabs #tab-1:checked ~ #content-1 {
+    display: block; }
+  html[dir=rtl] .demo-screen .tabs #tab-2:checked ~ #content-2 {
+    display: block; }
+  html[dir=rtl] .demo-screen .tabs #tab-3:checked ~ #content-3 {
+    display: block; }
+  html[dir=rtl] .demo-screen .tabs #tab-4:checked ~ #content-4 {
+    display: block; }
+  html[dir=rtl] .demo-screen .tabs #tab-5:checked ~ #content-5 {
+    display: block; }
+  html[dir=rtl] .demo-screen .tabs #tab-6:checked ~ #content-6 {
+    display: block; }
+  html[dir=rtl] .demo-screen .tabs #tab-7:checked ~ #content-7 {
+    display: block; }
+  html[dir=rtl] .demo-screen .tabs #tab-8:checked ~ #content-8 {
+    display: block; }
+  html[dir=rtl] .demo-screen .tabs #tab-9:checked ~ #content-9 {
+    display: block; }
+  html[dir=rtl] .demo-screen .tabs #tab-10:checked ~ #content-10 {
+    display: block; }
+  html[dir=rtl] .demo-screen .tabs #tab-11:checked ~ #content-11 {
+    display: block; }
+  html[dir=rtl] .demo-screen .tabs #tab-12:checked ~ #content-12 {
+    display: block; }
+  html[dir=rtl] .demo-screen .tabs #tab-13:checked ~ #content-13 {
+    display: block; }
+  html[dir=rtl] .demo-screen .tabs #tab-14:checked ~ #content-14 {
+    display: block; }
+  html[dir=rtl] .demo-screen .tabs #tab-15:checked ~ #content-15 {
+    display: block; }
+  html[dir=rtl] .demo-screen .tabs #tab-16:checked ~ #content-16 {
+    display: block; }
+  html[dir=rtl] .demo-screen .tabs #tab-17:checked ~ #content-17 {
+    display: block; }
+  html[dir=rtl] .demo-screen .tabs #tab-18:checked ~ #content-18 {
+    display: block; }
+  html[dir=rtl] .demo-screen .tabs #tab-19:checked ~ #content-19 {
+    display: block; }
+  html[dir=rtl] .demo-screen .tabs #tab-20:checked ~ #content-20 {
+    display: block; }
+  html[dir=rtl] .demo-screen .tabs #tab-21:checked ~ #content-21 {
+    display: block; }
+  html[dir=rtl] .demo-screen .tabs #tab-22:checked ~ #content-22 {
+    display: block; }
+  html[dir=rtl] .demo-screen .tabs #tab-23:checked ~ #content-23 {
+    display: block; }
+  html[dir=rtl] .demo-screen .tabs #tab-24:checked ~ #content-24 {
+    display: block; }
+  html[dir=rtl] .demo-screen .tabs #tab-25:checked ~ #content-25 {
+    display: block; }
+  html[dir=rtl] .demo-screen .tabs #tab-26:checked ~ #content-26 {
+    display: block; }
+  html[dir=rtl] .demo-screen .tabs #tab-27:checked ~ #content-27 {
+    display: block; }
+  html[dir=rtl] .demo-screen .tabs #tab-28:checked ~ #content-28 {
+    display: block; }
+  html[dir=rtl] .demo-screen .tabs #tab-29:checked ~ #content-29 {
+    display: block; }
+  html[dir=rtl] .demo-screen .tabs #tab-30:checked ~ #content-30 {
+    display: block; }
+  html[dir=rtl] .demo-screen .tabs #tab-31:checked ~ #content-31 {
+    display: block; }
+  html[dir=rtl] .demo-screen .tabs #tab-32:checked ~ #content-32 {
+    display: block; }
+  html[dir=rtl] .demo-screen .tabs #tab-33:checked ~ #content-33 {
+    display: block; }
+  html[dir=rtl] .demo-screen .tabs #tab-34:checked ~ #content-34 {
+    display: block; }
+  html[dir=rtl] .demo-screen .tabs #tab-35:checked ~ #content-35 {
+    display: block; }
+  html[dir=rtl] .demo-screen .tabs #tab-36:checked ~ #content-36 {
+    display: block; }
+  html[dir=rtl] .demo-screen .tabs #tab-37:checked ~ #content-37 {
+    display: block; }
+  html[dir=rtl] .demo-screen .tabs #tab-38:checked ~ #content-38 {
+    display: block; }
+  html[dir=rtl] .demo-screen .tabs #tab-39:checked ~ #content-39 {
+    display: block; }
+  html[dir=rtl] .demo-screen .tabs #tab-40:checked ~ #content-40 {
+    display: block; }

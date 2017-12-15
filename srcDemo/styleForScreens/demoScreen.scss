@@ -5,4 +5,47 @@
   padding: 10px;
   background-color: $demo-screen-background-color;
   box-shadow: inset 0px 3px 11px 0px rgba(0,0,0,0.75);
+
+  // Tabs Start
+  .tabs {
+    > section {
+      display: none;
+      padding: 20px 0 0;
+      border-top: 1px solid #ddd;
+    }
+
+    > input {
+      display: none;
+    }
+
+    > label {
+      display: inline-block;
+      margin: 0 0 -1px;
+      padding: 15px 25px;
+      font-weight: 600;
+      text-align: center;
+      color: #bbb;
+      border: 1px solid transparent;
+    }
+
+    > label:hover {
+      color: #888;
+      cursor: pointer;
+    }
+
+    > input:checked + label {
+      color: #555;
+      border: 1px solid #ddd;
+      border-top: 2px solid orange;
+      border-bottom: 1px solid #fff;
+    }
+
+    @for $i from 1 through 40 {
+      #tab-#{$i}:checked ~ #content-#{$i} {
+          display: block;
+      }
+    }
+  }
+  // Tabs End
+
 }

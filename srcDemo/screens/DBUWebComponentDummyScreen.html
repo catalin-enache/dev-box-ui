@@ -26,31 +26,109 @@
 <body>
 
 <div class="demo-screen"><!-- standard template requirement -->
-  <dbu-web-component-dummy class="custom-1">hello</dbu-web-component-dummy>
-  <dbu-web-component-dummy class="custom-2">hello</dbu-web-component-dummy>
 
-  <pre><code className="html">
-    <p>draggable</p>
-    <span>react</span>
-  </code></pre>
-  <pre><code className="javascript">
-    class Car extends SuperClass {
-      constructor() {
-        super();
-      }
+  <div class="tabs">
 
-      onInit() {
-        this.do(() => {
-          console.log(print);
-        });
-      }
-    }
-  </code></pre>
-  <pre><code className="css">
-    body {
-      color: red;
-    }
-  </code></pre>
+    <input id="tab-1" type="radio" name="group-1" checked>
+    <label for="tab-1">RESULT</label>
+
+    <input id="tab-2" type="radio" name="group-1">
+    <label for="tab-2">HTML</label>
+
+    <input id="tab-3" type="radio" name="group-1">
+    <label for="tab-3">CSS</label>
+
+    <input id="tab-4" type="radio" name="group-1">
+    <label for="tab-4">JS</label>
+
+    <section id="content-1">
+      <dbu-web-component-dummy class="custom-1">hello</dbu-web-component-dummy>
+      <dbu-web-component-dummy class="custom-2">hello</dbu-web-component-dummy>
+    </section>
+
+    <section id="content-2">
+      <pre><code className="html">
+<p>draggable</p>
+<span>react</span>
+      </code></pre>
+    </section>
+
+    <section id="content-3">
+      <pre><code className="css">
+body {
+  color: red;
+}
+      </code></pre>
+    </section>
+
+    <section id="content-4">
+      <pre><code className="javascript">
+class Car extends SuperClass {
+  constructor() {
+    super();
+  }
+
+  onInit() {
+    this.do(() => {
+      console.log(print);
+    });
+  }
+}
+      </code></pre>
+    </section>
+  </div>
+
+  <div class="tabs">
+
+    <input id="tab-5" type="radio" name="group-2" checked>
+    <label for="tab-5">RESULT</label>
+
+    <input id="tab-6" type="radio" name="group-2">
+    <label for="tab-6">HTML</label>
+
+    <input id="tab-7" type="radio" name="group-2">
+    <label for="tab-7">CSS</label>
+
+    <input id="tab-8" type="radio" name="group-2">
+    <label for="tab-8">JS</label>
+
+    <section id="content-5">
+      <dbu-web-component-dummy class="custom-1">hello</dbu-web-component-dummy>
+      <dbu-web-component-dummy class="custom-2">hello</dbu-web-component-dummy>
+    </section>
+
+    <section id="content-6">
+      <pre><code className="html">
+<p>draggable</p>
+<span>react</span>
+      </code></pre>
+    </section>
+
+    <section id="content-7">
+      <pre><code className="css">
+body {
+  color: red;
+}
+      </code></pre>
+    </section>
+
+    <section id="content-8">
+      <pre><code className="javascript">
+class Car extends SuperClass {
+  constructor() {
+    super();
+  }
+
+  onInit() {
+    this.do(() => {
+      console.log(print);
+    });
+  }
+}
+      </code></pre>
+    </section>
+  </div>
+
 </div>
 
 <!-- standard template start -->
