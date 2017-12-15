@@ -165,7 +165,8 @@ html[dir=ltr] .demo-screen {
     color: #3e454b;
     height: 60px;
     line-height: 60px;
-    text-align: left; }
+    text-align: left;
+    margin: 20px 0px 20px 0px; }
   html[dir=ltr] .demo-screen h3.section {
     font-weight: 500;
     font-size: 25px;
@@ -462,7 +463,8 @@ html[dir=rtl] .demo-screen {
     color: #3e454b;
     height: 60px;
     line-height: 60px;
-    text-align: right; }
+    text-align: right;
+    margin: 20px 0px 20px 0px; }
   html[dir=rtl] .demo-screen h3.section {
     font-weight: 500;
     font-size: 25px;

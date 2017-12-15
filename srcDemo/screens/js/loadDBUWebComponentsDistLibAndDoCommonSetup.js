@@ -30,7 +30,7 @@ window.onmessage = function (msg) {
 };
 
 // for highlight.js
-document.querySelectorAll('pre code').forEach((block) => {
+document.querySelectorAll('pre code.html').forEach((block) => {
   block.innerHTML =
     block.innerHTML
       .replace(/&/g, '&amp;')
@@ -38,5 +38,7 @@ document.querySelectorAll('pre code').forEach((block) => {
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#039;');
+});
+document.querySelectorAll('pre code').forEach((block) => {
   window.hljs && window.hljs.highlightBlock(block);
 });
