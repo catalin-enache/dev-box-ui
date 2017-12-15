@@ -93,6 +93,7 @@ html[dir=ltr] #demo {
         overflow: auto;
         width: 300px;
         height: 100%;
+        padding-bottom: 20px;
         background-color: #3e454b;
         box-sizing: border-box;
         border-right: 1px solid #c1c1c1; }
@@ -341,6 +342,7 @@ html[dir=rtl] #demo {
         overflow: auto;
         width: 300px;
         height: 100%;
+        padding-bottom: 20px;
         background-color: #3e454b;
         box-sizing: border-box;
         border-right: 1px solid #c1c1c1; }
