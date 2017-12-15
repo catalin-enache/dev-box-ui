@@ -2,7 +2,7 @@
 @import "vars";
 
 .demo-screen {
-  padding: 10px;
+  padding: 20px 10px 20px 10px;
   background-color: $demo-screen-background-color;
   box-shadow: inset 0px 3px 11px 0px rgba(0,0,0,0.75);
 
@@ -11,8 +11,8 @@
     > section {
       display: none;
       padding: 20px 10px;
-      //border: 1px solid $tabs-border-color;
-      box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px;
+      box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px -1px 4px;
+      background-color: $tabs-tab-background-color;
     }
 
     > input {
@@ -31,8 +31,7 @@
       text-align: center;
       color: #bbb;
       border-top: 2px solid transparent;
-      //border: 1px solid transparent;
-      background-color: $tabs-tab-background-color;
+      background-color: transparent;
     }
 
     > label:hover {
@@ -43,11 +42,10 @@
     > input:checked + label {
       color: #555;
       height: 82px;
-      margin-bottom: -3px;
+      margin-bottom: -1px;
       border-top: 2px solid orange;
-      //border-right: 1px solid $tabs-border-color;
-      //border-left: 1px solid $tabs-border-color;
       border-bottom: none;
+      background-color: $tabs-tab-background-color;
       box-shadow: rgba(0, 0, 0, 0.12) -1px -2px 2px, rgba(0, 0, 0, 0.12) 1px -2px 2px;
     }
 

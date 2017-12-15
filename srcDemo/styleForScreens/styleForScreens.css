@@ -30,7 +30,7 @@ html[dir=ltr] pre {
 html[dir=ltr] #demo {
   height: 100%; }
   html[dir=ltr] #demo .head-link {
-    color: #f2f2f2; }
+    color: #f0f0f0; }
   html[dir=ltr] #demo > div {
     height: 100%; }
     html[dir=ltr] #demo > div .page-header {
@@ -54,7 +54,7 @@ html[dir=ltr] #demo {
         vertical-align: top;
         margin: 0;
         padding: 0;
-        color: #f2f2f2; }
+        color: #f0f0f0; }
       html[dir=ltr] #demo > div .page-header a {
         display: inline-block;
         width: 100px;
@@ -106,15 +106,17 @@ html[dir=ltr] #demo {
           background-color: #2d3237;
           margin-bottom: 1px; }
           html[dir=ltr] #demo > div .demo-wrapper .demo-links .locale-dir-switch a {
-            color: #f2f2f2; }
+            color: #f0f0f0; }
         html[dir=ltr] #demo > div .demo-wrapper .demo-links ul li {
           padding-left: 10px;
           padding-top: 5px;
           padding-bottom: 5px; }
+          html[dir=ltr] #demo > div .demo-wrapper .demo-links ul li:hover {
+            background-color: #363c42; }
           html[dir=ltr] #demo > div .demo-wrapper .demo-links ul li[x-active] {
             background-color: #2d3237; }
           html[dir=ltr] #demo > div .demo-wrapper .demo-links ul li a {
-            color: #f2f2f2; }
+            color: #f0f0f0; }
       html[dir=ltr] #demo > div .demo-wrapper .demo-area {
         padding-left: 300px;
         position: relative;
@@ -142,13 +144,14 @@ html[dir=ltr] #demo {
           border: none; }
 
 html[dir=ltr] .demo-screen {
-  padding: 10px;
-  background-color: #f2f2f2;
+  padding: 20px 10px 20px 10px;
+  background-color: #fafafa;
   box-shadow: inset 0px 3px 11px 0px rgba(0, 0, 0, 0.75); }
   html[dir=ltr] .demo-screen .tabs > section {
     display: none;
     padding: 20px 10px;
-    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px; }
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px -1px 4px;
+    background-color: #fafafa; }
   html[dir=ltr] .demo-screen .tabs > input {
     display: none; }
   html[dir=ltr] .demo-screen .tabs > label {
@@ -163,16 +166,17 @@ html[dir=ltr] .demo-screen {
     text-align: center;
     color: #bbb;
     border-top: 2px solid transparent;
-    background-color: #f2f2f2; }
+    background-color: transparent; }
   html[dir=ltr] .demo-screen .tabs > label:hover {
     color: #888;
     cursor: pointer; }
   html[dir=ltr] .demo-screen .tabs > input:checked + label {
     color: #555;
     height: 82px;
-    margin-bottom: -3px;
+    margin-bottom: -1px;
     border-top: 2px solid orange;
     border-bottom: none;
+    background-color: #fafafa;
     box-shadow: rgba(0, 0, 0, 0.12) -1px -2px 2px, rgba(0, 0, 0, 0.12) 1px -2px 2px; }
   html[dir=ltr] .demo-screen .tabs #tab-1:checked ~ #content-1 {
     display: block; }
@@ -274,7 +278,7 @@ html[dir=rtl] pre {
 html[dir=rtl] #demo {
   height: 100%; }
   html[dir=rtl] #demo .head-link {
-    color: #f2f2f2; }
+    color: #f0f0f0; }
   html[dir=rtl] #demo > div {
     height: 100%; }
     html[dir=rtl] #demo > div .page-header {
@@ -298,7 +302,7 @@ html[dir=rtl] #demo {
         vertical-align: top;
         margin: 0;
         padding: 0;
-        color: #f2f2f2; }
+        color: #f0f0f0; }
       html[dir=rtl] #demo > div .page-header a {
         display: inline-block;
         width: 100px;
@@ -350,15 +354,17 @@ html[dir=rtl] #demo {
           background-color: #2d3237;
           margin-bottom: 1px; }
           html[dir=rtl] #demo > div .demo-wrapper .demo-links .locale-dir-switch a {
-            color: #f2f2f2; }
+            color: #f0f0f0; }
         html[dir=rtl] #demo > div .demo-wrapper .demo-links ul li {
           padding-right: 10px;
           padding-top: 5px;
           padding-bottom: 5px; }
+          html[dir=rtl] #demo > div .demo-wrapper .demo-links ul li:hover {
+            background-color: #363c42; }
           html[dir=rtl] #demo > div .demo-wrapper .demo-links ul li[x-active] {
             background-color: #2d3237; }
           html[dir=rtl] #demo > div .demo-wrapper .demo-links ul li a {
-            color: #f2f2f2; }
+            color: #f0f0f0; }
       html[dir=rtl] #demo > div .demo-wrapper .demo-area {
         padding-right: 300px;
         position: relative;
@@ -386,13 +392,14 @@ html[dir=rtl] #demo {
           border: none; }
 
 html[dir=rtl] .demo-screen {
-  padding: 10px;
-  background-color: #f2f2f2;
+  padding: 20px 10px 20px 10px;
+  background-color: #fafafa;
   box-shadow: inset 0px 3px 11px 0px rgba(0, 0, 0, 0.75); }
   html[dir=rtl] .demo-screen .tabs > section {
     display: none;
     padding: 20px 10px;
-    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px; }
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px -1px 4px;
+    background-color: #fafafa; }
   html[dir=rtl] .demo-screen .tabs > input {
     display: none; }
   html[dir=rtl] .demo-screen .tabs > label {
@@ -407,16 +414,17 @@ html[dir=rtl] .demo-screen {
     text-align: center;
     color: #bbb;
     border-top: 2px solid transparent;
-    background-color: #f2f2f2; }
+    background-color: transparent; }
   html[dir=rtl] .demo-screen .tabs > label:hover {
     color: #888;
     cursor: pointer; }
   html[dir=rtl] .demo-screen .tabs > input:checked + label {
     color: #555;
     height: 82px;
-    margin-bottom: -3px;
+    margin-bottom: -1px;
     border-top: 2px solid orange;
     border-bottom: none;
+    background-color: #fafafa;
     box-shadow: rgba(0, 0, 0, 0.12) -1px -2px 2px, rgba(0, 0, 0, 0.12) 1px -2px 2px; }
   html[dir=rtl] .demo-screen .tabs #tab-1:checked ~ #content-1 {
     display: block; }
