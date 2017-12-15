@@ -19,7 +19,8 @@
     "no-return-assign": 0,
     "padded-blocks": 0,
     "arrow-parens": 0,
-    "prefer-destructuring": 0
+    "prefer-destructuring": 0,
+    "import/no-mutable-exports": 0
   },
   "env": {
     "browser": true,

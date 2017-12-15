@@ -1,44 +1,12 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import GoMarkGithub from 'react-icons/lib/go/mark-github';
 import GoThreeBars from 'react-icons/lib/go/three-bars';
 import { screens, screenLinkNames } from './screens';
-import localeAware from '../src/lib/HOC/localeAware';
-
-let IFrameScreen = class IFrameScreen extends React.Component {
-  constructor(props) {
-    super(props);
-    this.iframeNode = null;
-  }
-
-  componentWillReceiveProps(nextProps) {
-    const { locale: { dir } } = nextProps;
-    this.iframeNode.contentWindow.postMessage(`changeDir ${dir}`, '*');
-  }
-
-  render() {
-    const isProd = !window.location.pathname.includes('.dev.');
-    const windowLocationHash = window.location.hash.replace('#', '');
-    return (
-      <iframe
-        ref={(node) => this.iframeNode = node}
-        src={`srcDemo/screens/${windowLocationHash}?production=${isProd ? '1' : '0'}`} />
-    );
-  }
-};
-IFrameScreen.propTypes = {
-  locale: PropTypes.shape({
-    dir: PropTypes.string,
-    lang: PropTypes.string
-  })
-};
-IFrameScreen = localeAware(IFrameScreen);
-
-function highlightBlock() {
-  [...document.querySelectorAll('pre code')].forEach((block) => {
-    window.hljs && window.hljs.highlightBlock(block);
-  });
-}
+import IFrameScreen from './internals/components/IFrameScreen';
+import {
+  highlightBlock,
+  toggleAppDir
+} from './internals/utils';
 
 class App extends React.Component {
   componentDidMount() {
@@ -54,14 +22,6 @@ class App extends React.Component {
     highlightBlock();
   }
 
-  toggleAppDir(evt) {
-    evt.preventDefault();
-    const documentElement = window.document.documentElement;
-    const currentDir = documentElement.getAttribute('dir');
-    const nextDir = currentDir === 'ltr' ? 'rtl' : 'ltr';
-    documentElement.setAttribute('dir', nextDir);
-  }
-
   render() {
     if (process.env.NODE_ENV !== 'production') {
       /* eslint no-console: 0 */
@@ -71,24 +31,19 @@ class App extends React.Component {
     const screensKeys = Object.keys(screens);
     const windowLocationHash = (window.location.hash || `#${screensKeys[0]}`).replace('#', '');
 
-    const links = <ul>
-      {
-        screensKeys.map((screen, idx) => {
-          const isActive = screen === windowLocationHash ? 'active' : undefined;
-          return (
-            <li key={idx} x-active={isActive}>
-              <a key={idx} href={`#${screen}`}>{screenLinkNames[screen] || screen}</a>
-            </li>
-          );
-        })
-      }
+    const links = <ul>{
+      screensKeys.map((screen, idx) => {
+        const isActive = screen === windowLocationHash ? 'active' : undefined;
+        return (
+          <li key={idx} x-active={isActive}>
+            <a key={idx} href={`#${screen}`}>{screenLinkNames[screen] || screen}</a>
+          </li>
+        );
+      })
+    }
     </ul>;
 
-    const Screen = windowLocationHash.endsWith('.html') ? IFrameScreen : screens[windowLocationHash];
-
-    if (!Screen) {
-      return null;
-    }
+    const Screen = windowLocationHash.endsWith('.html') ? IFrameScreen : (screens[windowLocationHash] || 'div');
 
     return (
       <div>
@@ -104,7 +59,7 @@ class App extends React.Component {
           <input id="links-toggle" type="checkbox" />
           <div className="demo-links" onClick={() => document.querySelector('#links-toggle').checked = false}>
             <div className="locale-dir-switch">
-              <a href="#" onClick={this.toggleAppDir}>Toggle Locale Dir</a>
+              <a href="#" onClick={toggleAppDir}>Toggle Locale Dir</a>
             </div>
             {links}
             {links}
@@ -119,7 +74,6 @@ class App extends React.Component {
           </div>
         </div>
       </div>
-
     );
   }
 }

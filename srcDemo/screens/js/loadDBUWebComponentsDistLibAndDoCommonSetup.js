@@ -28,3 +28,15 @@ window.onmessage = function (msg) {
     window.document.documentElement.setAttribute('dir', dir);
   }
 };
+
+// for highlight.js
+document.querySelectorAll('pre code').forEach((block) => {
+  block.innerHTML =
+    block.innerHTML
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  window.hljs && window.hljs.highlightBlock(block);
+});
