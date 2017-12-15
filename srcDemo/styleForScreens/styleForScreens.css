@@ -12,8 +12,10 @@ html, body {
   box-sizing: border-box; }
 
 html[dir=ltr] a {
-  color: black;
+  color: #4078c0;
   text-decoration: none; }
+  html[dir=ltr] a:hover {
+    text-decoration: underline; }
 
 html[dir=ltr] ul, html[dir=ltr] li {
   margin: 0px;
@@ -148,6 +150,20 @@ html[dir=ltr] .demo-screen {
   padding: 20px 10px 20px 10px;
   background-color: #fafafa;
   box-shadow: inset 0px 3px 11px 0px rgba(0, 0, 0, 0.75); }
+  html[dir=ltr] .demo-screen h2.title {
+    border-bottom: 1px solid #3e454b;
+    font-weight: 700;
+    font-size: 30px;
+    color: #3e454b;
+    height: 60px;
+    line-height: 60px;
+    text-align: left; }
+  html[dir=ltr] .demo-screen h3.section {
+    font-weight: 500;
+    font-size: 25px;
+    color: #3e454b;
+    text-decoration: underline;
+    text-align: left; }
   html[dir=ltr] .demo-screen .tabs > section {
     display: none;
     padding: 20px 10px;
@@ -261,8 +277,10 @@ html[dir=ltr] .demo-screen {
     display: block; }
 
 html[dir=rtl] a {
-  color: black;
+  color: #4078c0;
   text-decoration: none; }
+  html[dir=rtl] a:hover {
+    text-decoration: underline; }
 
 html[dir=rtl] ul, html[dir=rtl] li {
   margin: 0px;
@@ -397,6 +415,20 @@ html[dir=rtl] .demo-screen {
   padding: 20px 10px 20px 10px;
   background-color: #fafafa;
   box-shadow: inset 0px 3px 11px 0px rgba(0, 0, 0, 0.75); }
+  html[dir=rtl] .demo-screen h2.title {
+    border-bottom: 1px solid #3e454b;
+    font-weight: 700;
+    font-size: 30px;
+    color: #3e454b;
+    height: 60px;
+    line-height: 60px;
+    text-align: right; }
+  html[dir=rtl] .demo-screen h3.section {
+    font-weight: 500;
+    font-size: 25px;
+    color: #3e454b;
+    text-decoration: underline;
+    text-align: right; }
   html[dir=rtl] .demo-screen .tabs > section {
     display: none;
     padding: 20px 10px;

@@ -6,6 +6,25 @@
   background-color: $demo-screen-background-color;
   box-shadow: inset 0px 3px 11px 0px rgba(0,0,0,0.75);
 
+  h2.title {
+    border-bottom: 1px solid $head-background;
+    font-weight: 700;
+    font-size: 30px;
+    color: $head-background;
+    height: 60px;
+    line-height: 60px;
+    text-align: $start;
+  }
+
+  h3.section {
+    font-weight: 500;
+    font-size: 25px;
+    color: $head-background;
+    text-decoration: underline;
+    text-align: $start;
+  }
+
+  // https://codepen.io/oknoblich/pen/tfjFl (CSS Tabs example)
   // Tabs Start
   .tabs {
     > section {

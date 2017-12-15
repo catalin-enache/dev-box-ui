@@ -5,8 +5,8 @@ normal import: import someStuff from dev-box-ui
 
 
 finish demo page style maybe including foundation
-how do we show code snippets in react app and in iFrame using ace
-
+allow left links to have groups
+make a properties table
 
 unittest web-components in iFrame
 create event helpers for unittests
