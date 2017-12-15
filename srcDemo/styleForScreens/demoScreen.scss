@@ -7,7 +7,7 @@
   box-shadow: inset 0px 3px 11px 0px rgba(0,0,0,0.75);
 
   h2.title {
-    border-bottom: 1px solid $head-background;
+    border-bottom: 1px solid #ccc;
     font-weight: 700;
     font-size: 30px;
     color: $head-background;
@@ -20,8 +20,10 @@
     font-weight: 500;
     font-size: 25px;
     color: $head-background;
-    text-decoration: underline;
     text-align: $start;
+    display: inline-block;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 4px;
   }
 
   // https://codepen.io/oknoblich/pen/tfjFl (CSS Tabs example)
