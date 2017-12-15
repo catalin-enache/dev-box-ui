@@ -14,7 +14,7 @@ window.generateComponentPropertiesTable = function (data, selector = '.propertie
     return `<tr>
               <td class="prop-name">${name}</td>
               <td class="prop-type">${data[name].type}</td>
-              <td class="prop-default">${data[name].default}</td>
+              <td class="prop-default"><pre>${data[name].default}</pre></td>
               <td class="prop-description">${data[name].description}</td>
             </tr>`;
   }).join('')

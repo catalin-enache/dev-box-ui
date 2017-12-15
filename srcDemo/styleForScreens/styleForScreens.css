@@ -152,12 +152,12 @@ html[dir=ltr] #demo {
           border: none; }
 
 html[dir=ltr] .demo-screen {
-  padding: 20px 50px 20px 50px;
+  padding: 20px 60px 40px 60px;
   background-color: #fafafa;
   box-shadow: inset 0px 3px 11px 0px rgba(0, 0, 0, 0.75); }
   @media (max-width: 992px) {
     html[dir=ltr] .demo-screen {
-      padding: 20px 10px 20px 10px; } }
+      padding: 20px 20px 40px 20px; } }
   html[dir=ltr] .demo-screen h2.title {
     border-bottom: 1px solid #ccc;
     font-weight: 700;
@@ -186,9 +186,9 @@ html[dir=ltr] .demo-screen {
     display: inline-block;
     margin-right: 2px;
     margin-bottom: 5px;
-    padding: 0px 25px;
-    height: 70px;
-    line-height: 70px;
+    padding: 5px 15px 0px 15px;
+    height: 30px;
+    line-height: 30px;
     font-weight: 600;
     text-align: center;
     color: #bbb;
@@ -199,7 +199,7 @@ html[dir=ltr] .demo-screen {
     cursor: pointer; }
   html[dir=ltr] .demo-screen .tabs > input:checked + label {
     color: #555;
-    height: 82px;
+    height: 42px;
     margin-bottom: -1px;
     border-top: 2px solid orange;
     border-bottom: none;
@@ -288,7 +288,25 @@ html[dir=ltr] .demo-screen {
   html[dir=ltr] .demo-screen div.properties {
     overflow-x: auto; }
     html[dir=ltr] .demo-screen div.properties table {
-      width: 800px; }
+      width: 100%;
+      min-width: 800px;
+      border-spacing: 0px; }
+      html[dir=ltr] .demo-screen div.properties table th, html[dir=ltr] .demo-screen div.properties table td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #ccc; }
+      html[dir=ltr] .demo-screen div.properties table th {
+        color: #888888;
+        font-weight: 500;
+        font-size: 16px; }
+      html[dir=ltr] .demo-screen div.properties table td {
+        color: #6a6a6a;
+        font-weight: 400;
+        font-size: 15px; }
+      html[dir=ltr] .demo-screen div.properties table td.prop-name {
+        color: #266d90; }
+      html[dir=ltr] .demo-screen div.properties table td.prop-type {
+        color: #c02e5f; }
 
 html[dir=rtl] a {
   color: #4078c0;
@@ -431,12 +449,12 @@ html[dir=rtl] #demo {
           border: none; }
 
 html[dir=rtl] .demo-screen {
-  padding: 20px 50px 20px 50px;
+  padding: 20px 60px 40px 60px;
   background-color: #fafafa;
   box-shadow: inset 0px 3px 11px 0px rgba(0, 0, 0, 0.75); }
   @media (max-width: 992px) {
     html[dir=rtl] .demo-screen {
-      padding: 20px 10px 20px 10px; } }
+      padding: 20px 20px 40px 20px; } }
   html[dir=rtl] .demo-screen h2.title {
     border-bottom: 1px solid #ccc;
     font-weight: 700;
@@ -465,9 +483,9 @@ html[dir=rtl] .demo-screen {
     display: inline-block;
     margin-left: 2px;
     margin-bottom: 5px;
-    padding: 0px 25px;
-    height: 70px;
-    line-height: 70px;
+    padding: 5px 15px 0px 15px;
+    height: 30px;
+    line-height: 30px;
     font-weight: 600;
     text-align: center;
     color: #bbb;
@@ -478,7 +496,7 @@ html[dir=rtl] .demo-screen {
     cursor: pointer; }
   html[dir=rtl] .demo-screen .tabs > input:checked + label {
     color: #555;
-    height: 82px;
+    height: 42px;
     margin-bottom: -1px;
     border-top: 2px solid orange;
     border-bottom: none;
@@ -567,4 +585,22 @@ html[dir=rtl] .demo-screen {
   html[dir=rtl] .demo-screen div.properties {
     overflow-x: auto; }
     html[dir=rtl] .demo-screen div.properties table {
-      width: 800px; }
+      width: 100%;
+      min-width: 800px;
+      border-spacing: 0px; }
+      html[dir=rtl] .demo-screen div.properties table th, html[dir=rtl] .demo-screen div.properties table td {
+        padding: 10px;
+        text-align: right;
+        border-bottom: 1px solid #ccc; }
+      html[dir=rtl] .demo-screen div.properties table th {
+        color: #888888;
+        font-weight: 500;
+        font-size: 16px; }
+      html[dir=rtl] .demo-screen div.properties table td {
+        color: #6a6a6a;
+        font-weight: 400;
+        font-size: 15px; }
+      html[dir=rtl] .demo-screen div.properties table td.prop-name {
+        color: #266d90; }
+      html[dir=rtl] .demo-screen div.properties table td.prop-type {
+        color: #c02e5f; }

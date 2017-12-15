@@ -2,12 +2,12 @@
 @import "vars";
 
 .demo-screen {
-  padding: 20px 50px 20px 50px;
+  padding: 20px 60px 40px 60px;
   background-color: $demo-screen-background-color;
   box-shadow: inset 0px 3px 11px 0px rgba(0,0,0,0.75);
 
   @media (max-width: $mobile-break-point) {
-    padding: 20px 10px 20px 10px;
+    padding: 20px 20px 40px 20px;
   }
 
   h2.title {
@@ -49,9 +49,9 @@
       display: inline-block;
       margin-#{$end}: 2px;
       margin-bottom: 5px;
-      padding: 0px 25px;
-      height: 70px;
-      line-height: 70px;
+      padding: 5px 15px 0px 15px;
+      height: 30px;
+      line-height: 30px;
       font-weight: 600;
       text-align: center;
       color: #bbb;
@@ -66,7 +66,7 @@
 
     > input:checked + label {
       color: #555;
-      height: 82px;
+      height: 42px;
       margin-bottom: -1px;
       border-top: 2px solid orange;
       border-bottom: none;
@@ -86,7 +86,39 @@
     overflow-x: auto;
 
     table {
-      width: 800px;
+      width: 100%;
+      min-width: 800px;
+      border-spacing: 0px;
+
+
+      th, td {
+        padding: 10px;
+        text-align: $start;
+        border-bottom: 1px solid #ccc;
+      }
+
+      th {
+        color: #888888;
+        font-weight: 500;
+        font-size: 16px;
+      }
+
+      td {
+        color: #6a6a6a;
+        font-weight: 400;
+        font-size: 15px;
+      }
+
+      td.prop-name {
+        color: #266d90;
+      }
+
+      td.prop-type {
+        color: #c02e5f;
+      }
+
+
+
     }
 
   }
