@@ -82,6 +82,12 @@ class DraggableScreen extends React.Component {
     return (
       <div className="demo-screen"> { /* standard template requirement */ }
 
+        <h2 className="title">Draggable React</h2>
+
+        <h3 className="section">Stuff One</h3>
+
+        <p>before tabs</p>
+
         <div className="tabs">
 
           <input id="tab-1" type="radio" name="group-1" defaultChecked />
