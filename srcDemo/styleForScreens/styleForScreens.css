@@ -107,9 +107,14 @@ html[dir=ltr] #demo {
           height: 30px;
           line-height: 30px;
           background-color: #2d3237;
-          margin-bottom: 1px; }
+          margin-bottom: -10px; }
           html[dir=ltr] #demo > div .demo-wrapper .demo-links .locale-dir-switch a {
             color: #f0f0f0; }
+        html[dir=ltr] #demo > div .demo-wrapper .demo-links hr {
+          margin: 10px 0px 10px 0px;
+          padding: 0px;
+          border: none;
+          border-top: 1px solid black; }
         html[dir=ltr] #demo > div .demo-wrapper .demo-links ul li {
           padding-left: 10px;
           padding-top: 5px;
@@ -372,9 +377,14 @@ html[dir=rtl] #demo {
           height: 30px;
           line-height: 30px;
           background-color: #2d3237;
-          margin-bottom: 1px; }
+          margin-bottom: -10px; }
           html[dir=rtl] #demo > div .demo-wrapper .demo-links .locale-dir-switch a {
             color: #f0f0f0; }
+        html[dir=rtl] #demo > div .demo-wrapper .demo-links hr {
+          margin: 10px 0px 10px 0px;
+          padding: 0px;
+          border: none;
+          border-top: 1px solid black; }
         html[dir=rtl] #demo > div .demo-wrapper .demo-links ul li {
           padding-right: 10px;
           padding-top: 5px;

@@ -61,13 +61,9 @@ class App extends React.Component {
             <div className="locale-dir-switch">
               <a href="#" onClick={toggleAppDir}>Toggle Locale Dir</a>
             </div>
+            <hr />
             {links}
-            {links}
-            {links}
-            {links}
-            {links}
-            {links}
-            {links}
+            <hr />
           </div>
           <div className="demo-area">
             <Screen/>
