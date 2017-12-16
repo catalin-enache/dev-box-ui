@@ -4,6 +4,7 @@ distribution import: put distribution in head script then import someStuff from 
 normal import: import someStuff from dev-box-ui
 
 make a properties table
+remove duplicated code between iframe and app
 
 unittest web-components in iFrame
 create event helpers for unittests

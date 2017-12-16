@@ -25,3 +25,4 @@ window.generateComponentPropertiesTable = function (data, selector = '.propertie
 
   propertiesContainer.innerHTML = table;
 };
+

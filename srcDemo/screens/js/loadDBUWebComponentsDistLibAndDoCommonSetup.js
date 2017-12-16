@@ -1,24 +1,24 @@
+
 const isProd = window.location.search.includes('production=1');
-const script = document.createElement('script');
 
-script.onload = function () {
-  window.onDBUWebComponentsDistLibLoaded();
-};
-
-script.src = `../../build/dist/js/dev-box-ui-webcomponents${isProd ? '.min' : ''}.js`;
-document.querySelector('head').appendChild(script);
+window.loadAsset('script', `../../build/dist/js/dev-box-ui-webcomponents${isProd ? '.min' : ''}.js`, () => {
+  // must be defined by user
+  window.onDBUWebComponentsDistLibLoaded && window.onDBUWebComponentsDistLibLoaded();
+});
 
 /* eslint wrap-iife: 0 */
 (async function (callback) {
   const undefinedElements =
     [...document.querySelectorAll(':not(:defined)')]
       .map((element) => (element.localName));
-  console.log(':not(:defined) elements so far', undefinedElements);
+  console.log(':not(:defined) web-components so far', undefinedElements);
   const promises = [...undefinedElements].map(elementLocalName => customElements.whenDefined(elementLocalName));
   await Promise.all(promises);
   callback();
 })(() => {
-  window.onDBUWebComponentsDefined();
+  // must be defined by user
+  window.onDBUWebComponentsDefined && window.onDBUWebComponentsDefined();
+  console.log('all web-components defined');
 });
 
 window.onmessage = function (msg) {
@@ -29,16 +29,3 @@ window.onmessage = function (msg) {
   }
 };
 
-// for highlight.js
-document.querySelectorAll('pre code.html').forEach((block) => {
-  block.innerHTML =
-    block.innerHTML
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
-});
-document.querySelectorAll('pre code').forEach((block) => {
-  window.hljs && window.hljs.highlightBlock(block);
-});

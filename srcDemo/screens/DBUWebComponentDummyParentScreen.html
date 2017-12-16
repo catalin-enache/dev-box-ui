@@ -1,17 +1,6 @@
 <!doctype html>
 <html dir="ltr" lang="en">
 <head>
-  <!-- standard template start -->
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <link href='https://fonts.googleapis.com/css?family=Roboto:400,100,‌​100italic,300,300ita‌​lic,400italic,500,50‌​0italic,700,700itali‌​c,900italic,900' rel='stylesheet' type='text/css' />
-  <link rel="stylesheet" href="../styleForScreens/styleForScreens.css" />
-  <script src="js/iFrameHelpers.js"></script>
-  <!-- highlight.js -->
-  <link rel="stylesheet" href="../../srcDemo/vendors/highlight/styles/atelier-heath-light.css">
-  <script src="../../srcDemo/vendors/highlight/highlight.pack.js"></script>
-  <!-- standard template end -->
-
   <style>
     dbu-web-component-dummy-parent[dir=ltr] {
       --dummy-b-bg-color: gray;
@@ -36,10 +25,45 @@
     }
   </style>
 
-</head>
-<body>
+  <!-- standard template start -->
+  <script>
+    window.onDBUWebComponentsDistLibLoaded = function defineDBUWebComponents() {
+      const {
+        quickSetupAndLoad
+      } = require('dev-box-ui-webcomponents');
+      const {
+        'dbu-web-component-dummy-parent': dbuWebComponentDummyParentClass,
+      } = quickSetupAndLoad(window)([
+        {
+          registrationName: 'dbu-web-component-dummy',
+          componentStyle: `
+           b {
+             color: var(--dummy-b-color, inherit);
+             border-radius: var(--dummy-b-border-radius, 0px);
+             background-color: var(--dummy-b-bg-color, transparent);
+           }
+          `
+        },
+        {
+          registrationName: 'dbu-web-component-dummy-parent'
+        }
+      ]);
+    };
 
-<div class="demo-screen"><!-- standard template requirement -->
+    window.onDBUWebComponentsDefined = function() {
+    };
+  </script>
+  <!-- standard template end -->
+</head>
+<body style="margin: 0px; padding: 0px;">
+
+<!-- standard template start -->
+<div class="demo-screen-loading"
+     style="padding: 50px; font-family: arial, sans-serif; font-size: 16px;">
+  loading...
+</div>
+<div class="demo-screen" style="display: none;">
+<!-- standard template end -->
   <dbu-web-component-dummy-parent>hello 1</dbu-web-component-dummy-parent>
   <dbu-web-component-dummy-parent class="custom-1">hello 2</dbu-web-component-dummy-parent>
   <dbu-web-component-dummy>hello 3</dbu-web-component-dummy>
@@ -75,55 +99,30 @@
   <p>p</p>
   <p>end</p>
 
+  <!-- standard template start -->
   <div class="properties"></div>
-  <script>window.generateComponentPropertiesTable({
-    propertyOne: {
-      type: 'string',
-      default: 'value 1',
-      description: 'description one'
-    },
-    propertyTwo: {
-      type: 'number',
-      default: '5',
-      description: 'description two'
-    }
-  })</script>
+  <script>
+    window.addEventListener('load', () => {
+      window.generateComponentPropertiesTable({
+        propertyOne: {
+          type: 'string',
+          default: 'value 1',
+          description: 'description one'
+        },
+        propertyTwo: {
+          type: 'number',
+          default: '5',
+          description: 'description two'
+        }
+      })
+    });
+  </script>
+  <!-- standard template end -->
+
 </div>
 
 <!-- standard template start -->
-<script>
-  window.onDBUWebComponentsDistLibLoaded = function defineDBUWebComponents() {
-    const {
-      quickSetupAndLoad
-    } = require('dev-box-ui-webcomponents');
-    const {
-      'dbu-web-component-dummy-parent': dbuWebComponentDummyParentClass,
-    } = quickSetupAndLoad(window)([
-      {
-        registrationName: 'dbu-web-component-dummy',
-        componentStyle: `
-         b {
-           color: var(--dummy-b-color, inherit);
-           border-radius: var(--dummy-b-border-radius, 0px);
-           background-color: var(--dummy-b-bg-color, transparent);
-         }
-        `
-      },
-      {
-        registrationName: 'dbu-web-component-dummy-parent'
-      }
-    ]);
-  };
-
-  window.onDBUWebComponentsDefined = function() {
-    console.log('dbu web-components defined');
-  };
-</script>
+<script src="js/commonIFrameHead.js"></script>
 <!-- standard template end -->
-
-<!-- standard template start -->
-<script src="js/loadDBUWebComponentsDistLibAndDoCommonSetup.js"></script>
-<!-- standard template end -->
-
 </body>
 </html>
