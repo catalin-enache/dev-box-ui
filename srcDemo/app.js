@@ -6,7 +6,7 @@ import IFrameScreen from './internals/components/IFrameScreen';
 import {
   highlightBlock,
   toggleAppDir
-} from './internals/utils';
+} from './internals/appUtils';
 
 class App extends React.Component {
   componentDidMount() {
