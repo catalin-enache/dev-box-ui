@@ -15,5 +15,6 @@ in unittests we should test among other things:
   - css vars are inherited and style can be overridden
   - we have some default css vars injected when using the lib ?
   - web component are not registered multiple times even if using a mix of import styles
+  - web components register their dependencies before they register self
   - web component can use external renderers like the col renderer in a table or option renderer in select
 
