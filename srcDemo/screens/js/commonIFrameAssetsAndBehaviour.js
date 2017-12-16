@@ -24,7 +24,7 @@ document.querySelector('head').innerHTML += `
 
 loadAsset('link', 'https://fonts.googleapis.com/css?family=Roboto:400,100,‌​100italic,300,300ita‌​lic,400italic,500,50‌​0italic,700,700itali‌​c,900italic,900');
 loadAsset('link', '../styleForScreens/styleForScreens.css');
-loadAsset('script', 'js/iFrameHelpers.js');
+loadAsset('script', 'js/onWindowDefinedHelpers.js');
 loadAsset('link', '../../srcDemo/vendors/highlight/styles/atelier-heath-light.css');
 loadAsset('script', '../../srcDemo/vendors/highlight/highlight.pack.js');
 

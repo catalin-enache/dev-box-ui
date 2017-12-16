@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 // defines generateComponentPropertiesTable on window
-import '../../screens/js/iFrameHelpers';
+import '../../screens/js/onWindowDefinedHelpers';
 
 class PropertiesTable extends React.Component {
   componentDidMount() {
