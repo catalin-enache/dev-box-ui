@@ -146,15 +146,15 @@ class Car extends SuperClass {
         </div>
         <PropertiesTable properties={{
           propertyOne: {
-            type: 'string',
-            default: 'value 1',
-            description: 'description one'
-          },
-          propertyTwo: {
-            type: 'number',
-            default: '5',
-            description: 'description two'
-          }
+      type: 'string',
+      default: 'value 1',
+      description: 'description one'
+    },
+    propertyTwo: {
+      type: 'number',
+      default: '5',
+      description: 'description two'
+    }
         }} />
       </div>
     );

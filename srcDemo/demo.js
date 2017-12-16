@@ -6,6 +6,8 @@ import {
   localeAware
 } from 'dev-box-ui';
 import App from './app';
+// defines some helpers on window (reusing code needed in iFrames)
+import './screens/js/onWindowDefinedHelpers';
 
 // import getDBUWebComponentDummy from '../build/src/lib/webcomponents/DBUWebComponentDummy/DBUWebComponentDummy';
 // import getDBUWebComponentDummyParent from '../build/src/lib/webcomponents/DBUWebComponentDummyParent/DBUWebComponentDummyParent';

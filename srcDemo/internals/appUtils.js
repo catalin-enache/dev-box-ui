@@ -1,9 +1,4 @@
-function highlightBlock() {
-  [...document.querySelectorAll('pre code')].forEach((block) => {
-    window.hljs && window.hljs.highlightBlock(block);
-  });
-}
-
+/*  eslint import/prefer-default-export: 0 */
 function toggleAppDir(evt) {
   evt.preventDefault();
   const documentElement = window.document.documentElement;
@@ -13,6 +8,5 @@ function toggleAppDir(evt) {
 }
 
 export {
-  highlightBlock,
   toggleAppDir
 };

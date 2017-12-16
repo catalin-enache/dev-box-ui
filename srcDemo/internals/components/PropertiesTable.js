@@ -1,10 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-// defines generateComponentPropertiesTable on window
-import '../../screens/js/onWindowDefinedHelpers';
 
 class PropertiesTable extends React.Component {
   componentDidMount() {
+    // re-using the helper defined for iFrame
     window.generateComponentPropertiesTable(this.props.properties);
   }
 

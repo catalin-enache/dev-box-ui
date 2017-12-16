@@ -4,14 +4,14 @@ import GoThreeBars from 'react-icons/lib/go/three-bars';
 import { screens, screenLinkNames } from './screens';
 import IFrameScreen from './internals/components/IFrameScreen';
 import {
-  highlightBlock,
   toggleAppDir
 } from './internals/appUtils';
 
 class App extends React.Component {
   componentDidMount() {
     window.addEventListener('hashchange', this.onHashChange.bind(this));
-    highlightBlock();
+    // re-using the helper defined for iFrame
+    window.highlightBlocks();
   }
 
   onHashChange() {
@@ -19,7 +19,7 @@ class App extends React.Component {
   }
 
   componentDidUpdate() {
-    highlightBlock();
+    window.highlightBlocks();
   }
 
   render() {

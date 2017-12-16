@@ -26,3 +26,21 @@ window.generateComponentPropertiesTable = function (data, selector = '.propertie
   propertiesContainer.innerHTML = table;
 };
 
+window.highlightBlocks = function () {
+  document.querySelectorAll('pre code.html').forEach((block) => {
+    // if not already escaped (in which case contains '&lt;') (React string scenario)
+    if (!block.innerHTML.includes('&lt;')) {
+      block.innerHTML =
+      block.innerHTML
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+  });
+  document.querySelectorAll('pre code').forEach((block) => {
+    window.hljs && window.hljs.highlightBlock(block);
+  });
+};
+

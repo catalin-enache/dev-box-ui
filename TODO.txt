@@ -5,6 +5,7 @@ normal import: import someStuff from dev-box-ui
 
 make a properties table
 remove duplicated code between iframe and app
+maybe we should generate code example tabs dynamically
 
 unittest web-components in iFrame
 create event helpers for unittests

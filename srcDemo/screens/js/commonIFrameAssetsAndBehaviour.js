@@ -29,19 +29,7 @@ loadAsset('link', '../../srcDemo/vendors/highlight/styles/atelier-heath-light.cs
 loadAsset('script', '../../srcDemo/vendors/highlight/highlight.pack.js');
 
 window.addEventListener('load', () => {
-  // for highlight.js
-  document.querySelectorAll('pre code.html').forEach((block) => {
-    block.innerHTML =
-      block.innerHTML
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-  });
-  document.querySelectorAll('pre code').forEach((block) => {
-    window.hljs && window.hljs.highlightBlock(block);
-  });
+  window.highlightBlocks();
 
   loadAsset('script', 'js/loadDBUWebComponentsDistLibAndDoCommonSetup.js');
 
