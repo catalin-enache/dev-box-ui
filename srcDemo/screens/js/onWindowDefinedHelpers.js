@@ -1,3 +1,4 @@
+
 window.generateComponentPropertiesTable = function (data, selector = '.properties') {
   const propertiesContainer = document.querySelector(selector);
   const names = Object.keys(data);
