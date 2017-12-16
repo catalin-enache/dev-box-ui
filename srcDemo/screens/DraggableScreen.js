@@ -2,6 +2,7 @@ import React from 'react';
 import {
   Draggable, DisableSelection
 } from 'dev-box-ui';
+import PropertiesTable from '../internals/components/PropertiesTable';
 
 class ToRender extends React.Component {
   render() {
@@ -143,6 +144,18 @@ class Car extends SuperClass {
             `}</code></pre>
           </section>
         </div>
+        <PropertiesTable properties={{
+          propertyOne: {
+            type: 'string',
+            default: 'value 1',
+            description: 'description one'
+          },
+          propertyTwo: {
+            type: 'number',
+            default: '5',
+            description: 'description two'
+          }
+        }} />
       </div>
     );
   }

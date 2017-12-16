@@ -2,6 +2,7 @@ window.generateComponentPropertiesTable = function (data, selector = '.propertie
   const propertiesContainer = document.querySelector(selector);
   const names = Object.keys(data);
   const table = `
+<h3 class="section">Properties</h3>
 <table>
 <thead>
   <th class="prop-name">Name</th>
