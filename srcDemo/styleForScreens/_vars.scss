@@ -1,18 +1,24 @@
 
+$text-default-color: #000;
+
 $link-color: #4078c0;
-$demo-screen-background-color: #fafafa;
+$demo-screen-background-color: #f3f3f3;
+
+$mobile-break-point: 992px;
 
 $page-header-height: 50px;
 $page-header-border-width: 3px;
-$header-content-height: $page-header-height - 2 * $page-header-border-width;
+$page-header-background: #00BCD4;
+$page-header-color: #fff;
+$page-header-content-height: $page-header-height - 2 * $page-header-border-width;
 
-$mobile-break-point: 992px;
+
 $demo-links-width: 300px;
+$demo-links-background-color: #ffffff;
+$demo-links-section-background-color: $demo-screen-background-color;
 $links-toggle-label-width: 100px;
 $github-link-width: $links-toggle-label-width;
-$head-color: #f0f0f0;
-$head-background: #3e454b;
-$locale-dir-switch-background: #2d3237;
+$locale-dir-switch-background: $demo-links-background-color;
 $demo-area-border-color: #c1c1c1;
 
-$tabs-tab-background-color: $demo-screen-background-color;
+$tabs-tab-background-color: $demo-links-background-color;

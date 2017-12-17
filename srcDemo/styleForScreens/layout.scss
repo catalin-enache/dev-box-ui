@@ -6,7 +6,7 @@
   height: 100%;
 
   .head-link {
-    color: $head-color;
+    color: $page-header-color;
   }
 
   > div {
@@ -17,32 +17,33 @@
       z-index: 1;
       height: $page-header-height;
       box-sizing: border-box;
-      background-color: $head-background;
-      border-top: 3px solid $locale-dir-switch-background;
-      border-bottom: 3px solid $locale-dir-switch-background;
-      box-shadow: 0 8px 6px -6px black;
+      background-color: $page-header-background;
+      border-top: 3px solid $page-header-background;
+      border-bottom: 3px solid $page-header-background;
+      box-shadow: 0 8px 6px -6px rgba(0, 0, 0, .5);
 
       @media (max-width: $mobile-break-point) {
         padding-#{$start}: $links-toggle-label-width;
+        box-shadow: none;
       }
 
       h2 {
         display: inline-block;
         width: calc(100% - #{$github-link-width});
-        height: $header-content-height;
-        line-height: $header-content-height;
+        height: $page-header-content-height;
+        line-height: $page-header-content-height;
         text-align: center;
         vertical-align: top;
         margin: 0;
         padding: 0;
-        color: $head-color;
+        color: $page-header-color;
       }
 
       a {
         display: inline-block;
         width: $github-link-width;
-        height: $header-content-height;
-        line-height: $header-content-height;
+        height: $page-header-content-height;
+        line-height: $page-header-content-height;
         text-align: center;
         vertical-align: top;
         margin: 0;
@@ -62,8 +63,8 @@
           display: block;
           cursor: pointer;
           width: $links-toggle-label-width;
-          height: $header-content-height;
-          line-height: $header-content-height;
+          height: $page-header-content-height;
+          line-height: $page-header-content-height;
           text-align: center;
           top: -$page-header-height;
         }
@@ -88,50 +89,69 @@
         width: $demo-links-width;
         height: 100%;
         padding-bottom: 20px;
-        background-color: $head-background;
+        background-color: $demo-links-background-color;
         box-sizing: border-box;
         border-right: 1px solid $demo-area-border-color;
+        box-shadow: 2px 2px 6px -2px rgba(0, 0, 0, .5);
 
         @media (max-width: $mobile-break-point) {
           display: none;
+          border-right: none;
+          box-shadow: none;
         }
 
         .locale-dir-switch {
-          padding-#{$start}: 10px;
-          height: 30px;
-          line-height: 30px;
+          padding-#{$start}: 15px;
+          height: 40px;
+          line-height: 40px;
           background-color: $locale-dir-switch-background;
-          margin-bottom: -10px;
           a {
-            color: $head-color;
+            font-weight: 500;
+            color: $text-default-color;
           }
         }
 
-        hr {
-          margin: 10px 0px 10px 0px;
-          padding: 0px;
-          border: none;
-          border-top: 1px solid black;
+        .links-section-group {
+          padding-top: 25px;
+          padding-bottom: 10px;
+          padding-#{$start}: 15px;
+          font-weight: 700;
+          background-color: $demo-links-section-background-color;
         }
 
         ul {
 
+          background-color: $demo-links-section-background-color;
+
           li {
-            padding-#{$start}: 10px;
-            padding-top: 5px;
-            padding-bottom: 5px;
+            padding-#{$start}: 15px;
+            padding-top: 6px;
+            padding-bottom: 6px;
 
             &:hover {
-              background-color: lighten($locale-dir-switch-background, 4);
+              background-color: $demo-links-background-color;
             }
 
             &[x-active] {
-              background-color: $locale-dir-switch-background;
+              background-color: $demo-links-background-color;
+              a {
+                color: $page-header-background;
+              }
             }
 
             a {
-              color: $head-color;
+              color: $text-default-color;
             }
+          }
+
+          &:after {
+            content: '';
+            background-color: $demo-links-background-color;
+            display: table;
+            margin-top: 10px;
+            width: 100%;
+            height: 30px;
+            clear: both;
           }
         }
 

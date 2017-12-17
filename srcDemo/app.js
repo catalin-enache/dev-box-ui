@@ -48,7 +48,7 @@ class App extends React.Component {
     return (
       <div>
         <div className="page-header">
-          <h2>Dev Box UI</h2><a
+          <h2>DEV BOX UI</h2><a
             className="head-link"
             href="https://github.com/catalin-enache/dev-box-ui"
             rel="noopener noreferrer"
@@ -59,23 +59,22 @@ class App extends React.Component {
           <input id="links-toggle" type="checkbox" />
           <div className="demo-links" onClick={() => document.querySelector('#links-toggle').checked = false}>
             <div className="locale-dir-switch">
-              <a href="#" onClick={toggleAppDir}>Toggle Locale Dir</a>
+              <a href="#" onClick={toggleAppDir}>TOGGLE LOCALE DIR</a>
             </div>
-            <hr />
+            <div className="links-section-group">Components</div>
             {links}
-            <hr />
+            <div className="links-section-group">Components</div>
             {links}
-            <hr />
+            <div className="links-section-group">Components</div>
             {links}
-            <hr />
+            <div className="links-section-group">Components</div>
             {links}
-            <hr />
+            <div className="links-section-group">Components</div>
             {links}
-            <hr />
+            <div className="links-section-group">Components</div>
             {links}
-            <hr />
+            <div className="links-section-group">Components</div>
             {links}
-            <hr />
           </div>
           <div className="demo-area">
             <Screen/>
