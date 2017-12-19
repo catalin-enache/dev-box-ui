@@ -11,6 +11,7 @@ class App extends React.Component {
   componentDidMount() {
     window.addEventListener('hashchange', this.onHashChange.bind(this));
     // re-using the helper defined for iFrame
+    window.makeTabs();
     window.highlightBlocks();
   }
 
@@ -19,6 +20,7 @@ class App extends React.Component {
   }
 
   componentDidUpdate() {
+    window.makeTabs();
     window.highlightBlocks();
   }
 

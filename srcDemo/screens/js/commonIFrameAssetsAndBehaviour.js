@@ -58,6 +58,7 @@ loadAsset('script', `../../build/dist/js/dev-box-ui-webcomponents${isProd ? '.mi
 
 // Stuff to do when everything is settled.
 window.addEventListener('load', () => {
+  window.makeTabs();
   window.highlightBlocks();
   // Hide loader and show page.
   setTimeout(() => {

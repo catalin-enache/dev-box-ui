@@ -71,7 +71,9 @@ class DraggableScreen extends React.Component {
   }
 
   componentDidMount() {
+    this._mounted = true;
     setTimeout(() => {
+      if (!this._mounted) return;
       this.counter = this.counter + 1;
       this.setState({
         draggableContent: this.draggableContent
@@ -79,31 +81,22 @@ class DraggableScreen extends React.Component {
     }, 3000);
   }
 
+  componentWillUnmount() {
+    this._mounted = false;
+  }
+
   render() {
     return (
       <div className="demo-screen"> { /* standard template requirement */ }
 
-        <h2 className="title">Draggable React</h2>
+        <h2 className="title">Draggable React {this.counter}</h2>
 
         <h3 className="section">Stuff One</h3>
 
         <p>before tabs</p>
 
         <div className="tabs">
-
-          <input id="tab-1" type="radio" name="group-1" defaultChecked />
-          <label htmlFor="tab-1">RESULT</label>
-
-          <input id="tab-2" type="radio" name="group-1" />
-          <label htmlFor="tab-2">HTML</label>
-
-          <input id="tab-3" type="radio" name="group-1" />
-          <label htmlFor="tab-3">CSS</label>
-
-          <input id="tab-4" type="radio" name="group-1" />
-          <label htmlFor="tab-4">JS</label>
-
-          <section id="content-1">
+          <section x-name="RESULT" x-checked="1">
             <Draggable style={{ border: '1px solid blue', width: 200, height: 200, overflowX: 'scroll', overflowY: 'scroll' }}>
               {this.state.draggableContent}
             </Draggable>
@@ -112,24 +105,18 @@ class DraggableScreen extends React.Component {
             </DisableSelection>
             {Array.from({ length: 10 }).map((el, i) => <p key={i}>{i} ---------------------------------</p>)}
           </section>
-
-          <section id="content-2">
-            <pre><code className="html">{`
+          <section x-name="HTML" x-highlight="html">{`
 <p>draggable</p>
 <span>react</span>
-            `}</code></pre>
+          `}
           </section>
-
-          <section id="content-3">
-            <pre><code className="css">{`
+          <section x-name="CSS" x-highlight="css">{`
 body {
   color: red;
 }
-            `}</code></pre>
+          `}
           </section>
-
-          <section id="content-4">
-            <pre><code className="javascript">{`
+          <section x-name="JS" x-highlight="javascript">{`
 class Car extends SuperClass {
   constructor() {
     super();
@@ -141,9 +128,35 @@ class Car extends SuperClass {
     });
   }
 }
-            `}</code></pre>
+          `}
           </section>
         </div>
+
+        <p>between tabs</p>
+
+        <div className="tabs">
+          <section x-name="CSS" x-highlight="css">{`
+body {
+  color: red;
+}
+          `}
+          </section>
+          <section x-name="JS" x-highlight="javascript" x-checked="1">{`
+class Car extends SuperClass {
+  constructor() {
+    super();
+  }
+
+  onInit() {
+    this.do(() => {
+      console.log(print);
+    });
+  }
+}
+          `}
+          </section>
+        </div>
+
         <PropertiesTable properties={{
           propertyOne: {
       type: 'string',
