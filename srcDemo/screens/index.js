@@ -4,9 +4,14 @@ import FormInputScreen from './FormInputScreen';
 import FormInputNumberScreen from './FormInputNumberScreen';
 import Draggable from './DraggableScreen';
 import DBUWebComponentDummyScreen from './DBUWebComponentDummyScreen';
+import UsingDevBoxUIScreen from './UsingDevBoxUIScreen';
 
 
 const screens = {
+  // General
+  UsingDevBoxUIScreen,
+
+  // Components
   HelloScreen,
   ListScreen,
   FormInputScreen,
@@ -17,18 +22,29 @@ const screens = {
   'DBUWebComponentDummyParentScreen.html': null
 };
 
-const screenLinkNames = {
-  HelloScreen: 'Hello - React',
-  ListScreen: 'List - React',
-  FormInputScreen: 'Form Input - React',
-  FormInputNumberScreen: 'Form Input Number - React',
-  Draggable: 'Draggable - React',
-  DBUWebComponentDummyScreen: 'Dummy - React',
-  'DBUWebComponentDummyScreen.html': 'Dummy - Web Component',
-  'DBUWebComponentDummyParentScreen.html': 'Dummy Parent - Web Component'
-};
+const screenLinksGen = [
+  {
+    title: 'General',
+    links: [
+      { path: 'UsingDevBoxUIScreen', title: 'Using Dev Box UI' }
+    ]
+  },
+  {
+    title: 'Components',
+    links: [
+      { path: 'HelloScreen', title: 'Hello - React' },
+      { path: 'ListScreen', title: 'List - React' },
+      { path: 'FormInputScreen', title: 'Form Input - React' },
+      { path: 'FormInputNumberScreen', title: 'Form Input Number - React' },
+      { path: 'Draggable', title: 'Draggable - React' },
+      { path: 'DBUWebComponentDummyScreen', title: 'Dummy - React' },
+      { path: 'DBUWebComponentDummyScreen.html', title: 'Dummy - Web Component' },
+      { path: 'DBUWebComponentDummyParentScreen.html', title: 'Dummy Parent - Web Component' },
+    ]
+  }
+];
 
 export {
   screens,
-  screenLinkNames
+  screenLinksGen
 };

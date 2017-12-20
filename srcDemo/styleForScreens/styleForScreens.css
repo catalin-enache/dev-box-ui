@@ -134,14 +134,6 @@ html[dir=ltr] #demo {
                 color: #00BCD4; }
             html[dir=ltr] #demo > div .demo-wrapper .demo-links ul li a {
               color: #000; }
-          html[dir=ltr] #demo > div .demo-wrapper .demo-links ul:after {
-            content: '';
-            background-color: #ffffff;
-            display: table;
-            margin-top: 10px;
-            width: 100%;
-            height: 30px;
-            clear: both; }
       html[dir=ltr] #demo > div .demo-wrapper .demo-area {
         padding-left: 300px;
         position: relative;
@@ -444,14 +436,6 @@ html[dir=rtl] #demo {
                 color: #00BCD4; }
             html[dir=rtl] #demo > div .demo-wrapper .demo-links ul li a {
               color: #000; }
-          html[dir=rtl] #demo > div .demo-wrapper .demo-links ul:after {
-            content: '';
-            background-color: #ffffff;
-            display: table;
-            margin-top: 10px;
-            width: 100%;
-            height: 30px;
-            clear: both; }
       html[dir=rtl] #demo > div .demo-wrapper .demo-area {
         padding-right: 300px;
         position: relative;

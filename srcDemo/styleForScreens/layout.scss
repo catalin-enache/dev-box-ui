@@ -144,15 +144,15 @@
             }
           }
 
-          &:after {
-            content: '';
-            background-color: $demo-links-background-color;
-            display: table;
-            margin-top: 10px;
-            width: 100%;
-            height: 30px;
-            clear: both;
-          }
+          //&:after {
+          //  content: '';
+          //  background-color: $demo-links-background-color;
+          //  display: table;
+          //  margin-top: 10px;
+          //  width: 100%;
+          //  height: 30px;
+          //  clear: both;
+          //}
         }
 
       }

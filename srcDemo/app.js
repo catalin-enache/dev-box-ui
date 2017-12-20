@@ -1,7 +1,7 @@
 import React from 'react';
 import GoMarkGithub from 'react-icons/lib/go/mark-github';
 import GoThreeBars from 'react-icons/lib/go/three-bars';
-import { screens, screenLinkNames } from './screens';
+import { screens, screenLinksGen } from './screens';
 import IFrameScreen from './internals/components/IFrameScreen';
 import {
   toggleAppDir
@@ -33,17 +33,25 @@ class App extends React.Component {
     const screensKeys = Object.keys(screens);
     const windowLocationHash = (window.location.hash || `#${screensKeys[0]}`).replace('#', '');
 
-    const links = <ul>{
-      screensKeys.map((screen, idx) => {
-        const isActive = screen === windowLocationHash ? 'active' : undefined;
-        return (
-          <li key={idx} x-active={isActive}>
-            <a key={idx} href={`#${screen}`}>{screenLinkNames[screen] || screen}</a>
-          </li>
-        );
-      })
-    }
-    </ul>;
+    const links = screenLinksGen.map((section, idx) => {
+      return (
+        <div key={idx}>
+          <div className="links-section-group">{section.title}</div>
+          <ul>
+            {
+              section.links.map((link, idx) => {
+                const isActive = link.path === windowLocationHash ? 'active' : undefined;
+                return (
+                  <li key={idx} x-active={isActive}>
+                    <a href={`#${link.path}`}>{link.title}</a>
+                  </li>
+                );
+              })
+            }
+          </ul>
+        </div>
+      );
+    });
 
     const Screen = windowLocationHash.endsWith('.html') ? IFrameScreen : (screens[windowLocationHash] || 'div');
 
@@ -63,19 +71,6 @@ class App extends React.Component {
             <div className="locale-dir-switch">
               <a href="#" onClick={toggleAppDir}>TOGGLE LOCALE DIR</a>
             </div>
-            <div className="links-section-group">Components</div>
-            {links}
-            <div className="links-section-group">Components</div>
-            {links}
-            <div className="links-section-group">Components</div>
-            {links}
-            <div className="links-section-group">Components</div>
-            {links}
-            <div className="links-section-group">Components</div>
-            {links}
-            <div className="links-section-group">Components</div>
-            {links}
-            <div className="links-section-group">Components</div>
             {links}
           </div>
           <div className="demo-area">
