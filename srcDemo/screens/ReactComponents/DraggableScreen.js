@@ -2,7 +2,7 @@ import React from 'react';
 import {
   Draggable, DisableSelection
 } from 'dev-box-ui';
-import PropertiesTable from '../internals/components/PropertiesTable';
+import PropertiesTable from '../../internals/components/PropertiesTable';
 
 class ToRender extends React.Component {
   render() {
