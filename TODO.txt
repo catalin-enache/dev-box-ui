@@ -4,15 +4,18 @@ distribution import: put distribution in head script then import someStuff from 
 normal import: import someStuff from dev-box-ui
 
 do we need anymore styles for our React components since we use/wrap web-components which have shadow dom ?
-can we define/inject some global/default css vars (like input height) when importing web-components ?
-  to avoid distributing adjacent css asset
+
+rename all DBU occurrences to DBUI
+
+maybe react components should take care of importing by themselves the web component they wrap
+in this case we have to solve supporting style override from outside
 
 unittest web-components in iFrame
 create event helpers for unittests
 in unittests we should test among other things:
   - web component can be dir aware (css in template)
   - css vars are inherited and style can be overridden
-  - we have some default css vars injected when using the lib ?
+  - we have some default css vars injected when using the lib (like input height)
   - web component are not registered multiple times even if using a mix of import styles
   - web components register their dependencies before they register self
   - web component can use external renderers like the col renderer in a table or option renderer in select

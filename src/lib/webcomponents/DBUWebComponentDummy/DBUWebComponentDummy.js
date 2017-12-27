@@ -16,7 +16,7 @@ export default function getDBUWebComponentDummy(win) {
         display: inline-block;
         width: 100%;
         max-width: 400px;
-        height: 50px;
+        height: var(--dbu-input-height, 50px);
         color: maroon;
         border: 1px solid gray;
         box-sizing: border-box;

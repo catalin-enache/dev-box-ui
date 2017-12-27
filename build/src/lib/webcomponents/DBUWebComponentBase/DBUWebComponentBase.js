@@ -17,8 +17,23 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 const registrationName = 'DBUWebComponentBase';
 
+function defineCommonCSSVars() {
+  console.log('defineCommonCSSVars');
+  const commonStyle = document.createElement('style');
+  commonStyle.innerHTML = `
+  body {
+    color: red !important;
+  }
+  :root {
+    --dbu-input-height: 55px;
+  }
+  `;
+  document.querySelector('head').appendChild(commonStyle);
+}
+
 function getDBUWebComponentBase(win) {
   return (0, _ensureSingleRegistration2.default)(win, registrationName, () => {
+    defineCommonCSSVars();
     const { document, HTMLElement, customElements } = win;
 
     const template = document.createElement('template');

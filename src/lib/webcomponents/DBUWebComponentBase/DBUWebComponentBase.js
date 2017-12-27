@@ -4,8 +4,19 @@ import ensureSingleRegistration from '../internals/ensureSingleRegistration';
 
 const registrationName = 'DBUWebComponentBase';
 
+function defineCommonCSSVars() {
+  const commonStyle = document.createElement('style');
+  commonStyle.innerHTML = `
+  :root {
+    --dbu-input-height: 55px;
+  }
+  `;
+  document.querySelector('head').appendChild(commonStyle);
+}
+
 export default function getDBUWebComponentBase(win) {
   return ensureSingleRegistration(win, registrationName, () => {
+    defineCommonCSSVars();
     const { document, HTMLElement, customElements } = win;
 
     const template = document.createElement('template');
