@@ -3,7 +3,6 @@ minimal imports: import someStuff from node_modules/dev-box-ui/webcomponents/som
 distribution import: put distribution in head script then import someStuff from dev-box-ui
 normal import: import someStuff from dev-box-ui
 
-maybe we should generate code example tabs dynamically
 do we need anymore styles for our React components since we use/wrap web-components which have shadow dom ?
 can we define/inject some global/default css vars (like input height) when importing web-components ?
   to avoid distributing adjacent css asset
