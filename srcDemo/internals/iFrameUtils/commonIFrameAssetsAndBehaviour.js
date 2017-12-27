@@ -28,10 +28,10 @@ document.querySelector('head').innerHTML += `
 loadAsset('link', 'https://fonts.googleapis.com/css?family=Roboto:400,100,‌​100italic,300,300ita‌​lic,400italic,500,50‌​0italic,700,700itali‌​c,900italic,900');
 // Load our assets.
 loadAsset('link', '../../styleForScreens/styleForScreens.css');
-loadAsset('script', '../js/onWindowDefinedHelpers.js');
+loadAsset('script', '../../internals/iFrameUtils/onWindowDefinedHelpers.js');
 // Load highlight code lib.
-loadAsset('link', '../../../srcDemo/vendors/highlight/styles/atelier-heath-light.css');
-loadAsset('script', '../../../srcDemo/vendors/highlight/highlight.pack.js');
+loadAsset('link', '../../vendors/highlight/styles/atelier-heath-light.css');
+loadAsset('script', '../../vendors/highlight/highlight.pack.js');
 
 // Load web-components and trigger some hooks.
 // The definition itself (along with style overriding) is controlled inside the page.

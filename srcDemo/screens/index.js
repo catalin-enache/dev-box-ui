@@ -9,7 +9,7 @@ import HelloScreen from './ReactComponents/HelloScreen';
 import ListScreen from './ReactComponents/ListScreen';
 import FormInputScreen from './ReactComponents/FormInputScreen';
 import FormInputNumberScreen from './ReactComponents/FormInputNumberScreen';
-import Draggable from './ReactComponents/DraggableScreen';
+import DraggableScreen from './ReactComponents/DraggableScreen';
 import DBUWebComponentDummyScreen from './ReactComponents/DBUWebComponentDummyScreen';
 
 // Debug
@@ -27,7 +27,7 @@ const screens = {
   ListScreen,
   FormInputScreen,
   FormInputNumberScreen,
-  Draggable,
+  DraggableScreen,
   DBUWebComponentDummyScreen,
 
   // Debug
@@ -48,25 +48,25 @@ const screenLinksGen = [
   {
     title: 'Services',
     links: [
-      { path: 'LocaleServiceScreen', title: 'Locale Service' }
+      { path: 'LocaleServiceScreen', title: 'Locale' }
     ]
   },
   {
     title: 'Web Components',
     links: [
-      { path: 'WebComponentsScreens/DBUWebComponentDummyScreen.html', title: 'Dummy - Web Component' },
-      { path: 'WebComponentsScreens/DBUWebComponentDummyParentScreen.html', title: 'Dummy Parent - Web Component' },
+      { path: 'WebComponentsScreens/DBUWebComponentDummyScreen.html', title: 'Dummy' },
+      { path: 'WebComponentsScreens/DBUWebComponentDummyParentScreen.html', title: 'Dummy Parent' },
     ]
   },
   {
     title: 'React Components',
     links: [
-      { path: 'HelloScreen', title: 'Hello - React' },
-      { path: 'ListScreen', title: 'List - React' },
-      { path: 'FormInputScreen', title: 'Form Input - React' },
-      { path: 'FormInputNumberScreen', title: 'Form Input Number - React' },
-      { path: 'Draggable', title: 'Draggable - React' },
-      { path: 'DBUWebComponentDummyScreen', title: 'Dummy - React' },
+      { path: 'HelloScreen', title: 'Hello' },
+      { path: 'ListScreen', title: 'List' },
+      { path: 'FormInputScreen', title: 'Form Input' },
+      { path: 'FormInputNumberScreen', title: 'Form Input Number' },
+      { path: 'DraggableScreen', title: 'Draggable' },
+      { path: 'DBUWebComponentDummyScreen', title: 'Dummy' },
     ]
   },
   {

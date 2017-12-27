@@ -2,7 +2,7 @@ import React from 'react';
 import GoMarkGithub from 'react-icons/lib/go/mark-github';
 import GoThreeBars from 'react-icons/lib/go/three-bars';
 import { screens, screenLinksGen } from './screens';
-import IFrameScreen from './internals/components/IFrameScreen';
+import IFrameScreen from './internals/reactComponents/IFrameScreen';
 import {
   toggleAppDir
 } from './internals/appUtils';
