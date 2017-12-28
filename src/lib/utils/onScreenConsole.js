@@ -74,7 +74,7 @@ function createConsole({
 }) {
   const { rtl = false } = options;
   const console = document.createElement('div');
-  console.id = 'DBUonScreenConsole';
+  console.id = 'DBUIonScreenConsole';
   console.style.cssText = `
     display: block;
     margin: 0px;
@@ -102,7 +102,7 @@ function createButton({
 }) {
   const { rtl = false } = options;
   const button = document.createElement('div');
-  button.id = 'DBUonScreenConsoleToggler';
+  button.id = 'DBUIonScreenConsoleToggler';
   button.style.cssText = `
     position: ${position};
     width: ${width};

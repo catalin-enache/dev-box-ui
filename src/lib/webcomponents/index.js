@@ -1,18 +1,18 @@
 
-import dbuWebComponentsSetUp from './DBUWebComponentsSetup/DBUWebComponentsSetup';
-import getDBUWebComponentDummy from './DBUWebComponentDummy/DBUWebComponentDummy';
-import getDBUWebComponentDummyParent from './DBUWebComponentDummyParent/DBUWebComponentDummyParent';
+import dbuiWebComponentsSetUp from './DBUIWebComponentsSetup/DBUIWebComponentsSetup';
+import getDBUIWebComponentDummy from './DBUIWebComponentDummy/DBUIWebComponentDummy';
+import getDBUIWebComponentDummyParent from './DBUIWebComponentDummyParent/DBUIWebComponentDummyParent';
 
 const registrations = {
-  [getDBUWebComponentDummy.registrationName]: getDBUWebComponentDummy,
-  [getDBUWebComponentDummyParent.registrationName]: getDBUWebComponentDummyParent,
+  [getDBUIWebComponentDummy.registrationName]: getDBUIWebComponentDummy,
+  [getDBUIWebComponentDummyParent.registrationName]: getDBUIWebComponentDummyParent,
 };
 
 function quickSetupAndLoad(win = window) {
   return function (components) {
     const ret = {};
     components.forEach(({ registrationName, componentStyle }) => {
-      dbuWebComponentsSetUp(win).appendStyle(registrationName, componentStyle);
+      dbuiWebComponentsSetUp(win).appendStyle(registrationName, componentStyle);
       const componentClass = registrations[registrationName](window);
       componentClass.registerSelf();
       ret[registrationName] = componentClass;
@@ -23,7 +23,7 @@ function quickSetupAndLoad(win = window) {
 
 export {
   quickSetupAndLoad,
-  dbuWebComponentsSetUp,
-  getDBUWebComponentDummy,
-  getDBUWebComponentDummyParent
+  dbuiWebComponentsSetUp,
+  getDBUIWebComponentDummy,
+  getDBUIWebComponentDummyParent
 };

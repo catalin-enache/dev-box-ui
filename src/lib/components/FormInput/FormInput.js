@@ -39,11 +39,11 @@ class FormInput extends React.PureComponent {
   render() {
     const { hasWarning, hasError, ...rest } = this.props;
     const inputClassNames = cn({
-      'dbu-form-input': true,
-      'dbu-warning': hasWarning,
-      'dbu-error': hasError,
-      'dbu-theme': true,
-      'dbu-patch': true
+      'dbui-form-input': true,
+      'dbui-warning': hasWarning,
+      'dbui-error': hasError,
+      'dbui-theme': true,
+      'dbui-patch': true
     });
     return (
       <input

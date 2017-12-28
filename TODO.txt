@@ -5,8 +5,6 @@ normal import: import someStuff from dev-box-ui
 
 do we need anymore styles for our React components since we use/wrap web-components which have shadow dom ?
 
-rename all DBU occurrences to DBUI
-
 maybe react components should take care of importing by themselves the web component they wrap
 in this case we have to solve supporting style override from outside
 

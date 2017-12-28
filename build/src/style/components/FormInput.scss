@@ -1,4 +1,4 @@
-.dbu-form-input {
+.dbui-form-input {
   display: inline;
   width: 100%;
   height: $form-input-height;
@@ -43,13 +43,13 @@
     opacity: .5;
   }
 
-  &.dbu-warning {
+  &.dbui-warning {
     color: $form-input-warning-text-color;
     background-color: $form-input-warning-background-color;
     border-color: $form-input-warning-border-color;
   }
 
-  &.dbu-error {
+  &.dbui-error {
     color: $form-input-error-text-color;
     background-color: $form-input-error-background-color;
     border-color: $form-input-error-border-color;

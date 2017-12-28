@@ -61,11 +61,11 @@ class FormInput extends _react2.default.PureComponent {
           { hasWarning, hasError } = _props,
           rest = _objectWithoutProperties(_props, ['hasWarning', 'hasError']);
     const inputClassNames = (0, _classnames2.default)({
-      'dbu-form-input': true,
-      'dbu-warning': hasWarning,
-      'dbu-error': hasError,
-      'dbu-theme': true,
-      'dbu-patch': true
+      'dbui-form-input': true,
+      'dbui-warning': hasWarning,
+      'dbui-error': hasError,
+      'dbui-theme': true,
+      'dbui-patch': true
     });
     return _react2.default.createElement('input', _extends({
       'data-component-id': 'FormInput',

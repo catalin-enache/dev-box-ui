@@ -1,12 +1,25 @@
+'use strict';
 
-import getDBUWebComponentBase from '../DBUWebComponentBase/DBUWebComponentBase';
-import ensureSingleRegistration from '../internals/ensureSingleRegistration';
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = getDBUIWebComponentDummy;
 
-const registrationName = 'dbu-web-component-dummy';
+var _DBUIWebComponentBase = require('../DBUIWebComponentBase/DBUIWebComponentBase');
 
-export default function getDBUWebComponentDummy(win) {
-  return ensureSingleRegistration(win, registrationName, () => {
-    const { DBUWebComponentBase, defineCommonStaticMethods } = getDBUWebComponentBase(win);
+var _DBUIWebComponentBase2 = _interopRequireDefault(_DBUIWebComponentBase);
+
+var _ensureSingleRegistration = require('../internals/ensureSingleRegistration');
+
+var _ensureSingleRegistration2 = _interopRequireDefault(_ensureSingleRegistration);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+const registrationName = 'dbui-web-component-dummy';
+
+function getDBUIWebComponentDummy(win) {
+  return (0, _ensureSingleRegistration2.default)(win, registrationName, () => {
+    const { DBUIWebComponentBase, defineCommonStaticMethods } = (0, _DBUIWebComponentBase2.default)(win);
     const { document } = win;
 
     const template = document.createElement('template');
@@ -16,7 +29,7 @@ export default function getDBUWebComponentDummy(win) {
         display: inline-block;
         width: 100%;
         max-width: 400px;
-        height: var(--dbu-input-height, 50px);
+        height: var(--dbui-input-height, 50px);
         color: maroon;
         border: 1px solid gray;
         box-sizing: border-box;
@@ -87,7 +100,7 @@ export default function getDBUWebComponentDummy(win) {
       </div>
     `;
 
-    class DBUWebComponentDummy extends DBUWebComponentBase {
+    class DBUIWebComponentDummy extends DBUIWebComponentBase {
       static get registrationName() {
         return registrationName;
       }
@@ -101,11 +114,10 @@ export default function getDBUWebComponentDummy(win) {
       }
     }
 
-    defineCommonStaticMethods(DBUWebComponentDummy);
+    defineCommonStaticMethods(DBUIWebComponentDummy);
 
-    return DBUWebComponentDummy;
+    return DBUIWebComponentDummy;
   });
 }
 
-getDBUWebComponentDummy.registrationName = registrationName;
-
+getDBUIWebComponentDummy.registrationName = registrationName;

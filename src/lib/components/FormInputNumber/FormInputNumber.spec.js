@@ -32,7 +32,7 @@ class App extends React.PureComponent {
   componentDidMount() {
     const { expectedInitialValue, newValue, expectedNewValue } = this.props;
     const htmlNode =
-      ReactTestUtils.findRenderedDOMComponentWithClass(this.inputNode, 'dbu-form-input');
+      ReactTestUtils.findRenderedDOMComponentWithClass(this.inputNode, 'dbui-form-input');
     expect(htmlNode.value).to.equal(expectedInitialValue);
 
     this.setState({
@@ -74,7 +74,7 @@ class App2 extends React.PureComponent {
   }
 
   get htmlNode() {
-    return ReactTestUtils.findRenderedDOMComponentWithClass(this.inputNode, 'dbu-form-input');
+    return ReactTestUtils.findRenderedDOMComponentWithClass(this.inputNode, 'dbui-form-input');
   }
 
   simulateChange(val) {
@@ -143,7 +143,7 @@ class App3 extends React.PureComponent {
   }
 
   get htmlNode() {
-    return ReactTestUtils.findRenderedDOMComponentWithClass(this.inputNode, 'dbu-form-input');
+    return ReactTestUtils.findRenderedDOMComponentWithClass(this.inputNode, 'dbui-form-input');
   }
 
   simulateChange(val) {

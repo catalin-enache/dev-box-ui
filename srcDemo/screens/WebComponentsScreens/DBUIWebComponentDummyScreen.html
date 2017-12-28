@@ -2,13 +2,13 @@
 <html dir="ltr" lang="en">
 <head>
   <style>
-    dbu-web-component-dummy.custom-1 {
+    dbui-web-component-dummy.custom-1 {
       color: orange;
       font-style: oblique;
       --dummy-inner-sections-border-radius: 10px;
       --dummy-inner-sections-bg-color: #00bcd455;
     }
-    dbu-web-component-dummy.custom-2 {
+    dbui-web-component-dummy.custom-2 {
       --dummy-b-text-shadow: 2px 2px 2px #000000;
     }
   </style>
@@ -16,15 +16,15 @@
   <!-- standard template start -->
   <script>
 
-    window.onDBUWebComponentsDistLibLoaded = function defineDBUWebComponents() {
+    window.onDBUIWebComponentsDistLibLoaded = function defineDBUIWebComponents() {
       const {
         quickSetupAndLoad
       } = require('dev-box-ui-webcomponents');
       const {
-        'dbu-web-component-dummy': dbuWebComponentDummyClass,
+        'dbui-web-component-dummy': dbuiWebComponentDummyClass,
       } = quickSetupAndLoad(window)([
         {
-          registrationName: 'dbu-web-component-dummy',
+          registrationName: 'dbui-web-component-dummy',
           componentStyle: `
            #container > div {
             background-color: var(--dummy-inner-sections-bg-color, transparent);
@@ -34,7 +34,7 @@
       ]);
     };
 
-    window.onDBUWebComponentsDefined = function() {
+    window.onDBUIWebComponentsDefined = function() {
     };
   </script>
   <!-- standard template end -->
@@ -55,8 +55,8 @@
 
   <div class="tabs">
     <section x-name="RESULT" x-checked="1">
-      <dbu-web-component-dummy class="custom-1">hello</dbu-web-component-dummy>
-      <dbu-web-component-dummy class="custom-2">hello</dbu-web-component-dummy>
+      <dbui-web-component-dummy class="custom-1">hello</dbui-web-component-dummy>
+      <dbui-web-component-dummy class="custom-2">hello</dbui-web-component-dummy>
     </section>
 
     <section x-name="HTML" x-highlight="html">
@@ -90,8 +90,8 @@ class Car extends SuperClass {
   <div class="tabs">
 
     <section x-name="RESULT" x-checked="1">
-      <dbu-web-component-dummy class="custom-1">hello</dbu-web-component-dummy>
-      <dbu-web-component-dummy class="custom-2">hello</dbu-web-component-dummy>
+      <dbui-web-component-dummy class="custom-1">hello</dbui-web-component-dummy>
+      <dbui-web-component-dummy class="custom-2">hello</dbui-web-component-dummy>
     </section>
 
     <section x-name="HTML" x-highlight="html">

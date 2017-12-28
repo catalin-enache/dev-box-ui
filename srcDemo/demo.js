@@ -9,26 +9,26 @@ import App from './app';
 // defines some helpers on window (reusing code needed in iFrames)
 import './internals/iFrameUtils/onWindowDefinedHelpers';
 
-// import getDBUWebComponentDummy from '../build/src/lib/webcomponents/DBUWebComponentDummy/DBUWebComponentDummy';
-// import getDBUWebComponentDummyParent from '../build/src/lib/webcomponents/DBUWebComponentDummyParent/DBUWebComponentDummyParent';
-import dbuWebComponentsSetUp from '../src/lib/webcomponents/DBUWebComponentsSetup/DBUWebComponentsSetup';
-import getDBUWebComponentDummy from '../src/lib/webcomponents/DBUWebComponentDummy/DBUWebComponentDummy';
-import getDBUWebComponentDummyParent from '../src/lib/webcomponents/DBUWebComponentDummyParent/DBUWebComponentDummyParent';
+// import getDBUIWebComponentDummy from '../build/src/lib/webcomponents/DBUIWebComponentDummy/DBUIWebComponentDummy';
+// import getDBUIWebComponentDummyParent from '../build/src/lib/webcomponents/DBUIWebComponentDummyParent/DBUIWebComponentDummyParent';
+import dbuiWebComponentsSetUp from '../src/lib/webcomponents/DBUIWebComponentsSetup/DBUIWebComponentsSetup';
+import getDBUIWebComponentDummy from '../src/lib/webcomponents/DBUIWebComponentDummy/DBUIWebComponentDummy';
+import getDBUIWebComponentDummyParent from '../src/lib/webcomponents/DBUIWebComponentDummyParent/DBUIWebComponentDummyParent';
 
-dbuWebComponentsSetUp(window).appendStyle('dbu-web-component-dummy', `
+dbuiWebComponentsSetUp(window).appendStyle('dbui-web-component-dummy', `
   b {
     color: deepskyblue;
     font-style: oblique;
   }
 `);
 
-const DBUWebComponentDummy = getDBUWebComponentDummy(window);
-const DBUWebComponentDummyParent = getDBUWebComponentDummyParent(window);
+const DBUIWebComponentDummy = getDBUIWebComponentDummy(window);
+const DBUIWebComponentDummyParent = getDBUIWebComponentDummyParent(window);
 
 
 setTimeout(() => {
-  DBUWebComponentDummy.registerSelf();
-  DBUWebComponentDummyParent.registerSelf();
+  DBUIWebComponentDummy.registerSelf();
+  DBUIWebComponentDummyParent.registerSelf();
 }, 2000);
 
 const iframe = document.createElement('iframe');
@@ -40,12 +40,12 @@ iframe.onload = function (evt) {
   target.contentWindow.document.write(`
     <html>
     <body>
-      <dbu-web-component-dummy
+      <dbui-web-component-dummy
         style="color: blue"
       >
         <span>hello world 3</span>
-      </dbu-web-component-dummy>
-      <dbu-web-component-dummy-parent></dbu-web-component-dummy-parent>
+      </dbui-web-component-dummy>
+      <dbui-web-component-dummy-parent></dbui-web-component-dummy-parent>
     </body>
     <script>
       window.onmessage = function (msg) {
@@ -57,17 +57,17 @@ iframe.onload = function (evt) {
   `);
   target.contentWindow.postMessage('hello', '*');
 
-  dbuWebComponentsSetUp(target.contentWindow).appendStyle('dbu-web-component-dummy', `
+  dbuiWebComponentsSetUp(target.contentWindow).appendStyle('dbui-web-component-dummy', `
     b {
       font-style: oblique;
       opacity: 0.5;
     }
   `);
-  const DBUWebComponentDummy2 = getDBUWebComponentDummy(target.contentWindow);
-  const DBUWebComponentDummyParent2 = getDBUWebComponentDummyParent(target.contentWindow);
+  const DBUIWebComponentDummy2 = getDBUIWebComponentDummy(target.contentWindow);
+  const DBUIWebComponentDummyParent2 = getDBUIWebComponentDummyParent(target.contentWindow);
   setTimeout(() => {
-    DBUWebComponentDummy2.registerSelf();
-    DBUWebComponentDummyParent2.registerSelf();
+    DBUIWebComponentDummy2.registerSelf();
+    DBUIWebComponentDummyParent2.registerSelf();
 
     setTimeout(() => {
       // target.remove();

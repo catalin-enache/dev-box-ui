@@ -3,32 +3,32 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getDBUWebComponentDummyParent = exports.getDBUWebComponentDummy = exports.dbuWebComponentsSetUp = exports.quickSetupAndLoad = undefined;
+exports.getDBUIWebComponentDummyParent = exports.getDBUIWebComponentDummy = exports.dbuiWebComponentsSetUp = exports.quickSetupAndLoad = undefined;
 
-var _DBUWebComponentsSetup = require('./DBUWebComponentsSetup/DBUWebComponentsSetup');
+var _DBUIWebComponentsSetup = require('./DBUIWebComponentsSetup/DBUIWebComponentsSetup');
 
-var _DBUWebComponentsSetup2 = _interopRequireDefault(_DBUWebComponentsSetup);
+var _DBUIWebComponentsSetup2 = _interopRequireDefault(_DBUIWebComponentsSetup);
 
-var _DBUWebComponentDummy = require('./DBUWebComponentDummy/DBUWebComponentDummy');
+var _DBUIWebComponentDummy = require('./DBUIWebComponentDummy/DBUIWebComponentDummy');
 
-var _DBUWebComponentDummy2 = _interopRequireDefault(_DBUWebComponentDummy);
+var _DBUIWebComponentDummy2 = _interopRequireDefault(_DBUIWebComponentDummy);
 
-var _DBUWebComponentDummyParent = require('./DBUWebComponentDummyParent/DBUWebComponentDummyParent');
+var _DBUIWebComponentDummyParent = require('./DBUIWebComponentDummyParent/DBUIWebComponentDummyParent');
 
-var _DBUWebComponentDummyParent2 = _interopRequireDefault(_DBUWebComponentDummyParent);
+var _DBUIWebComponentDummyParent2 = _interopRequireDefault(_DBUIWebComponentDummyParent);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 const registrations = {
-  [_DBUWebComponentDummy2.default.registrationName]: _DBUWebComponentDummy2.default,
-  [_DBUWebComponentDummyParent2.default.registrationName]: _DBUWebComponentDummyParent2.default
+  [_DBUIWebComponentDummy2.default.registrationName]: _DBUIWebComponentDummy2.default,
+  [_DBUIWebComponentDummyParent2.default.registrationName]: _DBUIWebComponentDummyParent2.default
 };
 
 function quickSetupAndLoad(win = window) {
   return function (components) {
     const ret = {};
     components.forEach(({ registrationName, componentStyle }) => {
-      (0, _DBUWebComponentsSetup2.default)(win).appendStyle(registrationName, componentStyle);
+      (0, _DBUIWebComponentsSetup2.default)(win).appendStyle(registrationName, componentStyle);
       const componentClass = registrations[registrationName](window);
       componentClass.registerSelf();
       ret[registrationName] = componentClass;
@@ -38,6 +38,6 @@ function quickSetupAndLoad(win = window) {
 }
 
 exports.quickSetupAndLoad = quickSetupAndLoad;
-exports.dbuWebComponentsSetUp = _DBUWebComponentsSetup2.default;
-exports.getDBUWebComponentDummy = _DBUWebComponentDummy2.default;
-exports.getDBUWebComponentDummyParent = _DBUWebComponentDummyParent2.default;
+exports.dbuiWebComponentsSetUp = _DBUIWebComponentsSetup2.default;
+exports.getDBUIWebComponentDummy = _DBUIWebComponentDummy2.default;
+exports.getDBUIWebComponentDummyParent = _DBUIWebComponentDummyParent2.default;

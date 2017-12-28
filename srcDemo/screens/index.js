@@ -10,7 +10,7 @@ import ListScreen from './ReactComponents/ListScreen';
 import FormInputScreen from './ReactComponents/FormInputScreen';
 import FormInputNumberScreen from './ReactComponents/FormInputNumberScreen';
 import DraggableScreen from './ReactComponents/DraggableScreen';
-import DBUWebComponentDummyScreen from './ReactComponents/DBUWebComponentDummyScreen';
+import DBUIWebComponentDummyScreen from './ReactComponents/DBUIWebComponentDummyScreen';
 
 // Debug
 import OnScreenConsoleScreen from './Debug/OnScreenConsoleScreen';
@@ -28,7 +28,7 @@ const screens = {
   FormInputScreen,
   FormInputNumberScreen,
   DraggableScreen,
-  DBUWebComponentDummyScreen,
+  DBUIWebComponentDummyScreen,
 
   // Debug
   OnScreenConsoleScreen
@@ -54,8 +54,8 @@ const screenLinksGen = [
   {
     title: 'Web Components',
     links: [
-      { path: 'WebComponentsScreens/DBUWebComponentDummyScreen.html', title: 'Dummy' },
-      { path: 'WebComponentsScreens/DBUWebComponentDummyParentScreen.html', title: 'Dummy Parent' },
+      { path: 'WebComponentsScreens/DBUIWebComponentDummyScreen.html', title: 'Dummy' },
+      { path: 'WebComponentsScreens/DBUIWebComponentDummyParentScreen.html', title: 'Dummy Parent' },
     ]
   },
   {
@@ -66,7 +66,7 @@ const screenLinksGen = [
       { path: 'FormInputScreen', title: 'Form Input' },
       { path: 'FormInputNumberScreen', title: 'Form Input Number' },
       { path: 'DraggableScreen', title: 'Draggable' },
-      { path: 'DBUWebComponentDummyScreen', title: 'Dummy' },
+      { path: 'DBUIWebComponentDummyScreen', title: 'Dummy' },
     ]
   },
   {

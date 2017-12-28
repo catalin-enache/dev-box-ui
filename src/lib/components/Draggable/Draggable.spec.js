@@ -19,13 +19,13 @@ describe('Draggable', () => {
         if (!node) return;
 
         const htmlNodeFound1 = ReactDOM.findDOMNode(node);
-        const htmlNodeFound2 = ReactTestUtils.findRenderedDOMComponentWithClass(node, 'dbu-draggable');
+        const htmlNodeFound2 = ReactTestUtils.findRenderedDOMComponentWithClass(node, 'dbui-draggable');
         const reactElementFound1 = ReactTestUtils.findRenderedComponentWithType(node, Draggable);
 
         expect(node).to.equal(reactElementFound1);
         expect(htmlNodeFound1).to.equal(htmlNodeFound2);
         expect(htmlNodeFound1.getAttribute('class')).to.equal(
-          'dbu-draggable'
+          'dbui-draggable'
         );
 
         setTimeout(() => {
@@ -66,13 +66,13 @@ describe('Draggable', () => {
         if (!node) return;
 
         const htmlNodeFound1 = ReactDOM.findDOMNode(node);
-        const htmlNodeFound2 = ReactTestUtils.findRenderedDOMComponentWithClass(node, 'dbu-draggable');
+        const htmlNodeFound2 = ReactTestUtils.findRenderedDOMComponentWithClass(node, 'dbui-draggable');
         const reactElementFound1 = ReactTestUtils.findRenderedComponentWithType(node, Draggable);
 
         expect(node).to.equal(reactElementFound1);
         expect(htmlNodeFound1).to.equal(htmlNodeFound2);
         expect(htmlNodeFound1.getAttribute('class')).to.equal(
-          'dbu-draggable'
+          'dbui-draggable'
         );
 
         setTimeout(() => {
@@ -109,13 +109,13 @@ describe('Draggable', () => {
         if (!node) return;
 
         const htmlNodeFound1 = ReactDOM.findDOMNode(node);
-        const htmlNodeFound2 = ReactTestUtils.findRenderedDOMComponentWithClass(node, 'dbu-draggable');
+        const htmlNodeFound2 = ReactTestUtils.findRenderedDOMComponentWithClass(node, 'dbui-draggable');
         const reactElementFound1 = ReactTestUtils.findRenderedComponentWithType(node, Draggable);
 
         expect(node).to.equal(reactElementFound1);
         expect(htmlNodeFound1).to.equal(htmlNodeFound2);
         expect(htmlNodeFound1.getAttribute('class')).to.equal(
-          'dbu-draggable'
+          'dbui-draggable'
         );
 
         setTimeout(() => {

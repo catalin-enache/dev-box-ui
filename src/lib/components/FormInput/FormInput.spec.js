@@ -17,13 +17,13 @@ describe('FormInput', () => {
       if (!node) return;
 
       const htmlNodeFound1 = ReactDOM.findDOMNode(node);
-      const htmlNodeFound2 = ReactTestUtils.findRenderedDOMComponentWithClass(node, 'dbu-form-input');
+      const htmlNodeFound2 = ReactTestUtils.findRenderedDOMComponentWithClass(node, 'dbui-form-input');
       const reactElementFound1 = ReactTestUtils.findRenderedComponentWithType(node, FormInput);
 
       expect(node).to.equal(reactElementFound1);
       expect(htmlNodeFound1).to.equal(htmlNodeFound2);
       expect(htmlNodeFound1.getAttribute('class')).to.equal(
-        'dbu-form-input dbu-theme dbu-patch'
+        'dbui-form-input dbui-theme dbui-patch'
       );
 
       htmlNodeFound1.value = valueToSet;
@@ -71,7 +71,7 @@ describe('FormInput', () => {
       const htmlNodeFound1 = ReactDOM.findDOMNode(node);
 
       expect(htmlNodeFound1.getAttribute('class')).to.equal(
-        'dbu-form-input dbu-warning dbu-error dbu-theme dbu-patch'
+        'dbui-form-input dbui-warning dbui-error dbui-theme dbui-patch'
       );
 
       setTimeout(() => {
@@ -96,7 +96,7 @@ describe('FormInput', () => {
       }
 
       componentDidMount() {
-        const htmlNode = ReactTestUtils.findRenderedDOMComponentWithClass(this.inputNode, 'dbu-form-input');
+        const htmlNode = ReactTestUtils.findRenderedDOMComponentWithClass(this.inputNode, 'dbui-form-input');
         expect(htmlNode.value).to.equal('initialValue');
 
         this.setState({

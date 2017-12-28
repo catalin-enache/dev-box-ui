@@ -1,25 +1,12 @@
-'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = getDBUWebComponentDummy;
+import getDBUIWebComponentBase from '../DBUIWebComponentBase/DBUIWebComponentBase';
+import ensureSingleRegistration from '../internals/ensureSingleRegistration';
 
-var _DBUWebComponentBase = require('../DBUWebComponentBase/DBUWebComponentBase');
+const registrationName = 'dbui-web-component-dummy';
 
-var _DBUWebComponentBase2 = _interopRequireDefault(_DBUWebComponentBase);
-
-var _ensureSingleRegistration = require('../internals/ensureSingleRegistration');
-
-var _ensureSingleRegistration2 = _interopRequireDefault(_ensureSingleRegistration);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-const registrationName = 'dbu-web-component-dummy';
-
-function getDBUWebComponentDummy(win) {
-  return (0, _ensureSingleRegistration2.default)(win, registrationName, () => {
-    const { DBUWebComponentBase, defineCommonStaticMethods } = (0, _DBUWebComponentBase2.default)(win);
+export default function getDBUIWebComponentDummy(win) {
+  return ensureSingleRegistration(win, registrationName, () => {
+    const { DBUIWebComponentBase, defineCommonStaticMethods } = getDBUIWebComponentBase(win);
     const { document } = win;
 
     const template = document.createElement('template');
@@ -29,7 +16,7 @@ function getDBUWebComponentDummy(win) {
         display: inline-block;
         width: 100%;
         max-width: 400px;
-        height: var(--dbu-input-height, 50px);
+        height: var(--dbui-input-height, 50px);
         color: maroon;
         border: 1px solid gray;
         box-sizing: border-box;
@@ -100,7 +87,7 @@ function getDBUWebComponentDummy(win) {
       </div>
     `;
 
-    class DBUWebComponentDummy extends DBUWebComponentBase {
+    class DBUIWebComponentDummy extends DBUIWebComponentBase {
       static get registrationName() {
         return registrationName;
       }
@@ -114,10 +101,11 @@ function getDBUWebComponentDummy(win) {
       }
     }
 
-    defineCommonStaticMethods(DBUWebComponentDummy);
+    defineCommonStaticMethods(DBUIWebComponentDummy);
 
-    return DBUWebComponentDummy;
+    return DBUIWebComponentDummy;
   });
 }
 
-getDBUWebComponentDummy.registrationName = registrationName;
+getDBUIWebComponentDummy.registrationName = registrationName;
+

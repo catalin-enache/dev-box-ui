@@ -38,7 +38,7 @@ loadAsset('script', '../../vendors/highlight/highlight.pack.js');
 const isProd = window.location.search.includes('production=1');
 loadAsset('script', `../../../build/dist/js/dev-box-ui-webcomponents${isProd ? '.min' : ''}.js`, () => {
   // Must be defined by user.
-  window.onDBUWebComponentsDistLibLoaded && window.onDBUWebComponentsDistLibLoaded();
+  window.onDBUIWebComponentsDistLibLoaded && window.onDBUIWebComponentsDistLibLoaded();
 });
 
 /* eslint wrap-iife: 0 */
@@ -52,7 +52,7 @@ loadAsset('script', `../../../build/dist/js/dev-box-ui-webcomponents${isProd ? '
   callback();
 })(() => {
   // Must be defined by user.
-  window.onDBUWebComponentsDefined && window.onDBUWebComponentsDefined();
+  window.onDBUIWebComponentsDefined && window.onDBUIWebComponentsDefined();
   console.log('all web-components defined');
 });
 

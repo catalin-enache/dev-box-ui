@@ -4,17 +4,17 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 /*
-DBUWebComponentBase (from which all web-components inherit)
-will read componentStyle from win.DBUWebComponents
+DBUIWebComponentBase (from which all web-components inherit)
+will read componentStyle from win.DBUIWebComponents
 when klass.registerSelf() is called giving a chance to override default web-component style
 just before it is registered.
 */
 const appendStyle = win => (registrationName, componentStyle) => {
-  if (!win.DBUWebComponents) {
-    win.DBUWebComponents = {};
+  if (!win.DBUIWebComponents) {
+    win.DBUIWebComponents = {};
   }
-  win.DBUWebComponents = Object.assign({}, win.DBUWebComponents, {
-    [registrationName]: Object.assign({}, win.DBUWebComponents[registrationName], {
+  win.DBUIWebComponents = Object.assign({}, win.DBUIWebComponents, {
+    [registrationName]: Object.assign({}, win.DBUIWebComponents[registrationName], {
       componentStyle
     })
   });

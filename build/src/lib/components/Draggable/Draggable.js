@@ -143,7 +143,7 @@ class Draggable extends _react2.default.PureComponent {
   render() {
     const { style } = this.props;
     const draggableClassNames = (0, _classnames2.default)({
-      'dbu-draggable': true
+      'dbui-draggable': true
     });
 
     return _react2.default.createElement(

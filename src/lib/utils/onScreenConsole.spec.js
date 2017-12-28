@@ -33,16 +33,16 @@ describe('onScreenConsole', () => {
     (done) => {
       const consoleLog = console.log;
       const release = onScreenConsole();
-      const toggler = document.getElementById('DBUonScreenConsoleToggler');
+      const toggler = document.getElementById('DBUIonScreenConsoleToggler');
 
       expect(console.log).to.not.equal(consoleLog);
 
       setTimeout(() => {
         toggler.click();
-        const consoleArea = document.getElementById('DBUonScreenConsole');
+        const consoleArea = document.getElementById('DBUIonScreenConsole');
         expect(consoleArea).to.not.equal(null);
 
-        const children = document.querySelectorAll('#DBUonScreenConsole pre');
+        const children = document.querySelectorAll('#DBUIonScreenConsole pre');
         expect(children.length).to.equal(3);
 
         expect(children[0].innerHTML).to.equal(firstMessage);
@@ -55,13 +55,13 @@ describe('onScreenConsole', () => {
         setTimeout(() => {
           toggler.click();
 
-          const consoleArea = document.getElementById('DBUonScreenConsole');
+          const consoleArea = document.getElementById('DBUIonScreenConsole');
           expect(consoleArea).to.equal(null);
 
           release();
 
           expect(console.log).to.equal(consoleLog);
-          expect(document.getElementById('DBUonScreenConsoleToggler')).to.equal(null);
+          expect(document.getElementById('DBUIonScreenConsoleToggler')).to.equal(null);
 
           done();
         }, 0);
@@ -84,20 +84,20 @@ describe('onScreenConsole', () => {
         }
       });
 
-      const toggler = document.getElementById('DBUonScreenConsoleToggler');
+      const toggler = document.getElementById('DBUIonScreenConsoleToggler');
       toggler.click();
 
       let children = null;
-      children = document.querySelectorAll('#DBUonScreenConsole pre');
+      children = document.querySelectorAll('#DBUIonScreenConsole pre');
       expect(children.length).to.equal(0);
 
       console.log('first');
-      children = document.querySelectorAll('#DBUonScreenConsole pre');
+      children = document.querySelectorAll('#DBUIonScreenConsole pre');
       expect(children.length).to.equal(1);
       expect(children[0].innerHTML).to.equal('first');
 
       console.log('second');
-      children = document.querySelectorAll('#DBUonScreenConsole pre');
+      children = document.querySelectorAll('#DBUIonScreenConsole pre');
       expect(children.length).to.equal(1);
       expect(children[0].innerHTML).to.equal('second');
 

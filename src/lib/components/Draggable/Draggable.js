@@ -121,7 +121,7 @@ class Draggable extends React.PureComponent {
   render() {
     const { style } = this.props;
     const draggableClassNames = cn({
-      'dbu-draggable': true
+      'dbui-draggable': true
     });
 
     return (

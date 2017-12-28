@@ -1,28 +1,41 @@
+'use strict';
 
-import LocaleService from '../../services/LocaleService';
-import ensureSingleRegistration from '../internals/ensureSingleRegistration';
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = getDBUIWebComponentBase;
 
-const registrationName = 'DBUWebComponentBase';
+var _LocaleService = require('../../services/LocaleService');
+
+var _LocaleService2 = _interopRequireDefault(_LocaleService);
+
+var _ensureSingleRegistration = require('../internals/ensureSingleRegistration');
+
+var _ensureSingleRegistration2 = _interopRequireDefault(_ensureSingleRegistration);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+const registrationName = 'DBUIWebComponentBase';
 
 function defineCommonCSSVars() {
   const commonStyle = document.createElement('style');
   commonStyle.innerHTML = `
   :root {
-    --dbu-input-height: 55px;
+    --dbui-input-height: 55px;
   }
   `;
   document.querySelector('head').appendChild(commonStyle);
 }
 
-export default function getDBUWebComponentBase(win) {
-  return ensureSingleRegistration(win, registrationName, () => {
+function getDBUIWebComponentBase(win) {
+  return (0, _ensureSingleRegistration2.default)(win, registrationName, () => {
     defineCommonCSSVars();
     const { document, HTMLElement, customElements } = win;
 
     const template = document.createElement('template');
     template.innerHTML = '<style></style><slot></slot>';
 
-    class DBUWebComponentBase extends HTMLElement {
+    class DBUIWebComponentBase extends HTMLElement {
 
       static get template() {
         return template;
@@ -54,8 +67,7 @@ export default function getDBUWebComponentBase(win) {
       connectedCallback() {
         window.addEventListener('beforeunload', this.disconnectedCallback, false);
 
-        this.unregisterLocaleChange =
-          LocaleService.onLocaleChange(this._handleLocaleChange);
+        this.unregisterLocaleChange = _LocaleService2.default.onLocaleChange(this._handleLocaleChange);
       }
 
       disconnectedCallback() {
@@ -99,11 +111,11 @@ export default function getDBUWebComponentBase(win) {
         const registrationName = klass.registrationName;
         const dependencies = klass.dependencies;
         // Make sure our dependencies are registered before we register self
-        dependencies.forEach((dependency) => dependency.registerSelf());
+        dependencies.forEach(dependency => dependency.registerSelf());
         // Don't try to register self if already registered
         if (customElements.get(registrationName)) return registrationName;
         // Give a chance to override web-component style if provided before being registered.
-        const componentStyle = ((win.DBUWebComponents || {})[registrationName] || {}).componentStyle;
+        const componentStyle = ((win.DBUIWebComponents || {})[registrationName] || {}).componentStyle;
         if (componentStyle) {
           klass.componentStyle += componentStyle;
         }
@@ -114,7 +126,7 @@ export default function getDBUWebComponentBase(win) {
     }
 
     return {
-      DBUWebComponentBase,
+      DBUIWebComponentBase,
       defineCommonStaticMethods
     };
   });
