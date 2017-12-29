@@ -10,6 +10,8 @@ in this case we have to solve supporting style override from outside
 
 check box-shadow on rtl
 
+do a copyToClipboard shared utility
+
 unittest web-components in iFrame
 create event helpers for unittests
 in unittests we should test among other things:

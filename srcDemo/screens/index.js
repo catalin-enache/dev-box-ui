@@ -1,5 +1,5 @@
 // General
-import UsingDevBoxUIScreen from './General/UsingDevBoxUIScreen';
+import LoadingDevBoxUIWebComponents from './General/LoadingDevBoxUIWebComponents';
 
 // Services
 import LocaleServiceScreen from './Services/LocaleServiceScreen';
@@ -17,7 +17,7 @@ import OnScreenConsoleScreen from './Debug/OnScreenConsoleScreen';
 
 const screens = {
   // General
-  UsingDevBoxUIScreen,
+  LoadingDevBoxUIWebComponents,
 
   // Services
   LocaleServiceScreen,
@@ -42,7 +42,7 @@ const screenLinksGen = [
   {
     title: 'General',
     links: [
-      { path: 'UsingDevBoxUIScreen', title: 'Using Dev Box UI' }
+      { path: 'LoadingDevBoxUIWebComponents', title: 'Loading Web Components' }
     ]
   },
   {
