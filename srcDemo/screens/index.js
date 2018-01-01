@@ -56,6 +56,7 @@ const screenLinksGen = [
     links: [
       { path: 'WebComponentsScreens/DBUIWebComponentDummyScreen.html', title: 'Dummy' },
       { path: 'WebComponentsScreens/DBUIWebComponentDummyParentScreen.html', title: 'Dummy Parent' },
+      { path: 'WebComponentsScreens/DBUIWebComponentFormInputTextScreen.html', title: 'Form Input Text' },
     ]
   },
   {

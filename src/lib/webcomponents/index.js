@@ -2,10 +2,15 @@
 import dbuiWebComponentsSetUp from './DBUIWebComponentsSetup/DBUIWebComponentsSetup';
 import getDBUIWebComponentDummy from './DBUIWebComponentDummy/DBUIWebComponentDummy';
 import getDBUIWebComponentDummyParent from './DBUIWebComponentDummyParent/DBUIWebComponentDummyParent';
+import getDBUIWebComponentFormInputText from './DBUIWebComponentFormInputText/DBUIWebComponentFormInputText';
 
 const registrations = {
-  [getDBUIWebComponentDummy.registrationName]: getDBUIWebComponentDummy,
-  [getDBUIWebComponentDummyParent.registrationName]: getDBUIWebComponentDummyParent,
+  [getDBUIWebComponentDummy.registrationName]:
+    getDBUIWebComponentDummy,
+  [getDBUIWebComponentDummyParent.registrationName]:
+    getDBUIWebComponentDummyParent,
+  [getDBUIWebComponentFormInputText.registrationName]:
+    getDBUIWebComponentFormInputText,
 };
 
 function quickSetupAndLoad(win = window) {
@@ -22,6 +27,7 @@ function quickSetupAndLoad(win = window) {
 }
 
 export {
+  registrations,
   quickSetupAndLoad,
   dbuiWebComponentsSetUp,
   getDBUIWebComponentDummy,
