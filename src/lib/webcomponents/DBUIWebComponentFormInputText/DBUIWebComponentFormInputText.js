@@ -1,7 +1,7 @@
 
 import getDBUIWebComponentBase from '../DBUIWebComponentBase/DBUIWebComponentBase';
 import ensureSingleRegistration from '../internals/ensureSingleRegistration';
-import LocaleService from "../../services/LocaleService";
+import Focusable from '../behaviours/Focusable';
 
 const registrationName = 'dbui-web-component-form-input-text';
 
@@ -82,9 +82,9 @@ export default function getDBUIWebComponentFormInputText(win) {
 
       static get propertiesToDefine() {
         return {
-          // without tabindex focus does nothing
+          // tabindex defines focusable behaviour
           tabindex: 0,
-          role: 'dbui-web-component-form-input'
+          role: 'form-input'
         };
       }
 
@@ -205,9 +205,12 @@ export default function getDBUIWebComponentFormInputText(win) {
       }
     }
 
-    defineCommonStaticMethods(DBUIWebComponentFormInputText);
+    return defineCommonStaticMethods(
+      Focusable(
+        DBUIWebComponentFormInputText
+      )
+    );
 
-    return DBUIWebComponentFormInputText;
   });
 }
 

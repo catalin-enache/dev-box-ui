@@ -47,11 +47,15 @@
 
   <script>
     setTimeout(() => {
-      document.querySelector('#one').focus();
-      // document.querySelector('#one').focused = true;
+      const one = document.querySelector('#one');
+      const { _currentFocused, _somethingNew } = one;
+      console.log({ _currentFocused, _somethingNew });
+      console.log();
+      one.focus();
+      // one.focused = true;
       setTimeout(() => {
-        document.querySelector('#one').blur();
-        // document.querySelector('#one').focused = false;
+        one.blur();
+        // one.focused = false;
       }, 1000);
     }, 2000)
   </script>

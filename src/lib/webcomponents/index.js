@@ -13,6 +13,15 @@ const registrations = {
     getDBUIWebComponentFormInputText,
 };
 
+/*
+Using this function implies entire DBUIWebComponents library
+is already loaded.
+It is useful especially when working with distribution build.
+If you want to load just one web-component or a subset of web-components
+load them from node_modules by their path
+ex:
+import SomeComponentLoader from node_modules/dev-box-ui/build/src/lib/webcomponents/SomeComponent;
+*/
 function quickSetupAndLoad(win = window) {
   return function (components) {
     const ret = {};
@@ -31,5 +40,6 @@ export {
   quickSetupAndLoad,
   dbuiWebComponentsSetUp,
   getDBUIWebComponentDummy,
-  getDBUIWebComponentDummyParent
+  getDBUIWebComponentDummyParent,
+  getDBUIWebComponentFormInputText
 };

@@ -50,8 +50,9 @@ export default function getDBUIWebComponentBase(win) {
         return {};
       }
 
-      constructor() {
+      constructor(...args) {
         super();
+
         const { useShadow } = this.constructor;
         if (useShadow) {
           this.attachShadow({
@@ -69,6 +70,8 @@ export default function getDBUIWebComponentBase(win) {
         this._handleLocaleChange = this._handleLocaleChange.bind(this);
         this.onLocaleChange && (this.onLocaleChange = this.onLocaleChange.bind(this));
         this.unregisterLocaleChange = null;
+
+        this.init && this.init(...args);
       }
 
       // https://developers.google.com/web/fundamentals/web-components/best-practices#lazy-properties
@@ -136,16 +139,8 @@ export default function getDBUIWebComponentBase(win) {
         set(value) {
           klass.template.content.querySelector('style').innerHTML = value;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
-      });
-
-      Object.defineProperty(klass, 'isFocusable', {
-        get() {
-          return 'tabindex' in klass.propertiesToDefine;
-        },
-        enumerable: true,
-        configurable: false
       });
 
       klass.registerSelf = () => {
@@ -164,6 +159,8 @@ export default function getDBUIWebComponentBase(win) {
         customElements.define(registrationName, klass);
         return registrationName;
       };
+
+      return klass;
     }
 
     return {
