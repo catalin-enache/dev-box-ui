@@ -82,127 +82,14 @@ export default function getDBUIWebComponentFormInputText(win) {
 
       static get propertiesToDefine() {
         return {
-          // tabindex defines focusable behaviour
-          tabindex: 0,
           role: 'form-input'
         };
-      }
-
-      constructor() {
-        super();
-
-        this._currentFocused = null;
-        this._onFocusableFocused = this._onFocusableFocused.bind(this);
-        this._onFocus = this._onFocus.bind(this);
-        this._onBlur = this._onBlur.bind(this);
-      }
-
-      _onFocusableFocused(evt) {
-        console.log('_onFocusableFocused');
-        this._currentFocused = evt.target;
-      }
-
-      _onFocus() {
-        console.log('_onFocus', this);
-        if (!this.focused) {
-          this.focused = true;
-        }
-        // this._applyFocusSideEffects();
-      }
-
-      _onBlur() {
-        console.log('_onBlur', this);
-        if (this.focused) {
-          this.focused = false;
-        }
-        // this._applyBlurSideEffects();
-      }
-
-      _applyFocusSideEffects() {
-        console.log('_applyFocusSideEffects');
-        if (this._currentFocused) {
-          // Some inner component is already focused.
-          // No need to set focus on anything.
-          return;
-        }
-        this._focusFirstFocusable();
-      }
-
-      _applyBlurSideEffects() {
-        console.log('_applyBlurSideEffects');
-        if (this._currentFocused) {
-          this._currentFocused.blur();
-          this._currentFocused = null;
-        }
-      }
-
-      _focusFirstFocusable() {
-        const focusable = this.childrenTree.querySelector('[tabindex]');
-        console.log('_focusFirstFocusable', focusable)
-        if (focusable) {
-          // this._currentFocused = focusable;
-          focusable.focus();
-        }
-      }
-
-      static get observedAttributes() {
-        return ['focused'];
-      }
-
-      attributeChangedCallback(name, oldValue, newValue) {
-        console.log('attributeChangedCallback', {name, oldValue, newValue})
-        const hasValue = newValue !== null;
-        if (name === 'focused') {
-          hasValue ? this._applyFocusSideEffects() : this._applyBlurSideEffects();
-        }
-      }
-
-      get focused() {
-        return this.hasAttribute('focused');
-      }
-
-      // keep this generic (so we can put it in base class), do not add custom logic
-      set focused(value) {
-        console.log('set focused', value);
-        const hasValue = Boolean(value);
-        if (hasValue) {
-          this.setAttribute('focused', '');
-        } else {
-          this.removeAttribute('focused');
-        }
       }
 
       // onLocaleChange(locale) {
       //   // console.log('onLocaleChange', locale);
       // }
 
-      connectedCallback() {
-        super.connectedCallback();
-
-        this.addEventListener('focus', this._onFocus);
-        this.addEventListener('blur', this._onBlur);
-
-        const focusables = this.childrenTree.querySelectorAll('[tabindex]');
-        focusables.forEach((focusable) => {
-          focusable.addEventListener('focus', this._onFocusableFocused);
-        });
-
-        // if (this.focused) {
-        //   this._focusFirstFocusable();
-        // }
-      }
-
-      disconnectedCallback() {
-        super.disconnectedCallback();
-
-        this.removeEventListener('focus', this._onFocus);
-        this.removeEventListener('blur', this._onBlur);
-
-        const focusables = this.childrenTree.querySelectorAll('[tabindex]');
-        focusables.forEach((focusable) => {
-          focusable.removeEventListener('focus', this._onFocusableFocused);
-        });
-      }
     }
 
     return defineCommonStaticMethods(

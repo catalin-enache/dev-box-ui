@@ -71,6 +71,7 @@ export default function getDBUIWebComponentBase(win) {
         this.onLocaleChange && (this.onLocaleChange = this.onLocaleChange.bind(this));
         this.unregisterLocaleChange = null;
 
+        // provide support for traits if any as they cant override constructor
         this.init && this.init(...args);
       }
 
