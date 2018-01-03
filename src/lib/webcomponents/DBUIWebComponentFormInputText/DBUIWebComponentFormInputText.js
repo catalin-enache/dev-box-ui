@@ -38,6 +38,7 @@ export default function getDBUIWebComponentFormInputText(win) {
         margin: 0px;
         padding: 0px;
         background-color: transparent;
+        border-radius: 0px;
       }
       
       :host [tabindex]:focus {

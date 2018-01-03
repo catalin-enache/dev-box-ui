@@ -1,6 +1,18 @@
 
+/**
+ * When an inner focusable is focused (ex: via click) the entire component gets focused.
+ * When the component gets focused (ex: via tab) the first inner focusable gets focused too.
+ * When the component gets disabled it gets blurred too and all inner focusables get disabled and blurred.
+ * When disabled the component cannot be focused.
+ * When enabled the component can be focused.
+ * @param Klass
+ * @returns {Focusable}
+ * @constructor
+ */
 export default function Focusable(Klass) {
   class Focusable extends Klass {
+
+    // TODO: play with _upgradeProperty
 
     static get propertiesToDefine() {
       const inheritedPropertiesToDefine = super.propertiesToDefine || {};
@@ -13,14 +25,14 @@ export default function Focusable(Klass) {
 
     static get observedAttributes() {
       const inheritedObservedAttributes = super.observedAttributes || [];
-      return [...inheritedObservedAttributes, 'focused'];
+      return [...inheritedObservedAttributes, 'focused', 'disabled'];
     }
 
     constructor(...args) {
       super(...args);
 
-      this._currentFocused = null;
-      this._onFocusableFocused = this._onFocusableFocused.bind(this);
+      this._currentInnerFocused = null;
+      this._onInnerFocusableFocused = this._onInnerFocusableFocused.bind(this);
       this._onFocus = this._onFocus.bind(this);
       this._onBlur = this._onBlur.bind(this);
     }
@@ -29,9 +41,10 @@ export default function Focusable(Klass) {
       super.attributeChangedCallback &&
         super.attributeChangedCallback(name, oldValue, newValue);
 
-      console.log('attributeChangedCallback', { name, oldValue, newValue });
       const hasValue = newValue !== null;
       if (name === 'focused') {
+        // The browser might decide to not apply focus without user interaction.
+        // ex: on IPad
         hasValue ? this._applyFocusSideEffects() : this._applyBlurSideEffects();
       }
     }
@@ -40,16 +53,14 @@ export default function Focusable(Klass) {
       super.connectedCallback &&
         super.connectedCallback();
 
+      // when component focused/blurred
       this.addEventListener('focus', this._onFocus);
       this.addEventListener('blur', this._onBlur);
 
-      this._focusables.forEach((focusable) => {
-        focusable.addEventListener('focus', this._onFocusableFocused);
+      this._innerFocusables.forEach((focusable) => {
+        // when inner focusable focused
+        focusable.addEventListener('focus', this._onInnerFocusableFocused);
       });
-
-      // if (this.focused) {
-      //   this._focusFirstFocusable();
-      // }
     }
 
     disconnectedCallback() {
@@ -59,8 +70,8 @@ export default function Focusable(Klass) {
       this.removeEventListener('focus', this._onFocus);
       this.removeEventListener('blur', this._onBlur);
 
-      this._focusables.forEach((focusable) => {
-        focusable.removeEventListener('focus', this._onFocusableFocused);
+      this._innerFocusables.forEach((focusable) => {
+        focusable.removeEventListener('focus', this._onInnerFocusableFocused);
       });
     }
 
@@ -70,7 +81,6 @@ export default function Focusable(Klass) {
 
     // keep this generic (so we can put it in base class), do not add custom logic
     set focused(value) {
-      console.log('set focused', value);
       const hasValue = Boolean(value);
       if (hasValue) {
         this.setAttribute('focused', '');
@@ -79,59 +89,51 @@ export default function Focusable(Klass) {
       }
     }
 
-    get _focusables() {
+    get _innerFocusables() {
       return this.childrenTree.querySelectorAll('[tabindex]') || [];
     }
 
-    get _firstFocusable() {
+    get _firstInnerFocusable() {
       return this.childrenTree.querySelector('[tabindex]');
     }
 
-    _onFocusableFocused(evt) {
-      console.log('_onFocusableFocused');
-      this._currentFocused = evt.target;
+    _onInnerFocusableFocused(evt) {
+      this._currentInnerFocused = evt.target;
     }
 
     _onFocus() {
-      console.log('_onFocus', this);
       if (!this.focused) {
         this.focused = true;
       }
-      // this._applyFocusSideEffects();
     }
 
     _onBlur() {
-      console.log('_onBlur', this);
       if (this.focused) {
         this.focused = false;
       }
-      // this._applyBlurSideEffects();
     }
 
     _applyFocusSideEffects() {
-      console.log('_applyFocusSideEffects');
-      if (this._currentFocused) {
+      if (this._currentInnerFocused) {
         // Some inner component is already focused.
         // No need to set focus on anything.
         return;
       }
-      this._focusFirstFocusable();
+      this._focusFirstInnerFocusable();
     }
 
     _applyBlurSideEffects() {
-      console.log('_applyBlurSideEffects');
-      if (this._currentFocused) {
-        this._currentFocused.blur();
-        this._currentFocused = null;
+      if (this._currentInnerFocused) {
+        this._currentInnerFocused.blur();
+        this._currentInnerFocused = null;
       }
     }
 
-    _focusFirstFocusable() {
-      const firstFocusable = this._firstFocusable;
-      console.log('_focusFirstFocusable', firstFocusable);
-      if (firstFocusable) {
-        // this._currentFocused = focusable;
-        firstFocusable.focus();
+    _focusFirstInnerFocusable() {
+      const firstInnerFocusable = this._firstInnerFocusable;
+      if (firstInnerFocusable) {
+        this._currentInnerFocused = firstInnerFocusable;
+        firstInnerFocusable.focus();
       }
     }
   }

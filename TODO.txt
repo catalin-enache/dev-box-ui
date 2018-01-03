@@ -15,6 +15,11 @@ do a copyToClipboard shared utility
 on form inputs style the wrapper div not the input itself
 extract and reuse the common look & feel for form inputs (use the same vars also)
 
+remove log messages in production (NODE_ENV)
+
+document lack of support for: delegatesFocus: true
+make pages for documenting features like Focusable ?
+
 unittest web-components in iFrame
 create event helpers for unittests
 in unittests we should test among other things:
