@@ -41,13 +41,17 @@
 </div>
 <div class="demo-screen" style="display: none;">
 <!-- standard template end -->
-  <dbui-web-component-form-input-text id="one" name="one" focused></dbui-web-component-form-input-text>
+  <dbui-web-component-form-input-text id="one" name="one" focused__ ></dbui-web-component-form-input-text>
   <br /><br />
-  <dbui-web-component-form-input-text id="two" name="two" disabled ></dbui-web-component-form-input-text>
+  <dbui-web-component-form-input-text id="two" name="two" disabled__ ></dbui-web-component-form-input-text>
 
   <script>
+    const one = document.querySelector('#one');
+    const two = document.querySelector('#two');
+    one.focused = true;
+    two.disabled = true;
     setTimeout(() => {
-      const one = document.querySelector('#one');
+
       // one.blur();
       // one.focused = false;
 

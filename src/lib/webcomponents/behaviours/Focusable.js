@@ -23,6 +23,11 @@ export default function Focusable(Klass) {
       };
     }
 
+    static get propertiesToUpgrade() {
+      const inheritedPropertiesToUpgrade = super.propertiesToUpgrade || [];
+      return [...inheritedPropertiesToUpgrade, 'focused', 'disabled'];
+    }
+
     static get observedAttributes() {
       const inheritedObservedAttributes = super.observedAttributes || [];
       return [...inheritedObservedAttributes, 'focused', 'disabled'];
@@ -75,17 +80,31 @@ export default function Focusable(Klass) {
       });
     }
 
+    // keep getters and setters generic
+    // (so we can put them in base class), do not add custom logic
     get focused() {
       return this.hasAttribute('focused');
     }
 
-    // keep this generic (so we can put it in base class), do not add custom logic
     set focused(value) {
       const hasValue = Boolean(value);
       if (hasValue) {
         this.setAttribute('focused', '');
       } else {
         this.removeAttribute('focused');
+      }
+    }
+
+    get disabled() {
+      return this.hasAttribute('disabled');
+    }
+
+    set disabled(value) {
+      const hasValue = Boolean(value);
+      if (hasValue) {
+        this.setAttribute('disabled', '');
+      } else {
+        this.removeAttribute('disabled');
       }
     }
 
