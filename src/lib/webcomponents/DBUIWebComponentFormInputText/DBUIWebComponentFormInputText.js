@@ -7,7 +7,11 @@ const registrationName = 'dbui-web-component-form-input-text';
 
 export default function getDBUIWebComponentFormInputText(win) {
   return ensureSingleRegistration(win, registrationName, () => {
-    const { DBUIWebComponentBase, defineCommonStaticMethods } = getDBUIWebComponentBase(win);
+    const {
+      DBUIWebComponentBase,
+      defineCommonStaticMethods,
+      Registerable
+    } = getDBUIWebComponentBase(win);
     const { document } = win;
 
     const template = document.createElement('template');
@@ -23,7 +27,8 @@ export default function getDBUIWebComponentFormInputText(win) {
         padding: 0px;
         font-size: 18px;
         color: var(--dbui-web-component-form-input-color);
-        background-color: var(--dbui-web-component-form-input-background-color);
+        /*background-color: var(--dbui-web-component-form-input-background-color);*/
+        background-color: rgba(255, 100, 0, 0.1);
         unicode-bidi: bidi-override;
         box-sizing: border-box;
         border: none;
@@ -39,6 +44,8 @@ export default function getDBUIWebComponentFormInputText(win) {
         padding: 0px;
         background-color: transparent;
         border-radius: 0px;
+        box-sizing: border-box;
+        unicode-bidi: bidi-override;
       }
       
       :host [tabindex]:focus {
@@ -50,10 +57,10 @@ export default function getDBUIWebComponentFormInputText(win) {
         background-color: rgba(0, 255, 0, .3);
       }
       
-      :host([disabled]) {
-        background-color: rgba(0, 0, 0, .3);
-      }
-      
+      /*:host([disabled]) {*/
+        /*background-color: rgba(0, 0, 0, .3);*/
+      /*}*/
+
       :host([hidden]) {
         display: none;
       }
@@ -93,9 +100,11 @@ export default function getDBUIWebComponentFormInputText(win) {
 
     }
 
-    return defineCommonStaticMethods(
+    return Registerable(
       Focusable(
-        DBUIWebComponentFormInputText
+        defineCommonStaticMethods(
+          DBUIWebComponentFormInputText
+        )
       )
     );
 

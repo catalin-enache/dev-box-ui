@@ -8,7 +8,11 @@ const registrationName = 'dbui-web-component-dummy-parent';
 
 export default function getDBUIWebComponentDummyParent(win) {
   return ensureSingleRegistration(win, registrationName, () => {
-    const { DBUIWebComponentBase, defineCommonStaticMethods } = getDBUIWebComponentBase(win);
+    const {
+      DBUIWebComponentBase,
+      defineCommonStaticMethods,
+      Registerable
+    } = getDBUIWebComponentBase(win);
     const DBUIWebComponentDummy = getDBUIWebComponentDummy(win);
 
     const { document } = win;
@@ -47,9 +51,11 @@ export default function getDBUIWebComponentDummyParent(win) {
 
     }
 
-    defineCommonStaticMethods(DBUIWebComponentDummyParent);
-
-    return DBUIWebComponentDummyParent;
+    return Registerable(
+      defineCommonStaticMethods(
+        DBUIWebComponentDummyParent
+      )
+    );
   });
 }
 

@@ -10,9 +10,27 @@
  * @constructor
  */
 export default function Focusable(Klass) {
+
+  Klass.componentStyle += `
+  :host([disabled]) {
+    /* cursor: not-allowed; */
+    /*pointer-events: none;*/
+    opacity: 0.5;
+  }
+  /*
+  :host([disabled]):before {
+    content: '';
+    position: absolute;
+    width: 100%; height: 100%;
+    top: 0; left: 0;
+  }
+  */
+  `;
+
   class Focusable extends Klass {
 
-    // TODO: play with _upgradeProperty
+    // TODO: element looks like focused if user sets focused html property at creation
+    // even after clicking outside element
 
     static get propertiesToDefine() {
       const inheritedPropertiesToDefine = super.propertiesToDefine || {};

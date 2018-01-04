@@ -144,6 +144,10 @@ export default function getDBUIWebComponentBase(win) {
         configurable: true
       });
 
+      return klass;
+    }
+
+    function Registerable(klass) {
       klass.registerSelf = () => {
         const registrationName = klass.registrationName;
         const dependencies = klass.dependencies;
@@ -160,13 +164,13 @@ export default function getDBUIWebComponentBase(win) {
         customElements.define(registrationName, klass);
         return registrationName;
       };
-
       return klass;
     }
 
     return {
       DBUIWebComponentBase,
-      defineCommonStaticMethods
+      defineCommonStaticMethods,
+      Registerable
     };
   });
 }
