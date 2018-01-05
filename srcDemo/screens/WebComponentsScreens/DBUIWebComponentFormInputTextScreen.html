@@ -41,7 +41,7 @@
 </div>
 <div class="demo-screen" style="display: none;">
 <!-- standard template end -->
-  <dbui-web-component-form-input-text id="one" name="one" focused__ ></dbui-web-component-form-input-text>
+  <dbui-web-component-form-input-text id="one" name="one"></dbui-web-component-form-input-text>
   <br /><br />
   <dbui-web-component-form-input-text id="two" name="two" disabled__ ></dbui-web-component-form-input-text>
   <input type="text" id="three" tabindex="0" />
@@ -60,7 +60,8 @@
       // };
     });
 
-    one.focus();
+    // console.log('trying to set focus');
+    // one.focus();
     // one.focused = true;
     // two.disabled = true;
     setTimeout(() => {
@@ -69,6 +70,7 @@
       // one.focused = false;
 
       setTimeout(() => {
+        // console.log('trying to set focus');
         // one.focus();
         // one.focused = true;
 

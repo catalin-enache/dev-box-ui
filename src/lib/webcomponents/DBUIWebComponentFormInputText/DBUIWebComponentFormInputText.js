@@ -80,6 +80,11 @@ export default function getDBUIWebComponentFormInputText(win) {
     `;
 
     class DBUIWebComponentFormInputText extends DBUIWebComponentBase {
+
+      static get name() {
+        return 'DBUIWebComponentFormInputText';
+      }
+
       static get registrationName() {
         return registrationName;
       }

@@ -1,4 +1,12 @@
 
+const readOnlyProperties = ['focused'];
+
+const ERROR_MESSAGES = {
+  focused: `'focused' property is read-only as it is controlled by the component.
+If you want to set focus programmatically call .focus() method on component.
+`
+};
+
 /**
  * When an inner focusable is focused (ex: via click) the entire component gets focused.
  * When the component gets focused (ex: via tab) the first inner focusable gets focused too.
@@ -29,8 +37,9 @@ export default function Focusable(Klass) {
 
   class Focusable extends Klass {
 
-    // TODO: element looks like focused if user sets focused html property at creation
-    // even after clicking outside element
+    static get name() {
+      return super.name;
+    }
 
     static get propertiesToDefine() {
       const inheritedPropertiesToDefine = super.propertiesToDefine || {};
@@ -43,12 +52,15 @@ export default function Focusable(Klass) {
 
     static get propertiesToUpgrade() {
       const inheritedPropertiesToUpgrade = super.propertiesToUpgrade || [];
+      // The reason for upgrading 'focused' is only to show an warning
+      // if the consumer of the component attempted to set focus property
+      // which is read-only.
       return [...inheritedPropertiesToUpgrade, 'focused', 'disabled'];
     }
 
     static get observedAttributes() {
       const inheritedObservedAttributes = super.observedAttributes || [];
-      return [...inheritedObservedAttributes, 'focused', 'disabled'];
+      return [...inheritedObservedAttributes, 'disabled'];
     }
 
     constructor(...args) {
@@ -64,17 +76,19 @@ export default function Focusable(Klass) {
       super.attributeChangedCallback &&
         super.attributeChangedCallback(name, oldValue, newValue);
 
-      const hasValue = newValue !== null;
-      if (name === 'focused') {
-        // The browser might decide to not apply focus without user interaction.
-        // ex: on IPad
-        hasValue ? this._applyFocusSideEffects() : this._applyBlurSideEffects();
-      }
+      // const hasValue = newValue !== null;
     }
 
     connectedCallback() {
       super.connectedCallback &&
         super.connectedCallback();
+
+      readOnlyProperties.forEach((readOnlyProperty) => {
+        if (this.hasAttribute(readOnlyProperty)) {
+          this.removeAttribute(readOnlyProperty);
+          console.warn(ERROR_MESSAGES[readOnlyProperty]);
+        }
+      });
 
       // when component focused/blurred
       this.addEventListener('focus', this._onFocus);
@@ -98,19 +112,13 @@ export default function Focusable(Klass) {
       });
     }
 
-    // keep getters and setters generic
-    // (so we can put them in base class), do not add custom logic
+    // read-only
     get focused() {
       return this.hasAttribute('focused');
     }
 
-    set focused(value) {
-      const hasValue = Boolean(value);
-      if (hasValue) {
-        this.setAttribute('focused', '');
-      } else {
-        this.removeAttribute('focused');
-      }
+    set focused(_) {
+      console.warn(ERROR_MESSAGES.focused);
     }
 
     get disabled() {
@@ -139,15 +147,16 @@ export default function Focusable(Klass) {
     }
 
     _onFocus() {
-      if (!this.focused) {
-        this.focused = true;
-      }
+      // Only for styling purpose.
+      // Focused property is controlled from inside.
+      // Attempt to set this property from outside
+      this.setAttribute('focused', '');
+      this._applyFocusSideEffects();
     }
 
     _onBlur() {
-      if (this.focused) {
-        this.focused = false;
-      }
+      this.removeAttribute('focused');
+      this._applyBlurSideEffects();
     }
 
     _applyFocusSideEffects() {
