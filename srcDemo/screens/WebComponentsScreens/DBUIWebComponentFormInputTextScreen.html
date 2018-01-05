@@ -44,12 +44,25 @@
   <dbui-web-component-form-input-text id="one" name="one" focused__ ></dbui-web-component-form-input-text>
   <br /><br />
   <dbui-web-component-form-input-text id="two" name="two" disabled__ ></dbui-web-component-form-input-text>
+  <input type="text" id="three" tabindex="0" />
 
   <script>
     const one = document.querySelector('#one');
     const two = document.querySelector('#two');
-    one.focused = true;
-    two.disabled = true;
+    const three = document.querySelector('#three');
+
+    [one, two, three].forEach((el) => {
+      el.addEventListener("focus", (evt) => {
+        console.log('focused', evt.target.id);
+      });
+      // el.onfocus = (evt) => {
+      //   console.log('focused', evt.target.id);
+      // };
+    });
+
+    one.focus();
+    // one.focused = true;
+    // two.disabled = true;
     setTimeout(() => {
 
       // one.blur();

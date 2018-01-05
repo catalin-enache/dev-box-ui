@@ -20,6 +20,8 @@ remove log messages in production (NODE_ENV)
 document lack of support for: delegatesFocus: true
 make pages for documenting features like Focusable ?
 
+expose utils, decorators, traits and base classes
+
 unittest web-components in iFrame
 create event helpers for unittests
 in unittests we should test among other things:
