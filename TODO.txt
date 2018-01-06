@@ -22,6 +22,8 @@ make pages for documenting features like Focusable ?
 
 expose utils, decorators, traits and base classes
 
+document how user can extend Base class and apply existing behaviours
+
 unittest web-components in iFrame
 create event helpers for unittests
 in unittests we should test among other things:
