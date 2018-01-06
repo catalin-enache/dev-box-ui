@@ -18,11 +18,15 @@ extract and reuse the common look & feel for form inputs (use the same vars also
 remove log messages in production (NODE_ENV)
 
 document lack of support for: delegatesFocus: true
-make pages for documenting features like Focusable ?
+make pages for documenting features like Focusable and how to use css[focusable]?
 
 expose utils, decorators, traits and base classes
 
 document how user can extend Base class and apply existing behaviours
+in other words document how user can define its web-components using exposed internals
+
+should we rewrite the main app to not be React based and use React in IFrames ?
+https://raw.githubusercontent.com/reactjs/reactjs.org/master/static/html/single-file-example.html
 
 unittest web-components in iFrame
 create event helpers for unittests

@@ -1,5 +1,15 @@
 
+// helpers
 import dbuiWebComponentsSetUp from './DBUIWebComponentsSetup/DBUIWebComponentsSetup';
+
+// internals
+import ensureSingleRegistration from './internals/ensureSingleRegistration';
+import getDBUIWebComponentBase from './DBUIWebComponentBase/DBUIWebComponentBase';
+
+// behaviours
+import Focusable from './behaviours/Focusable';
+
+// components
 import getDBUIWebComponentDummy from './DBUIWebComponentDummy/DBUIWebComponentDummy';
 import getDBUIWebComponentDummyParent from './DBUIWebComponentDummyParent/DBUIWebComponentDummyParent';
 import getDBUIWebComponentFormInputText from './DBUIWebComponentFormInputText/DBUIWebComponentFormInputText';
@@ -37,8 +47,19 @@ function quickSetupAndLoad(win = window) {
 
 export {
   registrations,
+
+  // helpers
   quickSetupAndLoad,
   dbuiWebComponentsSetUp,
+
+  // internals
+  ensureSingleRegistration,
+  getDBUIWebComponentBase,
+
+  // behaviours
+  Focusable,
+
+  // components
   getDBUIWebComponentDummy,
   getDBUIWebComponentDummyParent,
   getDBUIWebComponentFormInputText
