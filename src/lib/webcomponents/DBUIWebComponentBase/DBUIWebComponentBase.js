@@ -50,6 +50,10 @@ export default function getDBUIWebComponentBase(win) {
         return {};
       }
 
+      get instancePropertiesToDefine() {
+        return {};
+      }
+
       constructor(...args) {
         super();
 
@@ -98,11 +102,16 @@ export default function getDBUIWebComponentBase(win) {
         this.unregisterLocaleChange =
           LocaleService.onLocaleChange(this._handleLocaleChange);
         const { propertiesToUpgrade, propertiesToDefine } = this.constructor;
+        const { instancePropertiesToDefine } = this;
+        const allPropertiesToDefine = {
+          ...propertiesToDefine,
+          ...instancePropertiesToDefine
+        };
         propertiesToUpgrade.forEach((property) => {
           this._upgradeProperty(property);
         });
-        Object.keys(propertiesToDefine).forEach((property) => {
-          this._defineProperty(property, propertiesToDefine[property]);
+        Object.keys(allPropertiesToDefine).forEach((property) => {
+          this._defineProperty(property, allPropertiesToDefine[property]);
         });
       }
 

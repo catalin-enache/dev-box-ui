@@ -21,18 +21,20 @@ export default function Focusable(Klass) {
 
   Klass.componentStyle += `
   :host([disabled]) {
-    /* cursor: not-allowed; */
-    /*pointer-events: none;*/
+    cursor: not-allowed;
     opacity: 0.5;
+    
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
   }
-  /*
-  :host([disabled]):before {
-    content: '';
-    position: absolute;
-    width: 100%; height: 100%;
-    top: 0; left: 0;
+  
+  :host([disabled]) * {
+    pointer-events: none;
   }
-  */
   `;
 
   class Focusable extends Klass {
@@ -41,12 +43,17 @@ export default function Focusable(Klass) {
       return super.name;
     }
 
-    static get propertiesToDefine() {
-      const inheritedPropertiesToDefine = super.propertiesToDefine || {};
-      return {
-        ...inheritedPropertiesToDefine,
+    get instancePropertiesToDefine() {
+      const inheritedInstancePropertiesToDefine =
+        super.instancePropertiesToDefine || {};
+      const newInstancePropertiesToDefine = {};
+      if (!this.disabled) {
         // tabindex defines focusable behaviour
-        tabindex: 0
+        newInstancePropertiesToDefine.tabindex = 0;
+      }
+      return {
+        ...inheritedInstancePropertiesToDefine,
+        ...newInstancePropertiesToDefine
       };
     }
 
@@ -76,7 +83,10 @@ export default function Focusable(Klass) {
       super.attributeChangedCallback &&
         super.attributeChangedCallback(name, oldValue, newValue);
 
-      // const hasValue = newValue !== null;
+      const hasValue = newValue !== null;
+      if (name === 'disabled') {
+        hasValue ? this._applyDisabledSideEffects() : this._applyEnabledSideEffects();
+      }
     }
 
     connectedCallback() {
@@ -147,6 +157,7 @@ export default function Focusable(Klass) {
     }
 
     _onFocus() {
+      if (this.disabled) return;
       // Only for styling purpose.
       // Focused property is controlled from inside.
       // Attempt to set this property from outside
@@ -182,8 +193,32 @@ export default function Focusable(Klass) {
         firstInnerFocusable.focus();
       }
     }
+
+    _applyDisabledSideEffects() {
+      this.removeAttribute('tabindex');
+      this._innerFocusables.forEach((innerFocusable) => {
+        innerFocusable.setAttribute('tabindex', '-1');
+        if (innerFocusable.hasAttribute('contenteditable')) {
+          innerFocusable.setAttribute('contenteditable', 'false');
+        } else {
+          innerFocusable.disabled = true;
+        }
+      });
+      this.blur();
+    }
+
+    _applyEnabledSideEffects() {
+      this.setAttribute('tabindex', '0');
+      this._innerFocusables.forEach((innerFocusable) => {
+        innerFocusable.setAttribute('tabindex', '0');
+        if (innerFocusable.hasAttribute('contenteditable')) {
+          innerFocusable.setAttribute('contenteditable', 'true');
+        } else {
+          innerFocusable.disabled = false;
+        }
+      });
+    }
   }
 
-  Focusable.originalName = Klass.name;
   return Focusable;
 }

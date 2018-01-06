@@ -23,7 +23,7 @@ export default function getDBUIWebComponentFormInputText(win) {
         width: 100%;
         /*height: var(--dbui-web-component-form-input-height);*/
         /*line-height: var(--dbui-web-component-form-input-height);*/
-        height: 200px;
+        height: 300px;
         padding: 0px;
         font-size: 18px;
         color: var(--dbui-web-component-form-input-color);
@@ -73,6 +73,7 @@ export default function getDBUIWebComponentFormInputText(win) {
       
       }
       </style>
+      <p>DBUIWebComponentFormInputText</p>
       <div contenteditable="true" tabindex="0"></div>
       <div contenteditable="true" tabindex="0"></div>
       <input type="text" tabindex="0" />
