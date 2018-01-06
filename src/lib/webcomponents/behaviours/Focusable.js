@@ -160,7 +160,8 @@ export default function Focusable(Klass) {
       if (this.disabled) return;
       // Only for styling purpose.
       // Focused property is controlled from inside.
-      // Attempt to set this property from outside
+      // Attempt to set this property from outside will trigger a warning
+      // and will be ignored
       this.setAttribute('focused', '');
       this._applyFocusSideEffects();
     }
