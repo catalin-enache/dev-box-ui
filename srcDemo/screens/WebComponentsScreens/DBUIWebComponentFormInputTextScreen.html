@@ -28,6 +28,7 @@
     };
 
     window.onDBUIWebComponentsDefined = function() {
+      console.log(document.querySelector('#one').constructor.prototypeChainInfo)
     };
   </script>
   <!-- standard template end -->
@@ -43,7 +44,7 @@
 <!-- standard template end -->
   <dbui-web-component-form-input-text id="one" name="one"></dbui-web-component-form-input-text>
   <br /><br />
-  <dbui-web-component-form-input-text id="two" name="two"></dbui-web-component-form-input-text>
+  <dbui-web-component-form-input-text id="two" name="two" disabled></dbui-web-component-form-input-text>
   <input type="text" id="three" tabindex="0" />
 
   <script>

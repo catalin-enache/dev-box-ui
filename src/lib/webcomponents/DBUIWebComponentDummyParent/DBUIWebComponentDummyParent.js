@@ -15,34 +15,30 @@ export default function getDBUIWebComponentDummyParent(win) {
     } = getDBUIWebComponentBase(win);
     const DBUIWebComponentDummy = getDBUIWebComponentDummy(win);
 
-    const { document } = win;
-
-    const template = document.createElement('template');
-    template.innerHTML = `
-      <style>
-      :host {
-        display: inline-block;
-        width: 100%;
-        max-width: 400px;
-      }
-      </style>
-      <div>
-        <div>
-          <b>Dummy Parent shadow</b>
-        </div>
-        <div>
-          <dbui-web-component-dummy><slot></slot></dbui-web-component-dummy>
-        </div>
-      </div>
-    `;
-
     class DBUIWebComponentDummyParent extends DBUIWebComponentBase {
+
       static get registrationName() {
         return registrationName;
       }
 
-      static get template() {
-        return template;
+      static get templateInnerHTML() {
+        return `
+          <style>
+          :host {
+            display: inline-block;
+            width: 100%;
+            max-width: 400px;
+          }
+          </style>
+          <div>
+            <div>
+              <b>Dummy Parent shadow</b>
+            </div>
+            <div>
+              <dbui-web-component-dummy><slot></slot></dbui-web-component-dummy>
+            </div>
+          </div>
+        `;
       }
 
       static get dependencies() {

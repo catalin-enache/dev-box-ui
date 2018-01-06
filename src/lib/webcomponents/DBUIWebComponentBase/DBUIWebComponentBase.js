@@ -23,15 +23,17 @@ function defineCommonCSSVars() {
 export default function getDBUIWebComponentBase(win) {
   return ensureSingleRegistration(win, registrationName, () => {
     defineCommonCSSVars();
-    const { document, HTMLElement, customElements } = win;
 
-    const template = document.createElement('template');
-    template.innerHTML = '<style></style><slot></slot>';
+    const { document, HTMLElement, customElements } = win;
 
     class DBUIWebComponentBase extends HTMLElement {
 
-      static get template() {
-        return template;
+      static get registrationName() {
+        throw new Error('registrationName must be defined in derived classes');
+      }
+
+      static get templateInnerHTML() {
+        return '<style></style><slot></slot>';
       }
 
       static get dependencies() {
@@ -142,6 +144,16 @@ export default function getDBUIWebComponentBase(win) {
     }
 
     function defineCommonStaticMethods(klass) {
+      const templateInnerHTML = klass.templateInnerHTML;
+      const template = document.createElement('template');
+      template.innerHTML = templateInnerHTML;
+
+      Object.defineProperty(klass, 'template', {
+        get() { return template; },
+        enumerable: false,
+        configurable: true
+      });
+
       Object.defineProperty(klass, 'componentStyle', {
         get() {
           return klass.template.content.querySelector('style').innerHTML;
@@ -173,6 +185,22 @@ export default function getDBUIWebComponentBase(win) {
         customElements.define(registrationName, klass);
         return registrationName;
       };
+
+      Object.defineProperty(klass, 'prototypeChainInfo', {
+        get() {
+          const chain = [klass];
+          let parentProto = Object.getPrototypeOf(klass);
+          while (parentProto !== HTMLElement) {
+            chain.push(parentProto);
+            parentProto = Object.getPrototypeOf(parentProto);
+          }
+          chain.push(parentProto);
+          return chain;
+        },
+        enumerable: false,
+        configurable: true
+      });
+
       return klass;
     }
 
