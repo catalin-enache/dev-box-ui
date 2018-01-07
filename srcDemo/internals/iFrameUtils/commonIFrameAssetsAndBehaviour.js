@@ -11,7 +11,9 @@ function loadAsset(type, path, callback = () => {}) {
     asset.src = path;
   }
   asset.onload = () => {
+    const loadingMessage = `<br /> loaded asset ${path}`;
     console.log('loaded asset', path);
+    document.querySelector('.demo-screen-loading').innerHTML += loadingMessage;
     callback();
   };
   head.appendChild(asset);
@@ -39,6 +41,26 @@ const isProd = window.location.search.includes('production=1');
 loadAsset('script', `../../../build/dist/js/dev-box-ui-webcomponents${isProd ? '.min' : ''}.js`, () => {
   // Must be defined by user.
   window.onDBUIWebComponentsDistLibLoaded && window.onDBUIWebComponentsDistLibLoaded();
+
+  // load vendors, react components, babel and execute babel scripts (ex: demoing react components)
+  // https://raw.githubusercontent.com/reactjs/reactjs.org/master/static/html/single-file-example.html
+  loadAsset('script', '../../../vendors/js/vendors.min.js', () => {
+    loadAsset('script', '../../../build/dist/js/dev-box-ui-no-deps.js', () => {
+      // https://unpkg.com/babel-standalone@6.26.0/babel.min.js
+      loadAsset('script', '../../vendors/babel-standalone.6.26.0.min.js', () => {
+        const babelScripts = document.querySelectorAll('script[type="text/babel"]');
+        babelScripts.forEach((babelScript) => {
+          const output = window.Babel.transform(babelScript.innerHTML, { presets: ['react'] }).code;
+          const script = document.createElement('script');
+          script.type = 'text/javascript';
+          script.innerHTML = output;
+          document.querySelector('head').appendChild(script);
+        });
+        console.log('executed babel scripts');
+        // window.dispatchEvent(new Event('runBabel'));
+      });
+    });
+  });
 });
 
 /* eslint wrap-iife: 0 */
@@ -56,6 +78,8 @@ loadAsset('script', `../../../build/dist/js/dev-box-ui-webcomponents${isProd ? '
   console.log('all web-components defined');
 });
 
+
+
 // Stuff to do when everything is settled.
 window.addEventListener('load', () => {
   window.makeTabs();
@@ -64,7 +88,8 @@ window.addEventListener('load', () => {
   setTimeout(() => {
     document.querySelector('.demo-screen-loading').style.display = 'none';
     document.querySelector('.demo-screen').style.display = 'block';
-  }, 500);
+    console.log('revealing body');
+  }, 0);
 });
 
 // Handle main app messages.

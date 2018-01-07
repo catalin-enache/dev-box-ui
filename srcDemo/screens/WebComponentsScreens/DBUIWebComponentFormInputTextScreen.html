@@ -105,10 +105,64 @@
   </script>
   <!-- standard template end -->
 
+  <div class="tabs">
+    <section x-name="RESULT" x-checked="1">
+      <div id="root"></div>
+      <script id="test" type="text/babel" data-presets="react">
+        // window.addEventListener('runBabel', function () {
+
+          const ReactDOM = require('react-dom');
+          const React = require('react');
+          const { Draggable } = require('dev-box-ui');
+
+          ReactDOM.render(
+            <div>
+              <h1>Hello, world!</h1>
+              {
+              <Draggable style={{ border: '1px solid blue', width: 200, height: 200, overflowX: 'scroll', overflowY: 'scroll' }}>
+                <p>Draggable</p>
+              </Draggable>
+              }
+              <h1>Hello, world!</h1>
+            </div>,
+            document.getElementById('root')
+          );
+        // });
+      </script>
+    </section>
+
+    <section x-name="HTML" x-highlight="html">
+<p>draggable</p>
+<span>react</span>
+    </section>
+
+    <section x-name="CSS" x-highlight="css">
+body {
+  color: red;
+}
+    </section>
+
+    <section x-name="JS" x-highlight="javascript">
+class Car extends SuperClass {
+  constructor() {
+    super();
+  }
+
+  onInit() {
+    this.do(() => {
+      console.log(print);
+    });
+  }
+}
+    </section>
+  </div>
+
 </div>
+
 
 <!-- standard template start -->
 <script src="../../internals/iFrameUtils/commonIFrameAssetsAndBehaviour.js"></script>
 <!-- standard template end -->
+
 </body>
 </html>
