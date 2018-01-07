@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   Hello
-} from 'dev-box-ui';
+} from 'dev-box-ui-react-components';
 
 class HelloScreen extends React.Component {
   render() {

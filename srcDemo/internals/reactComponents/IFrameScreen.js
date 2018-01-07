@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import localeAware from '../../../src/lib/HOC/localeAware';
+import localeAware from '../../../src/lib/react-components/behaviours/localeAware';
 
 let IFrameScreen = class IFrameScreen extends React.Component {
   constructor(props) {

@@ -14,9 +14,8 @@
           "exclude": [
             "**/*.spec.js",
             "**/src/lib/styles/**",
-            "**/src/lib/theming/**",
             "**/src/lib/index.js",
-            "**/src/lib/components/**",
+            "**/src/lib/react-components/**",
             "**/test/**"
           ]
         }]

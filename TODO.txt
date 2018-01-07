@@ -4,6 +4,7 @@ distribution import: put distribution in head script then import someStuff from 
 normal import: import someStuff from dev-box-ui
 
 do we need anymore styles for our React components since we use/wrap web-components which have shadow dom ?
+remove style dependencies for react-components build as they are in web-components shadow dom
 
 maybe react components should take care of importing by themselves the web component they wrap
 in this case we have to solve supporting style override from outside
@@ -24,7 +25,13 @@ expose utils, decorators, traits and base classes
 
 make onDBUIWebComponentsDefined an event listener and handler
 
+why classnames does not appear in vendors list ?
+
 rename dist libs with dev-box-ui-react-components-no-deps/with-deps
+rename components directory to react-components
+rename vendors script to react-vendors
+
+move utils and services into web-components build
 
 document how user can extend Base class and apply existing behaviours
 in other words document how user can define its web-components using exposed internals

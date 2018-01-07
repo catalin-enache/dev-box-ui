@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   List
-} from 'dev-box-ui';
+} from 'dev-box-ui-react-components';
 
 class ListScreen extends React.Component {
   render() {

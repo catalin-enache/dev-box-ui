@@ -2,18 +2,20 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import {
-  // onScreenConsole,
+// onScreenConsole,
+} from 'dev-box-ui-web-components';
+import {
   localeAware
-} from 'dev-box-ui';
+} from 'dev-box-ui-react-components';
 import App from './app';
 // defines some helpers on window (reusing code needed in iFrames)
 import './internals/iFrameUtils/onWindowDefinedHelpers';
 
 // import getDBUIWebComponentDummy from '../build/src/lib/webcomponents/DBUIWebComponentDummy/DBUIWebComponentDummy';
 // import getDBUIWebComponentDummyParent from '../build/src/lib/webcomponents/DBUIWebComponentDummyParent/DBUIWebComponentDummyParent';
-import dbuiWebComponentsSetUp from '../src/lib/webcomponents/DBUIWebComponentsSetup/DBUIWebComponentsSetup';
-import getDBUIWebComponentDummy from '../src/lib/webcomponents/DBUIWebComponentDummy/DBUIWebComponentDummy';
-import getDBUIWebComponentDummyParent from '../src/lib/webcomponents/DBUIWebComponentDummyParent/DBUIWebComponentDummyParent';
+import dbuiWebComponentsSetUp from '../src/lib/web-components/helpers/dbuiWebComponentsSetup';
+import getDBUIWebComponentDummy from '../src/lib/web-components/components/DBUIWebComponentDummy/DBUIWebComponentDummy';
+import getDBUIWebComponentDummyParent from '../src/lib/web-components/components/DBUIWebComponentDummyParent/DBUIWebComponentDummyParent';
 
 dbuiWebComponentsSetUp(window).appendStyle('dbui-web-component-dummy', `
   b {

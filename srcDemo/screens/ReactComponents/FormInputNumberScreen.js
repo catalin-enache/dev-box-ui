@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   FormInputNumber
-} from 'dev-box-ui';
+} from 'dev-box-ui-react-components';
 
 
 class FormInputNumberScreen extends React.Component {

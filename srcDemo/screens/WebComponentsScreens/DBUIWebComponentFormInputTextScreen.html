@@ -12,7 +12,7 @@
     window.onDBUIWebComponentsDistLibLoaded = function defineDBUIWebComponents() {
       const {
         quickSetupAndLoad
-      } = require('dev-box-ui-webcomponents');
+      } = require('dev-box-ui-web-components');
       const {
         'dbui-web-component-form-input-text': dbuiWebComponentFormInputTextClass,
       } = quickSetupAndLoad(window)([
@@ -113,7 +113,7 @@
 
           const ReactDOM = require('react-dom');
           const React = require('react');
-          const { Draggable } = require('dev-box-ui');
+          const { Draggable } = require('dev-box-ui-react-components');
 
           ReactDOM.render(
             <div>

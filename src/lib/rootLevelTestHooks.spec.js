@@ -1,7 +1,9 @@
 import ReactDOM from 'react-dom';
 import { beforeEach, afterEach } from 'mocha';
 import { expect } from 'chai';
-import localeService from './services/LocaleService';
+import getDBUILocaleService from './web-components/services/DBUILocaleService';
+
+const localeService = getDBUILocaleService(window);
 
 /* eslint no-console: 0 */
 /* eslint func-names: 0 */

@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   Draggable, DisableSelection
-} from 'dev-box-ui';
+} from 'dev-box-ui-react-components';
 import PropertiesTable from '../../internals/reactComponents/PropertiesTable';
 
 class ToRender extends React.Component {
