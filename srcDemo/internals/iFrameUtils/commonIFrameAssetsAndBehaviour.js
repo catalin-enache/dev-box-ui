@@ -49,7 +49,7 @@ loadAsset('script', `../../../build/dist/js/dev-box-ui-web-components${isProd ? 
 
   // load vendors, react components, babel and execute babel scripts (ex: demoing react components)
   // https://raw.githubusercontent.com/reactjs/reactjs.org/master/static/html/single-file-example.html
-  loadAsset('script', `../../../vendors/js/vendors${isProd ? '.min' : ''}.js`, () => {
+  loadAsset('script', `../../../vendors/js/vendors-react${isProd ? '.min' : ''}.js`, () => {
     loadAsset('script', `../../../build/dist/js/dev-box-ui-react-components-no-deps${isProd ? '.min' : ''}.js`, () => {
       // https://unpkg.com/babel-standalone@6.26.0/babel.min.js
       loadAsset('script', '../../vendors/babel-standalone.6.26.0.min.js', () => {

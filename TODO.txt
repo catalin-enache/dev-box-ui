@@ -3,48 +3,42 @@ minimal imports: import someStuff from node_modules/dev-box-ui/webcomponents/som
 distribution import: put distribution in head script then import someStuff from dev-box-ui
 normal import: import someStuff from dev-box-ui
 
-do we need anymore styles for our React components since we use/wrap web-components which have shadow dom ?
-remove style dependencies for react-components build as they are in web-components shadow dom
-
-maybe react components should take care of importing by themselves the web component they wrap
+most-probably react components should take care of importing by themselves the web component they wrap
 in this case we have to solve supporting style override from outside
 
 check box-shadow on rtl
 
 when user press back update window.location.hash
 
-do a copyToClipboard shared utility
+do a navigation service
+
+do a copyToClipboard utility - maybe even a web-component
 
 on form inputs style the wrapper div not the input itself
 extract and reuse the common look & feel for form inputs (use the same vars also)
 
 remove log messages in production (NODE_ENV)
 
-document lack of support for: delegatesFocus: true
-make pages for documenting features like Focusable and how to use css[focusable]?
-
-expose utils, decorators, traits and base classes
-
 make onDBUIWebComponentsDefined an event listener and handler
 
 why classnames does not appear in vendors list ?
 
-rename dist libs with dev-box-ui-react-components-no-deps/with-deps
-rename components directory to react-components
-rename vendors script to react-vendors
+when react-components will wrap web-components there will be no need for classnames dependency
 
-move utils and services into web-components build
-
+expose utils, decorators, traits and base classes
 document how user can extend Base class and apply existing behaviours
 in other words document how user can define its web-components using exposed internals
-
-should we rewrite the main app to not be React based and use React in IFrames ?
-https://raw.githubusercontent.com/reactjs/reactjs.org/master/static/html/single-file-example.html
-remove thr styles used for react app
 
 make some web-components icons - inspire from react icons
 
 add favicon.ico
+
+document lack of support for: delegatesFocus: true
+make pages for documenting features like Focusable and how to use css[focusable]?
+
+document dev-box-ui purpose, browser support etc - some general words
+
+do a change-log when publishing the library
 
 unittest web-components in iFrame
 create event helpers for unittests
