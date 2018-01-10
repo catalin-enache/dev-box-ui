@@ -6,15 +6,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link href='https://fonts.googleapis.com/css?family=Roboto:400,100,‌​100italic,300,300ita‌​lic,400italic,500,50‌​0italic,700,700itali‌​c,900italic,900' rel='stylesheet' type='text/css' />
   <link rel="stylesheet" href="srcDemo/styleForScreens/styleForScreens.css" />
-  <!-- highlight.js -->
-  <link rel="stylesheet" href="srcDemo/vendors/highlight/styles/atelier-heath-light.css">
-  <script src="srcDemo/vendors/highlight/highlight.pack.js"></script>
 </head>
 <body>
-<div id="demo"/>
-<script src="vendors/js/vendors.js"></script>
-<script src="build/dist/js/dev-box-ui-web-components.js"></script>
-<script src="build/dist/js/dev-box-ui-react-components-no-deps.js"></script>
-<script src="demo/js/demo.js"></script>
+<div id="demo">
+  <div>
+    <div class="page-header">
+      <h2>DEV BOX UI</h2><a
+        class="head-link"
+        href="https://github.com/catalin-enache/dev-box-ui"
+        rel="noopener noreferrer"
+        target="_blank">github</a>
+    </div>
+    <div class="demo-wrapper">
+      <label id="links-toggle-label" for="links-toggle" class="head-link">menu</label>
+      <input id="links-toggle" type="checkbox" />
+      <div class="demo-links">
+        <div class="locale-dir-switch">
+          <a href="#">TOGGLE LOCALE DIR</a>
+        </div>
+      </div>
+      <div class="demo-area">
+        <iframe src=""></iframe>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="srcDemo/demo.js"></script>
 </body>
 </html>

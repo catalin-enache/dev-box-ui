@@ -1,0 +1,82 @@
+<!doctype html>
+<html dir="ltr" lang="en">
+<head>
+  <style>
+
+  </style>
+
+  <!-- standard template start -->
+  <script src="../../internals/iFrameUtils/headScript.js"></script>
+  <script>
+    window.onDBUIWebComponentsDistLibLoaded = function defineDBUIWebComponents() {
+    };
+
+    window.onDBUIWebComponentsDefined = function() {
+    };
+  </script>
+  <!-- standard template end -->
+</head>
+<body style="margin: 0px; padding: 0px;">
+
+<!-- standard template start -->
+<div class="demo-screen-loading"
+     style="padding: 50px; font-family: arial, sans-serif; font-size: 16px;">
+  loading...
+</div>
+<div class="demo-screen" style="display: none;">
+<!-- standard template end -->
+  <h2 class="title">Loading Dev Box UI Web Components</h2>
+  <h3 class="section">From Distribution</h3>
+
+  <pre><code class="html" id="example">
+
+  </code></pre>
+  <script>
+    const exampleText = `
+<!doctype html>
+<html dir="ltr" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <script
+    src="${window.distributionURL}"><\/script>
+  <script>
+    const {
+      quickSetupAndLoad
+    } = require('dev-box-ui-web-components');
+    const {
+      'dbui-web-component-dummy-parent': dbuiWebComponentDummyParentClass,
+    } = quickSetupAndLoad(window)([
+      {
+        registrationName: 'dbui-web-component-dummy',
+        componentStyle: \`
+         b {
+           color: var(--dummy-b-color, inherit);
+           border-radius: var(--dummy-b-border-radius, 0px);
+           background-color: var(--dummy-b-bg-color, transparent);
+         }
+        \`
+      },
+      {
+        registrationName: 'dbui-web-component-dummy-parent'
+      }
+    ]);
+  <\/script>
+</head>
+<body>
+  <dbui-web-component-dummy-parent>hello 1</dbui-web-component-dummy-parent>
+</body>
+</html>
+`;
+    document.querySelector('#example').innerText = exampleText;
+  </script>
+
+
+
+</div>
+
+<!-- standard template start -->
+<script src="../../internals/iFrameUtils/commonIFrameAssetsAndBehaviour.js"></script>
+<!-- standard template end -->
+</body>
+</html>

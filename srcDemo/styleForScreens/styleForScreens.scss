@@ -15,6 +15,20 @@ html, body {
   box-sizing: border-box;
 }
 
+html, * {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+
+*:defined {
+  transition: opacity 1s;
+}
+*:not(:defined) {
+  visibility: hidden;
+  opacity: 0;
+}
+
+
 //@import "debug";
 
 $dir: ltr;

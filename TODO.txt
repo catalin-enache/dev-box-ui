@@ -11,6 +11,8 @@ in this case we have to solve supporting style override from outside
 
 check box-shadow on rtl
 
+when user press back update window.location.hash
+
 do a copyToClipboard shared utility
 
 on form inputs style the wrapper div not the input itself
@@ -38,6 +40,11 @@ in other words document how user can define its web-components using exposed int
 
 should we rewrite the main app to not be React based and use React in IFrames ?
 https://raw.githubusercontent.com/reactjs/reactjs.org/master/static/html/single-file-example.html
+remove thr styles used for react app
+
+make some web-components icons - inspire from react icons
+
+add favicon.ico
 
 unittest web-components in iFrame
 create event helpers for unittests

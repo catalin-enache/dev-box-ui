@@ -74,7 +74,6 @@
     "test": "node ./test/collect.js && cross-env NODE_ENV=test karma start --single-run",
     "serve": "http-server -a 0.0.0.0 -p 8001 -c-1",
     "eslint": "eslint src",
-    "build:developing-react-components": "npm run build:dev-box-ui-react-components-no-deps:dist:dev && npm run build:demo",
     "build:style:demo:styleForScreens": "node-sass srcDemo/styleForScreens/styleForScreens.scss srcDemo/styleForScreens/styleForScreens.css",
     "build:vendors:dev": "                                                                       browserify                                                              -r react -r react-dom -r prop-types -r hoist-non-react-statics -r classnames                       -o vendors/js/vendors.js",
     "build:vendors:prod": "cross-env NODE_ENV=production                                         browserify                                                              -r react -r react-dom -r prop-types -r hoist-non-react-statics -r classnames                       -g [ loose-envify purge --NODE_ENV production ] -g uglifyify -p bundle-collapser/plugin | uglifyjs --compress=unused,dead_code --mangle -o vendors/js/vendors.min.js",
@@ -87,10 +86,8 @@
     "build:dev-box-ui-react-components-with-deps:list": "                                        browserify   -r ./src/lib/react-components/:dev-box-ui-react-components -x react -x react-dom                                                                              --list | node scripts/depsReporter.js",
     "build:dev-box-ui-web-components:dist:dev": "                                                browserify   -r ./src/lib/web-components:dev-box-ui-web-components                                                                                                          --debug -o build/dist/js/dev-box-ui-web-components.js",
     "build:dev-box-ui-web-components:dist:prod": "cross-env NODE_ENV=production                  browserify   -r ./src/lib/web-components:dev-box-ui-web-components                                                                                                          -g [ loose-envify purge --NODE_ENV production ] -g uglifyify -p bundle-collapser/plugin | uglifyjs --compress=unused,dead_code --mangle -o build/dist/js/dev-box-ui-web-components.min.js",
-    "build:demo": "                                                                              browserify                                                              -x react -x react-dom -x prop-types -x dev-box-ui-web-components -x dev-box-ui-react-components    --debug -o demo/js/demo.js srcDemo/demo.js",
-    "build:demo:list": "                                                                         browserify                                                              -x react -x react-dom -x prop-types -x dev-box-ui-web-components -x dev-box-ui-react-components    --list | node scripts/depsReporter.js",
     "build:babel:src:release": "babel ./src --out-dir ./build/src --ignore *.spec.js",
-    "build:all": "npm run build:vendors:dev && npm run build:vendors:prod && npm run build:dev-box-ui-react-components-no-deps:dist:dev && npm run build:dev-box-ui-react-components-no-deps:dist:prod && npm run build:dev-box-ui-react-components-with-deps:dist:dev && npm run build:dev-box-ui-react-components-with-deps:dist:prod && npm run build:dev-box-ui-web-components:dist:dev && npm run build:dev-box-ui-web-components:dist:prod && npm run build:demo && npm run build:babel:src:release",
-    "clean": "rimraf build/dist/js/* && rimraf build/src/* && rimraf vendors/js/* && rimraf demo/js/*"
+    "build:all": "npm run build:vendors:dev && npm run build:vendors:prod && npm run build:dev-box-ui-react-components-no-deps:dist:dev && npm run build:dev-box-ui-react-components-no-deps:dist:prod && npm run build:dev-box-ui-react-components-with-deps:dist:dev && npm run build:dev-box-ui-react-components-with-deps:dist:prod && npm run build:dev-box-ui-web-components:dist:dev && npm run build:dev-box-ui-web-components:dist:prod && npm run build:babel:src:release",
+    "clean": "rimraf build/dist/js/* && rimraf build/src/* && rimraf vendors/js/*"
   }
 }

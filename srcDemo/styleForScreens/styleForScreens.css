@@ -11,6 +11,16 @@ html, body {
 * {
   box-sizing: border-box; }
 
+html, * {
+  -webkit-tap-highlight-color: transparent; }
+
+*:defined {
+  transition: opacity 1s; }
+
+*:not(:defined) {
+  visibility: hidden;
+  opacity: 0; }
+
 html[dir=ltr] a {
   color: #4078c0;
   text-decoration: none; }
@@ -144,14 +154,10 @@ html[dir=ltr] #demo {
         -webkit-overflow-scrolling: touch;
         /* 1 */
         box-sizing: border-box;
-        /* 1: prevents double scrollbar (from iframe and from iframe's wrapper)  */ }
+        /* 1: prevents double scrollbar (from iframe)  */ }
         @media (max-width: 992px) {
           html[dir=ltr] #demo > div .demo-wrapper .demo-area {
             padding-left: 0px; } }
-        html[dir=ltr] #demo > div .demo-wrapper .demo-area > div {
-          height: 100%;
-          overflow: auto;
-          -webkit-overflow-scrolling: touch; }
         html[dir=ltr] #demo > div .demo-wrapper .demo-area > iframe {
           width: 100%;
           height: 100%;
@@ -446,14 +452,10 @@ html[dir=rtl] #demo {
         -webkit-overflow-scrolling: touch;
         /* 1 */
         box-sizing: border-box;
-        /* 1: prevents double scrollbar (from iframe and from iframe's wrapper)  */ }
+        /* 1: prevents double scrollbar (from iframe)  */ }
         @media (max-width: 992px) {
           html[dir=rtl] #demo > div .demo-wrapper .demo-area {
             padding-right: 0px; } }
-        html[dir=rtl] #demo > div .demo-wrapper .demo-area > div {
-          height: 100%;
-          overflow: auto;
-          -webkit-overflow-scrolling: touch; }
         html[dir=rtl] #demo > div .demo-wrapper .demo-area > iframe {
           width: 100%;
           height: 100%;

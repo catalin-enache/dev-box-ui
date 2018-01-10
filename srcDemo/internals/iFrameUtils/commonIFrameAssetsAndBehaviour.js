@@ -1,4 +1,11 @@
 
+// expose React used in iFrame to React Developer Tools
+// https://github.com/facebook/react-devtools/issues/57
+window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = window.parent.__REACT_DEVTOOLS_GLOBAL_HOOK__;
+
+window.distributionURL =
+  'https://catalin-enache.github.io/dev-box-ui/build/dist/js/dev-box-ui-webcomponents.js';
+
 // Asset loader helper
 function loadAsset(type, path, callback = () => {}) {
   const head = document.querySelector('head');
@@ -11,9 +18,7 @@ function loadAsset(type, path, callback = () => {}) {
     asset.src = path;
   }
   asset.onload = () => {
-    const loadingMessage = `<br /> loaded asset ${path}`;
     console.log('loaded asset', path);
-    document.querySelector('.demo-screen-loading').innerHTML += loadingMessage;
     callback();
   };
   head.appendChild(asset);
@@ -44,8 +49,8 @@ loadAsset('script', `../../../build/dist/js/dev-box-ui-web-components${isProd ? 
 
   // load vendors, react components, babel and execute babel scripts (ex: demoing react components)
   // https://raw.githubusercontent.com/reactjs/reactjs.org/master/static/html/single-file-example.html
-  loadAsset('script', '../../../vendors/js/vendors.min.js', () => {
-    loadAsset('script', '../../../build/dist/js/dev-box-ui-react-components-no-deps.js', () => {
+  loadAsset('script', `../../../vendors/js/vendors${isProd ? '.min' : ''}.js`, () => {
+    loadAsset('script', `../../../build/dist/js/dev-box-ui-react-components-no-deps${isProd ? '.min' : ''}.js`, () => {
       // https://unpkg.com/babel-standalone@6.26.0/babel.min.js
       loadAsset('script', '../../vendors/babel-standalone.6.26.0.min.js', () => {
         const babelScripts = document.querySelectorAll('script[type="text/babel"]');
@@ -78,8 +83,6 @@ loadAsset('script', `../../../build/dist/js/dev-box-ui-web-components${isProd ? 
   console.log('all web-components defined');
 });
 
-
-
 // Stuff to do when everything is settled.
 window.addEventListener('load', () => {
   window.makeTabs();
@@ -93,11 +96,16 @@ window.addEventListener('load', () => {
 });
 
 // Handle main app messages.
-window.onmessage = (msg) => {
+window.addEventListener('message', (msg) => {
   const [message, value] = msg.data.split(' ');
   if (message === 'changeDir') {
     const dir = value;
     window.document.documentElement.setAttribute('dir', dir);
   }
-};
+  // not used currently
+  if (message === 'changeLang') {
+    const lang = value;
+    window.document.documentElement.setAttribute('lang', lang);
+  }
+});
 

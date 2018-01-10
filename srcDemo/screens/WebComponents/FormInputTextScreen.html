@@ -113,17 +113,56 @@
 
           const ReactDOM = require('react-dom');
           const React = require('react');
-          const { Draggable } = require('dev-box-ui-react-components');
+          const { Draggable, FormInputNumber } = require('dev-box-ui-react-components');
+
+          class FormInputNumberScreen extends React.Component {
+            constructor(props) {
+              super(props);
+              this.state = {
+                inputValue: -7.08
+              };
+              this.handleChange = this.handleChange.bind(this);
+            }
+
+            handleChange(inputValue) {
+              const valueToSendBack = Number(inputValue.toPrecision(16));
+              this.setState({
+                inputValue: valueToSendBack
+              });
+            }
+
+            render() {
+              return (
+                <div>
+                  <FormInputNumber
+                    value={this.state.inputValue}
+                    onChange={this.handleChange}
+                    defaultDecPoint=","
+                    defaultThousandsSeparator="."
+                  />
+                  <FormInputNumber
+                    value={this.state.inputValue}
+                    onChange={this.handleChange}
+                  />
+                  <p>{this.state.inputValue}{'\u00A0'}</p>
+                </div>
+              );
+            }
+          }
 
           ReactDOM.render(
             <div>
               <h1>Hello, world!</h1>
               {
               <Draggable style={{ border: '1px solid blue', width: 200, height: 200, overflowX: 'scroll', overflowY: 'scroll' }}>
-                <p>Draggable</p>
+                <div>
+                  <p>Draggable</p>
+                  <dbui-web-component-form-input-text></dbui-web-component-form-input-text>
+                </div>
               </Draggable>
               }
               <h1>Hello, world!</h1>
+              <FormInputNumberScreen />
             </div>,
             document.getElementById('root')
           );

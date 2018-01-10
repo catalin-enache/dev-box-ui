@@ -1,106 +1,124 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import PropTypes from 'prop-types';
-import {
-// onScreenConsole,
-} from 'dev-box-ui-web-components';
-import {
-  localeAware
-} from 'dev-box-ui-react-components';
-import App from './app';
-// defines some helpers on window (reusing code needed in iFrames)
-import './internals/iFrameUtils/onWindowDefinedHelpers';
 
-// import getDBUIWebComponentDummy from '../build/src/lib/webcomponents/DBUIWebComponentDummy/DBUIWebComponentDummy';
-// import getDBUIWebComponentDummyParent from '../build/src/lib/webcomponents/DBUIWebComponentDummyParent/DBUIWebComponentDummyParent';
-import dbuiWebComponentsSetUp from '../src/lib/web-components/helpers/dbuiWebComponentsSetup';
-import getDBUIWebComponentDummy from '../src/lib/web-components/components/DBUIWebComponentDummy/DBUIWebComponentDummy';
-import getDBUIWebComponentDummyParent from '../src/lib/web-components/components/DBUIWebComponentDummyParent/DBUIWebComponentDummyParent';
+'use strict';
 
-dbuiWebComponentsSetUp(window).appendStyle('dbui-web-component-dummy', `
-  b {
-    color: deepskyblue;
-    font-style: oblique;
-  }
-`);
+/* eslint strict: 0 */
 
-const DBUIWebComponentDummy = getDBUIWebComponentDummy(window);
-const DBUIWebComponentDummyParent = getDBUIWebComponentDummyParent(window);
+// ================================== constants ==============================
 
+const screenLinksGen = [
+  {
+    title: 'General',
+    links: [
+      { path: 'General/LoadingDevBoxUIWebComponentsScreen.html', title: 'Loading DevBoxUI Web Components' },
+    ]
+  },
+  {
+    title: 'Web Components',
+    links: [
+      { path: 'WebComponents/DummyScreen.html', title: 'Dummy' },
+      { path: 'WebComponents/DummyParentScreen.html', title: 'Dummy Parent' },
+      { path: 'WebComponents/FormInputTextScreen.html', title: 'Form Input Text' },
+    ]
+  },
+  {
+    title: 'React Components',
+    links: [
+      { path: 'ReactComponents/DraggableScreen.html', title: 'Draggable' },
+      { path: 'ReactComponents/FormInputNumberScreen.html', title: 'Form Input Number' },
+      { path: 'ReactComponents/FormInputScreen.html', title: 'Form Input' },
+      { path: 'ReactComponents/HelloScreen.html', title: 'Hello' },
+      { path: 'ReactComponents/ListScreen.html', title: 'List' },
+    ]
+  },
+  {
+    title: 'Services',
+    links: [
+      { path: 'Services/LocaleServiceScreen.html', title: 'Locale Service' },
+    ]
+  },
+  {
+    title: 'Miscellaneous',
+    links: [
+      { path: 'Miscellaneous/WebComponentInReactScreen.html', title: 'Web Component in React' },
+      { path: 'Miscellaneous/WebComponentInIframeScreen.html', title: 'Web Component in Iframe' },
+    ]
+  },
+  {
+    title: 'Debug',
+    links: [
+      { path: 'Debug/OnScreenConsoleScreen.html', title: 'On Screen Console' },
+    ]
+  },
+];
 
-setTimeout(() => {
-  DBUIWebComponentDummy.registerSelf();
-  DBUIWebComponentDummyParent.registerSelf();
-}, 2000);
+const demoIFrame = document.querySelector('.demo-area iframe');
+const demoLinks = document.querySelector('.demo-links');
 
-const iframe = document.createElement('iframe');
+// ================================== functions ==============================
 
-window.onmessage = function (msg) { console.log('msg from iframe', msg); };
-iframe.onload = function (evt) {
-  const target = evt.target;
+function getWindowLocationHash() {
+  return (
+    window.location.hash ||
+    screenLinksGen[0].links[0].path
+  ).replace('#', '');
+}
 
-  target.contentWindow.document.write(`
-    <html>
-    <body>
-      <dbui-web-component-dummy
-        style="color: blue"
-      >
-        <span>hello world 3</span>
-      </dbui-web-component-dummy>
-      <dbui-web-component-dummy-parent></dbui-web-component-dummy-parent>
-    </body>
-    <script>
-      window.onmessage = function (msg) {
-        console.log('msg from window', msg);
-        window.top.postMessage('world', '*');
-      };
-    </script>
-    </html>
-  `);
-  target.contentWindow.postMessage('hello', '*');
+function hideScreenLinks() {
+  document.querySelector('#links-toggle').checked = false;
+}
 
-  dbuiWebComponentsSetUp(target.contentWindow).appendStyle('dbui-web-component-dummy', `
-    b {
-      font-style: oblique;
-      opacity: 0.5;
-    }
-  `);
-  const DBUIWebComponentDummy2 = getDBUIWebComponentDummy(target.contentWindow);
-  const DBUIWebComponentDummyParent2 = getDBUIWebComponentDummyParent(target.contentWindow);
-  setTimeout(() => {
-    DBUIWebComponentDummy2.registerSelf();
-    DBUIWebComponentDummyParent2.registerSelf();
+function insertDemoLinks() {
+  const windowLocationHash = getWindowLocationHash();
+  const links = screenLinksGen.map((section) => {
+    return `
+<div>
+  <div class="links-section-group">${section.title}</div>
+  <ul>${
+  section.links.map((link) => {
+    const isActive = link.path === windowLocationHash ? 'x-active' : '';
+    return `
+    <li ${isActive}>
+      <a href="${`#${link.path}`}">${link.title}</a>
+    </li>
+    `;
+  }).join('\n')}
+  </ul>
+</div>`;
+  }).join('\n');
+  demoLinks.innerHTML += links;
+}
 
-    setTimeout(() => {
-      // target.remove();
-    }, 2000);
-  }, 2000);
-};
+function loadDemoScreen() {
+  const isProd = !window.location.pathname.includes('.dev.');
+  const windowLocationHash = getWindowLocationHash();
+  const src = `srcDemo/screens/${windowLocationHash}?production=${isProd ? '1' : '0'}`;
+  demoIFrame.src = src;
+  demoIFrame.addEventListener('load', () => {
+    hideScreenLinks();
+  });
 
-// document.body.appendChild(iframe);
+  const currentActiveLink = document.querySelector('.demo-links li[x-active]');
+  currentActiveLink.removeAttribute('x-active');
 
+  const nextActiveLink = document.querySelector(`.demo-links a[href="#${windowLocationHash}"]`);
+  nextActiveLink.parentNode.setAttribute('x-active', '');
+}
 
-// onScreenConsole({ options: { showLastOnly: false } });
+function toggleAppDir(evt) {
+  evt.preventDefault();
+  const documentElement = window.document.documentElement;
+  const currentDir = documentElement.getAttribute('dir');
+  const nextDir = currentDir === 'ltr' ? 'rtl' : 'ltr';
+  documentElement.setAttribute('dir', nextDir);
+  demoIFrame.contentWindow.postMessage(`changeDir ${nextDir}`, '*');
+  hideScreenLinks();
+}
 
-let Demo = class Demo extends React.Component {
-  render() {
-    if (process.env.NODE_ENV !== 'production') {
-      /* eslint no-console: 0 */
-      // console.log('rendering Demo component');
-    }
-    const { locale: { dir } } = this.props;
-    return (
-      <App />
-    );
-  }
-};
+// ================================== main ===============================
 
-Demo.propTypes = {
-  locale: PropTypes.object
-};
+insertDemoLinks();
+loadDemoScreen();
 
-Demo = localeAware(Demo);
+window.addEventListener('hashchange', loadDemoScreen);
 
-ReactDOM.render((
-  <Demo/>
-), document.getElementById('demo'));
+document.querySelector('.locale-dir-switch a').addEventListener('click', toggleAppDir);

@@ -1,0 +1,131 @@
+<!doctype html>
+<html dir="ltr" lang="en">
+<head>
+  <style>
+  </style>
+
+  <!-- standard template start -->
+  <script>
+    window.onDBUIWebComponentsDistLibLoaded = function defineDBUIWebComponents() {
+    };
+    window.onDBUIWebComponentsDefined = function() {
+    };
+  </script>
+  <!-- standard template end -->
+</head>
+<body style="margin: 0px; padding: 0px;">
+
+<!-- standard template start -->
+<div class="demo-screen-loading"
+     style="padding: 50px; font-family: arial, sans-serif; font-size: 16px;">
+  loading...
+</div>
+<div class="demo-screen" style="display: none;">
+<!-- standard template end -->
+
+  <h2 class="title">Dummy Web Component In Iframe</h2>
+
+  <h3 class="section">Web Component Render</h3>
+
+  <div class="tabs">
+    <section x-name="RESULT" x-checked="1">
+      <div id="iFrame-wrapper"></div>
+      <script>
+        window.addEventListener('load', () => {
+          const {
+            dbuiWebComponentsSetUp,
+            getDBUIWebComponentDummy,
+            getDBUIWebComponentDummyParent
+          } = require('dev-box-ui-web-components');
+
+          const iframe = document.createElement('iframe');
+          window.addEventListener('message', (msg) => {
+            if (iframe.contentWindow === msg.source) {
+              console.log('msg from iframe', msg)
+            } else {
+              console.log('msg from top window', msg)
+            }
+          });
+
+          iframe.onload = function (evt) {
+            const target = evt.target;
+            target.contentWindow.document.write(`
+              <html>
+              <body>
+                <dbui-web-component-dummy
+                  style="color: blue"
+                >
+                  <span>hello 1</span>
+                </dbui-web-component-dummy>
+                <dbui-web-component-dummy-parent>
+                  hello 2
+                </dbui-web-component-dummy-parent>
+              </body>
+              <script>
+                window.onmessage = function (msg) {
+                  console.log('msg from window', msg);
+                  window.parent.postMessage('world', '*');
+                };
+              <\/script>
+              </html>
+            `);
+            target.contentWindow.postMessage('hello', '*');
+
+            dbuiWebComponentsSetUp(target.contentWindow).appendStyle('dbui-web-component-dummy', `
+              b {
+                font-style: oblique;
+                opacity: 0.5;
+              }
+            `);
+            const DBUIWebComponentDummy2 = getDBUIWebComponentDummy(target.contentWindow);
+            const DBUIWebComponentDummyParent2 = getDBUIWebComponentDummyParent(target.contentWindow);
+            setTimeout(() => {
+              DBUIWebComponentDummy2.registerSelf();
+              DBUIWebComponentDummyParent2.registerSelf();
+
+              setTimeout(() => {
+                // target.remove();
+              }, 2000);
+            }, 2000);
+
+          };
+          document.querySelector('#iFrame-wrapper').appendChild(iframe);
+        });
+
+
+      </script>
+    </section>
+
+    <section x-name="HTML" x-highlight="html">
+<p>draggable</p>
+<span>react</span>
+    </section>
+
+    <section x-name="CSS" x-highlight="css">
+body {
+  color: red;
+}
+    </section>
+
+    <section x-name="JS" x-highlight="javascript">
+class Car extends SuperClass {
+  constructor() {
+    super();
+  }
+
+  onInit() {
+    this.do(() => {
+      console.log(print);
+    });
+  }
+}
+    </section>
+  </div>
+
+</div>
+
+<!-- standard template start -->
+<script src="../../internals/iFrameUtils/commonIFrameAssetsAndBehaviour.js"></script>
+<!-- standard template end -->
+</body>
+</html>

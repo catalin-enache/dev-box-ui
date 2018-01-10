@@ -1,0 +1,109 @@
+<!doctype html>
+<html dir="ltr" lang="en">
+<head>
+  <style>
+
+  </style>
+
+  <!-- standard template start -->
+  <script>
+    window.onDBUIWebComponentsDistLibLoaded = function defineDBUIWebComponents() {
+    };
+
+    window.onDBUIWebComponentsDefined = function() {
+    };
+  </script>
+  <!-- standard template end -->
+</head>
+<body style="margin: 0px; padding: 0px;">
+
+<!-- standard template start -->
+<div class="demo-screen-loading"
+     style="padding: 50px; font-family: arial, sans-serif; font-size: 16px;">
+  loading...
+</div>
+<div class="demo-screen" style="display: none;">
+<!-- standard template end -->
+  <h2 class="title">Hello</h2>
+
+  <div class="tabs">
+    <section x-name="RESULT" x-checked="1">
+      <div id="root"></div>
+      <script id="test" type="text/babel" data-presets="react">
+        // window.addEventListener('runBabel', function () {
+
+          const ReactDOM = require('react-dom');
+          const React = require('react');
+          const { Hello } = require('dev-box-ui-react-components');
+
+          class HelloScreen extends React.Component {
+            render() {
+              return (
+                <div>
+                  <Hello />
+                </div>
+              );
+            }
+          }
+
+          ReactDOM.render(
+            <HelloScreen />,
+            document.getElementById('root')
+          );
+        // });
+      </script>
+    </section>
+
+    <section x-name="HTML" x-highlight="html">
+<p>draggable</p>
+<span>react</span>
+    </section>
+
+    <section x-name="CSS" x-highlight="css">
+body {
+  color: red;
+}
+    </section>
+
+    <section x-name="JS" x-highlight="javascript">
+class Car extends SuperClass {
+  constructor() {
+    super();
+  }
+
+  onInit() {
+    this.do(() => {
+      console.log(print);
+    });
+  }
+}
+    </section>
+  </div>
+
+  <!-- standard template start -->
+  <div class="properties"></div>
+  <script>
+    window.addEventListener('load', () => {
+      window.generateComponentPropertiesTable({
+        propertyOne: {
+          type: 'string',
+          default: 'value 1',
+          description: 'description one'
+        },
+        propertyTwo: {
+          type: 'number',
+          default: '5',
+          description: 'description two'
+        }
+      })
+    });
+  </script>
+  <!-- standard template end -->
+
+</div>
+
+<!-- standard template start -->
+<script src="../../internals/iFrameUtils/commonIFrameAssetsAndBehaviour.js"></script>
+<!-- standard template end -->
+</body>
+</html>
