@@ -37,6 +37,7 @@ loadAsset('link', 'https://fonts.googleapis.com/css?family=Roboto:400,100,‌​
 loadAsset('link', '../../styleForScreens/styleForScreens.css');
 loadAsset('script', '../../internals/iFrameUtils/onWindowDefinedHelpers.js');
 // Load highlight code lib.
+// https://highlightjs.org/static/demo/
 loadAsset('link', '../../vendors/highlight/styles/atelier-heath-light.css');
 loadAsset('script', '../../vendors/highlight/highlight.pack.js');
 
