@@ -8,6 +8,9 @@ in this case we have to solve supporting style override from outside
 
 check box-shadow on rtl
 
+move toggle-locale-dir inside IFrame
+do something for lang change also (one screen to demo it for web-components and one for react-components)
+
 when user press back update window.location.hash
 
 do a navigation service
