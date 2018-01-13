@@ -10,6 +10,17 @@
     padding: 20px 20px 40px 20px;
   }
 
+  .locale-dir-switch {
+    padding-#{$start}: 15px;
+    height: 40px;
+    line-height: 40px;
+    background-color: $locale-dir-switch-background;
+    a {
+      font-weight: 500;
+      color: $text-default-color;
+    }
+  }
+
   h2.title {
     border-bottom: 1px solid #aaa;
     font-weight: 700;

@@ -3,8 +3,19 @@
 // https://github.com/facebook/react-devtools/issues/57
 window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = window.parent.__REACT_DEVTOOLS_GLOBAL_HOOK__;
 
-window.distributionURL =
-  'https://catalin-enache.github.io/dev-box-ui/build/dist/js/dev-box-ui-webcomponents.js';
+const isEmbeded = (window.top !== window);
+// console.log({ isEmbeded });
+if (!isEmbeded) {
+  window.location.replace(`${window.location.origin}/index.html`);
+}
+
+function toggleAppDir(evt) {
+  evt.preventDefault();
+  const documentElement = window.document.documentElement;
+  const currentDir = documentElement.getAttribute('dir');
+  const nextDir = currentDir === 'ltr' ? 'rtl' : 'ltr';
+  documentElement.setAttribute('dir', nextDir);
+}
 
 // Asset loader helper
 function loadAsset(type, path, callback = () => {}) {
@@ -90,23 +101,9 @@ window.addEventListener('load', () => {
   window.highlightBlocks();
   // Hide loader and show page.
   setTimeout(() => {
+    document.querySelector('.locale-dir-switch a').addEventListener('click', toggleAppDir);
     document.querySelector('.demo-screen-loading').style.display = 'none';
     document.querySelector('.demo-screen').style.display = 'block';
     console.log('revealing body');
   }, 0);
 });
-
-// Handle main app messages.
-window.addEventListener('message', (msg) => {
-  const [message, value] = msg.data.split(' ');
-  if (message === 'changeDir') {
-    const dir = value;
-    window.document.documentElement.setAttribute('dir', dir);
-  }
-  // not used currently
-  if (message === 'changeLang') {
-    const lang = value;
-    window.document.documentElement.setAttribute('lang', lang);
-  }
-});
-

@@ -5,120 +5,74 @@
 
 // ================================== constants ==============================
 
-const screenLinksGen = [
-  {
-    title: 'General',
-    links: [
-      { path: 'General/LoadingDevBoxUIWebComponentsScreen.html', title: 'Loading DevBoxUI Web Components' },
-    ]
-  },
-  {
-    title: 'Web Components',
-    links: [
-      { path: 'WebComponents/DummyScreen.html', title: 'Dummy' },
-      { path: 'WebComponents/DummyParentScreen.html', title: 'Dummy Parent' },
-      { path: 'WebComponents/FormInputTextScreen.html', title: 'Form Input Text' },
-    ]
-  },
-  {
-    title: 'React Components',
-    links: [
-      { path: 'ReactComponents/DraggableScreen.html', title: 'Draggable' },
-      { path: 'ReactComponents/FormInputNumberScreen.html', title: 'Form Input Number' },
-      { path: 'ReactComponents/FormInputScreen.html', title: 'Form Input' },
-      { path: 'ReactComponents/HelloScreen.html', title: 'Hello' },
-      { path: 'ReactComponents/ListScreen.html', title: 'List' },
-    ]
-  },
-  {
-    title: 'Services',
-    links: [
-      { path: 'Services/LocaleServiceScreen.html', title: 'Locale Service' },
-    ]
-  },
-  {
-    title: 'Miscellaneous',
-    links: [
-      { path: 'Miscellaneous/WebComponentInReactScreen.html', title: 'Web Component in React' },
-      { path: 'Miscellaneous/WebComponentInIframeScreen.html', title: 'Web Component in Iframe' },
-    ]
-  },
-  {
-    title: 'Debug',
-    links: [
-      { path: 'Debug/OnScreenConsoleScreen.html', title: 'On Screen Console' },
-    ]
-  },
-];
-
 const demoIFrame = document.querySelector('.demo-area iframe');
-const demoLinks = document.querySelector('.demo-links');
+const demoLinksContainer = document.querySelector('.demo-links');
 
 // ================================== functions ==============================
 
-function getWindowLocationHash() {
-  return (
-    window.location.hash ||
-    screenLinksGen[0].links[0].path
-  ).replace('#', '');
+function getCurrentScreen() {
+  const currentScreen = window.location.search.replace('?screen=', '');
+  return currentScreen;
+}
+
+function getNextScreen(href) {
+  const cleanHref = href.replace(`${window.location.origin}/`, '');
+  const baseUrl = window.location.origin + window.location.pathname;
+  const nextLocation = `${baseUrl}?screen=${cleanHref}`;
+  return nextLocation;
 }
 
 function hideScreenLinks() {
   document.querySelector('#links-toggle').checked = false;
 }
 
-function insertDemoLinks() {
-  const windowLocationHash = getWindowLocationHash();
-  const links = screenLinksGen.map((section) => {
-    return `
-<div>
-  <div class="links-section-group">${section.title}</div>
-  <ul>${
-  section.links.map((link) => {
-    const isActive = link.path === windowLocationHash ? 'x-active' : '';
-    return `
-    <li ${isActive}>
-      <a href="${`#${link.path}`}">${link.title}</a>
-    </li>
-    `;
-  }).join('\n')}
-  </ul>
-</div>`;
-  }).join('\n');
-  demoLinks.innerHTML += links;
+function upgradeDemoLinks() {
+  const currentScreen = getCurrentScreen();
+  const links = demoLinksContainer.querySelectorAll('a');
+
+  links.forEach((link) => {
+    link.addEventListener('click', (evt) => {
+      evt.preventDefault();
+      const nextScreen = getNextScreen(evt.target.href);
+
+      window.history.pushState({}, '', nextScreen);
+      loadDemoScreen();
+    });
+  });
+
+  const nextActiveLink = demoLinksContainer.querySelector(`a[href="${currentScreen}"]`);
+  nextActiveLink && nextActiveLink.parentNode.setAttribute('x-active', '');
+
 }
 
 function loadDemoScreen() {
   const isProd = !window.location.pathname.includes('.dev.');
-  const windowLocationHash = getWindowLocationHash();
-  const src = `srcDemo/screens/${windowLocationHash}?production=${isProd ? '1' : '0'}`;
-  demoIFrame.src = src;
-  demoIFrame.addEventListener('load', () => {
-    hideScreenLinks();
-  });
+  const currentScreen = getCurrentScreen();
+  const src = `${currentScreen}?production=${isProd ? '1' : '0'}`;
 
-  const currentActiveLink = document.querySelector('.demo-links li[x-active]');
-  currentActiveLink.removeAttribute('x-active');
+  demoIFrame.contentWindow.location.replace(src);
 
-  const nextActiveLink = document.querySelector(`.demo-links a[href="#${windowLocationHash}"]`);
-  nextActiveLink.parentNode.setAttribute('x-active', '');
-}
+  const currentActiveLink = demoLinksContainer.querySelector('li[x-active]');
+  currentActiveLink && currentActiveLink.removeAttribute('x-active');
 
-function toggleAppDir(evt) {
-  evt.preventDefault();
-  const documentElement = window.document.documentElement;
-  const currentDir = documentElement.getAttribute('dir');
-  const nextDir = currentDir === 'ltr' ? 'rtl' : 'ltr';
-  documentElement.setAttribute('dir', nextDir);
-  demoIFrame.contentWindow.postMessage(`changeDir ${nextDir}`, '*');
-  hideScreenLinks();
+  const nextActiveLink = demoLinksContainer.querySelector(`a[href="${currentScreen}"]`);
+  nextActiveLink && nextActiveLink.parentNode.setAttribute('x-active', '');
 }
 
 // ================================== main ===============================
 
-insertDemoLinks();
-loadDemoScreen();
+function main() {
+  if (!getCurrentScreen()) {
+    const firstAvailableHref = demoLinksContainer.querySelector('a').href;
+    const nextScreen = getNextScreen(firstAvailableHref);
+    window.location.replace(nextScreen);
+  }
 
-window.addEventListener('hashchange', loadDemoScreen);
+  demoIFrame.addEventListener('load', hideScreenLinks);
+  window.addEventListener('popstate', loadDemoScreen);
 
-document.querySelector('.locale-dir-switch a').addEventListener('click', toggleAppDir);
+  upgradeDemoLinks();
+  loadDemoScreen();
+}
+
+main();

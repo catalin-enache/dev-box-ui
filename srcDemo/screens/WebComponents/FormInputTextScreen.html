@@ -7,7 +7,7 @@
     }
   </style>
 
-  <!-- standard template start -->
+<!-- standard template start -->
   <script>
     window.onDBUIWebComponentsDistLibLoaded = function defineDBUIWebComponents() {
       const {
@@ -32,16 +32,19 @@
       // console.log(document.querySelector('#one').constructor.prototypeChainInfo);
     };
   </script>
-  <!-- standard template end -->
 </head>
 <body style="margin: 0px; padding: 0px;">
-
-<!-- standard template start -->
 <div class="demo-screen-loading"
      style="padding: 50px; font-family: arial, sans-serif; font-size: 16px;">
   loading...
 </div>
-<div class="demo-screen" style="display: none;">
+<div class="demo-screen">
+  <script src="../../internals/iFrameUtils/demoScreenStartScript.js"></script>
+  <div class="locale-switch">
+    <div class="locale-dir-switch">
+      <a href="">TOGGLE LOCALE DIR</a>
+    </div>
+  </div>
 <!-- standard template end -->
   <dbui-web-component-form-input-text id="one" name="one"></dbui-web-component-form-input-text>
   <br /><br />

@@ -100,17 +100,6 @@
           box-shadow: none;
         }
 
-        .locale-dir-switch {
-          padding-#{$start}: 15px;
-          height: 40px;
-          line-height: 40px;
-          background-color: $locale-dir-switch-background;
-          a {
-            font-weight: 500;
-            color: $text-default-color;
-          }
-        }
-
         .links-section-group {
           padding-top: 25px;
           padding-bottom: 10px;

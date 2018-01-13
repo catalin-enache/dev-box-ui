@@ -116,14 +116,6 @@ html[dir=ltr] #demo {
             display: none;
             border-right: none;
             box-shadow: none; } }
-        html[dir=ltr] #demo > div .demo-wrapper .demo-links .locale-dir-switch {
-          padding-left: 15px;
-          height: 40px;
-          line-height: 40px;
-          background-color: #ffffff; }
-          html[dir=ltr] #demo > div .demo-wrapper .demo-links .locale-dir-switch a {
-            font-weight: 500;
-            color: #000; }
         html[dir=ltr] #demo > div .demo-wrapper .demo-links .links-section-group {
           padding-top: 25px;
           padding-bottom: 10px;
@@ -172,6 +164,14 @@ html[dir=ltr] .demo-screen {
   @media (max-width: 992px) {
     html[dir=ltr] .demo-screen {
       padding: 20px 20px 40px 20px; } }
+  html[dir=ltr] .demo-screen .locale-dir-switch {
+    padding-left: 15px;
+    height: 40px;
+    line-height: 40px;
+    background-color: #ffffff; }
+    html[dir=ltr] .demo-screen .locale-dir-switch a {
+      font-weight: 500;
+      color: #000; }
   html[dir=ltr] .demo-screen h2.title {
     border-bottom: 1px solid #aaa;
     font-weight: 700;
@@ -414,14 +414,6 @@ html[dir=rtl] #demo {
             display: none;
             border-right: none;
             box-shadow: none; } }
-        html[dir=rtl] #demo > div .demo-wrapper .demo-links .locale-dir-switch {
-          padding-right: 15px;
-          height: 40px;
-          line-height: 40px;
-          background-color: #ffffff; }
-          html[dir=rtl] #demo > div .demo-wrapper .demo-links .locale-dir-switch a {
-            font-weight: 500;
-            color: #000; }
         html[dir=rtl] #demo > div .demo-wrapper .demo-links .links-section-group {
           padding-top: 25px;
           padding-bottom: 10px;
@@ -470,6 +462,14 @@ html[dir=rtl] .demo-screen {
   @media (max-width: 992px) {
     html[dir=rtl] .demo-screen {
       padding: 20px 20px 40px 20px; } }
+  html[dir=rtl] .demo-screen .locale-dir-switch {
+    padding-right: 15px;
+    height: 40px;
+    line-height: 40px;
+    background-color: #ffffff; }
+    html[dir=rtl] .demo-screen .locale-dir-switch a {
+      font-weight: 500;
+      color: #000; }
   html[dir=rtl] .demo-screen h2.title {
     border-bottom: 1px solid #aaa;
     font-weight: 700;
