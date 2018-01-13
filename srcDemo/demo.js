@@ -51,6 +51,7 @@ function loadDemoScreen() {
   const currentScreen = getCurrentScreen();
   const src = `${currentScreen}?production=${isProd ? '1' : '0'}`;
 
+  console.log('loadDemoScreen', { src });
   demoIFrame.contentWindow.location.replace(src);
 
   const currentActiveLink = demoLinksContainer.querySelector('li[x-active]');
