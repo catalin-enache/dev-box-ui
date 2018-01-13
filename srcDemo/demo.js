@@ -16,8 +16,8 @@ function getCurrentScreen() {
 }
 
 function getNextScreen(href) {
-  const cleanHref = href.replace(`${window.location.origin}/`, '')
-    .replace(`${window.location.pathname}/`, '');
+  const cleanHref = href.replace(`${window.location.origin}`, '')
+    .replace(`${window.location.pathname}`, '');
   const baseUrl = window.location.origin + window.location.pathname;
   const nextLocation = `${baseUrl}?screen=${cleanHref}`;
   return nextLocation;
