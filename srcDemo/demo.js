@@ -41,6 +41,8 @@ function upgradeDemoLinks() {
     });
   });
 
+  console.log('upgradeDemoLinks', { currentScreen });
+
   const nextActiveLink = demoLinksContainer.querySelector(`a[href="${currentScreen}"]`);
   nextActiveLink && nextActiveLink.parentNode.setAttribute('x-active', '');
 
