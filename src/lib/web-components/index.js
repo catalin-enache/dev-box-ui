@@ -25,6 +25,7 @@ import onScreenConsole from './utils/onScreenConsole';
 import getDBUIWebComponentDummy from './components/DBUIWebComponentDummy/DBUIWebComponentDummy';
 import getDBUIWebComponentDummyParent from './components/DBUIWebComponentDummyParent/DBUIWebComponentDummyParent';
 import getDBUIWebComponentFormInputText from './components/DBUIWebComponentFormInputText/DBUIWebComponentFormInputText';
+import getDBUIWebComponentIcon from './components/DBUIWebComponentIcon/DBUIWebComponentIcon';
 
 const registrations = {
   [getDBUIWebComponentDummy.registrationName]:
@@ -33,6 +34,8 @@ const registrations = {
     getDBUIWebComponentDummyParent,
   [getDBUIWebComponentFormInputText.registrationName]:
     getDBUIWebComponentFormInputText,
+  [getDBUIWebComponentIcon.registrationName]:
+    getDBUIWebComponentIcon
 };
 
 /*
@@ -86,5 +89,6 @@ export {
   // Components
   getDBUIWebComponentDummy,
   getDBUIWebComponentDummyParent,
-  getDBUIWebComponentFormInputText
+  getDBUIWebComponentFormInputText,
+  getDBUIWebComponentIcon
 };
