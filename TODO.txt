@@ -3,19 +3,10 @@ minimal imports: import someStuff from node_modules/dev-box-ui/webcomponents/som
 distribution import: put distribution in head script then import someStuff from dev-box-ui
 normal import: import someStuff from dev-box-ui
 
-in some cases links are not marked active (they start with /) => fix it check locale and github
-
-redirecting non embedded iFrame on github redirects in the wrong place, fix it.
-
 most-probably react components should take care of importing by themselves the web component they wrap
 in this case we have to solve supporting style override from outside
 
 check box-shadow on rtl
-
-move toggle-locale-dir inside IFrame
-do something for lang change also (one screen to demo it for web-components and one for react-components)
-
-when user press back update window.location.hash
 
 do a navigation service
 
