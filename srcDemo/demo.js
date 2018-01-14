@@ -7,17 +7,23 @@
 
 const demoIFrame = document.querySelector('.demo-area iframe');
 const demoLinksContainer = document.querySelector('.demo-links');
+const rootUrl = 'srcDemo/screens/';
+const originSubPath =
+  window.location.origin.includes('catalin-enache.github.io') ?
+    '/dev-box-ui' :
+    '';
 
 // ================================== functions ==============================
 
+// used in detecting active link and in loading current screen
 function getCurrentScreen() {
   const currentScreen = window.location.search.replace('?screen=', '');
   return currentScreen;
 }
 
+// used by history.pushState and location.replace
 function getNextScreen(href) {
-  const cleanHref = href.replace(`${window.location.origin}`, '')
-    .replace(`${window.location.pathname}`, '');
+  const cleanHref = href.substr(href.indexOf(rootUrl) + rootUrl.length);
   const baseUrl = window.location.origin + window.location.pathname;
   const nextLocation = `${baseUrl}?screen=${cleanHref}`;
   return nextLocation;
@@ -43,7 +49,7 @@ function upgradeDemoLinks() {
 
   console.log('upgradeDemoLinks', { currentScreen });
 
-  const nextActiveLink = demoLinksContainer.querySelector(`a[href="${currentScreen}"]`);
+  const nextActiveLink = demoLinksContainer.querySelector(`a[href="${rootUrl}${currentScreen}"]`);
   nextActiveLink && nextActiveLink.parentNode.setAttribute('x-active', '');
 
 }
@@ -51,7 +57,7 @@ function upgradeDemoLinks() {
 function loadDemoScreen() {
   const isProd = !window.location.pathname.includes('.dev.');
   const currentScreen = getCurrentScreen();
-  const src = `${currentScreen}?production=${isProd ? '1' : '0'}`;
+  const src = `${window.location.origin}${originSubPath}/${rootUrl}${currentScreen}?production=${isProd ? '1' : '0'}`;
 
   console.log('loadDemoScreen', { src });
   demoIFrame.contentWindow.location.replace(src);
@@ -59,7 +65,7 @@ function loadDemoScreen() {
   const currentActiveLink = demoLinksContainer.querySelector('li[x-active]');
   currentActiveLink && currentActiveLink.removeAttribute('x-active');
 
-  const nextActiveLink = demoLinksContainer.querySelector(`a[href="${currentScreen}"]`);
+  const nextActiveLink = demoLinksContainer.querySelector(`a[href="${rootUrl}${currentScreen}"]`);
   nextActiveLink && nextActiveLink.parentNode.setAttribute('x-active', '');
 }
 
