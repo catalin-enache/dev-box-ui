@@ -72,10 +72,16 @@ function loadDemoScreen() {
 // ================================== main ===============================
 
 function main() {
+  if (window.location.href !== decodeURIComponent(window.location.href)) {
+    window.location.replace(decodeURIComponent(window.location.href));
+    return;
+  }
+
   if (!getCurrentScreen()) {
     const firstAvailableHref = demoLinksContainer.querySelector('a').href;
     const nextScreen = getNextScreen(firstAvailableHref);
     window.location.replace(nextScreen);
+    return;
   }
 
   demoIFrame.addEventListener('load', hideScreenLinks);
