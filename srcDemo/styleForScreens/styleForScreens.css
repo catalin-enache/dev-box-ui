@@ -54,6 +54,9 @@ html[dir=ltr] #demo {
       border-top: 3px solid #00BCD4;
       border-bottom: 3px solid #00BCD4;
       box-shadow: 0 8px 6px -6px rgba(0, 0, 0, 0.5); }
+      html[dir=ltr] #demo > div .page-header dbui-web-component-icon {
+        font-size: 25px;
+        cursor: pointer; }
       @media (max-width: 992px) {
         html[dir=ltr] #demo > div .page-header {
           padding-left: 100px;
@@ -93,7 +96,10 @@ html[dir=ltr] #demo {
             height: 44px;
             line-height: 44px;
             text-align: center;
-            top: -50px; } }
+            top: -47px; } }
+        html[dir=ltr] #demo > div .demo-wrapper #links-toggle-label dbui-web-component-icon {
+          font-size: 25px;
+          cursor: pointer; }
       html[dir=ltr] #demo > div .demo-wrapper #links-toggle {
         display: none; }
         @media (max-width: 992px) {
@@ -352,6 +358,9 @@ html[dir=rtl] #demo {
       border-top: 3px solid #00BCD4;
       border-bottom: 3px solid #00BCD4;
       box-shadow: 0 8px 6px -6px rgba(0, 0, 0, 0.5); }
+      html[dir=rtl] #demo > div .page-header dbui-web-component-icon {
+        font-size: 25px;
+        cursor: pointer; }
       @media (max-width: 992px) {
         html[dir=rtl] #demo > div .page-header {
           padding-right: 100px;
@@ -391,7 +400,10 @@ html[dir=rtl] #demo {
             height: 44px;
             line-height: 44px;
             text-align: center;
-            top: -50px; } }
+            top: -47px; } }
+        html[dir=rtl] #demo > div .demo-wrapper #links-toggle-label dbui-web-component-icon {
+          font-size: 25px;
+          cursor: pointer; }
       html[dir=rtl] #demo > div .demo-wrapper #links-toggle {
         display: none; }
         @media (max-width: 992px) {
