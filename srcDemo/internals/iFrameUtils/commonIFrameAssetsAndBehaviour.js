@@ -13,8 +13,7 @@ window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = window.parent.__REACT_DEVTOOLS_GLOBAL_HO
       '';
   if (!isEmbeded) {
     const screen = href.split('?')[0].substr(href.indexOf(rootUrl) + rootUrl.length);
-    console.log({screen})
-    // window.location.replace(`${window.location.origin}${originSubPath}?screen=${screen}`);
+    window.location.replace(`${window.location.origin}${originSubPath}?screen=${screen}`);
   }
 })();
 
