@@ -47,8 +47,6 @@ function upgradeDemoLinks() {
     });
   });
 
-  console.log('upgradeDemoLinks', { currentScreen });
-
   const nextActiveLink = demoLinksContainer.querySelector(`a[href="${rootUrl}${currentScreen}"]`);
   nextActiveLink && nextActiveLink.parentNode.setAttribute('x-active', '');
 
@@ -59,7 +57,6 @@ function loadDemoScreen() {
   const currentScreen = getCurrentScreen();
   const src = `${window.location.origin}${originSubPath}/${rootUrl}${currentScreen}?production=${isProd ? '1' : '0'}`;
 
-  console.log('loadDemoScreen', { src });
   demoIFrame.contentWindow.location.replace(src);
 
   const currentActiveLink = demoLinksContainer.querySelector('li[x-active]');
