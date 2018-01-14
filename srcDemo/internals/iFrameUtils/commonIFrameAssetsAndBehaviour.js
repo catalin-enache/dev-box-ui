@@ -18,12 +18,21 @@ window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = window.parent.__REACT_DEVTOOLS_GLOBAL_HO
 })();
 
 
-function toggleAppDir(evt) {
+function switchDir(evt) {
   evt.preventDefault();
   const documentElement = window.document.documentElement;
   const currentDir = documentElement.getAttribute('dir');
   const nextDir = currentDir === 'ltr' ? 'rtl' : 'ltr';
   documentElement.setAttribute('dir', nextDir);
+}
+
+function switchLang(evt) {
+  evt.preventDefault();
+  const selectObj = evt.target;
+  const idx = selectObj.selectedIndex;
+  const nextLang = selectObj.options[idx].value;
+  const documentElement = window.document.documentElement;
+  documentElement.setAttribute('lang', nextLang);
 }
 
 // Asset loader helper
@@ -110,7 +119,12 @@ window.addEventListener('load', () => {
   window.highlightBlocks();
   // Hide loader and show page.
   setTimeout(() => {
-    document.querySelector('.locale-dir-switch a').addEventListener('click', toggleAppDir);
+    const dirSwitcher = document.querySelector('.locale-switch .locale-dir-switch a');
+    dirSwitcher && dirSwitcher.addEventListener('click', switchDir);
+
+    const langSwitcher = document.querySelector('.locale-switch .locale-lang-switch select');
+    langSwitcher && langSwitcher.addEventListener('change', switchLang);
+
     document.querySelector('.demo-screen-loading').style.display = 'none';
     document.querySelector('.demo-screen').style.display = 'block';
     console.log('revealing body');
