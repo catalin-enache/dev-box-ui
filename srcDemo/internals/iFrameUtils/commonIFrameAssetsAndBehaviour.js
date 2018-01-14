@@ -3,17 +3,20 @@
 // https://github.com/facebook/react-devtools/issues/57
 window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = window.parent.__REACT_DEVTOOLS_GLOBAL_HOOK__;
 
-const isEmbeded = (window.top !== window);
-const originSubPath =
-  window.location.origin.includes('catalin-enache.github.io') ?
-    '/dev-box-ui' :
-    '';
-// console.log({ isEmbeded });
-if (!isEmbeded) {
-  console.log('window.location', window.location);
-  // const src = window.location.origin.includes('')
-  window.location.replace(`${window.location.origin}${originSubPath}`);
-}
+(function () {
+  const isEmbeded = (window.top !== window);
+  const href = window.location.href;
+  const rootUrl = 'srcDemo/screens/';
+  const originSubPath =
+    window.location.origin.includes('catalin-enache.github.io') ?
+      '/dev-box-ui' :
+      '';
+  if (!isEmbeded) {
+    const screen = href.split('?')[0].substr(href.indexOf(rootUrl) + rootUrl.length);
+    window.location.replace(`${window.location.origin}${originSubPath}?screen=${screen}`);
+  }
+})();
+
 
 function toggleAppDir(evt) {
   evt.preventDefault();
