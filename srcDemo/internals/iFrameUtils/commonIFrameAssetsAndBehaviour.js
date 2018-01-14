@@ -4,9 +4,15 @@
 window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = window.parent.__REACT_DEVTOOLS_GLOBAL_HOOK__;
 
 const isEmbeded = (window.top !== window);
+const originSubPath =
+  window.location.origin.includes('catalin-enache.github.io') ?
+    '/dev-box-ui' :
+    '';
 // console.log({ isEmbeded });
 if (!isEmbeded) {
-  window.location.replace(`${window.location.origin}/index.html`);
+  console.log('window.location', window.location);
+  // const src = window.location.origin.includes('')
+  window.location.replace(`${window.location.origin}${originSubPath}`);
 }
 
 function toggleAppDir(evt) {
