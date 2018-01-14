@@ -5,7 +5,7 @@ window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = window.parent.__REACT_DEVTOOLS_GLOBAL_HO
 
 (function () {
   const isEmbeded = (window.top !== window);
-  const href = window.location.href;
+  const href = decodeURIComponent(window.location.href);
   const rootUrl = 'srcDemo/screens/';
   const originSubPath =
     window.location.origin.includes('catalin-enache.github.io') ?
