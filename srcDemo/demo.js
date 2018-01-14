@@ -17,8 +17,8 @@ const originSubPath =
 
 // used in detecting active link and in loading current screen
 function getCurrentScreen() {
-  const currentScreen = window.location.search.replace('?screen=', '');
-  return decodeURIComponent(currentScreen);
+  const currentScreen = decodeURIComponent(window.location.search).replace('?screen=', '');
+  return currentScreen;
 }
 
 // used by history.pushState and location.replace
