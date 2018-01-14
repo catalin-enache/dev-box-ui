@@ -73,6 +73,9 @@ function loadDemoScreen() {
 
 function main() {
   if (window.location.href !== decodeURIComponent(window.location.href)) {
+    // When non embedded iframe screen redirects to parent the query string might be url encoded.
+    // This does not happen on localhost but it does on served as github page.
+    // We want to replace eventual encoded string with real one.
     window.location.replace(decodeURIComponent(window.location.href));
     return;
   }
