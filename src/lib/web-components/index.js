@@ -92,3 +92,11 @@ export {
   getDBUIWebComponentFormInputText,
   getDBUIWebComponentIcon
 };
+
+/* eslint no-console: 0 */
+
+if (process.env.NODE_ENV !== 'production') {
+  console.log('Using DBUIWebComponentsDistLib develop build.');
+} else {
+  console.log('Using DBUIWebComponentsDistLib production build.');
+}

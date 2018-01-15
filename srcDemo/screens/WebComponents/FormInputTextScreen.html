@@ -9,7 +9,7 @@
 
 <!-- standard template start -->
   <script>
-    window.onDBUIWebComponentsDistLibLoaded = function defineDBUIWebComponents() {
+    window.addEventListener('DBUIWebComponentsDistLibLoaded', () => {
       const {
         quickSetupAndLoad
       } = require('dev-box-ui-web-components');
@@ -26,11 +26,11 @@
         }
       ]);
       // console.log(dbuiWebComponentFormInputTextClass.prototypeChainInfo);
-    };
+    });
 
-    window.onDBUIWebComponentsDefined = function() {
+    window.addEventListener('DBUIWebComponentsDefined', () => {
       // console.log(document.querySelector('#one').constructor.prototypeChainInfo);
-    };
+    });
   </script>
 </head>
 <body style="margin: 0px; padding: 0px;">

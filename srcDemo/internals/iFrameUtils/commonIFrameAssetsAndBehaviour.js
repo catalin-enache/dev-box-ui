@@ -74,8 +74,7 @@ loadAsset('script', '../../vendors/highlight/highlight.pack.js');
 // The definition itself (along with style overriding) is controlled inside the page.
 const isProd = window.location.search.includes('production=1');
 loadAsset('script', `../../../build/dist/js/dev-box-ui-web-components${isProd ? '.min' : ''}.js`, () => {
-  // Must be defined by user.
-  window.onDBUIWebComponentsDistLibLoaded && window.onDBUIWebComponentsDistLibLoaded();
+  window.dispatchEvent(new Event('DBUIWebComponentsDistLibLoaded'));
 
   // load vendors, react components, babel and execute babel scripts (ex: demoing react components)
   // https://raw.githubusercontent.com/reactjs/reactjs.org/master/static/html/single-file-example.html
@@ -108,9 +107,8 @@ loadAsset('script', `../../../build/dist/js/dev-box-ui-web-components${isProd ? 
   await Promise.all(promises);
   callback();
 })(() => {
-  // Must be defined by user.
-  window.onDBUIWebComponentsDefined && window.onDBUIWebComponentsDefined();
   console.log('all web-components defined');
+  window.dispatchEvent(new Event('DBUIWebComponentsDefined'));
 });
 
 // Stuff to do when everything is settled.

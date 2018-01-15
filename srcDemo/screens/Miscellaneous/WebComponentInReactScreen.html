@@ -15,8 +15,7 @@
 
 <!-- standard template start -->
   <script>
-
-    window.onDBUIWebComponentsDistLibLoaded = function defineDBUIWebComponents() {
+    window.addEventListener('DBUIWebComponentsDistLibLoaded', () => {
       const {
         dbuiWebComponentsSetUp,
         getDBUIWebComponentDummy,
@@ -39,11 +38,11 @@
         DBUIWebComponentDummy.registerSelf();
         DBUIWebComponentDummyParent.registerSelf();
       }, 2000);
+    });
 
-    };
+    window.addEventListener('DBUIWebComponentsDefined', () => {
+    });
 
-    window.onDBUIWebComponentsDefined = function() {
-    };
   </script>
 </head>
 <body style="margin: 0px; padding: 0px;">

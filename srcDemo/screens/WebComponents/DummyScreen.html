@@ -15,8 +15,7 @@
 
 <!-- standard template start -->
   <script>
-
-    window.onDBUIWebComponentsDistLibLoaded = function defineDBUIWebComponents() {
+    window.addEventListener('DBUIWebComponentsDistLibLoaded', () => {
       const {
         quickSetupAndLoad
       } = require('dev-box-ui-web-components');
@@ -32,10 +31,10 @@
           `
         }
       ]);
-    };
+    });
 
-    window.onDBUIWebComponentsDefined = function() {
-    };
+    window.addEventListener('DBUIWebComponentsDefined', () => {
+    });
   </script>
 </head>
 <body style="margin: 0px; padding: 0px;">
