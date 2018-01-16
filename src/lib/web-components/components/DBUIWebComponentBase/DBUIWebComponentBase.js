@@ -181,6 +181,7 @@ export default function getDBUIWebComponentBase(win) {
         // Give a chance to override web-component style if provided before being registered.
         const componentStyle = ((win.DBUIWebComponents || {})[registrationName] || {}).componentStyle;
         if (componentStyle) {
+          klass.componentStyle += '\n/* overrides */\n';
           klass.componentStyle += componentStyle;
         }
         // Do registration

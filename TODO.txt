@@ -6,6 +6,8 @@ normal import: import someStuff from dev-box-ui
 most-probably react components should take care of importing by themselves the web component they wrap
 in this case we have to solve supporting style override from outside
 
+improve appearance of title and sections on mobile
+
 check box-shadow on rtl
 
 do a navigation service
@@ -17,8 +19,6 @@ extract and reuse the common look & feel for form inputs (use the same vars also
 
 remove log messages in production (NODE_ENV)
 
-make onDBUIWebComponentsDefined an event listener and handler
-
 why classnames does not appear in vendors list ?
 
 when react-components will wrap web-components there will be no need for classnames dependency
@@ -26,8 +26,6 @@ when react-components will wrap web-components there will be no need for classna
 expose utils, decorators, traits and base classes
 document how user can extend Base class and apply existing behaviours
 in other words document how user can define its web-components using exposed internals
-
-make some web-components icons - inspire from react icons
 
 add favicon.ico
 

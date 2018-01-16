@@ -28,13 +28,14 @@
   </div>
 <!-- standard template end -->
   <h2 class="title">Loading Dev Box UI Web Components</h2>
-  <h3 class="section">From Distribution</h3>
 
-  <pre><code class="html" id="example">
+  <h3 class="section">From Distribution using <i>quickSetupAndLoad</i></h3>
+
+  <pre><code class="html" id="example-from-distribution-using-quickSetupAndLoad">
 
   </code></pre>
   <script>
-    const exampleText = `
+    const exampleTextQuickSetupAndLoad = `
 <!doctype html>
 <html dir="ltr" lang="en">
 <head>
@@ -43,14 +44,27 @@
   <script
     src="${window.distributionURL}"><\/script>
   <script>
+    // Import devBoxUiWebComponents.
+    const devBoxUiWebComponents = require('dev-box-ui-web-components');
+
+    // Get an overview of what's exported.
+    console.log(Object.keys(devBoxUiWebComponents));
+
+    // Get an overview of available component names.
+    console.log(Object.keys(devBoxUiWebComponents.registrations));
+
     const {
+      // Import quickSetupAndLoad helper from dev-box-ui-web-components.
       quickSetupAndLoad
-    } = require('dev-box-ui-web-components');
+    } = devBoxUiWebComponents;
     const {
-      'dbui-web-component-dummy-parent': dbuiWebComponentDummyParentClass,
-    } = quickSetupAndLoad(window)([
+      // Returns the components classes for eventually specified component names.
+      'dbui-web-component-dummy-parent': DBUIWebComponentDummyParentClass,
+    } = quickSetupAndLoad(window)([ // Accepts an array of objects specifying components to setup and load.
       {
+        // Component to setup and load.
         registrationName: 'dbui-web-component-dummy',
+        // Override default style for targeted component.
         componentStyle: \`
          b {
            color: var(--dummy-b-color, inherit);
@@ -60,9 +74,13 @@
         \`
       },
       {
+        // Another component to setup and load without style override (using default style).
         registrationName: 'dbui-web-component-dummy-parent'
       }
     ]);
+
+    // Inspect component's class prototype chain.
+    console.log(DBUIWebComponentDummyParentClass.prototypeChainInfo);
   <\/script>
 </head>
 <body>
@@ -70,10 +88,72 @@
 </body>
 </html>
 `;
-    document.querySelector('#example').innerText = exampleText;
+    document.querySelector('#example-from-distribution-using-quickSetupAndLoad').innerText = exampleTextQuickSetupAndLoad;
   </script>
 
+  <h3 class="section">From Distribution using <i>registerSelf</i></h3>
 
+  <pre><code class="html" id="example-from-distribution-using-registerSelf">
+
+  </code></pre>
+  <script>
+    const exampleTextRegisterSelf = `
+<!doctype html>
+<html dir="ltr" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <script
+    src="${window.distributionURL}"><\/script>
+  <script>
+    // Import devBoxUiWebComponents.
+    const devBoxUiWebComponents = require('dev-box-ui-web-components');
+    const {
+      // Import general DBUI setup helper.
+      dbuiWebComponentsSetUp,
+      // Import getters for targeted components.
+      getDBUIWebComponentDummy,
+      getDBUIWebComponentDummyParent
+    } = devBoxUiWebComponents;
+
+    // Provide window and retrieve component classes from their getters.
+    const DBUIWebComponentDummyClass = getDBUIWebComponentDummy(window);
+    const DBUIWebComponentDummyParentClass = getDBUIWebComponentDummyParent(window);
+
+    // Inspect component default style.
+    console.log(DBUIWebComponentDummyClass.componentStyle);
+
+    // Override component default style.
+    dbuiWebComponentsSetUp(window).appendStyle('dbui-web-component-dummy', \`
+        #container > div {
+          background-color: var(--dummy-inner-sections-bg-color, transparent);
+        }
+        b {
+          color: deepskyblue;
+          font-style: oblique;
+        }
+      \`);
+
+    // Inspect component's class prototype chain.
+    console.log(DBUIWebComponentDummyParentClass.prototypeChainInfo);
+
+    // Components can be registered/upgraded at any time.
+    setTimeout(() => {
+      DBUIWebComponentDummyClass.registerSelf();
+      DBUIWebComponentDummyParentClass.registerSelf();
+
+      // Inspect again component default style to see custom overrides being appended.
+      console.log(DBUIWebComponentDummyClass.componentStyle);
+    }, 2000);
+  <\/script>
+</head>
+<body>
+  <dbui-web-component-dummy-parent>hello 1</dbui-web-component-dummy-parent>
+</body>
+</html>
+`;
+    document.querySelector('#example-from-distribution-using-registerSelf').innerText = exampleTextRegisterSelf;
+  </script>
 
 </div>
 
