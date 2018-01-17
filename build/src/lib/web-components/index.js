@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getDBUIWebComponentFormInputText = exports.getDBUIWebComponentDummyParent = exports.getDBUIWebComponentDummy = exports.onScreenConsole = exports.template = exports.traits = exports.formatters = exports.getDBUII18nService = exports.getDBUILocaleService = exports.Focusable = exports.getDBUIWebComponentBase = exports.ensureSingleRegistration = exports.dbuiWebComponentsSetUp = exports.quickSetupAndLoad = exports.registrations = undefined;
+exports.getDBUIWebComponentIcon = exports.getDBUIWebComponentFormInputText = exports.getDBUIWebComponentDummyParent = exports.getDBUIWebComponentDummy = exports.onScreenConsole = exports.template = exports.traits = exports.formatters = exports.getDBUII18nService = exports.getDBUILocaleService = exports.Focusable = exports.getDBUIWebComponentBase = exports.ensureSingleRegistration = exports.dbuiWebComponentsSetUp = exports.quickSetupAndLoad = exports.registrations = undefined;
 
 var _dbuiWebComponentsSetup = require('./helpers/dbuiWebComponentsSetup');
 
@@ -57,28 +57,11 @@ var _DBUIWebComponentFormInputText = require('./components/DBUIWebComponentFormI
 
 var _DBUIWebComponentFormInputText2 = _interopRequireDefault(_DBUIWebComponentFormInputText);
 
+var _DBUIWebComponentIcon = require('./components/DBUIWebComponentIcon/DBUIWebComponentIcon');
+
+var _DBUIWebComponentIcon2 = _interopRequireDefault(_DBUIWebComponentIcon);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-// Behaviours
-
-
-// Internals
-const registrations = {
-  [_DBUIWebComponentDummy2.default.registrationName]: _DBUIWebComponentDummy2.default,
-  [_DBUIWebComponentDummyParent2.default.registrationName]: _DBUIWebComponentDummyParent2.default,
-  [_DBUIWebComponentFormInputText2.default.registrationName]: _DBUIWebComponentFormInputText2.default
-};
-
-/*
-Using this function implies entire DBUIWebComponents library
-is already loaded.
-It is useful especially when working with distribution build.
-If you want to load just one web-component or a subset of web-components
-load them from node_modules by their path
-ex:
-import SomeComponentLoader from node_modules/dev-box-ui/build/src/lib/webcomponents/SomeComponent;
-*/
-
 
 // Components
 
@@ -92,6 +75,28 @@ import SomeComponentLoader from node_modules/dev-box-ui/build/src/lib/webcompone
 // ComponentBase
 
 // Helpers
+const registrations = {
+  [_DBUIWebComponentDummy2.default.registrationName]: _DBUIWebComponentDummy2.default,
+  [_DBUIWebComponentDummyParent2.default.registrationName]: _DBUIWebComponentDummyParent2.default,
+  [_DBUIWebComponentFormInputText2.default.registrationName]: _DBUIWebComponentFormInputText2.default,
+  [_DBUIWebComponentIcon2.default.registrationName]: _DBUIWebComponentIcon2.default
+};
+
+/*
+Using this function implies entire DBUIWebComponents library
+is already loaded.
+It is useful especially when working with distribution build.
+If you want to load just one web-component or a subset of web-components
+load them from node_modules by their path
+ex:
+import SomeComponentLoader from node_modules/dev-box-ui/build/src/lib/webcomponents/SomeComponent;
+*/
+
+
+// Behaviours
+
+
+// Internals
 function quickSetupAndLoad(win = window) {
   return function (components) {
     const ret = {};
@@ -120,3 +125,12 @@ exports.onScreenConsole = _onScreenConsole2.default;
 exports.getDBUIWebComponentDummy = _DBUIWebComponentDummy2.default;
 exports.getDBUIWebComponentDummyParent = _DBUIWebComponentDummyParent2.default;
 exports.getDBUIWebComponentFormInputText = _DBUIWebComponentFormInputText2.default;
+exports.getDBUIWebComponentIcon = _DBUIWebComponentIcon2.default;
+
+/* eslint no-console: 0 */
+
+if (process.env.NODE_ENV !== 'production') {
+  console.log('Using DBUIWebComponentsDistLib develop build.');
+} else {
+  console.log('Using DBUIWebComponentsDistLib production build.');
+}
