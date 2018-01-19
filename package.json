@@ -10,8 +10,7 @@
     "url": "https://github.com/catalin-enache/dev-box-ui.git"
   },
   "files": [
-    "build/src/lib/",
-    "build/dist/"
+    "build/src/lib/"
   ],
   "devDependencies": {
     "babel-cli": "^6.26.0",
