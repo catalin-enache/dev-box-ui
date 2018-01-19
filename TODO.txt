@@ -6,6 +6,8 @@ normal import: import someStuff from dev-box-ui
 most-probably react components should take care of importing by themselves the web component they wrap
 in this case we have to solve supporting style override from outside
 
+improve appendStyle to allow chaining
+
 improve appearance of title and sections on mobile
 
 check box-shadow on rtl
