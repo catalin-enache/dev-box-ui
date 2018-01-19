@@ -1,6 +1,6 @@
 {
   "name": "dev-box-ui",
-  "version": "0.0.50",
+  "version": "0.0.51",
   "private": true,
   "author": "catalinenache78@gmail.com",
   "license": "MIT",
@@ -9,10 +9,10 @@
     "type": "git",
     "url": "https://github.com/catalin-enache/dev-box-ui.git"
   },
-  "directories": {
-    "lib":"./build/src/lib",
-    "dist":"./build/dist"
-  },
+  "files": [
+    "build/src/lib/",
+    "build/dist/"
+  ],
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-core": "^6.25.0",
