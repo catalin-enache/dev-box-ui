@@ -3,8 +3,10 @@ minimal imports: import someStuff from node_modules/dev-box-ui/webcomponents/som
 distribution import: put distribution in head script then import someStuff from dev-box-ui
 normal import: import someStuff from dev-box-ui
 
-most-probably react components should take care of importing by themselves the web component they wrap
-in this case we have to solve supporting style override from outside
+react components should document their dependencies on web-components
+and define them as an array on a static method webComponentsDependencies
+so that the user can inspect them and take care of defining by importing
+and calling registerSelf() for each of them
 
 improve appendStyle to allow chaining
 

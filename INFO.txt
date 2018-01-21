@@ -3,7 +3,16 @@ demo at:
 https://catalin-enache.github.io/dev-box-ui/
 
 installing from git
-"dev-box-ui": "git+https://github.com/catalin-enache/dev-box-ui.git",
+"dev-box-ui": "git+https://github.com/catalin-enache/dev-box-ui.git"
+
+npm package
+https://www.npmjs.com/package/dev-box-ui
+
+unpkg
+https://unpkg.com/dev-box-ui
+https://unpkg.com/dev-box-ui/dist/vendors/react.min.js
+https://unpkg.com/dev-box-ui/dist/dev-box-ui/web-components.min.js
+https://unpkg.com/dev-box-ui/dist/dev-box-ui/react-components.min.js
 
 =============================================== Testing ================================================
 
