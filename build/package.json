@@ -1,17 +1,17 @@
 {
   "name": "dev-box-ui",
   "version": "0.0.61",
-  "private": true,
+  "private": false,
   "author": "catalinenache78@gmail.com",
   "license": "MIT",
-  "main": "./build/src/lib/web-components/index.js",
+  "main": "./src/lib/web-components/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/catalin-enache/dev-box-ui.git"
   },
   "files": [
-    "web-components",
-    "react-components"
+    "dist",
+    "src"
   ],
   "devDependencies": {
     "babel-cli": "^6.26.0",

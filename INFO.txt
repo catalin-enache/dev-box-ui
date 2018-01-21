@@ -2,6 +2,9 @@
 demo at:
 https://catalin-enache.github.io/dev-box-ui/
 
+installing from git
+"dev-box-ui": "git+https://github.com/catalin-enache/dev-box-ui.git",
+
 =============================================== Testing ================================================
 
 general links:
