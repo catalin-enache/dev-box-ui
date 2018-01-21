@@ -14,6 +14,9 @@ check box-shadow on rtl
 
 do a navigation service
 
+flatten dist lib
+https://davidwells.io/blog/publishing-flat-npm-packages-for-easier-import-paths-smaller-consumer-bundle-sizes/
+
 do a copyToClipboard utility - maybe even a web-component
 
 on form inputs style the wrapper div not the input itself
