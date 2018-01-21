@@ -73,13 +73,13 @@ loadAsset('script', '../../vendors/highlight/highlight.pack.js');
 // Load web-components and trigger some hooks.
 // The definition itself (along with style overriding) is controlled inside the page.
 const isProd = window.location.search.includes('production=1');
-loadAsset('script', `../../../build/dist/js/dev-box-ui-web-components${isProd ? '.min' : ''}.js`, () => {
+loadAsset('script', `../../../build/dist/dev-box-ui/web-components${isProd ? '.min' : ''}.js`, () => {
   window.dispatchEvent(new Event('DBUIWebComponentsDistLibLoaded'));
 
   // load vendors, react components, babel and execute babel scripts (ex: demoing react components)
   // https://raw.githubusercontent.com/reactjs/reactjs.org/master/static/html/single-file-example.html
-  loadAsset('script', `../../../vendors/js/vendors-react${isProd ? '.min' : ''}.js`, () => {
-    loadAsset('script', `../../../build/dist/js/dev-box-ui-react-components-no-deps${isProd ? '.min' : ''}.js`, () => {
+  loadAsset('script', `../../../build/dist/vendors/react${isProd ? '.min' : ''}.js`, () => {
+    loadAsset('script', `../../../build/dist/dev-box-ui/react-components${isProd ? '.min' : ''}.js`, () => {
       // https://unpkg.com/babel-standalone@6.26.0/babel.min.js
       loadAsset('script', '../../vendors/babel-standalone.6.26.0.min.js', () => {
         const babelScripts = document.querySelectorAll('script[type="text/babel"]');
