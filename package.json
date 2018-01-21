@@ -4,8 +4,8 @@
   "private": false,
   "author": "catalinenache78@gmail.com",
   "license": "MIT",
-  "main": "./src/lib/web-components/index.js",
-  "unpkg": "./dist/js/dev-box-ui-web-components.min.js",
+  "main": "web-components/index.js",
+  "unpkg": "dist/js/dev-box-ui-web-components.min.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/catalin-enache/dev-box-ui.git"
