@@ -5,13 +5,15 @@
   "author": "catalinenache78@gmail.com",
   "license": "MIT",
   "main": "./src/lib/web-components/index.js",
+  "unpkg": "./dist/js/dev-box-ui-web-components.min.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/catalin-enache/dev-box-ui.git"
   },
   "files": [
     "dist",
-    "src"
+    "web-components",
+    "react-components"
   ],
   "devDependencies": {
     "babel-cli": "^6.26.0",
@@ -87,9 +89,11 @@
     "build:dev-box-ui-react-components-with-deps:list": "                                        browserify   -r ./src/lib/react-components/:dev-box-ui-react-components -x react -x react-dom                                                                              --list | node scripts/depsReporter.js",
     "build:dev-box-ui-web-components:dist:dev": "                                                browserify   -r ./src/lib/web-components:dev-box-ui-web-components                                                                                                          --debug -o build/dist/js/dev-box-ui-web-components.js",
     "build:dev-box-ui-web-components:dist:prod": "cross-env NODE_ENV=production                  browserify   -r ./src/lib/web-components:dev-box-ui-web-components                                                                                                          -g [ loose-envify purge --NODE_ENV production ] -g uglifyify -p bundle-collapser/plugin | uglifyjs --compress=unused,dead_code --mangle -o build/dist/js/dev-box-ui-web-components.min.js",
-    "build:babel:src:release": "babel ./src --out-dir ./build/src --ignore *.spec.js",
+    "build:babel:src:web-components": "babel ./src/lib/web-components --out-dir ./build/web-components --ignore *.spec.js",
+    "build:babel:src:react-components": "babel ./src/lib/react-components --out-dir ./build/react-components --ignore *.spec.js",
+    "build:babel:src:release": "npm run build:babel:src:web-components && npm run build:babel:src:react-components",
     "build:all": "npm run build:vendors-react:dev && npm run build:vendors-react:prod && npm run build:dev-box-ui-react-components-no-deps:dist:dev && npm run build:dev-box-ui-react-components-no-deps:dist:prod && npm run build:dev-box-ui-react-components-with-deps:dist:dev && npm run build:dev-box-ui-react-components-with-deps:dist:prod && npm run build:dev-box-ui-web-components:dist:dev && npm run build:dev-box-ui-web-components:dist:prod && npm run build:babel:src:release",
-    "clean": "rimraf build/dist/js/* && rimraf build/src/* && rimraf vendors/js/*",
-    "dist": "cp -rf package.json build && cd build && npm publish"
+    "clean": "rimraf build/dist/js/* && rimraf build/web-components/* && rimraf build/react-components/* && rimraf vendors/js/*",
+    "dist": "cp -rf package.json build && cd build && npm publish && rimraf build/package.json"
   }
 }
