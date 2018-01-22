@@ -8,6 +8,11 @@ and define them as an array on a static method webComponentsDependencies
 so that the user can inspect them and take care of defining by importing
 and calling registerSelf() for each of them
 
+make locale/I18n service able to target custom areas instead of always html element
+so we can use it only in tabs/result
+
+make tabs have optional edit link opening jsfiddle or some other online IDE.
+
 improve appendStyle to allow chaining
 
 improve appearance of title and sections on mobile
