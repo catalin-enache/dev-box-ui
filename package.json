@@ -91,6 +91,6 @@
     "build:babel:src:release": "npm run build:babel:src:web-components && npm run build:babel:src:react-components",
     "build:all": "npm run build:vendors-react:dev && npm run build:vendors-react:prod && npm run build:dev-box-ui-react-components:dist:dev && npm run build:dev-box-ui-react-components:dist:prod && npm run build:dev-box-ui-web-components:dist:dev && npm run build:dev-box-ui-web-components:dist:prod && npm run build:babel:src:release",
     "clean": "rimraf build/dist/vendors/* && rimraf build/dist/dev-box-ui/* && rimraf build/web-components/* && rimraf build/react-components/*",
-    "dist": "cp -rf package.json build && cd build && npm publish && rimraf ./build/package.json"
+    "dist": "cp -rf package.json build && cp -rf README.md build && cd build && npm publish && rimraf ./build/package.json && rimraf ./build/README.md"
   }
 }
