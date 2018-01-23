@@ -34,6 +34,7 @@ window.makeTabs = function () {
 
   document.querySelectorAll('.tabs').forEach((tabsBlock) => {
     const firstSection = tabsBlock.querySelector('section');
+    const edit = tabsBlock.getAttribute('x-edit');
 
     tabsBlock.querySelectorAll('section').forEach((section) => {
       const sectionName = section.getAttribute('x-name');
@@ -66,6 +67,14 @@ window.makeTabs = function () {
 
       idCount += 1;
     });
+
+    if (edit) {
+      const editLink = document.createElement('a');
+      editLink.href = edit;
+      editLink.target = '_blank';
+      editLink.innerText = 'EDIT';
+      tabsBlock.insertBefore(editLink, firstSection);
+    }
 
     gropCount += 1;
   });

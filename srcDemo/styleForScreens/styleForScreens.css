@@ -200,7 +200,7 @@ html[dir=ltr] .demo-screen {
     background-color: #ffffff; }
   html[dir=ltr] .demo-screen .tabs > input {
     display: none; }
-  html[dir=ltr] .demo-screen .tabs > label {
+  html[dir=ltr] .demo-screen .tabs > label, html[dir=ltr] .demo-screen .tabs > a {
     box-sizing: border-box;
     display: inline-block;
     margin-right: 2px;
@@ -213,7 +213,7 @@ html[dir=ltr] .demo-screen {
     color: #bbb;
     border-top: 2px solid transparent;
     background-color: transparent; }
-  html[dir=ltr] .demo-screen .tabs > label:hover {
+  html[dir=ltr] .demo-screen .tabs > label:hover, html[dir=ltr] .demo-screen .tabs > a:hover {
     color: #888;
     cursor: pointer; }
   html[dir=ltr] .demo-screen .tabs > input:checked + label {
@@ -504,7 +504,7 @@ html[dir=rtl] .demo-screen {
     background-color: #ffffff; }
   html[dir=rtl] .demo-screen .tabs > input {
     display: none; }
-  html[dir=rtl] .demo-screen .tabs > label {
+  html[dir=rtl] .demo-screen .tabs > label, html[dir=rtl] .demo-screen .tabs > a {
     box-sizing: border-box;
     display: inline-block;
     margin-left: 2px;
@@ -517,7 +517,7 @@ html[dir=rtl] .demo-screen {
     color: #bbb;
     border-top: 2px solid transparent;
     background-color: transparent; }
-  html[dir=rtl] .demo-screen .tabs > label:hover {
+  html[dir=rtl] .demo-screen .tabs > label:hover, html[dir=rtl] .demo-screen .tabs > a:hover {
     color: #888;
     cursor: pointer; }
   html[dir=rtl] .demo-screen .tabs > input:checked + label {
