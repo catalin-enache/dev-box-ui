@@ -75,7 +75,7 @@
   "scripts": {
     "test:watch": "node ./test/collect.js && cross-env NODE_ENV=test karma start",
     "test": "node ./test/collect.js && cross-env NODE_ENV=test karma start --single-run",
-    "serve": "http-server -a 0.0.0.0 -p 8001 -c-1",
+    "start": "http-server -a 0.0.0.0 -p 8001 -c-1",
     "eslint": "eslint src",
     "build:style:demo:styleForScreens": "node-sass srcDemo/styleForScreens/styleForScreens.scss srcDemo/styleForScreens/styleForScreens.css",
     "build:vendors-react:dev": "                                                                 browserify                                                              -r react -r react-dom                                                                              -o build/dist/vendors/react.js",
