@@ -91,7 +91,6 @@ loadAsset('script', `../../../build/dist/dev-box-ui/web-components${isProd ? '.m
           document.querySelector('head').appendChild(script);
         });
         console.log('executed babel scripts');
-        // window.dispatchEvent(new Event('runBabel'));
       });
     });
   });
