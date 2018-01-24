@@ -24,7 +24,7 @@ function getDBUILocaleService(win) {
       constructor() {
         this._callbacks = [];
         this._localeAttrs = Object.keys(defaultLocale);
-        this._rootElement = window.document.documentElement;
+        this._rootElement = win.document.documentElement;
         this._localeAttrs.forEach(attr => {
           if (!this._rootElement.getAttribute(attr)) {
             this._rootElement.setAttribute(attr, defaultLocale[attr]);
