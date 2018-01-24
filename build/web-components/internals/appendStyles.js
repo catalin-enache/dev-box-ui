@@ -20,4 +20,11 @@ const appendStyle = win => (registrationName, componentStyle) => {
   });
 };
 
-exports.default = appendStyle;
+const appendStyles = win => components => {
+  components.forEach(({ registrationName, componentStyle }) => {
+    appendStyle(win)(registrationName, componentStyle);
+  });
+  return components;
+};
+
+exports.default = appendStyles;

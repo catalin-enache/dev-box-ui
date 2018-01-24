@@ -132,16 +132,19 @@
     console.log(DBUIWebComponentDummyClass.componentStyle);
 
     // Override component default style.
-    dbuiWebComponentsSetUp(window).appendStyle('dbui-web-component-dummy', \`
-        #container > div {
-          /* match --dummy-inner-sections-bg-color new css var defined in head style */
-          background-color: var(--dummy-inner-sections-bg-color, transparent);
+    dbuiWebComponentsSetUp(window)([
+        {
+          registrationName: 'dbui-web-component-dummy',
+          componentStyle: \`
+            #container > div {
+              background-color: var(--dummy-inner-sections-bg-color, transparent);
+            }
+            b {
+              color: deepskyblue;
+              font-style: oblique;
+            }\`
         }
-        b {
-          color: deepskyblue;
-          font-style: oblique;
-        }
-      \`);
+      ]);
 
     // Inspect component's class prototype chain.
     console.log(DBUIWebComponentDummyParentClass.prototypeChainInfo);

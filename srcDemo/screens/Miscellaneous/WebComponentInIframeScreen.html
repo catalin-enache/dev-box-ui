@@ -75,12 +75,16 @@
             `);
             target.contentWindow.postMessage('hello', '*');
 
-            dbuiWebComponentsSetUp(target.contentWindow).appendStyle('dbui-web-component-dummy', `
-              b {
-                font-style: oblique;
-                opacity: 0.5;
+            dbuiWebComponentsSetUp(target.contentWindow)([
+              {
+                registrationName: 'dbui-web-component-dummy',
+                componentStyle: `
+                b {
+                  font-style: oblique;
+                  opacity: 0.5;
+                }`
               }
-            `);
+            ]);
             const DBUIWebComponentDummy2 = getDBUIWebComponentDummy(target.contentWindow);
             const DBUIWebComponentDummyParent2 = getDBUIWebComponentDummyParent(target.contentWindow);
             setTimeout(() => {

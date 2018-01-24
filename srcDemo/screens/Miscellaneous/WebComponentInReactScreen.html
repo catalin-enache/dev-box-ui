@@ -22,15 +22,19 @@
         getDBUIWebComponentDummyParent
       } = require('dev-box-ui-web-components');
 
-      dbuiWebComponentsSetUp(window).appendStyle('dbui-web-component-dummy', `
-        #container > div {
-          background-color: var(--dummy-inner-sections-bg-color, transparent);
+      dbuiWebComponentsSetUp(window)([
+        {
+          registrationName: 'dbui-web-component-dummy',
+          componentStyle: `
+            #container > div {
+              background-color: var(--dummy-inner-sections-bg-color, transparent);
+            }
+            b {
+              color: deepskyblue;
+              font-style: oblique;
+            }`
         }
-        b {
-          color: deepskyblue;
-          font-style: oblique;
-        }
-      `);
+      ]);
       const DBUIWebComponentDummy = getDBUIWebComponentDummy(window);
       const DBUIWebComponentDummyParent = getDBUIWebComponentDummyParent(window);
 
@@ -118,11 +122,11 @@ class Car extends SuperClass {
             return (
               <div>
 
-                <dbui-web-component-dummy style={{ color: 'green' }}>
+                <dbui-web-component-dummy class="custom-1" style={{ color: 'green' }}>
                   <span>hello 1</span>
                 </dbui-web-component-dummy>
 
-                <dbui-web-component-dummy style={{ color: 'blue' }}>
+                <dbui-web-component-dummy class="custom-2" style={{ color: 'blue' }}>
                   <span>hello 2</span>
                 </dbui-web-component-dummy>
 

@@ -83,13 +83,13 @@ const registrations = {
 };
 
 /*
-Using this function implies entire DBUIWebComponents library
-is already loaded.
+This helper function is just for convenience.
+Using it implies that entire DBUIWebComponents library is already loaded.
 It is useful especially when working with distribution build.
-If you want to load just one web-component or a subset of web-components
-load them from node_modules by their path
+If one wants to load just one web-component or a subset of web-components
+they should be loaded from node_modules/dev-box-ui/web-components by their path
 ex:
-import SomeComponentLoader from node_modules/dev-box-ui/build/src/lib/webcomponents/SomeComponent;
+import SomeComponentLoader from node_modules/dev-box-ui/web-components/path/to/SomeComponent;
 */
 
 
@@ -98,15 +98,20 @@ import SomeComponentLoader from node_modules/dev-box-ui/build/src/lib/webcompone
 
 // Internals
 function quickSetupAndLoad(win = window) {
+  /**
+   * @param components Object {
+   *  registrationName,
+   *  componentStyle
+   * }
+   * @return Object { <registrationName>, <componentClass> }
+   */
   return function (components) {
-    const ret = {};
-    components.forEach(({ registrationName, componentStyle }) => {
-      (0, _dbuiWebComponentsSetup2.default)(win).appendStyle(registrationName, componentStyle);
+    return (0, _dbuiWebComponentsSetup2.default)(win)(components).reduce((acc, { registrationName }) => {
       const componentClass = registrations[registrationName](window);
       componentClass.registerSelf();
-      ret[registrationName] = componentClass;
-    });
-    return ret;
+      acc[registrationName] = componentClass;
+      return acc;
+    }, {});
   };
 }
 
@@ -129,8 +134,10 @@ exports.getDBUIWebComponentIcon = _DBUIWebComponentIcon2.default;
 
 /* eslint no-console: 0 */
 
+let build = 'production';
+
 if (process.env.NODE_ENV !== 'production') {
-  console.log('Using DBUIWebComponentsDistLib develop build.');
-} else {
-  console.log('Using DBUIWebComponentsDistLib production build.');
+  build = 'develop';
 }
+
+console.log(`Using DBUIWebComponentsDistLib ${build} build.`);

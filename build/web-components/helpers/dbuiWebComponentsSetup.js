@@ -3,16 +3,23 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = dbuiWebComponentsSetUp;
 
-var _appendStyle = require('../internals/appendStyle');
+var _appendStyles = require('../internals/appendStyles');
 
-var _appendStyle2 = _interopRequireDefault(_appendStyle);
+var _appendStyles2 = _interopRequireDefault(_appendStyles);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function dbuiWebComponentsSetUp(win) {
-  return {
-    appendStyle: (0, _appendStyle2.default)(win)
-  };
-}
+/**
+* @param components Array<Object> [{
+*  registrationName,
+*  componentStyle,
+*  ...
+* }]
+* @returns components Array<Object>
+*/
+const dbuiWebComponentsSetUp = win => components => {
+  return (0, _appendStyles2.default)(win)(components);
+};
+
+exports.default = dbuiWebComponentsSetUp;

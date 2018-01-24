@@ -1,7 +1,15 @@
-import appendStyle from '../internals/appendStyle';
+import appendStyles from '../internals/appendStyles';
 
-export default function dbuiWebComponentsSetUp(win) {
-  return {
-    appendStyle: appendStyle(win)
-  };
-}
+/**
+* @param components Array<Object> [{
+*  registrationName,
+*  componentStyle,
+*  ...
+* }]
+* @returns components Array<Object>
+*/
+const dbuiWebComponentsSetUp = (win) => (components) => {
+  return appendStyles(win)(components);
+};
+
+export default dbuiWebComponentsSetUp;
