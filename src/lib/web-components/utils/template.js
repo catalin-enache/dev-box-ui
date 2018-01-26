@@ -1,4 +1,11 @@
-
+/**
+ * const t = template`${0} ${1} ${'two'} ${'three'}`;
+ * const tr = t('a', 'b', { two: 'c', three: 'd' });
+ * expect(tr).to.equal('a b c d');
+ * @param strings
+ * @param keys
+ * @return {function(...[*])}
+ */
 export default function template(strings, ...keys) {
   return ((...values) => {
     const dict = values[values.length - 1] || {};

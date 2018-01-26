@@ -3,6 +3,7 @@
 // https://github.com/facebook/react-devtools/issues/57
 window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = window.parent.__REACT_DEVTOOLS_GLOBAL_HOOK__;
 
+// redirect to main app if not embedded
 (function () {
   const isEmbeded = (window.top !== window);
   const href = decodeURIComponent(window.location.href);
@@ -17,22 +18,56 @@ window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = window.parent.__REACT_DEVTOOLS_GLOBAL_HO
   }
 })();
 
-
-function switchDir(evt) {
-  evt.preventDefault();
-  const documentElement = window.document.documentElement;
-  const currentDir = documentElement.getAttribute('dir');
-  const nextDir = currentDir === 'ltr' ? 'rtl' : 'ltr';
-  documentElement.setAttribute('dir', nextDir);
+function getLocaleRoot() {
+  return window.document.querySelector('[x-dbui-locale-root]');
 }
 
-function switchLang(evt) {
-  evt.preventDefault();
+function injectLocaleSwitch() {
+  document.querySelectorAll('.locale-switch').forEach((localeSwitchPlaceholder) => {
+    const hasDir = localeSwitchPlaceholder.hasAttribute('x-dir');
+    const hasLang = localeSwitchPlaceholder.hasAttribute('x-lang');
+
+    const dirSwitchHTML = `<div class="locale-dir-switch">
+      <select class="locale-dir-switcher"><option value="ltr">ltr</option><option value="rtl">rtl</option></select>
+    </div>`;
+
+    const langSwitchHTML = `<div class="locale-lang-switch">
+      <select class="locale-lang-switcher"><option value="en">en</option><option value="other">other</option><option value="---">---</option></select>
+    </div>`;
+
+    localeSwitchPlaceholder.innerHTML = `${hasLang ? langSwitchHTML : ''}${hasDir ? dirSwitchHTML : ''}`;
+  });
+}
+
+function switchLocale(evt) {
+  const className = evt.target.getAttribute('class') || '';
+  const isLocaleLangSwitcher = className.includes('locale-lang-switcher');
+  const isLocaleDirSwitcher = className.includes('locale-dir-switcher');
+
+  if (!isLocaleLangSwitcher && !isLocaleDirSwitcher) {
+    return;
+  }
+
   const selectObj = evt.target;
   const idx = selectObj.selectedIndex;
-  const nextLang = selectObj.options[idx].value;
-  const documentElement = window.document.documentElement;
-  documentElement.setAttribute('lang', nextLang);
+  const nextValue = selectObj.options[idx].value;
+  const localeRoot = getLocaleRoot();
+  localeRoot.setAttribute(isLocaleLangSwitcher ? 'lang' : 'dir', nextValue);
+
+  document
+    .querySelectorAll(`.locale-${isLocaleLangSwitcher ? 'lang' : 'dir'}-switcher [value="${nextValue}"]`)
+    .forEach((option) => option.selected = true);
+
+  // document.querySelectorAll('.locale-lang-switcher').forEach((select) => {
+  //   const opts = Array.from(select.options);
+  //   opts.some((opt, idx) => {
+  //     if (opt.value === nextLang) {
+  //       select.selectedIndex = idx;
+  //       return true;
+  //     }
+  //     return false;
+  //   });
+  // });
 }
 
 // Asset loader helper
@@ -58,6 +93,7 @@ window.loadAsset = loadAsset;
 document.querySelector('head').innerHTML += `
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta x-dbui-locale-root >
 `;
 
 // Load fonts.
@@ -116,11 +152,8 @@ window.addEventListener('load', () => {
   window.highlightBlocks();
   // Hide loader and show page.
   setTimeout(() => {
-    const dirSwitcher = document.querySelector('.locale-switch .locale-dir-switch a');
-    dirSwitcher && dirSwitcher.addEventListener('click', switchDir);
-
-    const langSwitcher = document.querySelector('.locale-switch .locale-lang-switch select');
-    langSwitcher && langSwitcher.addEventListener('change', switchLang);
+    injectLocaleSwitch();
+    document.addEventListener('change', switchLocale);
 
     document.querySelector('.demo-screen-loading').style.display = 'none';
     document.querySelector('.demo-screen').style.display = 'block';

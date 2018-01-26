@@ -13,7 +13,7 @@ i18nService.registerTranslations({
   en: {
     Hello: template`Hello ${'age'} ${'name'}`
   },
-  sp: {
+  other: {
     Hello: template`Hola ${'age'} ${'name'}`
   }
 });
@@ -30,7 +30,7 @@ class Hello extends React.PureComponent {
     }
     return (
       <div>
-        {translations.Hello({ age: 22, name: this.props.name || 'Nobody' })}
+        {translations.Hello && translations.Hello({ age: 22, name: this.props.name || 'Nobody' })}
         <FaSpinner />
         <List items={ listItems }/>
         <List items={ listItems }/>

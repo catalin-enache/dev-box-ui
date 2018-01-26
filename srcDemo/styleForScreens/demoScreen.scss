@@ -10,16 +10,30 @@
     padding: 20px 20px 40px 20px;
   }
 
-  .locale-dir-switch {
-    padding-#{$start}: 15px;
-    height: 40px;
-    line-height: 40px;
-    background-color: $locale-dir-switch-background;
-    a {
-      font-weight: 500;
-      color: $text-default-color;
+  .locale-switch {
+
+    .locale-dir-switch, .locale-lang-switch {
+      display: inline-block;
+      padding-#{$end}: 15px;
+      height: 45px;
+      line-height: 45px;
+      background-color: transparent;
+
+      select {
+        width: 100px;
+        height: 25px;
+        font-weight: 500;
+        color: $text-default-color;
+        vertical-align: top;
+        // https://stackoverflow.com/questions/5780109/removing-rounded-corners-from-a-select-element-in-chrome-webkit
+        border: 0;
+        background-color: transparent;
+        outline: 1px inset #ccc;
+        outline-offset:-1px
+      }
     }
   }
+
 
   h2.title {
     border-bottom: 1px solid #aaa;

@@ -10,7 +10,7 @@ i18nService.registerTranslations({
   en: {
     list: template`list`
   },
-  sp: {
+  other: {
     list: template`lista`
   }
 });
@@ -23,7 +23,7 @@ class List extends React.PureComponent {
     }
     return (
       <div>
-        {this.props.translations.list()}
+        {this.props.translations.list && this.props.translations.list()}
         <ul>
           {this.props.items.map(item => <li key={item}>{item}</li>)}
         </ul>

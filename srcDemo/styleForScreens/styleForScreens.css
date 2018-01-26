@@ -170,14 +170,22 @@ html[dir=ltr] .demo-screen {
   @media (max-width: 992px) {
     html[dir=ltr] .demo-screen {
       padding: 20px 20px 40px 20px; } }
-  html[dir=ltr] .demo-screen .locale-dir-switch {
-    padding-left: 15px;
-    height: 40px;
-    line-height: 40px;
-    background-color: #ffffff; }
-    html[dir=ltr] .demo-screen .locale-dir-switch a {
+  html[dir=ltr] .demo-screen .locale-switch .locale-dir-switch, html[dir=ltr] .demo-screen .locale-switch .locale-lang-switch {
+    display: inline-block;
+    padding-right: 15px;
+    height: 45px;
+    line-height: 45px;
+    background-color: transparent; }
+    html[dir=ltr] .demo-screen .locale-switch .locale-dir-switch select, html[dir=ltr] .demo-screen .locale-switch .locale-lang-switch select {
+      width: 100px;
+      height: 25px;
       font-weight: 500;
-      color: #000; }
+      color: #000;
+      vertical-align: top;
+      border: 0;
+      background-color: transparent;
+      outline: 1px inset #ccc;
+      outline-offset: -1px; }
   html[dir=ltr] .demo-screen h2.title {
     border-bottom: 1px solid #aaa;
     font-weight: 700;
@@ -474,14 +482,22 @@ html[dir=rtl] .demo-screen {
   @media (max-width: 992px) {
     html[dir=rtl] .demo-screen {
       padding: 20px 20px 40px 20px; } }
-  html[dir=rtl] .demo-screen .locale-dir-switch {
-    padding-right: 15px;
-    height: 40px;
-    line-height: 40px;
-    background-color: #ffffff; }
-    html[dir=rtl] .demo-screen .locale-dir-switch a {
+  html[dir=rtl] .demo-screen .locale-switch .locale-dir-switch, html[dir=rtl] .demo-screen .locale-switch .locale-lang-switch {
+    display: inline-block;
+    padding-left: 15px;
+    height: 45px;
+    line-height: 45px;
+    background-color: transparent; }
+    html[dir=rtl] .demo-screen .locale-switch .locale-dir-switch select, html[dir=rtl] .demo-screen .locale-switch .locale-lang-switch select {
+      width: 100px;
+      height: 25px;
       font-weight: 500;
-      color: #000; }
+      color: #000;
+      vertical-align: top;
+      border: 0;
+      background-color: transparent;
+      outline: 1px inset #ccc;
+      outline-offset: -1px; }
   html[dir=rtl] .demo-screen h2.title {
     border-bottom: 1px solid #aaa;
     font-weight: 700;

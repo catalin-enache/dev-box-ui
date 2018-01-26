@@ -56,11 +56,6 @@
 </div>
 <div class="demo-screen">
   <script src="../../internals/iFrameUtils/demoScreenStartScript.js"></script>
-  <div class="locale-switch">
-    <div class="locale-dir-switch">
-      <a href="">TOGGLE LOCALE DIR</a>
-    </div>
-  </div>
 <!-- standard template end -->
 
   <h2 class="title">Dummy Web Component In React App</h2>
@@ -69,6 +64,7 @@
 
   <div class="tabs">
     <section x-name="RESULT" x-checked="1">
+      <div class="locale-switch" x-lang="" x-dir=""></div>
       <dbui-web-component-dummy class="custom-1">
         hello 1
       </dbui-web-component-dummy>
@@ -113,6 +109,7 @@ class Car extends SuperClass {
   <div class="tabs">
 
     <section x-name="RESULT" x-checked="1">
+      <div class="locale-switch" x-lang="" x-dir=""></div>
       <div id="react-example-1"></div>
       <script id="test" type="text/babel" data-presets="react">
         const ReactDOM = require('react-dom');

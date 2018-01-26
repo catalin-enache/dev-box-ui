@@ -6,7 +6,6 @@
       border: 2px solid green;
     }
   </style>
-
 <!-- standard template start -->
   <script>
     window.addEventListener('DBUIWebComponentsDistLibLoaded', () => {
@@ -40,12 +39,8 @@
 </div>
 <div class="demo-screen">
   <script src="../../internals/iFrameUtils/demoScreenStartScript.js"></script>
-  <div class="locale-switch">
-    <div class="locale-dir-switch">
-      <a href="">TOGGLE LOCALE DIR</a>
-    </div>
-  </div>
 <!-- standard template end -->
+  <div class="locale-switch" x-dir=""></div>
   <dbui-web-component-form-input-text id="one" name="one"></dbui-web-component-form-input-text>
   <br /><br />
   <dbui-web-component-form-input-text id="two" name="two" disabled></dbui-web-component-form-input-text>
@@ -110,6 +105,7 @@
 
   <div class="tabs">
     <section x-name="RESULT" x-checked="1">
+      <div class="locale-switch" x-lang="" x-dir=""></div>
       <div id="root"></div>
       <script id="test" type="text/babel" data-presets="react">
         // window.addEventListener('runBabel', function () {
