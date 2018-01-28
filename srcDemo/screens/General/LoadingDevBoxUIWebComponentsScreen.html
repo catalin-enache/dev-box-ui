@@ -41,6 +41,7 @@
 
   </code></pre>
   <script>
+    // ================================ snippet =================================
     const exampleTextQuickSetupAndLoad = `
 <!doctype html>
 <html dir="ltr" lang="en">
@@ -94,6 +95,8 @@
 </body>
 </html>
 `;
+    // ================================ end snippet =================================
+
     document.querySelector('#example-from-distribution-using-quickSetupAndLoad').innerText = exampleTextQuickSetupAndLoad;
   </script>
 
@@ -115,6 +118,7 @@
 
   </code></pre>
   <script>
+    // ================================ snippet =================================
     const exampleTextRegisterSelf = `
 <!doctype html>
 <html dir="ltr" lang="en">
@@ -182,6 +186,7 @@
 </body>
 </html>
 `;
+    // ================================ end snippet =================================
     document.querySelector('#example-from-distribution-using-registerSelf').innerText = exampleTextRegisterSelf;
   </script>
 
@@ -200,10 +205,6 @@
     <h3 class="section">From Library <i>minimal</i> import </h3>
 
   <pre><code class="javascript" id="example-from-library-minimal-import">
-
-  </code></pre>
-  <script>
-    const exampleTextLibraryMinimalImport = `
 import React from 'react';
 import ReactDOM from 'react-dom';
 
@@ -221,9 +222,8 @@ setTimeout(() => {
   console.log('DBUIWebComponentDummyParent registered', DBUIWebComponentDummyParent.prototypeChainInfo);
   ReactDOM.render(<Hello />, document.querySelector('#demo'));
 }, 2000);
-`;
-    document.querySelector('#example-from-library-minimal-import').innerText = exampleTextLibraryMinimalImport;
-  </script>
+  </code></pre>
+
 
 
 
@@ -242,10 +242,6 @@ setTimeout(() => {
   <h3 class="section">From Library <i>full</i> import </h3>
 
   <pre><code class="javascript" id="example-from-library-full-import">
-
-  </code></pre>
-  <script>
-    const exampleTextLibraryFullImport = `
 import React from 'react';
 import ReactDOM from 'react-dom';
 
@@ -265,11 +261,8 @@ setTimeout(() => {
   console.log('DBUIWebComponentDummyParent registered', DBUIWebComponentDummyParent.prototypeChainInfo);
   ReactDOM.render(<Hello />, document.querySelector('#demo'));
 }, 2000);
+  </code></pre>
 
-
-`;
-    document.querySelector('#example-from-library-full-import').innerText = exampleTextLibraryFullImport;
-  </script>
 
 
 
