@@ -1,22 +1,15 @@
 
 import getDBUILocaleService from '../../services/DBUILocaleService';
 import ensureSingleRegistration from '../../internals/ensureSingleRegistration';
+import DBUICommonCssVars from './DBUICommonCssVars';
 
 const registrationName = 'DBUIWebComponentBase';
 
-function defineCommonCSSVars() {
+function defineCommonCSSVars(win) {
+  const { document } = win;
   const commonStyle = document.createElement('style');
-  commonStyle.innerHTML = `
-  :root {
-    --dbui-web-component-global-border-radius: 5px;
-    --dbui-web-component-form-input-height: 30px;
-    --dbui-web-component-form-input-color: #000;
-    --dbui-web-component-form-input-background-color: transparent;
-    --dbui-web-component-form-input-border-color: #ccc;
-    --dbui-web-component-form-input-border-style: solid;
-    --dbui-web-component-form-input-border-width: 1px;
-  }
-  `;
+  commonStyle.setAttribute('dbui-common-css-vars', '');
+  commonStyle.innerHTML = DBUICommonCssVars;
   document.querySelector('head').appendChild(commonStyle);
 }
 
@@ -24,7 +17,7 @@ export default function getDBUIWebComponentBase(win) {
   const LocaleService = getDBUILocaleService(win);
 
   return ensureSingleRegistration(win, registrationName, () => {
-    defineCommonCSSVars();
+    defineCommonCSSVars(win);
 
     const { document, HTMLElement, customElements } = win;
 

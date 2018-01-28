@@ -53,6 +53,7 @@
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "rimraf": "^2.6.1",
+    "sinon": "^4.2.2",
     "uglify-es": "^3.2.2",
     "uglifyify": "^4.0.3",
     "watchify": "^3.9.0"
