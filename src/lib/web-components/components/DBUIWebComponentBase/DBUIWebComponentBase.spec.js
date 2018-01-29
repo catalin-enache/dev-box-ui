@@ -84,7 +84,7 @@ getDummyOneParent.registrationName = dummyOneParentRegistrationName;
 
 
 describe('DBUIWebComponentBase', () => {
-  describe('when loaded from its getter (getDBUIWebComponentBase)', () => {
+  describe('when loaded', () => {
     it('injects dbui-common-css-vars into window document head', (done) => {
       inIframe({
         onLoad: ({ contentWindow, iframe }) => {
@@ -98,17 +98,32 @@ describe('DBUIWebComponentBase', () => {
         }
       });
     });
+
+    it('always returns the same reference', (done) => {
+      inIframe({
+        onLoad: ({ contentWindow, iframe }) => {
+          const inst1 = getDBUIWebComponentBase(contentWindow);
+          const inst2 = getDBUIWebComponentBase(contentWindow);
+          const inst3 = getDBUIWebComponentBase(contentWindow);
+          // same reference
+          expect(inst1).to.equal(inst2);
+          expect(inst2).to.equal(inst3);
+          iframe.remove();
+          done();
+        }
+      });
+    });
   });
 
   describe('registerSelf and registrationName', () => {
-    it('registers the component', (done) => {
+    it('registers the component using registrationName', (done) => {
       inIframe({
         bodyHTML: `
         <dummy-one></dummy-one>
         `,
         onLoad: ({ contentWindow, iframe }) => {
           const DummyOne = getDummyOne(contentWindow);
-          const dummyOneInstance = contentWindow.document.querySelector('dummy-one');
+          const dummyOneInstance = contentWindow.document.querySelector(DummyOne.registrationName);
 
           const notDefinedElementsBefore = [...contentWindow.document.querySelectorAll(':not(:defined)')]
             .map((element) => (element.localName));
@@ -147,19 +162,19 @@ describe('DBUIWebComponentBase', () => {
           <dummy-one-parent></dummy-one-parent>
           `,
           onLoad: ({ contentWindow, iframe }) => {
+            const DummyOneParent = getDummyOneParent(contentWindow);
             const DummyOne = getDummyOne(contentWindow);
             const dummyOneRegisterSelf = DummyOne.registerSelf;
             const spyDummyOneRegisterSelf = sinon.stub(DummyOne, 'registerSelf')
               .callsFake(dummyOneRegisterSelf);
 
-            contentWindow.customElements.whenDefined('dummy-one-parent').then(() => {
+            contentWindow.customElements.whenDefined(DummyOneParent.registrationName).then(() => {
               setTimeout(() => {
                 iframe.remove();
                 done();
               }, 0);
             });
 
-            const DummyOneParent = getDummyOneParent(contentWindow);
             DummyOneParent.registerSelf();
             // registerSelf took care of registering the dependencies
             expect(spyDummyOneRegisterSelf.callCount).to.equal(1);
@@ -176,10 +191,11 @@ describe('DBUIWebComponentBase', () => {
         <dummy-one-parent></dummy-one-parent>
         `,
         onLoad: ({ contentWindow, iframe }) => {
+          const DummyOne = getDummyOne(contentWindow);
+          const DummyOneParent = getDummyOneParent(contentWindow);
+          const dummyOneParentInstance = contentWindow.document.querySelector(DummyOneParent.registrationName);
 
-          const dummyOneParentInstance = contentWindow.document.querySelector('dummy-one-parent');
-
-          contentWindow.customElements.whenDefined('dummy-one-parent').then(() => {
+          contentWindow.customElements.whenDefined(DummyOneParent.registrationName).then(() => {
 
             // shadow dom structure was build as expected
             expect(dummyOneParentInstance
@@ -187,7 +203,7 @@ describe('DBUIWebComponentBase', () => {
               .innerText
             ).to.equal('dummy one parent component');
             expect(dummyOneParentInstance
-              .childrenTree.querySelector('dummy-one')
+              .childrenTree.querySelector(DummyOne.registrationName)
               .childrenTree.querySelector('div p')
               .innerText
             ).to.equal('dummy one component');
@@ -198,7 +214,6 @@ describe('DBUIWebComponentBase', () => {
             }, 0);
           });
 
-          const DummyOneParent = getDummyOneParent(contentWindow);
           DummyOneParent.registerSelf();
         }
       });
@@ -207,15 +222,16 @@ describe('DBUIWebComponentBase', () => {
 
   describe('useShadow and childrenTree', () => {
     describe('when useShadow', () => {
-      it('childrenTree return shadow DOM', (done) => {
+      it('childrenTree return shadowRoot', (done) => {
         inIframe({
           bodyHTML: `
           <dummy-one-parent></dummy-one-parent>
           `,
           onLoad: ({ contentWindow, iframe }) => {
-            const dummyOneParentInstance = contentWindow.document.querySelector('dummy-one-parent');
+            const DummyOneParent = getDummyOneParent(contentWindow);
+            const dummyOneParentInstance = contentWindow.document.querySelector(DummyOneParent.registrationName);
 
-            contentWindow.customElements.whenDefined('dummy-one-parent').then(() => {
+            contentWindow.customElements.whenDefined(DummyOneParent.registrationName).then(() => {
 
               // shadow dom structure was build as expected
               expect(
@@ -231,7 +247,6 @@ describe('DBUIWebComponentBase', () => {
               }, 0);
             });
 
-            const DummyOneParent = getDummyOneParent(contentWindow);
             DummyOneParent.registerSelf();
           }
         });
@@ -249,9 +264,9 @@ describe('DBUIWebComponentBase', () => {
             const useShadowStub = sinon.stub(DummyOneParent, 'useShadow').get(() => {
               return false;
             });
-            const dummyOneParentInstance = contentWindow.document.querySelector('dummy-one-parent');
+            const dummyOneParentInstance = contentWindow.document.querySelector(DummyOneParent.registrationName);
 
-            contentWindow.customElements.whenDefined('dummy-one-parent').then(() => {
+            contentWindow.customElements.whenDefined(DummyOneParent.registrationName).then(() => {
 
               // shadow dom structure was build as expected
               expect(
