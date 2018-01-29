@@ -3,6 +3,8 @@ export default function inIframe({
   bodyHTML = '', headStyle = '', headScript = '', bodyScript = '', onLoad
 }) {
   const iframe = document.createElement('iframe');
+  iframe.style.width = '100%';
+  iframe.style.height = '100%';
   iframe.addEventListener('load', (evt) => {
     const target = evt.target;
     target.contentWindow.document.write(`
