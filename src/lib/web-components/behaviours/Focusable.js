@@ -43,31 +43,15 @@ export default function Focusable(Klass) {
       return super.name;
     }
 
-    get instancePropertiesToDefine() {
-      const inheritedInstancePropertiesToDefine =
-        super.instancePropertiesToDefine || {};
-      const newInstancePropertiesToDefine = {};
-      if (!this.disabled) {
-        // tabindex defines focusable behaviour
-        newInstancePropertiesToDefine.tabindex = 0;
-      }
-      return {
-        ...inheritedInstancePropertiesToDefine,
-        ...newInstancePropertiesToDefine
-      };
-    }
-
     static get propertiesToUpgrade() {
-      const inheritedPropertiesToUpgrade = super.propertiesToUpgrade || [];
       // The reason for upgrading 'focused' is only to show an warning
       // if the consumer of the component attempted to set focus property
       // which is read-only.
-      return [...inheritedPropertiesToUpgrade, 'focused', 'disabled'];
+      return [...super.propertiesToUpgrade, 'focused', 'disabled'];
     }
 
     static get observedAttributes() {
-      const inheritedObservedAttributes = super.observedAttributes || [];
-      return [...inheritedObservedAttributes, 'disabled'];
+      return [...super.observedAttributes, 'disabled'];
     }
 
     constructor(...args) {
@@ -80,8 +64,7 @@ export default function Focusable(Klass) {
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
-      super.attributeChangedCallback &&
-        super.attributeChangedCallback(name, oldValue, newValue);
+      super.attributeChangedCallback(name, oldValue, newValue);
 
       const hasValue = newValue !== null;
       if (name === 'disabled') {
@@ -90,8 +73,7 @@ export default function Focusable(Klass) {
     }
 
     connectedCallback() {
-      super.connectedCallback &&
-        super.connectedCallback();
+      super.connectedCallback();
 
       readOnlyProperties.forEach((readOnlyProperty) => {
         if (this.hasAttribute(readOnlyProperty)) {
@@ -99,6 +81,10 @@ export default function Focusable(Klass) {
           console.warn(ERROR_MESSAGES[readOnlyProperty]);
         }
       });
+
+      if (!this.disabled) {
+        this.setAttribute('tabindex', 0);
+      }
 
       // when component focused/blurred
       this.addEventListener('focus', this._onFocus);
@@ -111,8 +97,7 @@ export default function Focusable(Klass) {
     }
 
     disconnectedCallback() {
-      super.disconnectedCallback &&
-        super.disconnectedCallback();
+      super.disconnectedCallback();
 
       this.removeEventListener('focus', this._onFocus);
       this.removeEventListener('blur', this._onBlur);

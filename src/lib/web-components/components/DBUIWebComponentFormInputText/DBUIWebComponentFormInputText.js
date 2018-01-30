@@ -95,7 +95,7 @@ export default function getDBUIWebComponentFormInputText(win) {
       onLocaleChange(locale) {
         if (process.env.NODE_ENV !== 'production') {
           /* eslint no-console: 0 */
-          console.log('onLocaleChange', locale);
+          // console.log('onLocaleChange', locale);
         }
       }
 

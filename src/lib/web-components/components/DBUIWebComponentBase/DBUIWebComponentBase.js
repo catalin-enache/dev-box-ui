@@ -47,8 +47,9 @@ export default function getDBUIWebComponentBase(win) {
         return {};
       }
 
-      get instancePropertiesToDefine() {
-        return {};
+      // web components standard API
+      static get observedAttributes() {
+        return [];
       }
 
       constructor(...args) {
@@ -93,29 +94,35 @@ export default function getDBUIWebComponentBase(win) {
         }
       }
 
+      // web components standard API
       connectedCallback() {
         this._isConnected = true;
         window.addEventListener('beforeunload', this.disconnectedCallback, false);
         this.unregisterLocaleChange =
           LocaleService.onLocaleChange(this._handleLocaleChange);
         const { propertiesToUpgrade, propertiesToDefine } = this.constructor;
-        const { instancePropertiesToDefine } = this;
-        const allPropertiesToDefine = {
-          ...propertiesToDefine,
-          ...instancePropertiesToDefine
-        };
         propertiesToUpgrade.forEach((property) => {
           this._upgradeProperty(property);
         });
-        Object.keys(allPropertiesToDefine).forEach((property) => {
-          this._defineProperty(property, allPropertiesToDefine[property]);
+        Object.keys(propertiesToDefine).forEach((property) => {
+          this._defineProperty(property, propertiesToDefine[property]);
         });
       }
 
+      // web components standard API
       disconnectedCallback() {
         this._isConnected = false;
         this.unregisterLocaleChange();
         window.removeEventListener('beforeunload', this.disconnectedCallback, false);
+      }
+
+      // web components standard API
+      attributeChangedCallback() {
+        // no op
+      }
+
+      get isConnected() {
+        return this._isConnected;
       }
 
       get childrenTree() {
