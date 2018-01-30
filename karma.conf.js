@@ -42,7 +42,7 @@ module.exports = function (config) {
         reporter: 'html', // change Karma's debug.html to the mocha web reporter
         checkLeaks: true,
         ignoreLeaks: false,
-        timeout: 60000
+        timeout: 2000
       }
     },
     browserify: {

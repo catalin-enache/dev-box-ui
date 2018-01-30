@@ -29,6 +29,11 @@ function getDummyOne(win) {
           </div>
         `;
       }
+
+      onLocaleChange(locale) {
+        this._localeObject = locale;
+      }
+
     }
 
     return Registerable(
@@ -316,6 +321,73 @@ describe('DBUIWebComponentBase', () => {
             .to.equal(DummyOneParent.template.content.querySelector('style').innerText);
           iframe.remove();
           done();
+        }
+      });
+    });
+  });
+
+  describe('isConnected', () => {
+    it('is true after connectedCallback and false after disconnectedCallback', (done) => {
+      inIframe({
+        bodyHTML: `
+          <dummy-one-parent></dummy-one-parent>
+          `,
+        onLoad: ({ contentWindow, iframe }) => {
+          const DummyOneParent = getDummyOneParent(contentWindow);
+          const dummyOneParentInstance = contentWindow.document.querySelector(DummyOneParent.registrationName);
+
+          contentWindow.customElements.whenDefined(DummyOneParent.registrationName).then(() => {
+            const parentNode = dummyOneParentInstance.parentNode;
+
+            expect(dummyOneParentInstance.isConnected).to.equal(true);
+            dummyOneParentInstance.remove();
+            expect(dummyOneParentInstance.isConnected).to.equal(false);
+            parentNode.appendChild(dummyOneParentInstance);
+            expect(dummyOneParentInstance.isConnected).to.equal(true);
+            parentNode.removeChild(dummyOneParentInstance);
+            expect(dummyOneParentInstance.isConnected).to.equal(false);
+
+            iframe.remove();
+            done();
+          });
+
+          DummyOneParent.registerSelf();
+
+        }
+      });
+    });
+  });
+
+  describe('onLocaleChange', () => {
+    it('is called when locale is changed', (done) => {
+      inIframe({
+        bodyHTML: `
+          <dummy-one></dummy-one>
+          `,
+        onLoad: ({ contentWindow, iframe }) => {
+          const DummyOne = getDummyOne(contentWindow);
+          const dummyOneInstance = contentWindow.document.querySelector(DummyOne.registrationName);
+
+          contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+            expect(dummyOneInstance._localeObject).to.eql({ dir: 'ltr', lang: 'en' });
+            contentWindow.document.documentElement.setAttribute('lang', 'sp');
+
+            setTimeout(() => {
+              expect(dummyOneInstance._localeObject).to.eql({ dir: 'ltr', lang: 'sp' });
+              contentWindow.document.documentElement.setAttribute('dir', 'rtl');
+
+              setTimeout(() => {
+                expect(dummyOneInstance._localeObject).to.eql({ dir: 'rtl', lang: 'sp' });
+
+                iframe.remove();
+                done();
+              }, 0);
+            }, 0);
+
+          });
+
+          DummyOne.registerSelf();
+
         }
       });
     });

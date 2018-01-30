@@ -70,7 +70,7 @@ export default function getDBUIWebComponentBase(win) {
         this.connectedCallback = this.connectedCallback.bind(this);
         this.disconnectedCallback = this.disconnectedCallback.bind(this);
         this._handleLocaleChange = this._handleLocaleChange.bind(this);
-        this.onLocaleChange && (this.onLocaleChange = this.onLocaleChange.bind(this));
+        this.onLocaleChange = this.onLocaleChange.bind(this);
         this.unregisterLocaleChange = null;
 
         // provide support for traits if any as they cant override constructor
@@ -121,6 +121,10 @@ export default function getDBUIWebComponentBase(win) {
         // no op
       }
 
+      onLocaleChange() {
+        // no op
+      }
+
       get isConnected() {
         return this._isConnected;
       }
@@ -140,7 +144,7 @@ export default function getDBUIWebComponentBase(win) {
       _handleLocaleChange(locale) {
         this.setAttribute('dir', locale.dir);
         this.setAttribute('lang', locale.lang);
-        this.onLocaleChange && this.onLocaleChange(locale);
+        this.onLocaleChange(locale);
       }
 
     }
