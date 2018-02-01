@@ -7,7 +7,7 @@
 
 <!-- standard template start -->
   <script>
-    window.addEventListener('DBUIWebComponentsDistLibLoaded', () => {
+    window.addEventListener('DBUIWebComponentsCoreLoaded', () => {
     });
 
     window.addEventListener('DBUIWebComponentsDefined', () => {
@@ -51,19 +51,19 @@
   <script
     src="${window.distributionURL}"><\/script>
   <script>
-    /* Import devBoxUiWebComponents. */
-    const devBoxUiWebComponents = require('dev-box-ui-web-components');
+    /* Import devBoxUiCore. */
+    const devBoxUiCore = require('dev-box-ui-core');
 
     /* Get an overview of what's exported. */
-    console.log(Object.keys(devBoxUiWebComponents));
+    console.log(Object.keys(devBoxUiCore));
 
     /* Get an overview of available component names. */
-    console.log(Object.keys(devBoxUiWebComponents.registrations));
+    console.log(Object.keys(devBoxUiCore.registrations));
 
     const {
-      /* Import quickSetupAndLoad helper from dev-box-ui-web-components. */
+      /* Import quickSetupAndLoad helper from dev-box-ui-core. */
       quickSetupAndLoad
-    } = devBoxUiWebComponents;
+    } = devBoxUiCore;
     const {
       /* Returns the components classes for eventually specified component names. */
       'dbui-web-component-dummy-parent': DBUIWebComponentDummyParentClass,
@@ -137,14 +137,14 @@
     src="${window.distributionURL}"><\/script>
   <script>
     /* Import devBoxUiWebComponents. */
-    const devBoxUiWebComponents = require('dev-box-ui-web-components');
+    const devBoxUiCore = require('dev-box-ui-core');
     const {
       /* Import general DBUI setup helper. */
       dbuiWebComponentsSetUp,
       /* Import getters for targeted components. */
       getDBUIWebComponentDummy,
       getDBUIWebComponentDummyParent
-    } = devBoxUiWebComponents;
+    } = devBoxUiCore;
 
     /* Provide window and retrieve component classes from their getters. */
     const DBUIWebComponentDummyClass = getDBUIWebComponentDummy(window);
@@ -209,7 +209,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 /* minimal web-components lib import */
-import getDBUIWebComponentDummyParent from 'dev-box-ui/web-components/components/DBUIWebComponentDummyParent/DBUIWebComponentDummyParent';
+import getDBUIWebComponentDummyParent from 'dev-box-ui/core/web-components/DBUIWebComponentDummyParent/DBUIWebComponentDummyParent';
 /* minimal react-components lib import */
 import Hello from 'dev-box-ui/react-components/components/Hello/Hello';
 
@@ -246,7 +246,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 /* full web-components lib import */
-import { getDBUIWebComponentDummyParent } from 'dev-box-ui/web-components';
+import { getDBUIWebComponentDummyParent } from 'dev-box-ui/core';
 /* import { getDBUIWebComponentDummyParent } from 'dev-box-ui'; */
 
 /* full react-components lib import */

@@ -28,11 +28,11 @@ var _localeAware = require('../../behaviours/localeAware');
 
 var _localeAware2 = _interopRequireDefault(_localeAware);
 
-var _DBUII18nService = require('./../../../web-components/services/DBUII18nService');
+var _DBUII18nService = require('./../../../core/services/DBUII18nService');
 
 var _DBUII18nService2 = _interopRequireDefault(_DBUII18nService);
 
-var _template = require('../../../web-components/utils/template');
+var _template = require('../../../core/utils/template');
 
 var _template2 = _interopRequireDefault(_template);
 
@@ -44,7 +44,7 @@ i18nService.registerTranslations({
   en: {
     Hello: _template2.default`Hello ${'age'} ${'name'}`
   },
-  sp: {
+  other: {
     Hello: _template2.default`Hola ${'age'} ${'name'}`
   }
 });
@@ -61,7 +61,7 @@ class Hello extends _react2.default.PureComponent {
     return _react2.default.createElement(
       'div',
       null,
-      translations.Hello({ age: 22, name: this.props.name || 'Nobody' }),
+      translations.Hello && translations.Hello({ age: 22, name: this.props.name || 'Nobody' }),
       _react2.default.createElement(_spinner2.default, null),
       _react2.default.createElement(_List2.default, { items: listItems }),
       _react2.default.createElement(_List2.default, { items: listItems }),

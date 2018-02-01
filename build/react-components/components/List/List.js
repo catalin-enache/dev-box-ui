@@ -16,11 +16,11 @@ var _localeAware = require('../../behaviours/localeAware');
 
 var _localeAware2 = _interopRequireDefault(_localeAware);
 
-var _DBUII18nService = require('./../../../web-components/services/DBUII18nService');
+var _DBUII18nService = require('./../../../core/services/DBUII18nService');
 
 var _DBUII18nService2 = _interopRequireDefault(_DBUII18nService);
 
-var _template = require('../../../web-components/utils/template');
+var _template = require('../../../core/utils/template');
 
 var _template2 = _interopRequireDefault(_template);
 
@@ -32,7 +32,7 @@ i18nService.registerTranslations({
   en: {
     list: _template2.default`list`
   },
-  sp: {
+  other: {
     list: _template2.default`lista`
   }
 });
@@ -46,7 +46,7 @@ class List extends _react2.default.PureComponent {
     return _react2.default.createElement(
       'div',
       null,
-      this.props.translations.list(),
+      this.props.translations.list && this.props.translations.list(),
       _react2.default.createElement(
         'ul',
         null,

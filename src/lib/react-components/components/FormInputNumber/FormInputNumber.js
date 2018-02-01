@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import FormInput from '../FormInput/FormInput';
-import formatters from '../../../web-components/utils/formatters';
+import formatters from '../../../core/utils/formatters';
 
 class FormInputNumber extends React.PureComponent {
   constructor(props) {

@@ -1,7 +1,7 @@
 import React from 'react';
 import hoistNonReactStatics from 'hoist-non-react-statics';
-import getDBUILocaleService from './../../web-components/services/DBUILocaleService';
-import getDBUII18nService from './../../web-components/services/DBUII18nService';
+import getDBUILocaleService from './../../core/services/DBUILocaleService';
+import getDBUII18nService from './../../core/services/DBUII18nService';
 
 const localeService = getDBUILocaleService(window);
 const i18nService = getDBUII18nService(window);

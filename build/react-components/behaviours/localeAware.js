@@ -16,11 +16,11 @@ var _hoistNonReactStatics = require('hoist-non-react-statics');
 
 var _hoistNonReactStatics2 = _interopRequireDefault(_hoistNonReactStatics);
 
-var _DBUILocaleService = require('./../../web-components/services/DBUILocaleService');
+var _DBUILocaleService = require('./../../core/services/DBUILocaleService');
 
 var _DBUILocaleService2 = _interopRequireDefault(_DBUILocaleService);
 
-var _DBUII18nService = require('./../../web-components/services/DBUII18nService');
+var _DBUII18nService = require('./../../core/services/DBUII18nService');
 
 var _DBUII18nService2 = _interopRequireDefault(_DBUII18nService);
 

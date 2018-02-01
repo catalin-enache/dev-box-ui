@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import { expect } from 'chai';
 import localeAware from './localeAware';
-import getDBUII18nService from '../../web-components/services/DBUII18nService';
-import getDBUILocaleService from '../../web-components/services/DBUILocaleService';
+import getDBUII18nService from '../../core/services/DBUII18nService';
+import getDBUILocaleService from '../../core/services/DBUILocaleService';
 
 const i18nService = getDBUII18nService(window);
 const localeService = getDBUILocaleService(window);

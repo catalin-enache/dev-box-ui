@@ -18,7 +18,7 @@ var _FormInput = require('../FormInput/FormInput');
 
 var _FormInput2 = _interopRequireDefault(_FormInput);
 
-var _formatters = require('../../../web-components/utils/formatters');
+var _formatters = require('../../../core/utils/formatters');
 
 var _formatters2 = _interopRequireDefault(_formatters);
 

@@ -6,7 +6,7 @@
 
 <!-- standard template start -->
   <script>
-    window.addEventListener('DBUIWebComponentsDistLibLoaded', () => {
+    window.addEventListener('DBUIWebComponentsCoreLoaded', () => {
     });
 
     window.addEventListener('DBUIWebComponentsDefined', () => {
@@ -36,7 +36,7 @@
             dbuiWebComponentsSetUp,
             getDBUIWebComponentDummy,
             getDBUIWebComponentDummyParent
-          } = require('dev-box-ui-web-components');
+          } = require('dev-box-ui-core');
 
           const iframe = document.createElement('iframe');
           window.addEventListener('message', (msg) => {

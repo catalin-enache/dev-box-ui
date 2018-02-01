@@ -4,8 +4,8 @@ import FaSpinner from 'react-icons/lib/fa/spinner';
 import List from '../List/List';
 import World from '../World/World';
 import localeAware from '../../behaviours/localeAware';
-import getDBUII18nService from './../../../web-components/services/DBUII18nService';
-import template from '../../../web-components/utils/template';
+import getDBUII18nService from './../../../core/services/DBUII18nService';
+import template from '../../../core/utils/template';
 
 const i18nService = getDBUII18nService(window);
 

@@ -106,11 +106,11 @@ loadAsset('script', '../../internals/iFrameUtils/onWindowDefinedHelpers.js');
 loadAsset('link', '../../vendors/highlight/styles/atelier-heath-light.css');
 loadAsset('script', '../../vendors/highlight/highlight.pack.js');
 
-// Load web-components and trigger some hooks.
+// Load core and trigger some hooks.
 // The definition itself (along with style overriding) is controlled inside the page.
 const isProd = window.location.search.includes('production=1');
-loadAsset('script', `../../../build/dist/dev-box-ui/web-components${isProd ? '.min' : ''}.js`, () => {
-  window.dispatchEvent(new Event('DBUIWebComponentsDistLibLoaded'));
+loadAsset('script', `../../../build/dist/dev-box-ui/core${isProd ? '.min' : ''}.js`, () => {
+  window.dispatchEvent(new Event('DBUIWebComponentsCoreLoaded'));
 
   // load vendors, react components, babel and execute babel scripts (ex: demoing react components)
   // https://raw.githubusercontent.com/reactjs/reactjs.org/master/static/html/single-file-example.html
@@ -137,12 +137,12 @@ loadAsset('script', `../../../build/dist/dev-box-ui/web-components${isProd ? '.m
   const undefinedElements =
     [...document.querySelectorAll(':not(:defined)')]
       .map((element) => (element.localName));
-  console.log(':not(:defined) web-components so far', undefinedElements);
+  console.log(':not(:defined) core so far', undefinedElements);
   const promises = [...undefinedElements].map(elementLocalName => customElements.whenDefined(elementLocalName));
   await Promise.all(promises);
   callback();
 })(() => {
-  console.log('all web-components defined');
+  console.log('all core defined');
   window.dispatchEvent(new Event('DBUIWebComponentsDefined'));
 });
 
