@@ -3,6 +3,7 @@ import sinon from 'sinon';
 import getDBUIWebComponentBase from './DBUIWebComponentBase';
 import DBUICommonCssVars from './DBUICommonCssVars';
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
+import appendStyles from '../../../internals/appendStyles';
 import inIframe from '../../../../../../testUtils/inIframe';
 
 const dummyOneRegistrationName = 'dummy-one';
@@ -107,9 +108,11 @@ describe('DBUIWebComponentBase', () => {
     it('always returns the same reference', (done) => {
       inIframe({
         onLoad: ({ contentWindow, iframe }) => {
-          const inst1 = getDBUIWebComponentBase(contentWindow);
-          const inst2 = getDBUIWebComponentBase(contentWindow);
-          const inst3 = getDBUIWebComponentBase(contentWindow);
+          const inst1 = getDBUIWebComponentBase(contentWindow).DBUIWebComponentBase;
+          const inst2 = getDBUIWebComponentBase(contentWindow).DBUIWebComponentBase;
+          const inst3 = getDBUIWebComponentBase(contentWindow).DBUIWebComponentBase;
+
+          expect(Object.getPrototypeOf(inst1)).to.equal(contentWindow.HTMLElement);
           // same reference
           expect(inst1).to.equal(inst2);
           expect(inst2).to.equal(inst3);
@@ -189,41 +192,93 @@ describe('DBUIWebComponentBase', () => {
     });
   });
 
-  describe('templateInnerHTML', () => {
-    it('defines the component HTML structure', (done) => {
+  describe('isConnected', () => {
+    it('is true after connectedCallback and false after disconnectedCallback', (done) => {
       inIframe({
         bodyHTML: `
-        <dummy-one-parent></dummy-one-parent>
-        `,
+          <dummy-one-parent></dummy-one-parent>
+          `,
         onLoad: ({ contentWindow, iframe }) => {
-          const DummyOne = getDummyOne(contentWindow);
           const DummyOneParent = getDummyOneParent(contentWindow);
           const dummyOneParentInstance = contentWindow.document.querySelector(DummyOneParent.registrationName);
 
           contentWindow.customElements.whenDefined(DummyOneParent.registrationName).then(() => {
+            const parentNode = dummyOneParentInstance.parentNode;
 
-            // shadow dom structure was build as expected
-            expect(dummyOneParentInstance
-              .childrenTree.querySelector('div p')
-              .innerText
-            ).to.equal('dummy one parent component');
-            expect(dummyOneParentInstance
-              .childrenTree.querySelector(DummyOne.registrationName)
-              .childrenTree.querySelector('div p')
-              .innerText
-            ).to.equal('dummy one component');
+            expect(dummyOneParentInstance.isConnected).to.equal(true);
+            dummyOneParentInstance.remove();
+            expect(dummyOneParentInstance.isConnected).to.equal(false);
+            parentNode.appendChild(dummyOneParentInstance);
+            expect(dummyOneParentInstance.isConnected).to.equal(true);
+            parentNode.removeChild(dummyOneParentInstance);
+            expect(dummyOneParentInstance.isConnected).to.equal(false);
 
-            setTimeout(() => {
-              iframe.remove();
-              done();
-            }, 0);
+            iframe.remove();
+            done();
           });
 
           DummyOneParent.registerSelf();
+
         }
       });
     });
   });
+
+  describe('prototypeChainInfo', () => {
+    it('returns prototype chain for the component', (done) => {
+      inIframe({
+        onLoad: ({ contentWindow, iframe }) => {
+          const { DBUIWebComponentBase } = getDBUIWebComponentBase(contentWindow);
+          const DummyOneParent = getDummyOneParent(contentWindow);
+
+          const prototypeChainInfo = DummyOneParent.prototypeChainInfo;
+
+          expect(prototypeChainInfo[0]).to.equal(DummyOneParent);
+          expect(prototypeChainInfo[2]).to.equal(contentWindow.HTMLElement);
+          expect(prototypeChainInfo[1]).to.equal(DBUIWebComponentBase);
+
+          iframe.remove();
+          done();
+        }
+      });
+    });
+  });
+
+  describe('onLocaleChange', () => {
+    it('is called when locale is changed', (done) => {
+      inIframe({
+        bodyHTML: `
+          <dummy-one></dummy-one>
+          `,
+        onLoad: ({ contentWindow, iframe }) => {
+          const DummyOne = getDummyOne(contentWindow);
+          const dummyOneInstance = contentWindow.document.querySelector(DummyOne.registrationName);
+
+          contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+            expect(dummyOneInstance._localeObject).to.eql({ dir: 'ltr', lang: 'en' });
+            contentWindow.document.documentElement.setAttribute('lang', 'sp');
+
+            setTimeout(() => {
+              expect(dummyOneInstance._localeObject).to.eql({ dir: 'ltr', lang: 'sp' });
+              contentWindow.document.documentElement.setAttribute('dir', 'rtl');
+
+              setTimeout(() => {
+                expect(dummyOneInstance._localeObject).to.eql({ dir: 'rtl', lang: 'sp' });
+
+                iframe.remove();
+                done();
+              }, 0);
+            }, 0);
+
+          });
+
+          DummyOne.registerSelf();
+
+        }
+      });
+    });
+  });
+
 
   describe('useShadow and childrenTree', () => {
     describe('when useShadow', () => {
@@ -296,6 +351,42 @@ describe('DBUIWebComponentBase', () => {
     });
   });
 
+  describe('templateInnerHTML', () => {
+    it('defines the component HTML structure', (done) => {
+      inIframe({
+        bodyHTML: `
+        <dummy-one-parent></dummy-one-parent>
+        `,
+        onLoad: ({ contentWindow, iframe }) => {
+          const DummyOne = getDummyOne(contentWindow);
+          const DummyOneParent = getDummyOneParent(contentWindow);
+          const dummyOneParentInstance = contentWindow.document.querySelector(DummyOneParent.registrationName);
+
+          contentWindow.customElements.whenDefined(DummyOneParent.registrationName).then(() => {
+
+            // shadow dom structure was build as expected
+            expect(dummyOneParentInstance
+              .childrenTree.querySelector('div p')
+              .innerText
+            ).to.equal('dummy one parent component');
+            expect(dummyOneParentInstance
+              .childrenTree.querySelector(DummyOne.registrationName)
+              .childrenTree.querySelector('div p')
+              .innerText
+            ).to.equal('dummy one component');
+
+            setTimeout(() => {
+              iframe.remove();
+              done();
+            }, 0);
+          });
+
+          DummyOneParent.registerSelf();
+        }
+      });
+    });
+  });
+
   describe('template', () => {
     it('returns template instance built from templateInnerHTML', (done) => {
       inIframe({
@@ -324,73 +415,34 @@ describe('DBUIWebComponentBase', () => {
         }
       });
     });
-  });
 
-  describe('isConnected', () => {
-    it('is true after connectedCallback and false after disconnectedCallback', (done) => {
+    it('is updated if related bit is found on window', (done) => {
       inIframe({
-        bodyHTML: `
-          <dummy-one-parent></dummy-one-parent>
-          `,
         onLoad: ({ contentWindow, iframe }) => {
           const DummyOneParent = getDummyOneParent(contentWindow);
-          const dummyOneParentInstance = contentWindow.document.querySelector(DummyOneParent.registrationName);
+          appendStyles(contentWindow)([{
+            registrationName: [DummyOneParent.registrationName],
+            componentStyle: `
+              border-radius: 5px;
+            `
+          }]);
 
-          contentWindow.customElements.whenDefined(DummyOneParent.registrationName).then(() => {
-            const parentNode = dummyOneParentInstance.parentNode;
-
-            expect(dummyOneParentInstance.isConnected).to.equal(true);
-            dummyOneParentInstance.remove();
-            expect(dummyOneParentInstance.isConnected).to.equal(false);
-            parentNode.appendChild(dummyOneParentInstance);
-            expect(dummyOneParentInstance.isConnected).to.equal(true);
-            parentNode.removeChild(dummyOneParentInstance);
-            expect(dummyOneParentInstance.isConnected).to.equal(false);
-
-            iframe.remove();
-            done();
-          });
+          // before registering the style is NOT updated
+          expect(DummyOneParent.componentStyle)
+            .to.not.have.string('overrides');
 
           DummyOneParent.registerSelf();
 
+          // after registering the style is updated
+          expect(DummyOneParent.componentStyle)
+            .to.have.string('overrides');
+          expect(DummyOneParent.componentStyle)
+            .to.have.string('border-radius: 5px;');
+
+          iframe.remove();
+          done();
         }
       });
     });
   });
-
-  describe('onLocaleChange', () => {
-    it('is called when locale is changed', (done) => {
-      inIframe({
-        bodyHTML: `
-          <dummy-one></dummy-one>
-          `,
-        onLoad: ({ contentWindow, iframe }) => {
-          const DummyOne = getDummyOne(contentWindow);
-          const dummyOneInstance = contentWindow.document.querySelector(DummyOne.registrationName);
-
-          contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
-            expect(dummyOneInstance._localeObject).to.eql({ dir: 'ltr', lang: 'en' });
-            contentWindow.document.documentElement.setAttribute('lang', 'sp');
-
-            setTimeout(() => {
-              expect(dummyOneInstance._localeObject).to.eql({ dir: 'ltr', lang: 'sp' });
-              contentWindow.document.documentElement.setAttribute('dir', 'rtl');
-
-              setTimeout(() => {
-                expect(dummyOneInstance._localeObject).to.eql({ dir: 'rtl', lang: 'sp' });
-
-                iframe.remove();
-                done();
-              }, 0);
-            }, 0);
-
-          });
-
-          DummyOne.registerSelf();
-
-        }
-      });
-    });
-  });
-
 });
