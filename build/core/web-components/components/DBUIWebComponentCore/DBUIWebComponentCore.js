@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = getDBUIWebComponentBase;
+exports.default = getDBUIWebComponentCore;
 
 var _DBUILocaleService = require('../../../services/DBUILocaleService');
 
@@ -29,7 +29,7 @@ function defineCommonCSSVars(win) {
   document.querySelector('head').appendChild(commonStyle);
 }
 
-function getDBUIWebComponentBase(win) {
+function getDBUIWebComponentCore(win) {
   const LocaleService = (0, _DBUILocaleService2.default)(win);
 
   return (0, _ensureSingleRegistration2.default)(win, registrationName, () => {

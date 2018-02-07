@@ -1,5 +1,5 @@
 
-import getDBUIWebComponentBase from '../DBUIWebComponentBase/DBUIWebComponentBase';
+import getDBUIWebComponentCore from '../DBUIWebComponentCore/DBUIWebComponentCore';
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
 
 const registrationName = 'dbui-web-component-dummy';
@@ -10,7 +10,7 @@ export default function getDBUIWebComponentDummy(win) {
       DBUIWebComponentBase,
       defineCommonStaticMethods,
       Registerable
-    } = getDBUIWebComponentBase(win);
+    } = getDBUIWebComponentCore(win);
 
     class DBUIWebComponentDummy extends DBUIWebComponentBase {
 

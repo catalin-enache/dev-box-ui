@@ -1,5 +1,5 @@
 
-import getDBUIWebComponentBase from '../DBUIWebComponentBase/DBUIWebComponentBase';
+import getDBUIWebComponentCore from '../DBUIWebComponentCore/DBUIWebComponentCore';
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
 import Focusable from '../../behaviours/Focusable';
 
@@ -11,7 +11,7 @@ export default function getDBUIWebComponentFormInputText(win) {
       DBUIWebComponentBase,
       defineCommonStaticMethods,
       Registerable
-    } = getDBUIWebComponentBase(win);
+    } = getDBUIWebComponentCore(win);
 
     class DBUIWebComponentFormInputText extends DBUIWebComponentBase {
 

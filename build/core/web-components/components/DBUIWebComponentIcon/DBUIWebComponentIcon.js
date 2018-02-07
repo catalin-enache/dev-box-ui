@@ -5,9 +5,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = getDBUIWebComponentIcon;
 
-var _DBUIWebComponentBase = require('../DBUIWebComponentBase/DBUIWebComponentBase');
+var _DBUIWebComponentCore = require('../DBUIWebComponentCore/DBUIWebComponentCore');
 
-var _DBUIWebComponentBase2 = _interopRequireDefault(_DBUIWebComponentBase);
+var _DBUIWebComponentCore2 = _interopRequireDefault(_DBUIWebComponentCore);
 
 var _ensureSingleRegistration = require('../../../internals/ensureSingleRegistration');
 
@@ -29,7 +29,7 @@ function getDBUIWebComponentIcon(win) {
       DBUIWebComponentBase,
       defineCommonStaticMethods,
       Registerable
-    } = (0, _DBUIWebComponentBase2.default)(win);
+    } = (0, _DBUIWebComponentCore2.default)(win);
 
     class DBUIWebComponentIcon extends DBUIWebComponentBase {
 

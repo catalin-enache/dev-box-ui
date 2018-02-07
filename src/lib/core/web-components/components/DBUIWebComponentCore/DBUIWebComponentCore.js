@@ -13,7 +13,7 @@ function defineCommonCSSVars(win) {
   document.querySelector('head').appendChild(commonStyle);
 }
 
-export default function getDBUIWebComponentBase(win) {
+export default function getDBUIWebComponentCore(win) {
   const LocaleService = getDBUILocaleService(win);
 
   return ensureSingleRegistration(win, registrationName, () => {

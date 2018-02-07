@@ -6,7 +6,7 @@ import dbuiWebComponentsSetUp from './web-components/helpers/dbuiWebComponentsSe
 import ensureSingleRegistration from './internals/ensureSingleRegistration';
 
 // ComponentBase
-import getDBUIWebComponentBase from './web-components/components/DBUIWebComponentBase/DBUIWebComponentBase';
+import getDBUIWebComponentCore from './web-components/components/DBUIWebComponentCore/DBUIWebComponentCore';
 
 // Behaviours
 import Focusable from './web-components/behaviours/Focusable';
@@ -76,8 +76,8 @@ export {
   // Internals
   ensureSingleRegistration,
 
-  // ComponentBase
-  getDBUIWebComponentBase,
+  // ComponentCore
+  getDBUIWebComponentCore,
 
   // Behaviours
   Focusable,

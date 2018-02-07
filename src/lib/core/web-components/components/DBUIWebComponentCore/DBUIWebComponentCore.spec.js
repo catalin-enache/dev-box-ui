@@ -1,10 +1,20 @@
-import { expect } from 'chai';
+import { expect, assert } from 'chai';
 import sinon from 'sinon';
-import getDBUIWebComponentBase from './DBUIWebComponentBase';
+import getDBUIWebComponentCore from './DBUIWebComponentCore';
 import DBUICommonCssVars from './DBUICommonCssVars';
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
 import appendStyles from '../../../internals/appendStyles';
 import inIframe from '../../../../../../testUtils/inIframe';
+
+function getDummyNoRegistrationNameNoTemplate(win) {
+  return ensureSingleRegistration(win, dummyOneRegistrationName, () => {
+    const {
+      DBUIWebComponentBase
+    } = getDBUIWebComponentCore(win);
+
+    return class getDummyNoRegistrationNameNoTemplate extends DBUIWebComponentBase {};
+  });
+}
 
 const dummyOneRegistrationName = 'dummy-one';
 const dummyOneStyle = ':host { color: blue; }';
@@ -14,12 +24,34 @@ function getDummyOne(win) {
       DBUIWebComponentBase,
       defineCommonStaticMethods,
       Registerable
-    } = getDBUIWebComponentBase(win);
+    } = getDBUIWebComponentCore(win);
 
     class DummyOne extends DBUIWebComponentBase {
 
       static get registrationName() {
         return dummyOneRegistrationName;
+      }
+
+      static get propertiesToDefine() {
+        return { bar: 'BAR' };
+      }
+
+      static get propertiesToUpgrade() {
+        return ['foo'];
+      }
+
+      /**
+       * @return {string}
+       */
+      get foo() {
+        return `||${this._foo}||`;
+      }
+
+      /**
+       * @param value {string}
+       */
+      set foo(value) {
+        this._foo = `__${value}__`;
       }
 
       static get templateInnerHTML() {
@@ -33,6 +65,17 @@ function getDummyOne(win) {
 
       onLocaleChange(locale) {
         this._localeObject = locale;
+      }
+
+      static get observedAttributes() {
+        return ['baz'];
+      }
+
+      attributeChangedCallback(name, oldValue, newValue) {
+        super.attributeChangedCallback(name, oldValue, newValue);
+        this._attributeChangedName = name;
+        this._attributeChangedOldValue = oldValue;
+        this._attributeChangedNewValue = newValue;
       }
 
     }
@@ -54,7 +97,7 @@ function getDummyOneParent(win) {
       DBUIWebComponentBase,
       defineCommonStaticMethods,
       Registerable
-    } = getDBUIWebComponentBase(win);
+    } = getDBUIWebComponentCore(win);
 
     const DummyOne = getDummyOne(win);
 
@@ -96,7 +139,7 @@ describe('DBUIWebComponentBase', () => {
         onLoad: ({ contentWindow, iframe }) => {
           // style[dbui-common-css-vars] not injected yet
           expect(contentWindow.document.querySelector('style[dbui-common-css-vars]')).to.equal(null);
-          getDBUIWebComponentBase(contentWindow);
+          getDBUIWebComponentCore(contentWindow);
           // style[dbui-common-css-vars] has been injected
           expect(contentWindow.document.querySelector('style[dbui-common-css-vars]').innerText).to.equal(DBUICommonCssVars);
           iframe.remove();
@@ -108,9 +151,9 @@ describe('DBUIWebComponentBase', () => {
     it('always returns the same reference', (done) => {
       inIframe({
         onLoad: ({ contentWindow, iframe }) => {
-          const inst1 = getDBUIWebComponentBase(contentWindow).DBUIWebComponentBase;
-          const inst2 = getDBUIWebComponentBase(contentWindow).DBUIWebComponentBase;
-          const inst3 = getDBUIWebComponentBase(contentWindow).DBUIWebComponentBase;
+          const inst1 = getDBUIWebComponentCore(contentWindow).DBUIWebComponentBase;
+          const inst2 = getDBUIWebComponentCore(contentWindow).DBUIWebComponentBase;
+          const inst3 = getDBUIWebComponentCore(contentWindow).DBUIWebComponentBase;
 
           expect(Object.getPrototypeOf(inst1)).to.equal(contentWindow.HTMLElement);
           // same reference
@@ -186,6 +229,7 @@ describe('DBUIWebComponentBase', () => {
             DummyOneParent.registerSelf();
             // registerSelf took care of registering the dependencies
             expect(spyDummyOneRegisterSelf.callCount).to.equal(1);
+            spyDummyOneRegisterSelf.restore();
           }
         });
       });
@@ -228,7 +272,7 @@ describe('DBUIWebComponentBase', () => {
     it('returns prototype chain for the component', (done) => {
       inIframe({
         onLoad: ({ contentWindow, iframe }) => {
-          const { DBUIWebComponentBase } = getDBUIWebComponentBase(contentWindow);
+          const { DBUIWebComponentBase } = getDBUIWebComponentCore(contentWindow);
           const DummyOneParent = getDummyOneParent(contentWindow);
 
           const prototypeChainInfo = DummyOneParent.prototypeChainInfo;
@@ -441,6 +485,154 @@ describe('DBUIWebComponentBase', () => {
 
           iframe.remove();
           done();
+        }
+      });
+    });
+  });
+
+  describe('propertiesToUpgrade', () => {
+    it('are upgraded', (done) => {
+      inIframe({
+        bodyHTML: `
+        <dummy-one></dummy-one>
+        `,
+        onLoad: ({ contentWindow, iframe }) => {
+          const DummyOne = getDummyOne(contentWindow);
+          const dummyOneUpgradeProperty = DummyOne.prototype._upgradeProperty;
+          const spyDummyOneUpgradeProperty = sinon.stub(DummyOne.prototype, '_upgradeProperty')
+            .callsFake(dummyOneUpgradeProperty);
+          const dummyOneInst = contentWindow.document.querySelector('dummy-one');
+          dummyOneInst.foo = 'fooValue';
+          // foo setter has not been called yet
+          expect(dummyOneInst._foo).to.equal(undefined);
+
+          contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+            expect(spyDummyOneUpgradeProperty.callCount).to.equal(1);
+            assert(spyDummyOneUpgradeProperty.calledWithExactly('foo'), 'called with foo');
+            // foo setter has been called as a result of upgrading foo property
+            expect(dummyOneInst._foo).to.equal('__fooValue__');
+            // foo getter is called as a result of upgrading foo property
+            expect(dummyOneInst.foo).to.equal('||__fooValue__||');
+
+            spyDummyOneUpgradeProperty.restore();
+            iframe.remove();
+            done();
+          });
+
+          DummyOne.registerSelf();
+        }
+      });
+    });
+  });
+
+  describe('propertiesToDefine', () => {
+    it('are defined', (done) => {
+      inIframe({
+        bodyHTML: `
+        <dummy-one></dummy-one>
+        `,
+        onLoad: ({ contentWindow, iframe }) => {
+          const DummyOne = getDummyOne(contentWindow);
+          const dummyOneDefineProperty = DummyOne.prototype._defineProperty;
+          const spyDummyOneDefineProperty = sinon.stub(DummyOne.prototype, '_defineProperty')
+            .callsFake(dummyOneDefineProperty);
+          const dummyOneInst = contentWindow.document.querySelector('dummy-one');
+
+          contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+            expect(spyDummyOneDefineProperty.callCount).to.equal(1);
+            assert(spyDummyOneDefineProperty.calledWithExactly('bar', 'BAR'), 'called with bar, BAR');
+            expect(dummyOneInst.getAttribute('bar')).to.equal('BAR');
+
+            spyDummyOneDefineProperty.restore();
+            iframe.remove();
+            done();
+          });
+
+          DummyOne.registerSelf();
+        }
+      });
+    });
+  });
+
+  describe('registrationName', () => {
+    it('is required', (done) => {
+      inIframe({
+        onLoad: ({ contentWindow, iframe }) => {
+          const DummyNoRegistrationNameNoTemplate =
+            getDummyNoRegistrationNameNoTemplate(contentWindow);
+          const registrationNameGetter =
+            Object.getOwnPropertyDescriptor(
+              Object.getPrototypeOf(DummyNoRegistrationNameNoTemplate), 'registrationName'
+            );
+          let thrownErr = null;
+          const spyRegistrationName =
+            // eslint-disable-next-line
+            sinon.stub(DummyNoRegistrationNameNoTemplate, 'registrationName').get(() => {
+              try {
+                return registrationNameGetter.get();
+              } catch (err) {
+                thrownErr = err;
+              }
+            });
+
+          DummyNoRegistrationNameNoTemplate.registrationName;
+          expect(thrownErr.message).to.include('registrationName must be defined in derived');
+
+          spyRegistrationName.restore();
+
+          iframe.remove();
+          done();
+        }
+      });
+    });
+  });
+
+  describe('templateInnerHTML', () => {
+    it('has default when not specified', (done) => {
+      inIframe({
+        onLoad: ({ contentWindow, iframe }) => {
+          const DummyNoRegistrationNameNoTemplate =
+            getDummyNoRegistrationNameNoTemplate(contentWindow);
+
+          const templateInnerHTML = DummyNoRegistrationNameNoTemplate.templateInnerHTML;
+          expect(templateInnerHTML).to.equal('<style></style><slot></slot>');
+
+          iframe.remove();
+          done();
+        }
+      });
+    });
+  });
+
+  describe('observerdAttributes', () => {
+    it('are observed', (done) => {
+      inIframe({
+        bodyHTML: `
+        <dummy-one></dummy-one>
+        `,
+        onLoad: ({ contentWindow, iframe }) => {
+          const DummyOne = getDummyOne(contentWindow);
+          const dummyOneInst = contentWindow.document.querySelector('dummy-one');
+
+          dummyOneInst.setAttribute('baz', 3);
+
+          contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+
+            expect(dummyOneInst._attributeChangedName).to.equal('baz');
+            expect(dummyOneInst._attributeChangedOldValue).to.equal(null);
+            expect(dummyOneInst._attributeChangedNewValue).to.equal('3');
+
+            dummyOneInst.removeAttribute('baz');
+
+            expect(dummyOneInst._attributeChangedName).to.equal('baz');
+            expect(dummyOneInst._attributeChangedOldValue).to.equal('3');
+            expect(dummyOneInst._attributeChangedNewValue).to.equal(null);
+
+            iframe.remove();
+            done();
+          });
+
+          DummyOne.registerSelf();
         }
       });
     });

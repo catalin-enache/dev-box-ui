@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getDBUIWebComponentIcon = exports.getDBUIWebComponentFormInputText = exports.getDBUIWebComponentDummyParent = exports.getDBUIWebComponentDummy = exports.onScreenConsole = exports.template = exports.traits = exports.formatters = exports.getDBUII18nService = exports.getDBUILocaleService = exports.Focusable = exports.getDBUIWebComponentBase = exports.ensureSingleRegistration = exports.dbuiWebComponentsSetUp = exports.quickSetupAndLoad = exports.registrations = undefined;
+exports.getDBUIWebComponentIcon = exports.getDBUIWebComponentFormInputText = exports.getDBUIWebComponentDummyParent = exports.getDBUIWebComponentDummy = exports.onScreenConsole = exports.template = exports.traits = exports.formatters = exports.getDBUII18nService = exports.getDBUILocaleService = exports.Focusable = exports.getDBUIWebComponentCore = exports.ensureSingleRegistration = exports.dbuiWebComponentsSetUp = exports.quickSetupAndLoad = exports.registrations = undefined;
 
 var _dbuiWebComponentsSetup = require('./web-components/helpers/dbuiWebComponentsSetup');
 
@@ -13,9 +13,9 @@ var _ensureSingleRegistration = require('./internals/ensureSingleRegistration');
 
 var _ensureSingleRegistration2 = _interopRequireDefault(_ensureSingleRegistration);
 
-var _DBUIWebComponentBase = require('./web-components/components/DBUIWebComponentBase/DBUIWebComponentBase');
+var _DBUIWebComponentCore = require('./web-components/components/DBUIWebComponentCore/DBUIWebComponentCore');
 
-var _DBUIWebComponentBase2 = _interopRequireDefault(_DBUIWebComponentBase);
+var _DBUIWebComponentCore2 = _interopRequireDefault(_DBUIWebComponentCore);
 
 var _Focusable = require('./web-components/behaviours/Focusable');
 
@@ -119,7 +119,7 @@ exports.registrations = registrations;
 exports.quickSetupAndLoad = quickSetupAndLoad;
 exports.dbuiWebComponentsSetUp = _dbuiWebComponentsSetup2.default;
 exports.ensureSingleRegistration = _ensureSingleRegistration2.default;
-exports.getDBUIWebComponentBase = _DBUIWebComponentBase2.default;
+exports.getDBUIWebComponentCore = _DBUIWebComponentCore2.default;
 exports.Focusable = _Focusable2.default;
 exports.getDBUILocaleService = _DBUILocaleService2.default;
 exports.getDBUII18nService = _DBUII18nService2.default;

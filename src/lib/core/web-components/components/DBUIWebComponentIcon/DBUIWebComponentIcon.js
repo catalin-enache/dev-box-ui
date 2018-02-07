@@ -1,5 +1,5 @@
 
-import getDBUIWebComponentBase from '../DBUIWebComponentBase/DBUIWebComponentBase';
+import getDBUIWebComponentCore from '../DBUIWebComponentCore/DBUIWebComponentCore';
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
 
 const registrationName = 'dbui-web-component-icon';
@@ -16,7 +16,7 @@ export default function getDBUIWebComponentIcon(win) {
       DBUIWebComponentBase,
       defineCommonStaticMethods,
       Registerable
-    } = getDBUIWebComponentBase(win);
+    } = getDBUIWebComponentCore(win);
 
     class DBUIWebComponentIcon extends DBUIWebComponentBase {
 

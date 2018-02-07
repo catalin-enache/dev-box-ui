@@ -5,9 +5,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = getDBUIWebComponentDummyParent;
 
-var _DBUIWebComponentBase = require('../DBUIWebComponentBase/DBUIWebComponentBase');
+var _DBUIWebComponentCore = require('../DBUIWebComponentCore/DBUIWebComponentCore');
 
-var _DBUIWebComponentBase2 = _interopRequireDefault(_DBUIWebComponentBase);
+var _DBUIWebComponentCore2 = _interopRequireDefault(_DBUIWebComponentCore);
 
 var _DBUIWebComponentDummy = require('../DBUIWebComponentDummy/DBUIWebComponentDummy');
 
@@ -27,7 +27,7 @@ function getDBUIWebComponentDummyParent(win) {
       DBUIWebComponentBase,
       defineCommonStaticMethods,
       Registerable
-    } = (0, _DBUIWebComponentBase2.default)(win);
+    } = (0, _DBUIWebComponentCore2.default)(win);
     const DBUIWebComponentDummy = (0, _DBUIWebComponentDummy2.default)(win);
 
     class DBUIWebComponentDummyParent extends DBUIWebComponentBase {
