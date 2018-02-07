@@ -3,6 +3,7 @@ import sinon from 'sinon';
 import getDBUIWebComponentCore from './DBUIWebComponentCore';
 import DBUICommonCssVars from './DBUICommonCssVars';
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
+import getDBUILocaleService from '../../../services/DBUILocaleService';
 import appendStyles from '../../../internals/appendStyles';
 import inIframe from '../../../../../../testUtils/inIframe';
 
@@ -627,6 +628,37 @@ describe('DBUIWebComponentBase', () => {
             expect(dummyOneInst._attributeChangedName).to.equal('baz');
             expect(dummyOneInst._attributeChangedOldValue).to.equal('3');
             expect(dummyOneInst._attributeChangedNewValue).to.equal(null);
+
+            iframe.remove();
+            done();
+          });
+
+          DummyOne.registerSelf();
+        }
+      });
+    });
+  });
+
+  describe('disconnectedCallback', () => {
+    it('unregisterLocaleChange', (done) => {
+      inIframe({
+        bodyHTML: `
+        <dummy-one></dummy-one>
+        `,
+        onLoad: ({ contentWindow, iframe }) => {
+          const DBUILocaleService = getDBUILocaleService(contentWindow);
+          const DummyOne = getDummyOne(contentWindow);
+          const dummyOneInst = contentWindow.document.querySelector('dummy-one');
+
+          // before connected
+          expect(DBUILocaleService._callbacks.length).to.equal(0);
+
+          contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+            // after connected
+            expect(DBUILocaleService._callbacks.length).to.equal(1);
+            dummyOneInst.remove();
+            // after disconnected
+            expect(DBUILocaleService._callbacks.length).to.equal(0);
 
             iframe.remove();
             done();
