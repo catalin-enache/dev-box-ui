@@ -83,8 +83,11 @@ export default function getDBUIWebComponentCore(win) {
       _upgradeProperty(prop) {
         if (this.hasOwnProperty(prop)) {
           const value = this[prop];
+          // get rid of the property that might shadow a setter/getter
           delete this[prop];
+          // this time if a setter was defined it will be properly called
           this[prop] = value;
+          // if a getter was defined, it will be called from now on
         }
       }
 

@@ -527,7 +527,7 @@ describe('DBUIWebComponentBase', () => {
   });
 
   describe('propertiesToDefine', () => {
-    it('are defined', (done) => {
+    it('are defined if not set by user', (done) => {
       inIframe({
         bodyHTML: `
         <dummy-one></dummy-one>
@@ -543,6 +543,35 @@ describe('DBUIWebComponentBase', () => {
             expect(spyDummyOneDefineProperty.callCount).to.equal(1);
             assert(spyDummyOneDefineProperty.calledWithExactly('bar', 'BAR'), 'called with bar, BAR');
             expect(dummyOneInst.getAttribute('bar')).to.equal('BAR');
+
+            spyDummyOneDefineProperty.restore();
+            iframe.remove();
+            done();
+          });
+
+          DummyOne.registerSelf();
+        }
+      });
+    });
+
+    it('are NOT defined if already set by user', (done) => {
+      inIframe({
+        bodyHTML: `
+        <dummy-one></dummy-one>
+        `,
+        onLoad: ({ contentWindow, iframe }) => {
+          const DummyOne = getDummyOne(contentWindow);
+          const dummyOneDefineProperty = DummyOne.prototype._defineProperty;
+          const spyDummyOneDefineProperty = sinon.stub(DummyOne.prototype, '_defineProperty')
+            .callsFake(dummyOneDefineProperty);
+          const dummyOneInst = contentWindow.document.querySelector('dummy-one');
+          dummyOneInst.setAttribute('bar', 'customBar');
+
+          contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+            expect(spyDummyOneDefineProperty.callCount).to.equal(1);
+            assert(spyDummyOneDefineProperty.calledWithExactly('bar', 'BAR'), 'called with bar, BAR');
+            // user defined property was not overridden with default value
+            expect(dummyOneInst.getAttribute('bar')).to.equal('customBar');
 
             spyDummyOneDefineProperty.restore();
             iframe.remove();
