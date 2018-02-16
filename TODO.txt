@@ -4,6 +4,9 @@ and define them as an array on a static method webComponentsDependencies
 so that the user can inspect them and take care of defining by importing
 and calling registerSelf() for each of them
 
+what behaviour when component is adopted ?
+inject global css to handle dbui-web-component (hide when not defined, un hide when defined)
+
 make locale/I18n service able to target custom areas instead of always html element
 so we can use it only in tabs/result
 

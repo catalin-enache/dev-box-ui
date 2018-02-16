@@ -1,0 +1,137 @@
+<!doctype html>
+<html dir="ltr" lang="en">
+<head>
+  <style>
+  </style>
+
+<!-- standard template start -->
+  <script>
+    window.addEventListener('DBUIWebComponentsCoreLoaded', () => {
+      const {
+        getDBUIWebComponentCore,
+        // onScreenConsole
+      } = require('dev-box-ui-core');
+      // onScreenConsole();
+      const {
+        DBUIWebComponentBase,
+        defineCommonStaticMethods,
+        Registerable
+      } = getDBUIWebComponentCore(window);
+      const MyDummyGrandChild = Registerable(defineCommonStaticMethods(class MyDummyGrandChild extends DBUIWebComponentBase {
+        static get registrationName() { return 'my-dummy-grand-child'; }
+        static get templateInnerHTML() {
+          return `
+          <style>
+          </style>
+          <div>
+          my dummy grand child
+          </div>
+          `;
+        }
+
+        get id() {
+          return `${this.dbuiParentHost.id}-${this.getAttribute('id')}`
+        }
+
+        connectedCallback() {
+          super.connectedCallback();
+          // this.sendMessage(this.createMessage({
+          //   channel: 'xxx',
+          //   message: `from-${this.id}`,
+          //   targetType: 'PARENT',
+          //   rememberNodesPath: false
+          // }));
+          //
+          // this.sendMessage(this.createMessage({
+          //   channel: 'yyy',
+          //   message: `from-${this.id}`,
+          //   targetType: 'CHILDREN',
+          //   rememberNodesPath: false
+          // }));
+        }
+      }));
+
+      const MyDummyChild = Registerable(defineCommonStaticMethods(class MyDummyChild extends DBUIWebComponentBase {
+        static get registrationName() { return 'my-dummy-child'; }
+        static get dependencies() { return [MyDummyGrandChild]; }
+        static get templateInnerHTML() {
+          return `
+          <style>
+          </style>
+          <div>
+          my dummy child
+          <my-dummy-grand-child id="grandchild-1"></my-dummy-grand-child>
+          <my-dummy-grand-child id="grandchild-2"></my-dummy-grand-child>
+          </div>
+          `;
+        }
+
+        get id() {
+          return `${this.dbuiParentHost.id}-${this.getAttribute('id')}`
+        }
+
+        connectedCallback() {
+          super.connectedCallback();
+        }
+      }));
+
+      const MyDummyParent = Registerable(defineCommonStaticMethods(class MyDummyParent extends DBUIWebComponentBase {
+        static get registrationName() { return 'my-dummy-parent'; }
+        static get dependencies() { return [MyDummyChild]; }
+        static get templateInnerHTML() {
+          return `
+          <style>
+          </style>
+          <div>
+          my dummy parent
+          <my-dummy-child id="child-1"></my-dummy-child>
+          <my-dummy-child id="child-2"></my-dummy-child>
+          </div>
+          `;
+        }
+
+        connectedCallback() {
+          super.connectedCallback();
+          // this.sendMessage(this.createMessage({
+          //   channel: 'xxx',
+          //   message: `from-${this.id}`,
+          //   targetType: 'PARENT',
+          //   rememberNodesPath: true
+          // }));
+          //
+          // this.sendMessage(this.createMessage({
+          //   channel: 'yyy',
+          //   message: `from-${this.id}`,
+          //   targetType: 'CHILDREN',
+          //   rememberNodesPath: true
+          // }));
+
+        }
+      }));
+
+      MyDummyParent.registerSelf();
+    });
+
+    window.addEventListener('DBUIWebComponentsDefined', () => {
+    });
+  </script>
+</head>
+<body style="margin: 0px; padding: 0px;">
+<div class="demo-screen-loading"
+     style="padding: 50px; font-family: arial, sans-serif; font-size: 16px;">
+  loading...
+</div>
+<div class="demo-screen">
+  <script src="../../internals/iFrameUtils/demoScreenStartScript.js"></script>
+<!-- standard template end -->
+  <div class="locale-switch" x-lang="" x-dir=""></div>
+  <my-dummy-parent locale-aware id="parent"></my-dummy-parent>
+
+
+</div>
+
+<!-- standard template start -->
+<script src="../../internals/iFrameUtils/commonIFrameAssetsAndBehaviour.js"></script>
+<!-- standard template end -->
+</body>
+</html>

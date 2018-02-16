@@ -1,7 +1,13 @@
 
 import getDBUILocaleService from '../../../services/DBUILocaleService';
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
+import DBUIWebComponentMessage from './DBUIWebComponentMessage';
 import DBUICommonCssVars from './DBUICommonCssVars';
+
+const PARENT_TARGET_TYPE = 'PARENT';
+const CHILDREN_TARGET_TYPE = 'CHILDREN';
+const CHANNEL_INTERNAL = 'Internal';
+const MESSAGE_ANCESTORS_CHAIN_CONNECTED = 'ANCESTORS_CHAIN_CONNECTED';
 
 const registrationName = 'DBUIWebComponentBase';
 
@@ -44,7 +50,7 @@ export default function getDBUIWebComponentCore(win) {
       }
 
       static get propertiesToDefine() {
-        return {};
+        return { 'dbui-web-component': '' };
       }
 
       // web components standard API
@@ -65,6 +71,7 @@ export default function getDBUIWebComponentCore(win) {
           });
         }
         this._isConnected = false;
+        this._ancestorsConnected = false;
         this._insertTemplate();
 
         this.connectedCallback = this.connectedCallback.bind(this);
@@ -110,6 +117,13 @@ export default function getDBUIWebComponentCore(win) {
         Object.keys(propertiesToDefine).forEach((property) => {
           this._defineProperty(property, propertiesToDefine[property]);
         });
+        // if in light dom notify descendants that ancestor chain is connected
+        if (!this.dbuiParentHost) {
+          this.sendMessageToChildren({
+            channel: CHANNEL_INTERNAL,
+            message: MESSAGE_ANCESTORS_CHAIN_CONNECTED
+          });
+        }
       }
 
       // web components standard API
@@ -126,6 +140,101 @@ export default function getDBUIWebComponentCore(win) {
 
       onLocaleChange() {
         // no op
+      }
+
+      get ancestorsConnected() {
+        return this._ancestorsConnected;
+      }
+
+      get dbuiChildren() {
+        return this.childrenTree.querySelectorAll('[dbui-web-component]');
+      }
+
+      get dbuiParentHost() {
+        return this.getRootNode().host;
+      }
+
+      createMessage({
+        channel, message, data, rememberNodesPath, targetType
+      } = {}) {
+        const messageInst = new DBUIWebComponentMessage({
+          channel,
+          message,
+          data,
+          source: this,
+          rememberNodesPath,
+          metadata: {
+            targetType
+          }
+        });
+        // will be ignored if rememberNodesPath was false at message creation
+        messageInst.appendVisitedNode(this);
+        return messageInst;
+      }
+
+      sendMessage(messageInst) {
+        const { targetType } = messageInst.metadata;
+        if (targetType === PARENT_TARGET_TYPE) {
+          const dbuiParentHost = this.dbuiParentHost;
+          if (dbuiParentHost) {
+            dbuiParentHost._propagateMessage(messageInst.cloneOrInstance);
+          }
+        } else if (targetType === CHILDREN_TARGET_TYPE) {
+          const dbuChildren = this.dbuiChildren;
+          dbuChildren.forEach((child) => {
+            child._propagateMessage(messageInst.cloneOrInstance);
+          });
+        }
+      }
+
+      _propagateMessage(messageInst) {
+        // Will be ignored if rememberNodesPath was false at message creation
+        messageInst.appendVisitedNode(this);
+        this.onMessageReceived(messageInst);
+        // Inside onMessageReceived there is a chance that
+        // message#stopPropagation has been called.
+        if (messageInst.shouldPropagate) {
+          this.sendMessage(messageInst);
+        }
+      }
+
+      onMessageReceived(messageInst) {
+        // console.log(this.id, 'isConnected', this.isConnected, `received message ${messageInst.message}`, 'path', JSON.stringify(messageInst.visitedNodes.map((node) => node.id)), 'source', messageInst.source.id);
+        const { channel } = messageInst;
+        this[`on${channel}Message`] &&
+          this[`on${channel}Message`](messageInst);
+      }
+
+      [`on${CHANNEL_INTERNAL}Message`](messageInst) {
+        const { message } = messageInst;
+        message === MESSAGE_ANCESTORS_CHAIN_CONNECTED &&
+          this.onAncestorsChainConnected(messageInst);
+      }
+
+      // eslint-disable-next-line
+      onAncestorsChainConnected(messageInst) {
+        this._ancestorsConnected = true;
+        // console.log(this.id, 'isConnected', this.isConnected, 'onAncestorsChainConnected', messageInst.source.id);
+      }
+
+      sendMessageToParent({ channel, message, data, rememberNodesPath }) {
+        this.sendMessage(this.createMessage({
+          channel,
+          message,
+          data,
+          rememberNodesPath,
+          targetType: PARENT_TARGET_TYPE
+        }));
+      }
+
+      sendMessageToChildren({ channel, message, data, rememberNodesPath }) {
+        this.sendMessage(this.createMessage({
+          channel,
+          message,
+          data,
+          rememberNodesPath,
+          targetType: CHILDREN_TARGET_TYPE
+        }));
       }
 
       get isConnected() {
