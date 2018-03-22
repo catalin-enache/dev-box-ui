@@ -119,7 +119,7 @@ describe('DBUIWebComponent Styling Behaviour', () => {
   it('inherits inheritable css props from its parent', (done) => {
     inIframe({
       bodyHTML: `
-      <div style="color: rgba(250, 0, 0, 0.5);">
+      <div style="color: rgba(250, 0, 0, 0.2);">
         <dummy-one></dummy-one>
       </div>
       `,
@@ -133,7 +133,7 @@ describe('DBUIWebComponent Styling Behaviour', () => {
           const computedStyle = contentWindow.getComputedStyle(dummyOneInst);
 
           // inherited color from parent
-          expect(computedStyle.color).to.equal('rgba(250, 0, 0, 0.5)');
+          expect(computedStyle.color).to.equal('rgba(250, 0, 0, 0.2)');
 
           setTimeout(() => {
             iframe.remove();
@@ -183,7 +183,7 @@ describe('DBUIWebComponent Styling Behaviour', () => {
   `, (done) => {
       inIframe({
         bodyHTML: `
-        <div style="color: rgba(250, 0, 0, 0.5);">
+        <div style="color: rgba(250, 0, 0, 0.2);">
           <dummy-one></dummy-one>
         </div>
         `,
@@ -198,7 +198,7 @@ describe('DBUIWebComponent Styling Behaviour', () => {
             const computedStyle = contentWindow.getComputedStyle(dummyOneInst);
 
             // color was inherited due to being explicitly set to inherit despite all: initial rule
-            expect(computedStyle.color).to.equal('rgba(250, 0, 0, 0.5)');
+            expect(computedStyle.color).to.equal('rgba(250, 0, 0, 0.2)');
 
             setTimeout(() => {
               iframe.remove();
@@ -210,7 +210,7 @@ describe('DBUIWebComponent Styling Behaviour', () => {
         }
       });
     });
-
+  // TODO: fix when locale aware will be shared in context
   xit('is locale aware', (done) => {
     inIframe({
       bodyHTML: `

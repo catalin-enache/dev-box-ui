@@ -1,14 +1,16 @@
 
 export default class DBUIWebComponentMessage {
   constructor({
-    channel, message, data, source, rememberNodesPath, metadata
+    channel, message, data, source, rememberNodesPath,
+    domType, targetType, metadata
   }) {
     this._channel = channel;
     this._message = message;
     this._data = data;
     this._source = source; // instance of node creating the message
     this._rememberNodesPath = rememberNodesPath;
-    // can contain fields like targetType: children | parent or whatever else
+    this._domType = domType; // LIGHT_DOM_TYPE || SHADOW_DOM_TYPE
+    this._targetType = targetType; // PARENT_TARGET_TYPE || CHILDREN_TARGET_TYPE
     this._metadata = metadata;
 
     // internals
@@ -26,6 +28,8 @@ export default class DBUIWebComponentMessage {
       data: this.data,
       source: this.source,
       rememberNodesPath: this.rememberNodesPath,
+      domType: this.domType,
+      targetType: this.targetType,
       metadata: this.metadata
     });
     messageClone._shouldPropagate = this.shouldPropagate;
@@ -64,6 +68,14 @@ export default class DBUIWebComponentMessage {
 
   get rememberNodesPath() {
     return this._rememberNodesPath;
+  }
+
+  get domType() {
+    return this._domType;
+  }
+
+  get targetType() {
+    return this._targetType;
   }
 
   get metadata() {

@@ -79,7 +79,7 @@ b.y = 9;
 console.log(b.hello()); // hello 6 and 36
 
 */
-
+// TODO:test this
 function OverrideOrDefine(behaviour) {
   const instanceKeys = Reflect.ownKeys(behaviour);
 

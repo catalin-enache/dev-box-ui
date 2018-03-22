@@ -130,11 +130,11 @@ export default function Focusable(Klass) {
     }
 
     get _innerFocusables() {
-      return this.childrenTree.querySelectorAll('[tabindex]') || [];
+      return this.shadowRoot.querySelectorAll('[tabindex]') || [];
     }
 
     get _firstInnerFocusable() {
-      return this.childrenTree.querySelector('[tabindex]');
+      return this.shadowRoot.querySelector('[tabindex]');
     }
 
     _onInnerFocusableFocused(evt) {

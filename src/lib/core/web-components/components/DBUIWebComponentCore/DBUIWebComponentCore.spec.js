@@ -7,6 +7,8 @@ import getDBUILocaleService from '../../../services/DBUILocaleService';
 import appendStyles from '../../../internals/appendStyles';
 import inIframe from '../../../../../../testUtils/inIframe';
 
+/* eslint camelcase: 0 */
+
 function getDummyNoRegistrationNameNoTemplate(win) {
   return ensureSingleRegistration(win, dummyOneRegistrationName, () => {
     const {
@@ -34,11 +36,18 @@ function getDummyOne(win) {
       }
 
       static get propertiesToDefine() {
-        return { bar: 'BAR' };
+        return {
+          ...super.propertiesToDefine,
+          ...{ bar: 'BAR' }
+        };
       }
 
       static get propertiesToUpgrade() {
-        return ['foo'];
+        return [...super.propertiesToUpgrade, 'foo'];
+      }
+
+      init() {
+        this._init = true;
       }
 
       /**
@@ -59,7 +68,7 @@ function getDummyOne(win) {
         return `
           <style>${dummyOneStyle}</style>
           <div>
-            <p>dummy one component</p>
+            <p style="padding: 0px; margin: 0px;">dummy one component</p>
           </div>
         `;
       }
@@ -116,8 +125,12 @@ function getDummyOneParent(win) {
         return `
           <style>${dummyOneParentStyle}</style>
           <div>
-            <p>dummy one parent component</p>
-            <dummy-one></dummy-one>
+            <p style="padding: 0px; margin: 0px;">dummy one parent component</p>
+            <ul style="padding-top: 0px; padding-bottom: 0px; margin-top: 0px; margin-bottom: 0px;">
+              <li>
+                <dummy-one id="shadow-dummy-one"></dummy-one>
+              </li>
+            </ul>
           </div>
         `;
       }
@@ -204,6 +217,30 @@ describe('DBUIWebComponentBase', () => {
         }
       });
     });
+
+    it('calls init to support mixins', (done) => {
+      inIframe({
+        bodyHTML: `
+        <dummy-one></dummy-one>
+        `,
+        onLoad: ({ contentWindow, iframe }) => {
+          const DummyOne = getDummyOne(contentWindow);
+          const dummyOneInstance = contentWindow.document.querySelector(DummyOne.registrationName);
+          expect(dummyOneInstance._init).to.equal(undefined);
+
+          contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+            expect(dummyOneInstance._init).to.equal(true);
+
+            setTimeout(() => {
+              iframe.remove();
+              done();
+            }, 0);
+          });
+
+          DummyOne.registerSelf();
+        }
+      });
+    });
   });
 
   describe('dependencies', () => {
@@ -237,7 +274,7 @@ describe('DBUIWebComponentBase', () => {
     });
   });
 
-  describe('isConnected', () => {
+  describe('isMounted', () => {
     it('is true after connectedCallback and false after disconnectedCallback', (done) => {
       inIframe({
         bodyHTML: `
@@ -249,23 +286,28 @@ describe('DBUIWebComponentBase', () => {
 
           contentWindow.customElements.whenDefined(DummyOneParent.registrationName).then(() => {
             const parentNode = dummyOneParentInstance.parentNode;
-
-            expect(dummyOneParentInstance.isConnected).to.equal(true);
+            expect(dummyOneParentInstance.isMounted).to.equal(true);
             dummyOneParentInstance.remove();
-            expect(dummyOneParentInstance.isConnected).to.equal(false);
+            expect(dummyOneParentInstance.isMounted).to.equal(false);
             parentNode.appendChild(dummyOneParentInstance);
-            expect(dummyOneParentInstance.isConnected).to.equal(true);
+            expect(dummyOneParentInstance.isMounted).to.equal(true);
+
             parentNode.removeChild(dummyOneParentInstance);
-            expect(dummyOneParentInstance.isConnected).to.equal(false);
+            expect(dummyOneParentInstance.isMounted).to.equal(false);
 
             iframe.remove();
             done();
           });
 
           DummyOneParent.registerSelf();
-
         }
       });
+    });
+  });
+
+  describe('isReady', () => {
+    xit('returns true after it registered to new closestDbuiParent', () => {
+
     });
   });
 
@@ -324,78 +366,6 @@ describe('DBUIWebComponentBase', () => {
     });
   });
 
-
-  describe('useShadow and childrenTree', () => {
-    describe('when useShadow', () => {
-      it('childrenTree return shadowRoot', (done) => {
-        inIframe({
-          bodyHTML: `
-          <dummy-one-parent></dummy-one-parent>
-          `,
-          onLoad: ({ contentWindow, iframe }) => {
-            const DummyOneParent = getDummyOneParent(contentWindow);
-            const dummyOneParentInstance = contentWindow.document.querySelector(DummyOneParent.registrationName);
-
-            contentWindow.customElements.whenDefined(DummyOneParent.registrationName).then(() => {
-
-              // shadow dom structure was build as expected
-              expect(
-                dummyOneParentInstance.shadowRoot
-              ).to.not.equal(null);
-              expect(dummyOneParentInstance
-                .childrenTree
-              ).to.equal(dummyOneParentInstance.shadowRoot);
-
-              setTimeout(() => {
-                iframe.remove();
-                done();
-              }, 0);
-            });
-
-            DummyOneParent.registerSelf();
-          }
-        });
-      });
-    });
-
-    describe('when NOT useShadow', () => {
-      it('childrenTree return self instance', (done) => {
-        inIframe({
-          bodyHTML: `
-          <dummy-one-parent></dummy-one-parent>
-          `,
-          onLoad: ({ contentWindow, iframe }) => {
-            const DummyOneParent = getDummyOneParent(contentWindow);
-            const useShadowStub = sinon.stub(DummyOneParent, 'useShadow').get(() => {
-              return false;
-            });
-            const dummyOneParentInstance = contentWindow.document.querySelector(DummyOneParent.registrationName);
-
-            contentWindow.customElements.whenDefined(DummyOneParent.registrationName).then(() => {
-
-              // shadow dom structure was build as expected
-              expect(
-                dummyOneParentInstance.shadowRoot
-              ).to.equal(null);
-              expect(dummyOneParentInstance
-                .childrenTree
-              ).to.equal(dummyOneParentInstance);
-
-              useShadowStub.restore();
-
-              setTimeout(() => {
-                iframe.remove();
-                done();
-              }, 0);
-            });
-
-            DummyOneParent.registerSelf();
-          }
-        });
-      });
-    });
-  });
-
   describe('templateInnerHTML', () => {
     it('defines the component HTML structure', (done) => {
       inIframe({
@@ -411,12 +381,12 @@ describe('DBUIWebComponentBase', () => {
 
             // shadow dom structure was build as expected
             expect(dummyOneParentInstance
-              .childrenTree.querySelector('div p')
+              .shadowRoot.querySelector('div p')
               .innerText
             ).to.equal('dummy one parent component');
             expect(dummyOneParentInstance
-              .childrenTree.querySelector(DummyOne.registrationName)
-              .childrenTree.querySelector('div p')
+              .shadowRoot.querySelector(DummyOne.registrationName)
+              .shadowRoot.querySelector('div p')
               .innerText
             ).to.equal('dummy one component');
 
@@ -540,7 +510,7 @@ describe('DBUIWebComponentBase', () => {
           const dummyOneInst = contentWindow.document.querySelector('dummy-one');
 
           contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
-            expect(spyDummyOneDefineProperty.callCount).to.equal(1);
+            expect(spyDummyOneDefineProperty.callCount).to.equal(2);
             assert(spyDummyOneDefineProperty.calledWithExactly('bar', 'BAR'), 'called with bar, BAR');
             expect(dummyOneInst.getAttribute('bar')).to.equal('BAR');
 
@@ -568,7 +538,7 @@ describe('DBUIWebComponentBase', () => {
           dummyOneInst.setAttribute('bar', 'customBar');
 
           contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
-            expect(spyDummyOneDefineProperty.callCount).to.equal(1);
+            expect(spyDummyOneDefineProperty.callCount).to.equal(2);
             assert(spyDummyOneDefineProperty.calledWithExactly('bar', 'BAR'), 'called with bar, BAR');
             // user defined property was not overridden with default value
             expect(dummyOneInst.getAttribute('bar')).to.equal('customBar');
@@ -634,7 +604,7 @@ describe('DBUIWebComponentBase', () => {
     });
   });
 
-  describe('observerdAttributes', () => {
+  describe('observedAttributes', () => {
     it('are observed', (done) => {
       inIframe({
         bodyHTML: `
@@ -683,10 +653,8 @@ describe('DBUIWebComponentBase', () => {
           expect(DBUILocaleService._callbacks.length).to.equal(0);
 
           contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
-            // after connected
             expect(DBUILocaleService._callbacks.length).to.equal(1);
             dummyOneInst.remove();
-            // after disconnected
             expect(DBUILocaleService._callbacks.length).to.equal(0);
 
             iframe.remove();
@@ -694,6 +662,31 @@ describe('DBUIWebComponentBase', () => {
           });
 
           DummyOne.registerSelf();
+        }
+      });
+    });
+  });
+
+  describe('CONSTANTS', () => {
+    it('are defined', (done) => {
+      inIframe({
+        onLoad: ({ contentWindow, iframe }) => {
+          const {
+            DBUIWebComponentBase
+          } = getDBUIWebComponentCore(contentWindow);
+
+          expect(DBUIWebComponentBase.CONSTANTS).to.include.all.keys([
+            'PARENT_TARGET_TYPE',
+            'CHILDREN_TARGET_TYPE',
+            'SHADOW_DOM_TYPE',
+            'LIGHT_DOM_TYPE',
+            'CHANNEL_INTERNAL',
+            'MESSAGE_SHADOW_DOM_ANCESTORS_CHAIN_CONNECTED',
+            'EVENT_READY'
+          ]);
+
+          iframe.remove();
+          done();
         }
       });
     });

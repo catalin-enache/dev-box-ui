@@ -1,13 +1,17 @@
 
 import getDBUILocaleService from '../../../services/DBUILocaleService';
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
+import Publisher from '../../../utils/Publisher';
 import DBUIWebComponentMessage from './DBUIWebComponentMessage';
 import DBUICommonCssVars from './DBUICommonCssVars';
 
 const PARENT_TARGET_TYPE = 'PARENT';
 const CHILDREN_TARGET_TYPE = 'CHILDREN';
+const SHADOW_DOM_TYPE = 'ShadowDom';
+const LIGHT_DOM_TYPE = 'LightDom';
 const CHANNEL_INTERNAL = 'Internal';
-const MESSAGE_ANCESTORS_CHAIN_CONNECTED = 'ANCESTORS_CHAIN_CONNECTED';
+const MESSAGE_SHADOW_DOM_ANCESTORS_CHAIN_CONNECTED = 'SHADOW_DOM_ANCESTORS_CHAIN_CONNECTED';
+const EVENT_READY = 'ready';
 
 const registrationName = 'DBUIWebComponentBase';
 
@@ -41,10 +45,6 @@ export default function getDBUIWebComponentCore(win) {
         return [];
       }
 
-      static get useShadow() {
-        return true;
-      }
-
       static get propertiesToUpgrade() {
         return [];
       }
@@ -53,36 +53,293 @@ export default function getDBUIWebComponentCore(win) {
         return { 'dbui-web-component': '' };
       }
 
+      static get CONSTANTS() {
+        return {
+          PARENT_TARGET_TYPE,
+          CHILDREN_TARGET_TYPE,
+          SHADOW_DOM_TYPE,
+          LIGHT_DOM_TYPE,
+          CHANNEL_INTERNAL,
+          MESSAGE_SHADOW_DOM_ANCESTORS_CHAIN_CONNECTED,
+          EVENT_READY
+        };
+      }
+
       // web components standard API
       static get observedAttributes() {
         return [];
       }
 
+      get shadowDomChildren() {
+        // TODO: is this reliable when not ready
+        return [...this.shadowRoot.querySelectorAll('[dbui-web-component]')];
+      }
+
+      get shadowDomParent() {
+        // TODO: is this reliable when not ready
+        return this.getRootNode().host || null;
+      }
+
+      get lightDomParent() {
+        // TODO: is this reliable when not ready
+        let parent = this.parentElement;
+        while (parent && !parent.hasAttribute('dbui-web-component')) {
+          parent = parent.parentElement;
+        }
+        return parent || null;
+      }
+
+      get lightDomChildren() {
+        // TODO: is this reliable when not ready
+        return [...this.querySelectorAll('[dbui-web-component]')];
+      }
+
+      get closestDbuiParentLiveQuery() {
+        let closestParent = this.parentElement;
+        // might be null if disconnected from dom
+        if (closestParent === null) {
+          return null;
+        }
+        closestParent = closestParent.closest('[dbui-web-component]');
+        return closestParent || this.shadowDomParent;
+      }
+
+      // Can be accessed in connectedCallback, however,
+      // the parent might not be itself connected yet.
+      get closestDbuiParent() {
+        // if (!this.isReady) {
+        //   throw new Error(`${this.constructor.registrationName} not ready yet`);
+        // }
+        // cached
+        // Reason for cache is to allow a child to unregister from its parent when unmounted
+        // because when browser calls disconnectedCallback the parent is not reachable anymore.
+        // If parent could not be reachable it could not unregister its closest children
+        // thus leading to memory leak.
+        if (this._closestDbuiParent) {
+          return this._closestDbuiParent;
+        }
+        this._closestDbuiParent = this.closestDbuiParentLiveQuery;
+        return this._closestDbuiParent;
+        // let closestParent = this.parentElement;
+        // // might be null if disconnected from dom
+        // if (closestParent === null) {
+        //   this._closestDbuiParent = null;
+        // } else {
+        //   closestParent = closestParent.closest('[dbui-web-component]');
+        //   this._closestDbuiParent = closestParent || this.shadowDomParent;
+        // }
+        // return this._closestDbuiParent;
+      }
+
+      get closestDbuiChildrenLiveQuery() {
+        const dbuiChildren = [...this.lightDomChildren, ...this.shadowDomChildren];
+        const closestDbuiChildren = dbuiChildren.filter((child) => child.closestDbuiParentLiveQuery === this);
+        return closestDbuiChildren;
+      }
+
+      // Must NOT be accessed in connectedCallback
+      // as children might not be registered yet
+      get closestDbuiChildren() {
+        // if (!this.isReady) {
+        //   throw new Error(`${this.constructor.registrationName} not ready yet`);
+        // }
+        return this._closestDbuiChildren;
+      }
+
+      get isMounted() {
+        return this._isMounted;
+      }
+
+      get isReady() {
+        return this._isReady;
+      }
+
       constructor(...args) {
         super();
 
-        const { useShadow } = this.constructor;
-        if (useShadow) {
-          this.attachShadow({
-            mode: 'open',
-            // delegatesFocus: true
-            // Not working on IPad so we do an workaround
-            // by setting "focused" attribute when needed.
-          });
-        }
-        this._isConnected = false;
-        this._ancestorsConnected = false;
+        this.attachShadow({
+          mode: 'open',
+          // delegatesFocus: true
+          // Not working on IPad so we do an workaround
+          // by setting "focused" attribute when needed.
+        });
+
+        // this._publisher = new Publisher();
+        this._providingContext = {};
+        this._lastReceivedContext = {};
+        this._closestDbuiParent = null;
+        this._closestDbuiChildren = [];
+        this._isMounted = false;
+        this._isReady = false;
         this._insertTemplate();
 
         this.connectedCallback = this.connectedCallback.bind(this);
         this.disconnectedCallback = this.disconnectedCallback.bind(this);
+        // TODO: _handleLocaleChange only if user sets locale-aware attribute
         this._handleLocaleChange = this._handleLocaleChange.bind(this);
         this.onLocaleChange = this.onLocaleChange.bind(this);
         this.unregisterLocaleChange = null;
 
-        // provide support for traits if any as they cant override constructor
+        // provide support for traits if any as they can't override constructor
         this.init && this.init(...args);
       }
+
+      static get contextProvide() {
+        return [];
+      }
+
+      static get contextSubscribe() {
+        return [];
+      }
+
+      _providesContextFor(key) {
+        return this.constructor.contextProvide.some((_key) => _key === key);
+      }
+
+      _hasValueForContext(key) {
+        return this._providingContext[key] !== undefined;
+      }
+
+      _subscribesForContext(key) {
+        return this.constructor.contextSubscribe.some((_key) => _key === key);
+      }
+
+      setContext(contextObj) {
+        const newKeys = Object.keys(contextObj).filter((key) => {
+          return this._providesContextFor(key);
+        });
+
+        const anythingChanged = newKeys.some((key) => {
+          return ![
+            this._lastReceivedContext[key]
+          ].includes(contextObj[key]);
+        });
+
+        const anythingShouldChange = this.constructor.contextProvide.some((key) => {
+          return this._hasValueForContext(key) &&
+            this._providingContext[key] !== this._lastReceivedContext[key];
+        });
+
+        if (!anythingChanged && !anythingShouldChange) return;
+
+        const newProvidingContext = {
+          ...this._providingContext,
+          ...newKeys.reduce((acc, key) => {
+            acc[key] = contextObj[key];
+            return acc;
+          }, {})
+        };
+
+        this._providingContext = newProvidingContext;
+
+        this._onContextChanged(this._providingContext);
+        this._propagateContextChanged(this._providingContext);
+      }
+
+      _propagateContextChanged(newContext) {
+        const newContextKeys = Object.keys(newContext);
+
+        // if context is received from ancestors
+        if (newContext !== this._providingContext) {
+          // makes self aware
+          const keysSubscribedFor = newContextKeys.reduce((acc, key) => {
+            this._subscribesForContext(key) && acc.push(key);
+            return acc;
+          }, []);
+
+          if (keysSubscribedFor.length) {
+            const contextSubscribedFor = keysSubscribedFor.reduce((acc, key) => {
+              acc[key] = newContext[key];
+              return acc;
+            }, {});
+            this._onContextChanged(contextSubscribedFor);
+          }
+        }
+
+        // propagate with overrides
+        const overriddenContext = this.constructor.contextProvide.reduce((acc, key) => {
+          if (this._hasValueForContext(key)) {
+            acc[key] = this._providingContext[key];
+          }
+          return acc;
+        }, {});
+
+        const contextToPropagate = {
+          ...newContext,
+          ...overriddenContext
+        };
+
+        this.closestDbuiChildren.forEach((child) => {
+          child._propagateContextChanged(contextToPropagate);
+        });
+      }
+
+      _getContext(keys) {
+        const ownedKeys = [];
+        const keysToAskFor = [];
+        keys.forEach((key) => {
+          if (this._hasValueForContext(key)) {
+            ownedKeys.push(key);
+          } else {
+            keysToAskFor.push(key);
+          }
+        });
+        const closestDbuiParent = this.closestDbuiParent;
+        return {
+          ...ownedKeys.reduce((acc, key) => {
+            acc[key] = this._providingContext[key];
+            return acc;
+          }, {}),
+          ...(closestDbuiParent ? closestDbuiParent._getContext(keysToAskFor) : {})
+        };
+        // TODO: we should propagate here to children ?
+        // because when they registered to us we were not aware of context
+      }
+
+      _onContextChanged(newContext) {
+        const lastReceivedContext = this._lastReceivedContext;
+        const contextToSet = { ...lastReceivedContext, ...newContext };
+        this._lastReceivedContext = contextToSet;
+
+        this.onContextChanged(this._lastReceivedContext, lastReceivedContext);
+      }
+
+      // eslint-disable-next-line
+      onContextChanged(newContext, prevContext) {
+        // no op
+      }
+
+      _checkContext() {
+        const newContext = this._getContext(
+          this.constructor.contextSubscribe
+        );
+        this._onContextChanged(newContext);
+      }
+
+      _registerSelfToClosestDbuiParent() {
+        const closestDbuiParent = this.closestDbuiParent;
+        if (!closestDbuiParent) return;
+        closestDbuiParent._registerChild(this);
+      }
+
+      _unregisterSelfFromClosestDbuiParent() {
+        const closestDbuiParent = this.closestDbuiParent;
+        if (!closestDbuiParent) return;
+        closestDbuiParent._unregisterChild(this);
+      }
+
+      _registerChild(child) {
+        this._closestDbuiChildren.push(child);
+      }
+
+      _unregisterChild(child) {
+        this._closestDbuiChildren =
+          this._closestDbuiChildren.filter((_child) => _child !== child);
+      }
+
+      // publish(channel, message) {
+      //   this._publisher.publish(CHANNEL_INTERNAL, message);
+      // }
 
       // https://developers.google.com/web/fundamentals/web-components/best-practices#lazy-properties
       // https://developers.google.com/web/fundamentals/web-components/examples/howto-checkbox
@@ -99,15 +356,33 @@ export default function getDBUIWebComponentCore(win) {
       }
 
       _defineProperty(key, value) {
+        // don't override user defined value
         if (!this.hasAttribute(key)) {
           this.setAttribute(key, value);
         }
       }
 
+      _insertTemplate() {
+        const { template } = this.constructor;
+        template &&
+        this.shadowRoot.appendChild(template.content.cloneNode(true));
+      }
+
+      _handleLocaleChange(locale) {
+        this.setAttribute('dir', locale.dir);
+        this.setAttribute('lang', locale.lang);
+        this.onLocaleChange(locale);
+      }
+
       // web components standard API
+      /*
+      * connectedCallback is fired from children to parent in shadow DOM
+      * but the order is less predictable in light DOM.
+      * Should not read light/shadowDomParent/Children here.
+      * */
       connectedCallback() {
-        this._isConnected = true;
-        window.addEventListener('beforeunload', this.disconnectedCallback, false);
+        this._isMounted = true;
+        win.addEventListener('beforeunload', this.disconnectedCallback, false);
         this.unregisterLocaleChange =
           LocaleService.onLocaleChange(this._handleLocaleChange);
         const { propertiesToUpgrade, propertiesToDefine } = this.constructor;
@@ -117,24 +392,42 @@ export default function getDBUIWebComponentCore(win) {
         Object.keys(propertiesToDefine).forEach((property) => {
           this._defineProperty(property, propertiesToDefine[property]);
         });
-        // if in light dom notify descendants that ancestor chain is connected
-        if (!this.dbuiParentHost) {
-          this.sendMessageToChildren({
-            channel: CHANNEL_INTERNAL,
-            message: MESSAGE_ANCESTORS_CHAIN_CONNECTED
-          });
-        }
+        // We can safely register to closestDbuiParent because it exists at this time
+        // but we must not assume it was connected.
+        this._registerSelfToClosestDbuiParent();
+        this._checkContext();
+
+        // this.info('connectedCallback');
+        setTimeout(this._readyCallback.bind(this), 0);
       }
 
       // web components standard API
       disconnectedCallback() {
-        this._isConnected = false;
+        this._unregisterSelfFromClosestDbuiParent();
         this.unregisterLocaleChange();
-        window.removeEventListener('beforeunload', this.disconnectedCallback, false);
+        win.removeEventListener('beforeunload', this.disconnectedCallback, false);
+        this._isMounted = false;
+        this._isReady = false;
+        this._closestDbuiParent = null;
+      }
+
+      cloneNodeDeep({ idPrefix = '', idSuffix = '' }) {
+        const clone = super.cloneNode(true);
+        if (!idPrefix && !idSuffix) return clone;
+        if (clone.hasAttribute('id')) {
+          clone.setAttribute('id', `${idPrefix}${clone.getAttribute('id')}${idSuffix}`);
+        }
+        clone.querySelectorAll('[dbui-web-component]').forEach((child) => {
+          if (child.hasAttribute('id')) {
+            child.setAttribute('id', `${idPrefix}${child.getAttribute('id')}${idSuffix}`);
+          }
+        });
+        return clone;
       }
 
       // web components standard API
-      attributeChangedCallback() {
+      // eslint-disable-next-line
+      attributeChangedCallback(name, oldValue, newValue) {
         // no op
       }
 
@@ -142,122 +435,206 @@ export default function getDBUIWebComponentCore(win) {
         // no op
       }
 
-      get ancestorsConnected() {
-        return this._ancestorsConnected;
-      }
+      info(step) {
+        // if (this.id !== 'light-dummy-d-three-in-default-slot') return;
+        const selfId = this.id || 'no id';
+        // const isDefined = !!win.customElements.get(this.constructor.registrationName);
+        // const hasAttr = this.hasAttribute('dbui-web-component');
 
-      get dbuiChildren() {
-        return this.childrenTree.querySelectorAll('[dbui-web-component]');
-      }
+        // const { contextColor } = this._getContext(['color']);
+        const closestDbuiParent = this.closestDbuiParent;
+        const closestDbuiChildren = this.closestDbuiChildren;
+        const closestDbuiChildrenLiveQuery = this.closestDbuiChildrenLiveQuery;
+        const closestDbuiParent2 = this.parentElement && this.parentElement.closest('[dbui-web-component]');
+        const shadowDomParent = this.shadowDomParent;
+        const shadowDomChildren = this.shadowDomChildren;
+        const lightDomParent = this.lightDomParent;
+        const lightDomChildren = this.lightDomChildren;
+        // const lightParentHasAttr = lightDomParent && lightDomParent.hasAttribute('dbui-web-component');
+        // const ownerDocument = this.ownerDocument;
+        // const parentNode = this.parentNode;
+        // const defaultView = ownerDocument.defaultView;
 
-      get dbuiParentHost() {
-        return this.getRootNode().host;
-      }
-
-      createMessage({
-        channel, message, data, rememberNodesPath, targetType
-      } = {}) {
-        const messageInst = new DBUIWebComponentMessage({
-          channel,
-          message,
-          data,
-          source: this,
-          rememberNodesPath,
-          metadata: {
-            targetType
-          }
+        console.log({
+          step,
+          selfId,
+          // contextColor,
+          // closestDbuiParent: (closestDbuiParent || {}).id || null,
+          // closestDbuiParentIsMounted: closestDbuiParent && closestDbuiParent.isMounted,
+          closestDbuiChildren: closestDbuiChildren.map((child) => child.id).join(', '),
+          // closestDbuiChildrenLiveQuery: closestDbuiChildrenLiveQuery.map((child) => child.id).join(', '),
+          // isDefined,
+          // hasAttr,
+          // ownerDocument,
+          // parentNode,
+          // defaultView,
+          // lightParentHasAttr,
+          // closestDbuiParent2: (closestDbuiParent2 || {}).id || null,
+          // lightDomParent: (lightDomParent || {}).id || null,
+          // lightDomChildren: lightDomChildren.map((child) => child.id).join(', '),
+          // shadowDomParent: (shadowDomParent || {}).id || null,
+          // shadowDomChildren: shadowDomChildren.map((child) => child.id).join(', ')
         });
-        // will be ignored if rememberNodesPath was false at message creation
-        messageInst.appendVisitedNode(this);
-        return messageInst;
       }
 
-      sendMessage(messageInst) {
-        const { targetType } = messageInst.metadata;
-        if (targetType === PARENT_TARGET_TYPE) {
-          const dbuiParentHost = this.dbuiParentHost;
-          if (dbuiParentHost) {
-            dbuiParentHost._propagateMessage(messageInst.cloneOrInstance);
-          }
-        } else if (targetType === CHILDREN_TARGET_TYPE) {
-          const dbuChildren = this.dbuiChildren;
-          dbuChildren.forEach((child) => {
-            child._propagateMessage(messageInst.cloneOrInstance);
+      _dispatchEventReady() {
+        if (!this.isReady) return;
+        // this.info('_dispatchEventReady');
+        this.dispatchEvent(new Event(EVENT_READY, {
+          bubbles: false,
+          composed: false
+        }));
+      }
+
+      // custom internal API
+      _readyCallback() {
+        // its possible the component was unmounted before having a chance to be ready
+        // TODO: test what happens when component is appended and immediately removed from DOM
+        // the ready event should not fire
+        if (!this.isMounted) return;
+        this._isReady = true;
+        // this.info('_readyCallback');
+        this._dispatchEventReady();
+      }
+
+      register(type, listener, ...rest) {
+        if (type === EVENT_READY) {
+          this.registerOnce(type, listener, ...rest);
+        } else {
+          super.addEventListener(type, listener, ...rest);
+        }
+      }
+
+      registerOnce(type, listener, ...rest) {
+        const internalListener = (evt, ...rest) => {
+          listener(evt, ...rest);
+          this.unregister(type, internalListener);
+        };
+        super.addEventListener(type, internalListener, { ...rest, once: true });
+        if (type === EVENT_READY && this.isReady) {
+          this._dispatchEventReady();
+        }
+      }
+
+      unregister(type, listener, ...rest) {
+        super.removeEventListener(type, listener, ...rest);
+      }
+
+      get onReady() {
+        return new Promise((resolve) => {
+          this.registerOnce(EVENT_READY, (evt) => {
+            return resolve(evt);
           });
-        }
+        });
       }
 
-      _propagateMessage(messageInst) {
-        // Will be ignored if rememberNodesPath was false at message creation
-        messageInst.appendVisitedNode(this);
-        this.onMessageReceived(messageInst);
-        // Inside onMessageReceived there is a chance that
-        // message#stopPropagation has been called.
-        if (messageInst.shouldPropagate) {
-          this.sendMessage(messageInst);
-        }
-      }
+      // _propagateMessage(messageInst) {
+      //   // Will be ignored if rememberNodesPath was false at message creation
+      //   messageInst.appendVisitedNode(this);
+      //   this.onMessageReceived(messageInst);
+      //   // Inside onMessageReceived there is a chance that
+      //   // message#stopPropagation has been called.
+      //   if (messageInst.shouldPropagate) {
+      //     this.sendMessage(messageInst);
+      //   }
+      // }
 
-      onMessageReceived(messageInst) {
-        // console.log(this.id, 'isConnected', this.isConnected, `received message ${messageInst.message}`, 'path', JSON.stringify(messageInst.visitedNodes.map((node) => node.id)), 'source', messageInst.source.id);
-        const { channel } = messageInst;
-        this[`on${channel}Message`] &&
-          this[`on${channel}Message`](messageInst);
-      }
+      // createMessage({
+      //   channel, message, data, rememberNodesPath, targetType, domType, appendSelf = true
+      // } = {}) {
+      //   const messageInst = new DBUIWebComponentMessage({
+      //     channel,
+      //     message,
+      //     data,
+      //     source: this,
+      //     rememberNodesPath,
+      //     targetType,
+      //     domType
+      //   });
+      //   // will be ignored if rememberNodesPath was false at message creation
+      //   appendSelf && messageInst.appendVisitedNode(this);
+      //   return messageInst;
+      // }
 
-      [`on${CHANNEL_INTERNAL}Message`](messageInst) {
-        const { message } = messageInst;
-        message === MESSAGE_ANCESTORS_CHAIN_CONNECTED &&
-          this.onAncestorsChainConnected(messageInst);
-      }
+      // sendMessage(messageInst) {
+      //   const { targetType, domType } = messageInst;
+      //   if (targetType === PARENT_TARGET_TYPE) {
+      //     const parent =
+      //       domType === SHADOW_DOM_TYPE ? this.shadowDomParent : this.lightDomParent;
+      //     parent && parent._propagateMessage(messageInst.cloneOrInstance);
+      //   } else if (targetType === CHILDREN_TARGET_TYPE) {
+      //     const children =
+      //       domType === SHADOW_DOM_TYPE ? this.shadowDomChildren : this.lightDomChildren;
+      //     children.forEach((child) => {
+      //       child._propagateMessage(messageInst.cloneOrInstance);
+      //     });
+      //   }
+      // }
 
-      // eslint-disable-next-line
-      onAncestorsChainConnected(messageInst) {
-        this._ancestorsConnected = true;
-        // console.log(this.id, 'isConnected', this.isConnected, 'onAncestorsChainConnected', messageInst.source.id);
-      }
+      // onMessageReceived(messageInst) {
+      //   const { domType } = messageInst;
+      //   this[`on${domType}Message`](messageInst);
+      // }
 
-      sendMessageToParent({ channel, message, data, rememberNodesPath }) {
-        this.sendMessage(this.createMessage({
-          channel,
-          message,
-          data,
-          rememberNodesPath,
-          targetType: PARENT_TARGET_TYPE
-        }));
-      }
+      // [`on${SHADOW_DOM_TYPE}Message`](messageInst) {
+      //   const { channel, domType } = messageInst;
+      //   const listener = `on${domType}${channel}Message`;
+      //   this[listener] && this[listener](messageInst);
+      // }
 
-      sendMessageToChildren({ channel, message, data, rememberNodesPath }) {
-        this.sendMessage(this.createMessage({
-          channel,
-          message,
-          data,
-          rememberNodesPath,
-          targetType: CHILDREN_TARGET_TYPE
-        }));
-      }
+      // [`on${LIGHT_DOM_TYPE}Message`](messageInst) {
+      //   const { channel, domType } = messageInst;
+      //   const listener = `on${domType}${channel}Message`;
+      //   this[listener] && this[listener](messageInst);
+      // }
 
-      get isConnected() {
-        return this._isConnected;
-      }
+      // shadowDomSendMessageToParent({ channel, message, data, rememberNodesPath }) {
+      //   this.sendMessage(this.createMessage({
+      //     channel,
+      //     message,
+      //     data,
+      //     rememberNodesPath,
+      //     targetType: PARENT_TARGET_TYPE,
+      //     domType: SHADOW_DOM_TYPE
+      //   }));
+      // }
 
-      get childrenTree() {
-        return this.constructor.useShadow ? this.shadowRoot : this;
-      }
+      // shadowDomSendMessageToChildren({ channel, message, data, rememberNodesPath }) {
+      //   this.sendMessage(this.createMessage({
+      //     channel,
+      //     message,
+      //     data,
+      //     rememberNodesPath,
+      //     targetType: CHILDREN_TARGET_TYPE,
+      //     domType: SHADOW_DOM_TYPE
+      //   }));
+      // }
 
-      _insertTemplate() {
-        const { template } = this.constructor;
+      // shadowDomSendMessageToParentAndSelf({ channel, message, data, rememberNodesPath }) {
+      //   const messageInst = this.createMessage({
+      //     channel,
+      //     message,
+      //     data,
+      //     rememberNodesPath,
+      //     targetType: PARENT_TARGET_TYPE,
+      //     domType: SHADOW_DOM_TYPE,
+      //     appendSelf: false
+      //   });
+      //   this._propagateMessage(messageInst);
+      // }
 
-        if (template) {
-          this.childrenTree.appendChild(template.content.cloneNode(true));
-        }
-      }
-
-      _handleLocaleChange(locale) {
-        this.setAttribute('dir', locale.dir);
-        this.setAttribute('lang', locale.lang);
-        this.onLocaleChange(locale);
-      }
+      // shadowDomSendMessageToChildrenAndSelf({ channel, message, data, rememberNodesPath }) {
+      //   const messageInst = this.createMessage({
+      //     channel,
+      //     message,
+      //     data,
+      //     rememberNodesPath,
+      //     targetType: CHILDREN_TARGET_TYPE,
+      //     domType: SHADOW_DOM_TYPE,
+      //     appendSelf: false
+      //   });
+      //   this._propagateMessage(messageInst);
+      // }
 
     }
 

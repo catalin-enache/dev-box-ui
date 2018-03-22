@@ -4,6 +4,47 @@ and define them as an array on a static method webComponentsDependencies
 so that the user can inspect them and take care of defining by importing
 and calling registerSelf() for each of them
 
+
+make setters and getters dynamically to avoid boilerplate
+
+mouse/pointer events
+
+intelligent forms (with message passing, value aggregating, validating)
+
+passing messages is not the same as reading global variables
+think of a child just appended into a tree which already consumed messages from root
+what if we change root dir then append some children down the tree ?
+
+we have to communicate (ancestors/descendants) in the shadow dom tree but in light dom too (form <-> inputs)
+
+onLocaleChange should hook only when user sets locale-aware attribute and it should propagate inside shadow DOM
+eventually it should propagate locale in light DOM if user sets propagate-locale-in-light-dom
+
+
+proposal:
+  get lightDomChildren()
+  get lightDomParent()
+  get shadowDomChildren()
+  get shadowDomParent()
+
+  get lightDomContextProvide()
+  get lightDomContextSubscribe()
+  get shadowDomContextProvide()
+  get shadowDomContextSubscribe()
+
+  lightDomSendMessage()
+  lightDomSendMessageToParent()
+  lightDomSendMessageToParentAndSelf()
+  lightDomSendMessageToChildren()
+  lightDomSendMessageToChildrenAndSelf()
+  shadowDomSendMessage()
+  shadowDomSendMessageToParent()
+  shadowDomSendMessageToParentAndSelf()
+  shadowDomSendMessageToChildren()
+  shadowDomSendMessageToChildrenAndSelf()
+
+
+
 what behaviour when component is adopted ?
 inject global css to handle dbui-web-component (hide when not defined, un hide when defined)
 

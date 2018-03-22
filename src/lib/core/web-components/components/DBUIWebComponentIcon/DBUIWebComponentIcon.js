@@ -85,12 +85,12 @@ export default function getDBUIWebComponentIcon(win) {
       }
 
       _setShape() {
-        const path = this.childrenTree.querySelector('svg g path');
+        const path = this.shadowRoot.querySelector('svg g path');
         path.setAttribute('d', this.shape);
       }
 
       _removeShape() {
-        const path = this.childrenTree.querySelector('svg g path');
+        const path = this.shadowRoot.querySelector('svg g path');
         path.setAttribute('d', '');
       }
 
