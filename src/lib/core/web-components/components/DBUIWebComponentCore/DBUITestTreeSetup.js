@@ -1,6 +1,50 @@
 import getDBUIWebComponentCore from './DBUIWebComponentCore';
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
 
+/*
+inIframe({
+  headStyle: treeStyle,
+  bodyHTML: `
+  <div id="container">
+    ${treeOne}
+  </div>
+  `,
+  onLoad: ({ contentWindow, iframe }) => {
+    const DummyA = getDummyA(contentWindow);
+    const DummyB = getDummyB(contentWindow);
+    const DummyC = getDummyC(contentWindow);
+    const DummyD = getDummyD(contentWindow);
+    const DummyE = getDummyE(contentWindow);
+
+    Promise.all([
+      DummyA.registrationName,
+      DummyB.registrationName,
+      DummyC.registrationName,
+      DummyD.registrationName,
+      DummyE.registrationName,
+    ].map((localName) => contentWindow.customElements.whenDefined(localName)
+    )).then(() => {
+      const dbuiNodes = treeOneGetDbuiNodes(contentWindow);
+      const {
+        lightDummyDOneRoot,
+        lightDummyDOneRoot_ShadowDummyB,
+        lightDummyDTwoInDefaultSlot,
+        lightDummyDThreeInDefaultSlot,
+        lightDummyDThreeInDefaultSlot_ShadowDummyB,
+        lightDummyEInNamedSlot,
+        lightDummyEInDefaultSlot
+      } = dbuiNodes;
+    });
+
+    setTimeout(() => {
+      iframe.remove();
+      done();
+    }, 0);
+
+    DummyE.registerSelf();
+  }
+});
+*/
 
 const treeStyle = `
   ul, li, p {
@@ -11,6 +55,7 @@ const treeStyle = `
   }
 `;
 
+// 23 total components to connect (3 * d: 3 + 2 * e: 7)
 const treeOne = `
 <dummy-d id="light-dummy-d-one-root" context-color1="green" context-color2="maroon" context-color4="bisque" >
   <ul slot="named-slot" id="ul1">
@@ -173,7 +218,7 @@ function getBase(win) {
         newColor4 && this.setAttribute('context-color4', newColor4);
 
       }
-
+      // TODO: this should be removed
       _readyCallback() {
         super._readyCallback();
         this.shadowRoot.querySelector('#id-holder').innerText = getId(this);

@@ -375,6 +375,13 @@ export default function getDBUIWebComponentCore(win) {
       }
 
       // web components standard API
+      // eslint-disable-next-line
+      adoptedCallback(oldDocument, newDocument) {
+        // callbacks order:
+        // disconnectedCallback => adoptedCallback => connectedCallback
+      }
+
+      // web components standard API
       /*
       * connectedCallback is fired from children to parent in shadow DOM
       * but the order is less predictable in light DOM.
@@ -487,6 +494,7 @@ export default function getDBUIWebComponentCore(win) {
       }
 
       // custom internal API
+      // TODO: this should be removed
       _readyCallback() {
         // its possible the component was unmounted before having a chance to be ready
         // TODO: test what happens when component is appended and immediately removed from DOM
@@ -520,13 +528,13 @@ export default function getDBUIWebComponentCore(win) {
         super.removeEventListener(type, listener, ...rest);
       }
 
-      get onReady() {
-        return new Promise((resolve) => {
-          this.registerOnce(EVENT_READY, (evt) => {
-            return resolve(evt);
-          });
-        });
-      }
+      // get onReady() {
+      //   return new Promise((resolve) => {
+      //     this.registerOnce(EVENT_READY, (evt) => {
+      //       return resolve(evt);
+      //     });
+      //   });
+      // }
 
       // _propagateMessage(messageInst) {
       //   // Will be ignored if rememberNodesPath was false at message creation

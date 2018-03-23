@@ -23,7 +23,7 @@ import {
 
 describe('DBUIWebComponentBase ancestors/descendants and message passing', () => {
   describe('closestDbuiParent/closestDbuiChildren', () => {
-    it('onReady returns closest dbui parent/children', (done) => {
+    it('returns closest dbui parent/children', (done) => {
       inIframe({
         headStyle: treeStyle,
         bodyHTML: `
@@ -41,7 +41,7 @@ describe('DBUIWebComponentBase ancestors/descendants and message passing', () =>
 
           const container = contentWindow.document.querySelector('#container');
 
-          const doTest = (node) => {
+          const doTest = () => {
             const dbuiNodes = treeOneGetDbuiNodes(contentWindow);
             const {
               lightDummyDOneRoot,
@@ -162,72 +162,6 @@ describe('DBUIWebComponentBase ancestors/descendants and message passing', () =>
             expect(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot.closestDbuiChildren).to.have.members([lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB]);
             expect(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB.closestDbuiChildren).to.have.members([lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA]);
             expect(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA.closestDbuiChildren).to.have.members([]);
-
-
-            return node.onReady.then(() => {
-              // test closestDbuiParent async
-
-              // expect(lightDummyDOneRoot.closestDbuiParent).to.equal(null);
-              // expect(lightDummyDOneRoot_ShadowDummyB.closestDbuiParent).to.equal(lightDummyDOneRoot);
-              // expect(lightDummyDOneRoot_ShadowDummyB_ShadowDummyA.closestDbuiParent).to.equal(lightDummyDOneRoot_ShadowDummyB);
-              //
-              // expect(lightDummyEInNamedSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
-              // expect(lightDummyEInNamedSlot_ShadowDummyD.closestDbuiParent).to.equal(lightDummyEInNamedSlot);
-              // expect(lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB.closestDbuiParent).to.equal(lightDummyEInNamedSlot_ShadowDummyD);
-              // expect(lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA.closestDbuiParent).to.equal(lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB);
-              // expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot.closestDbuiParent).to.equal(lightDummyEInNamedSlot_ShadowDummyD);
-              // expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB.closestDbuiParent).to.equal(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot);
-              // expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA.closestDbuiParent).to.equal(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB);
-              //
-              // expect(lightDummyDTwoInDefaultSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
-              // expect(lightDummyDTwoInDefaultSlot_ShadowDummyB.closestDbuiParent).to.equal(lightDummyDTwoInDefaultSlot);
-              // expect(lightDummyDTwoInDefaultSlot_ShadowDummyB_ShadowDummyA.closestDbuiParent).to.equal(lightDummyDTwoInDefaultSlot_ShadowDummyB);
-              //
-              // expect(lightDummyDThreeInDefaultSlot.closestDbuiParent).to.equal(lightDummyDTwoInDefaultSlot);
-              // expect(lightDummyDThreeInDefaultSlot_ShadowDummyB.closestDbuiParent).to.equal(lightDummyDThreeInDefaultSlot);
-              // expect(lightDummyDThreeInDefaultSlot_ShadowDummyB_ShadowDummyA.closestDbuiParent).to.equal(lightDummyDThreeInDefaultSlot_ShadowDummyB);
-              //
-              // expect(lightDummyEInDefaultSlot.closestDbuiParent).to.equal(lightDummyDThreeInDefaultSlot);
-              // expect(lightDummyEInDefaultSlot_ShadowDummyD.closestDbuiParent).to.equal(lightDummyEInDefaultSlot);
-              // expect(lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB.closestDbuiParent).to.equal(lightDummyEInDefaultSlot_ShadowDummyD);
-              // expect(lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA.closestDbuiParent).to.equal(lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB);
-              // expect(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot.closestDbuiParent).to.equal(lightDummyEInDefaultSlot_ShadowDummyD);
-              // expect(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB.closestDbuiParent).to.equal(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot);
-              // expect(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA.closestDbuiParent).to.equal(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB);
-
-
-              // test closestDbuiChildren async
-
-              // expect(lightDummyDOneRoot.closestDbuiChildren).to.have.members([lightDummyDOneRoot_ShadowDummyB, lightDummyEInNamedSlot, lightDummyDTwoInDefaultSlot]);
-              // expect(lightDummyDOneRoot_ShadowDummyB.closestDbuiChildren).to.have.members([lightDummyDOneRoot_ShadowDummyB_ShadowDummyA]);
-              // expect(lightDummyDOneRoot_ShadowDummyB_ShadowDummyA.closestDbuiChildren).to.have.members([]);
-              //
-              // expect(lightDummyEInNamedSlot.closestDbuiChildren).to.have.members([lightDummyEInNamedSlot_ShadowDummyD]);
-              // expect(lightDummyEInNamedSlot_ShadowDummyD.closestDbuiChildren).to.have.members([lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB, lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot]);
-              // expect(lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB.closestDbuiChildren).to.have.members([lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA]);
-              // expect(lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA.closestDbuiChildren).to.have.members([]);
-              // expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot.closestDbuiChildren).to.have.members([lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB]);
-              // expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB.closestDbuiChildren).to.have.members([lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA]);
-              // expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA.closestDbuiChildren).to.have.members([]);
-              //
-              // expect(lightDummyDTwoInDefaultSlot.closestDbuiChildren).to.have.members([lightDummyDThreeInDefaultSlot, lightDummyDTwoInDefaultSlot_ShadowDummyB]);
-              // expect(lightDummyDTwoInDefaultSlot_ShadowDummyB.closestDbuiChildren).to.have.members([lightDummyDTwoInDefaultSlot_ShadowDummyB_ShadowDummyA]);
-              // expect(lightDummyDTwoInDefaultSlot_ShadowDummyB_ShadowDummyA.closestDbuiChildren).to.have.members([]);
-              //
-              // expect(lightDummyDThreeInDefaultSlot.closestDbuiChildren).to.have.members([lightDummyEInDefaultSlot, lightDummyDThreeInDefaultSlot_ShadowDummyB]);
-              // expect(lightDummyDThreeInDefaultSlot_ShadowDummyB.closestDbuiChildren).to.have.members([lightDummyDThreeInDefaultSlot_ShadowDummyB_ShadowDummyA]);
-              // expect(lightDummyDThreeInDefaultSlot_ShadowDummyB_ShadowDummyA.closestDbuiChildren).to.have.members([]);
-              //
-              // expect(lightDummyEInDefaultSlot.closestDbuiChildren).to.have.members([lightDummyEInDefaultSlot_ShadowDummyD]);
-              // expect(lightDummyEInDefaultSlot_ShadowDummyD.closestDbuiChildren).to.have.members([lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot, lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB]);
-              // expect(lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB.closestDbuiChildren).to.have.members([lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA]);
-              // expect(lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA.closestDbuiChildren).to.have.members([]);
-              // expect(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot.closestDbuiChildren).to.have.members([lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB]);
-              // expect(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB.closestDbuiChildren).to.have.members([lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA]);
-              // expect(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA.closestDbuiChildren).to.have.members([]);
-
-              return dbuiNodes;
-            });
           };
 
           Promise.all([
@@ -239,92 +173,63 @@ describe('DBUIWebComponentBase ancestors/descendants and message passing', () =>
           ].map((localName) => contentWindow.customElements.whenDefined(localName)
           )).then(() => {
 
-            doTest(contentWindow.document.querySelector('#light-dummy-d-one-root')).then((dbuiNodes1) => {
+            doTest();
+
+            const dbuiNodes1 = treeOneGetDbuiNodes(contentWindow);
+            setTimeout(() => {
+              // clear everything
+              container.innerHTML = '';
+
+              Object.keys(dbuiNodes1).forEach((key) => {
+                const node = dbuiNodes1[key];
+                expect(node.closestDbuiChildren.length).to.equal(0);
+              });
+
+              expect(contentWindow.document.querySelector('#light-dummy-d-one-root'))
+                .to.equal(null);
+
               setTimeout(() => {
-                // clear everything
-                container.innerHTML = '';
+                // restart using innerHTML
+                container.innerHTML = treeOne;
+
+                const dbuiNodes = treeOneGetDbuiNodes(contentWindow);
 
                 Object.keys(dbuiNodes1).forEach((key) => {
-                  const node = dbuiNodes1[key];
-                  // let err = null;
-                  // try {
-                  //   node.closestDbuiChildren;
-                  // } catch (_err) {
-                  //   err = _err;
-                  // }
-                  // expect(err.message).to.equal(`${node.localName} not ready yet`);
-                  expect(node._closestDbuiChildren.length).to.equal(0);
+                  const node = dbuiNodes[key];
+                  const node1 = dbuiNodes1[key];
+                  // expect NOT to be same instances as we used innerHTML
+                  expect(node1).to.not.equal(node);
                 });
-                //
-                // Object.keys(dbuiNodes1).forEach((key) => {
-                //   const node = dbuiNodes1[key];
-                //   let err = null;
-                //   try {
-                //     node.closestDbuiParent;
-                //   } catch (_err) {
-                //     err = _err;
-                //   }
-                //   expect(err.message).to.equal(`${node.localName} not ready yet`);
-                // });
 
+                doTest();
+
+                const dbuiNodes2 = treeOneGetDbuiNodes(contentWindow);
+                // clear again everything
+                container.innerHTML = '';
                 expect(contentWindow.document.querySelector('#light-dummy-d-one-root'))
                   .to.equal(null);
 
                 setTimeout(() => {
-                  // restart using innerHTML
-                  container.innerHTML = treeOne;
-
-                  // const comp = contentWindow.document.querySelector('#light-dummy-d-three-in-default-slot');
-                  // console.log({
-                  //   xxxxxxxxxxxxx: 'xxxxxxxxxxxxxxxxx',
-                  //   lightDomChildren: comp.lightDomChildren.map((child) => child.id).join(', '),
-                  //   lightDomParent: (comp.lightDomParent || {}).id || null,
-                  //   shadowDomChildren: comp.shadowDomChildren.map((child) => child.id).join(', '),
-                  //   shadowDomParent: (comp.shadowDomParent || {}).id || null,
-                  //   closestDbuiParent: ((comp.closestDbuiParent) || {}).id || null,
-                  //   closestDbuiChildren: comp.closestDbuiChildren.map((child) => child.id).join(', '),
-                  //   closestDbuiChildrenLiveQuery: comp.closestDbuiChildrenLiveQuery.map((child) => child.id).join(', '),
-                  //   closestDbuiParent2: (comp.parentElement && comp.parentElement.closest('[dbui-web-component]') || {}).id || null,
-                  // });
+                  // restart using appendChild
+                  container.appendChild(dbuiNodes2.lightDummyDOneRoot);
 
                   const dbuiNodes = treeOneGetDbuiNodes(contentWindow);
 
-                  Object.keys(dbuiNodes1).forEach((key) => {
+                  Object.keys(dbuiNodes2).forEach((key) => {
                     const node = dbuiNodes[key];
-                    const node1 = dbuiNodes1[key];
-                    // expect NOT to be same instances as we used innerHTML
-                    expect(node1).to.not.equal(node);
+                    const node2 = dbuiNodes2[key];
+                    // expect to be same instances as we used appendChild
+                    expect(node2).to.equal(node);
                   });
 
-                  doTest(contentWindow.document.querySelector('#light-dummy-d-one-root'))
-                    .then((dbuiNodes2) => {
-                      // clear again everything
-                      container.innerHTML = '';
-                      expect(contentWindow.document.querySelector('#light-dummy-d-one-root'))
-                        .to.equal(null);
+                  doTest();
 
-                      setTimeout(() => {
-                        // restart using appendChild
-                        container.appendChild(dbuiNodes2.lightDummyDOneRoot);
+                  iframe.remove();
+                  done();
 
-                        const dbuiNodes = treeOneGetDbuiNodes(contentWindow);
-
-                        Object.keys(dbuiNodes2).forEach((key) => {
-                          const node = dbuiNodes[key];
-                          const node2 = dbuiNodes2[key];
-                          // expect to be same instances as we used appendChild
-                          expect(node2).to.equal(node);
-                        });
-
-                        doTest(dbuiNodes2.lightDummyDOneRoot).then(() => {
-                          iframe.remove();
-                          done();
-                        });
-                      }, 0);
-                    });
                 }, 0);
               }, 0);
-            });
+            }, 0);
           });
 
           DummyE.registerSelf();
@@ -333,8 +238,8 @@ describe('DBUIWebComponentBase ancestors/descendants and message passing', () =>
     });
   });
 
-  describe('when node is removed in light DOM', () => {
-    it('unregisters self from closetDbuiParent', (done) => {
+  describe('when node is removed in light DOM then re-appended', () => {
+    it('unregisters self from closetDbuiParent then re-registers', (done) => {
       inIframe({
         headStyle: treeStyle,
         bodyHTML: `
@@ -365,44 +270,43 @@ describe('DBUIWebComponentBase ancestors/descendants and message passing', () =>
               lightDummyEInNamedSlot
             } = dbuiNodes;
 
-            lightDummyDOneRoot.onReady.then(() => {
 
-              expect(lightDummyDOneRoot.closestDbuiChildren).to.have.members([
-                lightDummyDOneRoot_ShadowDummyB,
-                lightDummyDTwoInDefaultSlot,
-                lightDummyEInNamedSlot
-              ]);
-              expect(lightDummyEInNamedSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
-              expect(lightDummyDTwoInDefaultSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
-              expect(lightDummyEInNamedSlot.closestDbuiChildren.length).to.equal(1);
+            expect(lightDummyDOneRoot.closestDbuiChildren).to.have.members([
+              lightDummyDOneRoot_ShadowDummyB,
+              lightDummyDTwoInDefaultSlot,
+              lightDummyEInNamedSlot
+            ]);
+            expect(lightDummyEInNamedSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
+            expect(lightDummyDTwoInDefaultSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
+            expect(lightDummyEInNamedSlot.closestDbuiChildren.length).to.equal(1);
 
-              lightDummyDOneRoot.querySelector('#ul1-li1').removeChild(lightDummyEInNamedSlot);
+            lightDummyDOneRoot.querySelector('#ul1-li1').removeChild(lightDummyEInNamedSlot);
 
-              expect(lightDummyEInNamedSlot._closestDbuiChildren.length).to.equal(0);
-              expect(lightDummyDOneRoot.closestDbuiChildren).to.have.members([
-                lightDummyDOneRoot_ShadowDummyB,
-                lightDummyDTwoInDefaultSlot
-              ]);
-              expect(lightDummyEInNamedSlot._closestDbuiParent).to.equal(null);
-              expect(lightDummyDTwoInDefaultSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
+            expect(lightDummyEInNamedSlot.closestDbuiChildren.length).to.equal(0);
+            expect(lightDummyDOneRoot.closestDbuiChildren).to.have.members([
+              lightDummyDOneRoot_ShadowDummyB,
+              lightDummyDTwoInDefaultSlot
+            ]);
+            expect(lightDummyEInNamedSlot.closestDbuiParent).to.equal(null);
+            expect(lightDummyDTwoInDefaultSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
 
-              lightDummyDOneRoot.querySelector('#ul1-li1').appendChild(lightDummyEInNamedSlot);
-              lightDummyEInNamedSlot.onReady.then(() => {
-                expect(lightDummyDOneRoot.closestDbuiChildren).to.have.members([
-                  lightDummyDOneRoot_ShadowDummyB,
-                  lightDummyDTwoInDefaultSlot,
-                  lightDummyEInNamedSlot
-                ]);
-                expect(lightDummyEInNamedSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
-                expect(lightDummyDTwoInDefaultSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
-                expect(lightDummyEInNamedSlot.closestDbuiChildren.length).to.equal(1);
+            lightDummyDOneRoot.querySelector('#ul1-li1').appendChild(lightDummyEInNamedSlot);
 
-                setTimeout(() => {
-                  iframe.remove();
-                  done();
-                }, 0);
-              });
-            });
+            expect(lightDummyDOneRoot.closestDbuiChildren).to.have.members([
+              lightDummyDOneRoot_ShadowDummyB,
+              lightDummyDTwoInDefaultSlot,
+              lightDummyEInNamedSlot
+            ]);
+            expect(lightDummyEInNamedSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
+            expect(lightDummyDTwoInDefaultSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
+            expect(lightDummyEInNamedSlot.closestDbuiChildren.length).to.equal(1);
+
+            setTimeout(() => {
+              iframe.remove();
+              done();
+            }, 0);
+
+
           });
 
           DummyE.registerSelf();
@@ -447,79 +351,70 @@ describe('DBUIWebComponentBase ancestors/descendants and message passing', () =>
                 lightDummyEInDefaultSlot
               } = dbuiNodes;
 
-              lightDummyDOneRoot.onReady.then(() => {
+              const doTest = () => {
+                expect(lightDummyDOneRoot.closestDbuiChildren).to.have.members([
+                  lightDummyDOneRoot_ShadowDummyB,
+                  lightDummyDTwoInDefaultSlot,
+                  lightDummyEInNamedSlot
+                ]);
+                expect(lightDummyEInNamedSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
+                expect(lightDummyDTwoInDefaultSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
+                expect(lightDummyDTwoInDefaultSlot.closestDbuiChildren).to.include(lightDummyDThreeInDefaultSlot);
+                expect(lightDummyDThreeInDefaultSlot.closestDbuiParent).to.equal(lightDummyDTwoInDefaultSlot);
+                expect(lightDummyDThreeInDefaultSlot.closestDbuiChildren).to.have.members([lightDummyEInDefaultSlot, lightDummyDThreeInDefaultSlot_ShadowDummyB]);
+                expect(lightDummyEInDefaultSlot.closestDbuiParent).to.equal(lightDummyDThreeInDefaultSlot);
+                expect(lightDummyDOneRoot.querySelector('#ul2-li1-ul1-li1').children.length).to.equal(1);
+              };
 
-                const doTest = () => {
-                  expect(lightDummyDOneRoot.closestDbuiChildren).to.have.members([
-                    lightDummyDOneRoot_ShadowDummyB,
-                    lightDummyDTwoInDefaultSlot,
-                    lightDummyEInNamedSlot
-                  ]);
-                  expect(lightDummyEInNamedSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
-                  expect(lightDummyDTwoInDefaultSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
-                  expect(lightDummyDTwoInDefaultSlot.closestDbuiChildren).to.include(lightDummyDThreeInDefaultSlot);
-                  expect(lightDummyDThreeInDefaultSlot.closestDbuiParent).to.equal(lightDummyDTwoInDefaultSlot);
-                  expect(lightDummyDThreeInDefaultSlot.closestDbuiChildren).to.have.members([lightDummyEInDefaultSlot, lightDummyDThreeInDefaultSlot_ShadowDummyB]);
-                  expect(lightDummyEInDefaultSlot.closestDbuiParent).to.equal(lightDummyDThreeInDefaultSlot);
-                  expect(lightDummyDOneRoot.querySelector('#ul2-li1-ul1-li1').children.length).to.equal(1);
-                };
-                doTest();
+              doTest();
 
-                lightDummyDOneRoot.querySelector('#ul1-li1').replaceChild(lightDummyDThreeInDefaultSlot, lightDummyEInNamedSlot);
+              lightDummyDOneRoot.querySelector('#ul1-li1').replaceChild(lightDummyDThreeInDefaultSlot, lightDummyEInNamedSlot);
 
-                // Replaced child did unregistered from its parent (synchronously)
-                expect(lightDummyEInNamedSlot._closestDbuiParent).to.equal(null);
-                expect(lightDummyEInNamedSlot._closestDbuiChildren.length).to.equal(0);
-                // expect(lightDummyDOneRoot.closestDbuiChildren).to.have.members([
-                //   lightDummyDOneRoot_ShadowDummyB,
-                //   lightDummyDTwoInDefaultSlot,
-                // ]);
-                // Replacing child also did unregistered from its parent (synchronously)
-                // but has not did registered yet to the new parent.
-                expect(lightDummyDTwoInDefaultSlot.closestDbuiChildren).to.not.include(lightDummyDThreeInDefaultSlot);
-                // expect(lightDummyDThreeInDefaultSlot._closestDbuiParent).to.equal(null);
-                // expect(lightDummyDThreeInDefaultSlot._closestDbuiChildren.length).to.equal(0);
+              // Replaced child did unregistered from its parent (synchronously)
+              expect(lightDummyEInNamedSlot.closestDbuiParent).to.equal(null);
+              expect(lightDummyEInNamedSlot.closestDbuiChildren.length).to.equal(0);
 
-                lightDummyDThreeInDefaultSlot.onReady.then(() => {
-                  expect(lightDummyDOneRoot.closestDbuiChildren).to.have.members([
-                    lightDummyDOneRoot_ShadowDummyB,
-                    lightDummyDTwoInDefaultSlot,
-                    // replacing child
-                    lightDummyDThreeInDefaultSlot
-                  ]);
-                  expect(lightDummyDTwoInDefaultSlot.closestDbuiChildren).to.not.include(lightDummyDThreeInDefaultSlot);
-                  // replacing child
-                  // has new closest parent
-                  expect(lightDummyDThreeInDefaultSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
-                  // has the same closest children
-                  expect(lightDummyDThreeInDefaultSlot.closestDbuiChildren).to.have.members([lightDummyEInDefaultSlot, lightDummyDThreeInDefaultSlot_ShadowDummyB]);
-                  expect(lightDummyEInDefaultSlot.closestDbuiParent).to.equal(lightDummyDThreeInDefaultSlot);
-                  expect(lightDummyEInNamedSlot._closestDbuiParent).to.equal(null);
-                  expect(lightDummyDOneRoot.querySelector('#ul2-li1-ul1-li1').children.length).to.equal(0);
+              // Replacing child also did unregistered from its parent (synchronously)
+              // and has registered to the new parent.
+              expect(lightDummyDTwoInDefaultSlot.closestDbuiChildren).to.not.include(lightDummyDThreeInDefaultSlot);
+              expect(lightDummyDThreeInDefaultSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
+              expect(lightDummyDThreeInDefaultSlot.closestDbuiChildren.length).to.equal(2);
 
-                  // put nodes back as they were and redo initial test
-                  lightDummyDOneRoot.querySelector('#ul1-li1').appendChild(lightDummyEInNamedSlot);
-                  lightDummyEInNamedSlot.onReady.then(() => {
-                    // intermediary test
-                    expect(lightDummyEInNamedSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
-                    expect(lightDummyDOneRoot.closestDbuiChildren).to.have.members([
-                      lightDummyDOneRoot_ShadowDummyB,
-                      lightDummyDTwoInDefaultSlot,
-                      lightDummyEInNamedSlot,
-                      lightDummyDThreeInDefaultSlot
-                    ]);
+              expect(lightDummyDOneRoot.closestDbuiChildren).to.have.members([
+                lightDummyDOneRoot_ShadowDummyB,
+                lightDummyDTwoInDefaultSlot,
+                // replacing child
+                lightDummyDThreeInDefaultSlot
+              ]);
+              expect(lightDummyDTwoInDefaultSlot.closestDbuiChildren).to.not.include(lightDummyDThreeInDefaultSlot);
+              // replacing child
+              // has new closest parent
+              expect(lightDummyDThreeInDefaultSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
+              // has the same closest children
+              expect(lightDummyDThreeInDefaultSlot.closestDbuiChildren).to.have.members([lightDummyEInDefaultSlot, lightDummyDThreeInDefaultSlot_ShadowDummyB]);
+              expect(lightDummyEInDefaultSlot.closestDbuiParent).to.equal(lightDummyDThreeInDefaultSlot);
+              expect(lightDummyEInNamedSlot.closestDbuiParent).to.equal(null);
+              expect(lightDummyDOneRoot.querySelector('#ul2-li1-ul1-li1').children.length).to.equal(0);
 
-                    lightDummyDOneRoot.querySelector('#ul2-li1-ul1-li1').appendChild(lightDummyDThreeInDefaultSlot);
-                    lightDummyDThreeInDefaultSlot.onReady.then(() => {
-                      doTest();
-                      setTimeout(() => {
-                        iframe.remove();
-                        done();
-                      }, 0);
-                    });
-                  });
-                });
-              });
+              // put nodes back as they were and redo initial test
+              lightDummyDOneRoot.querySelector('#ul1-li1').appendChild(lightDummyEInNamedSlot);
+
+              // intermediary test
+              expect(lightDummyEInNamedSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
+              expect(lightDummyDOneRoot.closestDbuiChildren).to.have.members([
+                lightDummyDOneRoot_ShadowDummyB,
+                lightDummyDTwoInDefaultSlot,
+                lightDummyEInNamedSlot,
+                lightDummyDThreeInDefaultSlot
+              ]);
+
+              lightDummyDOneRoot.querySelector('#ul2-li1-ul1-li1').appendChild(lightDummyDThreeInDefaultSlot);
+
+              doTest();
+              setTimeout(() => {
+                iframe.remove();
+                done();
+              }, 0);
             });
             DummyE.registerSelf();
           }
@@ -528,8 +423,64 @@ describe('DBUIWebComponentBase ancestors/descendants and message passing', () =>
   });
 
   describe('when node is appended under a new parent while being removed from an old parent in light DOM', () => {
-    xit('unregisters from old parent and registers to the new parent', () => {
-      // newParent.appendChild(childFromAnotherParent);
+    it('unregisters from old parent and registers to the new parent', (done) => {
+      inIframe({
+        headStyle: treeStyle,
+        bodyHTML: `
+        <div id="container">
+          ${treeOne}
+        </div>
+        `,
+        onLoad: ({ contentWindow, iframe }) => {
+          const DummyA = getDummyA(contentWindow);
+          const DummyB = getDummyB(contentWindow);
+          const DummyC = getDummyC(contentWindow);
+          const DummyD = getDummyD(contentWindow);
+          const DummyE = getDummyE(contentWindow);
+
+          Promise.all([
+            DummyA.registrationName,
+            DummyB.registrationName,
+            DummyC.registrationName,
+            DummyD.registrationName,
+            DummyE.registrationName,
+          ].map((localName) => contentWindow.customElements.whenDefined(localName)
+          )).then(() => {
+            const dbuiNodes = treeOneGetDbuiNodes(contentWindow);
+            const {
+              lightDummyDOneRoot,
+              lightDummyDOneRoot_ShadowDummyB,
+              lightDummyDTwoInDefaultSlot,
+              lightDummyDTwoInDefaultSlot_ShadowDummyB,
+              lightDummyDThreeInDefaultSlot,
+              lightDummyDThreeInDefaultSlot_ShadowDummyB,
+              lightDummyEInNamedSlot,
+              lightDummyEInDefaultSlot
+            } = dbuiNodes;
+
+            expect(lightDummyDOneRoot.closestDbuiChildren).to.have.members([lightDummyDOneRoot_ShadowDummyB, lightDummyEInNamedSlot, lightDummyDTwoInDefaultSlot]);
+            expect(lightDummyDTwoInDefaultSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
+            expect(lightDummyDTwoInDefaultSlot.closestDbuiChildren).to.have.members([lightDummyDTwoInDefaultSlot_ShadowDummyB, lightDummyDThreeInDefaultSlot]);
+            expect(lightDummyDThreeInDefaultSlot.closestDbuiParent).to.equal(lightDummyDTwoInDefaultSlot);
+            expect(lightDummyDThreeInDefaultSlot.closestDbuiChildren).to.have.members([lightDummyDThreeInDefaultSlot_ShadowDummyB, lightDummyEInDefaultSlot]);
+
+            contentWindow.document.querySelector('#ul1').appendChild(
+              contentWindow.document.querySelector('#ul2-li1-ul1-li1')
+            );
+
+            expect(lightDummyDOneRoot.closestDbuiChildren).to.have.members([lightDummyDOneRoot_ShadowDummyB, lightDummyEInNamedSlot, lightDummyDTwoInDefaultSlot, lightDummyDThreeInDefaultSlot]);
+            expect(lightDummyDTwoInDefaultSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
+            expect(lightDummyDTwoInDefaultSlot.closestDbuiChildren).to.have.members([lightDummyDTwoInDefaultSlot_ShadowDummyB]);
+            expect(lightDummyDThreeInDefaultSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
+            expect(lightDummyDThreeInDefaultSlot.closestDbuiChildren).to.have.members([lightDummyDThreeInDefaultSlot_ShadowDummyB, lightDummyEInDefaultSlot]);
+
+            iframe.remove();
+            done();
+          });
+
+          DummyE.registerSelf();
+        }
+      });
     });
   });
 
@@ -568,37 +519,33 @@ describe('DBUIWebComponentBase ancestors/descendants and message passing', () =>
               lightDummyEInDefaultSlot
             } = dbuiNodes;
 
-            lightDummyDOneRoot.onReady.then(() => {
-              const lightDummyDThreeInDefaultSlotClone = lightDummyDThreeInDefaultSlot.cloneNodeDeep({ idSuffix: '_clone' });
-              lightDummyDOneRoot.appendChild(lightDummyDThreeInDefaultSlotClone);
-              expect(lightDummyDThreeInDefaultSlot.closestDbuiChildren).to.have.members([lightDummyDThreeInDefaultSlot_ShadowDummyB, lightDummyEInDefaultSlot]);
+            const lightDummyDThreeInDefaultSlotClone = lightDummyDThreeInDefaultSlot.cloneNodeDeep({ idSuffix: '_clone' });
 
-              // clone not registered yet
-              // expect(lightDummyDThreeInDefaultSlotClone._closestDbuiParent).to.equal(null);
-              // expect(lightDummyDThreeInDefaultSlotClone._closestDbuiChildren).to.have.members([]);
-              // expect(lightDummyDOneRoot.closestDbuiChildren).to.have.members([
-              //   lightDummyDOneRoot_ShadowDummyB,
-              //   lightDummyDTwoInDefaultSlot,
-              //   lightDummyEInNamedSlot
-              // ]);
-              lightDummyDThreeInDefaultSlotClone.onReady.then(() => {
-                expect(lightDummyDThreeInDefaultSlotClone.closestDbuiParent).to.equal(lightDummyDOneRoot);
-                expect(lightDummyDThreeInDefaultSlotClone.closestDbuiChildren).to.not.have.members([lightDummyDThreeInDefaultSlot_ShadowDummyB, lightDummyEInDefaultSlot]);
-                expect(lightDummyDThreeInDefaultSlotClone.closestDbuiChildren.map((child) => child.id)).to.have.members(['shadow-dummy-b', 'light-dummy-e-in-default-slot_clone']);
-                expect(lightDummyDOneRoot.closestDbuiChildren).to.have.members([
-                  lightDummyDOneRoot_ShadowDummyB,
-                  lightDummyDTwoInDefaultSlot,
-                  lightDummyEInNamedSlot,
-                  lightDummyDThreeInDefaultSlotClone
-                ]);
-                setTimeout(() => {
-                  iframe.remove();
-                  done();
-                }, 0);
-              });
+            // clone not registered yet
+            expect(lightDummyDThreeInDefaultSlotClone.closestDbuiParent).to.equal(null);
+            expect(lightDummyDThreeInDefaultSlotClone.closestDbuiChildren).to.have.members([]);
+            expect(lightDummyDOneRoot.closestDbuiChildren).to.have.members([
+              lightDummyDOneRoot_ShadowDummyB,
+              lightDummyDTwoInDefaultSlot,
+              lightDummyEInNamedSlot
+            ]);
 
+            lightDummyDOneRoot.appendChild(lightDummyDThreeInDefaultSlotClone);
+            expect(lightDummyDThreeInDefaultSlot.closestDbuiChildren).to.have.members([lightDummyDThreeInDefaultSlot_ShadowDummyB, lightDummyEInDefaultSlot]);
 
-            });
+            expect(lightDummyDThreeInDefaultSlotClone.closestDbuiParent).to.equal(lightDummyDOneRoot);
+            expect(lightDummyDThreeInDefaultSlotClone.closestDbuiChildren).to.not.have.members([lightDummyDThreeInDefaultSlot_ShadowDummyB, lightDummyEInDefaultSlot]);
+            expect(lightDummyDThreeInDefaultSlotClone.closestDbuiChildren.map((child) => child.id)).to.have.members(['shadow-dummy-b', 'light-dummy-e-in-default-slot_clone']);
+            expect(lightDummyDOneRoot.closestDbuiChildren).to.have.members([
+              lightDummyDOneRoot_ShadowDummyB,
+              lightDummyDTwoInDefaultSlot,
+              lightDummyEInNamedSlot,
+              lightDummyDThreeInDefaultSlotClone
+            ]);
+            setTimeout(() => {
+              iframe.remove();
+              done();
+            }, 0);
           });
 
           DummyE.registerSelf();
@@ -609,8 +556,118 @@ describe('DBUIWebComponentBase ancestors/descendants and message passing', () =>
 
   describe('when node is adopted into a new document in light DOM', () => {
     // no need to check shadow DOM
-    xit('unregisters from old parent and registers to the new parent', () => {
+    it('unregisters from old parent and registers to the new parent', (done) => {
+      inIframe({
+        headStyle: treeStyle,
+        bodyHTML: `
+        <div id="container">
+          ${treeOne}
+        </div>
+        `,
+        onLoad: ({ contentWindow, iframe }) => {
+          const DummyA = getDummyA(contentWindow);
+          const DummyB = getDummyB(contentWindow);
+          const DummyC = getDummyC(contentWindow);
+          const DummyD = getDummyD(contentWindow);
+          const DummyE = getDummyE(contentWindow);
 
+          Promise.all([
+            DummyA.registrationName,
+            DummyB.registrationName,
+            DummyC.registrationName,
+            DummyD.registrationName,
+            DummyE.registrationName,
+          ].map((localName) => contentWindow.customElements.whenDefined(localName)
+          )).then(() => {
+            const dbuiNodes = treeOneGetDbuiNodes(contentWindow);
+            const {
+              lightDummyDOneRoot,
+              lightDummyDOneRoot_ShadowDummyB,
+              lightDummyDTwoInDefaultSlot,
+              // lightDummyDTwoInDefaultSlot_ShadowDummyB,
+              // lightDummyDThreeInDefaultSlot,
+              // lightDummyDThreeInDefaultSlot_ShadowDummyB,
+              lightDummyEInNamedSlot,
+              // lightDummyEInDefaultSlot
+            } = dbuiNodes;
+
+            setTimeout(() => {
+
+              inIframe({
+                headStyle: treeStyle,
+                bodyHTML: `
+                <div id="container">
+                  ${treeOne}
+                </div>
+                `,
+                onLoad: ({ contentWindow: contentWindow2, iframe: iframe2 }) => {
+                  const DummyA2 = getDummyA(contentWindow2);
+                  const DummyB2 = getDummyB(contentWindow2);
+                  const DummyC2 = getDummyC(contentWindow2);
+                  const DummyD2 = getDummyD(contentWindow2);
+                  const DummyE2 = getDummyE(contentWindow2);
+
+                  Promise.all([
+                    DummyA2.registrationName,
+                    DummyB2.registrationName,
+                    DummyC2.registrationName,
+                    DummyD2.registrationName,
+                    DummyE2.registrationName,
+                  ].map((localName) => contentWindow2.customElements.whenDefined(localName)
+                  )).then(() => {
+                    const dbuiNodes2 = treeOneGetDbuiNodes(contentWindow2);
+                    const {
+                      lightDummyDOneRoot: lightDummyDOneRoot2,
+                      // lightDummyDOneRoot_ShadowDummyB: lightDummyDOneRoot_ShadowDummyB2,
+                      lightDummyDTwoInDefaultSlot: lightDummyDTwoInDefaultSlot2,
+                      lightDummyDTwoInDefaultSlot_ShadowDummyB: lightDummyDTwoInDefaultSlot_ShadowDummyB2,
+                      lightDummyDThreeInDefaultSlot: lightDummyDThreeInDefaultSlot2,
+                      lightDummyDThreeInDefaultSlot_ShadowDummyB: lightDummyDThreeInDefaultSlot_ShadowDummyB2,
+                      // lightDummyEInNamedSlot: lightDummyEInNamedSlot2,
+                      lightDummyEInDefaultSlot: lightDummyEInDefaultSlot2
+                    } = dbuiNodes2;
+
+                    setTimeout(() => {
+
+                      expect(lightDummyDOneRoot.closestDbuiChildren).to.have.members([lightDummyDOneRoot_ShadowDummyB, lightDummyEInNamedSlot, lightDummyDTwoInDefaultSlot]);
+                      expect(lightDummyDTwoInDefaultSlot2.closestDbuiParent).to.equal(lightDummyDOneRoot2);
+                      expect(lightDummyDTwoInDefaultSlot2.closestDbuiChildren).to.have.members([lightDummyDTwoInDefaultSlot_ShadowDummyB2, lightDummyDThreeInDefaultSlot2]);
+                      expect(lightDummyDThreeInDefaultSlot2.closestDbuiParent).to.equal(lightDummyDTwoInDefaultSlot2);
+                      expect(lightDummyDThreeInDefaultSlot2.closestDbuiChildren).to.have.members([lightDummyDThreeInDefaultSlot_ShadowDummyB2, lightDummyEInDefaultSlot2]);
+                      expect(lightDummyDThreeInDefaultSlot2.ownerDocument).to.equal(contentWindow2.document);
+                      expect(lightDummyDThreeInDefaultSlot2.ownerDocument.defaultView).to.equal(contentWindow2);
+
+                      contentWindow.document.querySelector('#ul1').appendChild(
+                        contentWindow2.document.querySelector('#ul2-li1-ul1-li1')
+                      );
+
+                      expect(lightDummyDOneRoot.closestDbuiChildren).to.have.members([lightDummyDOneRoot_ShadowDummyB, lightDummyEInNamedSlot, lightDummyDTwoInDefaultSlot, lightDummyDThreeInDefaultSlot2]);
+                      expect(lightDummyDTwoInDefaultSlot2.closestDbuiParent).to.equal(lightDummyDOneRoot2);
+                      expect(lightDummyDTwoInDefaultSlot2.closestDbuiChildren).to.have.members([lightDummyDTwoInDefaultSlot_ShadowDummyB2]);
+                      expect(lightDummyDThreeInDefaultSlot2.closestDbuiParent).to.equal(lightDummyDOneRoot);
+                      expect(lightDummyDThreeInDefaultSlot2.closestDbuiChildren).to.have.members([lightDummyDThreeInDefaultSlot_ShadowDummyB2, lightDummyEInDefaultSlot2]);
+                      expect(lightDummyDThreeInDefaultSlot2.ownerDocument).to.equal(contentWindow.document);
+                      expect(lightDummyDThreeInDefaultSlot2.ownerDocument.defaultView).to.equal(contentWindow);
+
+                      setTimeout(() => {
+                        iframe2.remove();
+                        iframe.remove();
+                        done();
+                      }, 0);
+
+                    }, 0);
+                  });
+
+                  DummyE2.registerSelf();
+                }
+              });
+
+            }, 0);
+          });
+
+          DummyE.registerSelf();
+        }
+      });
     });
   });
 
