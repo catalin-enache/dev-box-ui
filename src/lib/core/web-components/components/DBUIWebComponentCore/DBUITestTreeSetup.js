@@ -34,12 +34,12 @@ inIframe({
         lightDummyEInNamedSlot,
         lightDummyEInDefaultSlot
       } = dbuiNodes;
-    });
 
-    setTimeout(() => {
-      iframe.remove();
-      done();
-    }, 0);
+      setTimeout(() => {
+        iframe.remove();
+        done();
+      }, 0);
+    });
 
     DummyE.registerSelf();
   }

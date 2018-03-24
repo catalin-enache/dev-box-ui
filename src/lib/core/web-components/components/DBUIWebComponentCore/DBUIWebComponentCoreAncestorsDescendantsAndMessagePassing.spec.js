@@ -671,28 +671,148 @@ describe('DBUIWebComponentBase ancestors/descendants and message passing', () =>
     });
   });
 
-  describe('when node is removed in shadow DOM', () => {
-    xit('unregisters self from closetDbuiParent', () => {
+  describe('when node is removed/appended in shadow DOM', () => {
+    it('unregisters/re-registers self from/to closetDbuiParent', (done) => {
+      inIframe({
+        headStyle: treeStyle,
+        bodyHTML: `
+        <div id="container">
+          ${treeOne}
+        </div>
+        `,
+        onLoad: ({ contentWindow, iframe }) => {
+          const DummyA = getDummyA(contentWindow);
+          const DummyB = getDummyB(contentWindow);
+          const DummyC = getDummyC(contentWindow);
+          const DummyD = getDummyD(contentWindow);
+          const DummyE = getDummyE(contentWindow);
 
-    });
-  });
+          Promise.all([
+            DummyA.registrationName,
+            DummyB.registrationName,
+            DummyC.registrationName,
+            DummyD.registrationName,
+            DummyE.registrationName,
+          ].map((localName) => contentWindow.customElements.whenDefined(localName)
+          )).then(() => {
+            const dbuiNodes = treeOneGetDbuiNodes(contentWindow);
+            const {
+              lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot
+            } = dbuiNodes;
 
-  describe('when node is replaced in shadow DOM', () => {
-    xit(`unregisters self from closetDbuiParent and registers to the new closetDbuiParent
-    while keeping the same closest children`, () => {
+            const lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_shadowDummyB =
+              lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot.shadowRoot.querySelector('#shadow-dummy-b');
+            const lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_shadowDummyB_parentElement =
+              lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_shadowDummyB.parentElement;
 
+            expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_shadowDummyB.closestDbuiParent).to.equal(
+              lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot
+            );
+            expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot.closestDbuiChildren).to.include(
+              lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_shadowDummyB
+            );
+
+            lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_shadowDummyB.remove();
+
+            expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_shadowDummyB.closestDbuiParent).to.equal(
+              null
+            );
+            expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot.closestDbuiChildren).to.not.include(
+              lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_shadowDummyB
+            );
+
+            lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_shadowDummyB_parentElement.appendChild(
+              lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_shadowDummyB
+            );
+
+            expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_shadowDummyB.closestDbuiParent).to.equal(
+              lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot
+            );
+            expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot.closestDbuiChildren).to.include(
+              lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_shadowDummyB
+            );
+
+            iframe.remove();
+            done();
+
+          });
+
+          DummyE.registerSelf();
+        }
       });
-  });
-
-  describe('when node is appended under a new parent while being removed from an old parent in shadow DOM', () => {
-    xit('unregisters from old parent and registers to the new parent', () => {
-
     });
   });
 
   describe('when cloneNodeDeep in shadow DOM', () => {
-    xit('it starts unregistered then, when inserted into the DOM it registers self to closetDbuiParent', () => {
+    it('it starts unregistered then, when inserted into the shadow DOM it registers self to closetDbuiParent', (done) => {
+      inIframe({
+        headStyle: treeStyle,
+        bodyHTML: `
+        <div id="container">
+          ${treeOne}
+        </div>
+        `,
+        onLoad: ({ contentWindow, iframe }) => {
+          const DummyA = getDummyA(contentWindow);
+          const DummyB = getDummyB(contentWindow);
+          const DummyC = getDummyC(contentWindow);
+          const DummyD = getDummyD(contentWindow);
+          const DummyE = getDummyE(contentWindow);
 
+          Promise.all([
+            DummyA.registrationName,
+            DummyB.registrationName,
+            DummyC.registrationName,
+            DummyD.registrationName,
+            DummyE.registrationName,
+          ].map((localName) => contentWindow.customElements.whenDefined(localName)
+          )).then(() => {
+            const dbuiNodes = treeOneGetDbuiNodes(contentWindow);
+            const {
+              lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot
+            } = dbuiNodes;
+
+            const lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_shadowDummyB =
+              lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot.shadowRoot.querySelector('#shadow-dummy-b');
+            const lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_shadowDummyB_child =
+              lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_shadowDummyB.closestDbuiChildren[0];
+            const lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_shadowDummyB_parentElement =
+              lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_shadowDummyB.parentElement;
+            const lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_shadowDummyB_clone =
+              lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_shadowDummyB.cloneNodeDeep({ idSuffix: '_clone' });
+
+            expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_shadowDummyB.closestDbuiChildren.length).to.equal(1);
+            expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_shadowDummyB_clone.id).to.equal('shadow-dummy-b_clone')
+
+            // the clone has no parent no children yet
+            expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_shadowDummyB_clone.closestDbuiParent).to.equal(
+              null
+            );
+            expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_shadowDummyB_clone.closestDbuiChildren).to.have.members([]);
+
+            // connecting the clone
+            lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_shadowDummyB_parentElement.appendChild(
+              lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_shadowDummyB_clone
+            );
+
+            // after connected the clone has parent and children
+            expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_shadowDummyB_clone.closestDbuiParent).to.equal(
+              lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot
+            );
+            expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_shadowDummyB_clone.closestDbuiChildren.length).to.equal(1);
+            expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_shadowDummyB_clone.closestDbuiChildren[0].id).to.equal('shadow-dummy-a');
+            expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_shadowDummyB_clone.closestDbuiChildren[0]).to.not.equal(
+              lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_shadowDummyB_child
+            );
+
+            iframe.remove();
+            done();
+
+          });
+
+          DummyE.registerSelf();
+        }
+      });
     });
   });
 });
