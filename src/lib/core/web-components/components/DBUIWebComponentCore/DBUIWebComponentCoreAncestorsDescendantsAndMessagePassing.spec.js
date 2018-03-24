@@ -22,8 +22,8 @@ import {
 /* eslint camelcase: 0 */
 
 describe('DBUIWebComponentBase ancestors/descendants and message passing', () => {
-  describe('closestDbuiParent/closestDbuiChildren', () => {
-    it('returns closest dbui parent/children', (done) => {
+  describe('closestDbuiParent/closestDbuiChildren/shadowDomParent/lightDomParent/shadowDomChildren/lightDomChildren', () => {
+    it('return what is expected', (done) => {
       inIframe({
         headStyle: treeStyle,
         bodyHTML: `
@@ -83,85 +83,230 @@ describe('DBUIWebComponentBase ancestors/descendants and message passing', () =>
             // NOTE: even it existed it might not have been connected yet.
             expect(lightDummyDOneRoot.closestDbuiParent).to.equal(null);
             expect(lightDummyDOneRoot.closestDbuiParent).to.equal(lightDummyDOneRoot.__testClosestDbuiParent);
+            expect(lightDummyDOneRoot.shadowDomParent).to.equal(null);
+            expect(lightDummyDOneRoot.shadowDomParent).to.equal(lightDummyDOneRoot.__testShadowDomParent);
+            expect(lightDummyDOneRoot.lightDomParent).to.equal(null);
+            expect(lightDummyDOneRoot.lightDomParent).to.equal(lightDummyDOneRoot.__testLightDomParent);
             expect(lightDummyDOneRoot_ShadowDummyB.closestDbuiParent).to.equal(lightDummyDOneRoot);
             expect(lightDummyDOneRoot_ShadowDummyB.closestDbuiParent).to.equal(lightDummyDOneRoot_ShadowDummyB.__testClosestDbuiParent);
+            expect(lightDummyDOneRoot_ShadowDummyB.shadowDomParent).to.equal(lightDummyDOneRoot);
+            expect(lightDummyDOneRoot_ShadowDummyB.shadowDomParent).to.equal(lightDummyDOneRoot_ShadowDummyB.__testShadowDomParent);
+            expect(lightDummyDOneRoot_ShadowDummyB.lightDomParent).to.equal(null);
+            expect(lightDummyDOneRoot_ShadowDummyB.lightDomParent).to.equal(lightDummyDOneRoot_ShadowDummyB.__testLightDomParent);
             expect(lightDummyDOneRoot_ShadowDummyB_ShadowDummyA.closestDbuiParent).to.equal(lightDummyDOneRoot_ShadowDummyB);
             expect(lightDummyDOneRoot_ShadowDummyB_ShadowDummyA.closestDbuiParent).to.equal(lightDummyDOneRoot_ShadowDummyB_ShadowDummyA.__testClosestDbuiParent);
+            expect(lightDummyDOneRoot_ShadowDummyB_ShadowDummyA.shadowDomParent).to.equal(lightDummyDOneRoot_ShadowDummyB);
+            expect(lightDummyDOneRoot_ShadowDummyB_ShadowDummyA.shadowDomParent).to.equal(lightDummyDOneRoot_ShadowDummyB_ShadowDummyA.__testShadowDomParent);
+            expect(lightDummyDOneRoot_ShadowDummyB_ShadowDummyA.lightDomParent).to.equal(null);
+            expect(lightDummyDOneRoot_ShadowDummyB_ShadowDummyA.lightDomParent).to.equal(lightDummyDOneRoot_ShadowDummyB_ShadowDummyA.__testLightDomParent);
 
             expect(lightDummyEInNamedSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
             expect(lightDummyEInNamedSlot.closestDbuiParent).to.equal(lightDummyEInNamedSlot.__testClosestDbuiParent);
+            expect(lightDummyEInNamedSlot.shadowDomParent).to.equal(null);
+            expect(lightDummyEInNamedSlot.shadowDomParent).to.equal(lightDummyEInNamedSlot.__testShadowDomParent);
+            expect(lightDummyEInNamedSlot.lightDomParent).to.equal(lightDummyDOneRoot);
+            expect(lightDummyEInNamedSlot.lightDomParent).to.equal(lightDummyEInNamedSlot.__testLightDomParent);
             expect(lightDummyEInNamedSlot_ShadowDummyD.closestDbuiParent).to.equal(lightDummyEInNamedSlot);
             expect(lightDummyEInNamedSlot_ShadowDummyD.closestDbuiParent).to.equal(lightDummyEInNamedSlot_ShadowDummyD.__testClosestDbuiParent);
+            expect(lightDummyEInNamedSlot_ShadowDummyD.shadowDomParent).to.equal(lightDummyEInNamedSlot);
+            expect(lightDummyEInNamedSlot_ShadowDummyD.shadowDomParent).to.equal(lightDummyEInNamedSlot_ShadowDummyD.__testShadowDomParent);
+            expect(lightDummyEInNamedSlot_ShadowDummyD.lightDomParent).to.equal(null);
+            expect(lightDummyEInNamedSlot_ShadowDummyD.lightDomParent).to.equal(lightDummyEInNamedSlot_ShadowDummyD.__testLightDomParent);
             expect(lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB.closestDbuiParent).to.equal(lightDummyEInNamedSlot_ShadowDummyD);
             expect(lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB.closestDbuiParent).to.equal(lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB.__testClosestDbuiParent);
+            expect(lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB.shadowDomParent).to.equal(lightDummyEInNamedSlot_ShadowDummyD);
+            expect(lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB.shadowDomParent).to.equal(lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB.__testShadowDomParent);
+            expect(lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB.lightDomParent).to.equal(null);
+            expect(lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB.lightDomParent).to.equal(lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB.__testLightDomParent);
             expect(lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA.closestDbuiParent).to.equal(lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB);
             expect(lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA.closestDbuiParent).to.equal(lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA.__testClosestDbuiParent);
+            expect(lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA.shadowDomParent).to.equal(lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB);
+            expect(lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA.shadowDomParent).to.equal(lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA.__testShadowDomParent);
+            expect(lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA.lightDomParent).to.equal(null);
+            expect(lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA.lightDomParent).to.equal(lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA.__testLightDomParent);
             expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot.closestDbuiParent).to.equal(lightDummyEInNamedSlot_ShadowDummyD);
             expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot.closestDbuiParent).to.equal(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot.__testClosestDbuiParent);
+            // interesting
+            expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot.shadowDomParent).to.equal(lightDummyEInNamedSlot);
+            expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot.shadowDomParent).to.equal(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot.__testShadowDomParent);
+            expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot.lightDomParent).to.equal(lightDummyEInNamedSlot_ShadowDummyD);
+            expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot.lightDomParent).to.equal(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot.__testLightDomParent);
             expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB.closestDbuiParent).to.equal(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot);
             expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB.closestDbuiParent).to.equal(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB.__testClosestDbuiParent);
+            expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB.shadowDomParent).to.equal(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot);
+            expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB.shadowDomParent).to.equal(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB.__testShadowDomParent);
+            expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB.lightDomParent).to.equal(null);
+            expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB.lightDomParent).to.equal(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB.__testLightDomParent);
             expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA.closestDbuiParent).to.equal(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB);
             expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA.closestDbuiParent).to.equal(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA.__testClosestDbuiParent);
+            expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA.shadowDomParent).to.equal(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB);
+            expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA.shadowDomParent).to.equal(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA.__testShadowDomParent);
+            expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA.lightDomParent).to.equal(null);
+            expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA.lightDomParent).to.equal(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA.__testLightDomParent);
 
             expect(lightDummyDTwoInDefaultSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
             expect(lightDummyDTwoInDefaultSlot.closestDbuiParent).to.equal(lightDummyDTwoInDefaultSlot.__testClosestDbuiParent);
+            expect(lightDummyDTwoInDefaultSlot.shadowDomParent).to.equal(null);
+            expect(lightDummyDTwoInDefaultSlot.shadowDomParent).to.equal(lightDummyDTwoInDefaultSlot.__testShadowDomParent);
+            expect(lightDummyDTwoInDefaultSlot.lightDomParent).to.equal(lightDummyDOneRoot);
+            expect(lightDummyDTwoInDefaultSlot.lightDomParent).to.equal(lightDummyDTwoInDefaultSlot.__testLightDomParent);
             expect(lightDummyDTwoInDefaultSlot_ShadowDummyB.closestDbuiParent).to.equal(lightDummyDTwoInDefaultSlot);
             expect(lightDummyDTwoInDefaultSlot_ShadowDummyB.closestDbuiParent).to.equal(lightDummyDTwoInDefaultSlot_ShadowDummyB.__testClosestDbuiParent);
+            expect(lightDummyDTwoInDefaultSlot_ShadowDummyB.shadowDomParent).to.equal(lightDummyDTwoInDefaultSlot);
+            expect(lightDummyDTwoInDefaultSlot_ShadowDummyB.shadowDomParent).to.equal(lightDummyDTwoInDefaultSlot_ShadowDummyB.__testShadowDomParent);
+            expect(lightDummyDTwoInDefaultSlot_ShadowDummyB.lightDomParent).to.equal(null);
+            expect(lightDummyDTwoInDefaultSlot_ShadowDummyB.lightDomParent).to.equal(lightDummyDTwoInDefaultSlot_ShadowDummyB.__testLightDomParent);
             expect(lightDummyDTwoInDefaultSlot_ShadowDummyB_ShadowDummyA.closestDbuiParent).to.equal(lightDummyDTwoInDefaultSlot_ShadowDummyB);
             expect(lightDummyDTwoInDefaultSlot_ShadowDummyB_ShadowDummyA.closestDbuiParent).to.equal(lightDummyDTwoInDefaultSlot_ShadowDummyB_ShadowDummyA.__testClosestDbuiParent);
+            expect(lightDummyDTwoInDefaultSlot_ShadowDummyB_ShadowDummyA.shadowDomParent).to.equal(lightDummyDTwoInDefaultSlot_ShadowDummyB);
+            expect(lightDummyDTwoInDefaultSlot_ShadowDummyB_ShadowDummyA.shadowDomParent).to.equal(lightDummyDTwoInDefaultSlot_ShadowDummyB_ShadowDummyA.__testShadowDomParent);
+            expect(lightDummyDTwoInDefaultSlot_ShadowDummyB_ShadowDummyA.lightDomParent).to.equal(null);
+            expect(lightDummyDTwoInDefaultSlot_ShadowDummyB_ShadowDummyA.lightDomParent).to.equal(lightDummyDTwoInDefaultSlot_ShadowDummyB_ShadowDummyA.__testLightDomParent);
 
             expect(lightDummyDThreeInDefaultSlot.closestDbuiParent).to.equal(lightDummyDTwoInDefaultSlot);
             expect(lightDummyDThreeInDefaultSlot.closestDbuiParent).to.equal(lightDummyDThreeInDefaultSlot.__testClosestDbuiParent);
+            expect(lightDummyDThreeInDefaultSlot.shadowDomParent).to.equal(null);
+            expect(lightDummyDThreeInDefaultSlot.shadowDomParent).to.equal(lightDummyDThreeInDefaultSlot.__testShadowDomParent);
+            expect(lightDummyDThreeInDefaultSlot.lightDomParent).to.equal(lightDummyDTwoInDefaultSlot);
+            expect(lightDummyDThreeInDefaultSlot.lightDomParent).to.equal(lightDummyDThreeInDefaultSlot.__testLightDomParent);
             expect(lightDummyDThreeInDefaultSlot_ShadowDummyB.closestDbuiParent).to.equal(lightDummyDThreeInDefaultSlot);
             expect(lightDummyDThreeInDefaultSlot_ShadowDummyB.closestDbuiParent).to.equal(lightDummyDThreeInDefaultSlot_ShadowDummyB.__testClosestDbuiParent);
+            expect(lightDummyDThreeInDefaultSlot_ShadowDummyB.shadowDomParent).to.equal(lightDummyDThreeInDefaultSlot);
+            expect(lightDummyDThreeInDefaultSlot_ShadowDummyB.shadowDomParent).to.equal(lightDummyDThreeInDefaultSlot_ShadowDummyB.__testShadowDomParent);
+            expect(lightDummyDThreeInDefaultSlot_ShadowDummyB.lightDomParent).to.equal(null);
+            expect(lightDummyDThreeInDefaultSlot_ShadowDummyB.lightDomParent).to.equal(lightDummyDThreeInDefaultSlot_ShadowDummyB.__testLightDomParent);
             expect(lightDummyDThreeInDefaultSlot_ShadowDummyB_ShadowDummyA.closestDbuiParent).to.equal(lightDummyDThreeInDefaultSlot_ShadowDummyB);
             expect(lightDummyDThreeInDefaultSlot_ShadowDummyB_ShadowDummyA.closestDbuiParent).to.equal(lightDummyDThreeInDefaultSlot_ShadowDummyB_ShadowDummyA.__testClosestDbuiParent);
+            expect(lightDummyDThreeInDefaultSlot_ShadowDummyB_ShadowDummyA.shadowDomParent).to.equal(lightDummyDThreeInDefaultSlot_ShadowDummyB);
+            expect(lightDummyDThreeInDefaultSlot_ShadowDummyB_ShadowDummyA.shadowDomParent).to.equal(lightDummyDThreeInDefaultSlot_ShadowDummyB_ShadowDummyA.__testShadowDomParent);
+            expect(lightDummyDThreeInDefaultSlot_ShadowDummyB_ShadowDummyA.lightDomParent).to.equal(null);
+            expect(lightDummyDThreeInDefaultSlot_ShadowDummyB_ShadowDummyA.lightDomParent).to.equal(lightDummyDThreeInDefaultSlot_ShadowDummyB_ShadowDummyA.__testLightDomParent);
 
             expect(lightDummyEInDefaultSlot.closestDbuiParent).to.equal(lightDummyDThreeInDefaultSlot);
             expect(lightDummyEInDefaultSlot.closestDbuiParent).to.equal(lightDummyEInDefaultSlot.__testClosestDbuiParent);
+            expect(lightDummyEInDefaultSlot.shadowDomParent).to.equal(null);
+            expect(lightDummyEInDefaultSlot.shadowDomParent).to.equal(lightDummyEInDefaultSlot.__testShadowDomParent);
+            expect(lightDummyEInDefaultSlot.lightDomParent).to.equal(lightDummyDThreeInDefaultSlot);
+            expect(lightDummyEInDefaultSlot.lightDomParent).to.equal(lightDummyEInDefaultSlot.__testLightDomParent);
             expect(lightDummyEInDefaultSlot_ShadowDummyD.closestDbuiParent).to.equal(lightDummyEInDefaultSlot);
             expect(lightDummyEInDefaultSlot_ShadowDummyD.closestDbuiParent).to.equal(lightDummyEInDefaultSlot_ShadowDummyD.__testClosestDbuiParent);
+            expect(lightDummyEInDefaultSlot_ShadowDummyD.shadowDomParent).to.equal(lightDummyEInDefaultSlot);
+            expect(lightDummyEInDefaultSlot_ShadowDummyD.shadowDomParent).to.equal(lightDummyEInDefaultSlot_ShadowDummyD.__testShadowDomParent);
+            expect(lightDummyEInDefaultSlot_ShadowDummyD.lightDomParent).to.equal(null);
+            expect(lightDummyEInDefaultSlot_ShadowDummyD.lightDomParent).to.equal(lightDummyEInDefaultSlot_ShadowDummyD.__testLightDomParent);
             expect(lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB.closestDbuiParent).to.equal(lightDummyEInDefaultSlot_ShadowDummyD);
             expect(lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB.closestDbuiParent).to.equal(lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB.__testClosestDbuiParent);
+            expect(lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB.shadowDomParent).to.equal(lightDummyEInDefaultSlot_ShadowDummyD);
+            expect(lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB.shadowDomParent).to.equal(lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB.__testShadowDomParent);
+            expect(lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB.lightDomParent).to.equal(null);
+            expect(lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB.lightDomParent).to.equal(lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB.__testLightDomParent);
             expect(lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA.closestDbuiParent).to.equal(lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB);
             expect(lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA.closestDbuiParent).to.equal(lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA.__testClosestDbuiParent);
+            expect(lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA.shadowDomParent).to.equal(lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB);
+            expect(lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA.shadowDomParent).to.equal(lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA.__testShadowDomParent);
+            expect(lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA.lightDomParent).to.equal(null);
+            expect(lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA.lightDomParent).to.equal(lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA.__testLightDomParent);
             expect(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot.closestDbuiParent).to.equal(lightDummyEInDefaultSlot_ShadowDummyD);
             expect(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot.closestDbuiParent).to.equal(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot.__testClosestDbuiParent);
+            // interesting
+            expect(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot.shadowDomParent).to.equal(lightDummyEInDefaultSlot);
+            expect(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot.shadowDomParent).to.equal(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot.__testShadowDomParent);
+            expect(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot.lightDomParent).to.equal(lightDummyEInDefaultSlot_ShadowDummyD);
+            expect(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot.lightDomParent).to.equal(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot.__testLightDomParent);
             expect(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB.closestDbuiParent).to.equal(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot);
             expect(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB.closestDbuiParent).to.equal(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB.__testClosestDbuiParent);
+            expect(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB.shadowDomParent).to.equal(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot);
+            expect(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB.shadowDomParent).to.equal(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB.__testShadowDomParent);
+            expect(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB.lightDomParent).to.equal(null);
+            expect(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB.lightDomParent).to.equal(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB.__testLightDomParent);
             expect(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA.closestDbuiParent).to.equal(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB);
             expect(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA.closestDbuiParent).to.equal(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA.__testClosestDbuiParent);
+            expect(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA.shadowDomParent).to.equal(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB);
+            expect(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA.shadowDomParent).to.equal(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA.__testShadowDomParent);
+            expect(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA.lightDomParent).to.equal(null);
+            expect(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA.lightDomParent).to.equal(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA.__testLightDomParent);
 
 
             // Test closestDbuiChildren sync.
             // NOTE: we know that at the time of connectedCallback closestDbuiChildren might not have been complete.
             expect(lightDummyDOneRoot.closestDbuiChildren).to.have.members([lightDummyDOneRoot_ShadowDummyB, lightDummyEInNamedSlot, lightDummyDTwoInDefaultSlot]);
+            expect(lightDummyDOneRoot.closestDbuiChildren).to.have.members(lightDummyDOneRoot.closestDbuiChildrenLiveQuery);
+            expect(lightDummyDOneRoot.shadowDomChildren).to.have.members([lightDummyDOneRoot_ShadowDummyB]);
+            expect(lightDummyDOneRoot.lightDomChildren).to.have.members([lightDummyEInNamedSlot, lightDummyDTwoInDefaultSlot, lightDummyDThreeInDefaultSlot, lightDummyEInDefaultSlot]);
             expect(lightDummyDOneRoot_ShadowDummyB.closestDbuiChildren).to.have.members([lightDummyDOneRoot_ShadowDummyB_ShadowDummyA]);
+            expect(lightDummyDOneRoot_ShadowDummyB.closestDbuiChildren).to.have.members(lightDummyDOneRoot_ShadowDummyB.closestDbuiChildrenLiveQuery);
+            expect(lightDummyDOneRoot_ShadowDummyB.shadowDomChildren).to.have.members([lightDummyDOneRoot_ShadowDummyB_ShadowDummyA]);
+            expect(lightDummyDOneRoot_ShadowDummyB.lightDomChildren).to.have.members([]);
             expect(lightDummyDOneRoot_ShadowDummyB_ShadowDummyA.closestDbuiChildren).to.have.members([]);
+            expect(lightDummyDOneRoot_ShadowDummyB_ShadowDummyA.closestDbuiChildren).to.have.members(lightDummyDOneRoot_ShadowDummyB_ShadowDummyA.closestDbuiChildrenLiveQuery);
+            expect(lightDummyDOneRoot_ShadowDummyB_ShadowDummyA.shadowDomChildren).to.have.members([]);
+            expect(lightDummyDOneRoot_ShadowDummyB_ShadowDummyA.lightDomChildren).to.have.members([]);
 
             expect(lightDummyEInNamedSlot.closestDbuiChildren).to.have.members([lightDummyEInNamedSlot_ShadowDummyD]);
+            expect(lightDummyEInNamedSlot.closestDbuiChildren).to.have.members(lightDummyEInNamedSlot.closestDbuiChildrenLiveQuery);
+            expect(lightDummyEInNamedSlot.shadowDomChildren).to.have.members([lightDummyEInNamedSlot_ShadowDummyD, lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot]);
+            expect(lightDummyEInNamedSlot.lightDomChildren).to.have.members([]);
             expect(lightDummyEInNamedSlot_ShadowDummyD.closestDbuiChildren).to.have.members([lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB, lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot]);
+            expect(lightDummyEInNamedSlot_ShadowDummyD.closestDbuiChildren).to.have.members(lightDummyEInNamedSlot_ShadowDummyD.closestDbuiChildrenLiveQuery);
+            expect(lightDummyEInNamedSlot_ShadowDummyD.shadowDomChildren).to.have.members([lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB]);
+            expect(lightDummyEInNamedSlot_ShadowDummyD.lightDomChildren).to.have.members([lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot]);
             expect(lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB.closestDbuiChildren).to.have.members([lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA]);
+            expect(lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB.shadowDomChildren).to.have.members([lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA]);
+            expect(lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB.lightDomChildren).to.have.members([]);
             expect(lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA.closestDbuiChildren).to.have.members([]);
+            expect(lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA.shadowDomChildren).to.have.members([]);
+            expect(lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA.lightDomChildren).to.have.members([]);
             expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot.closestDbuiChildren).to.have.members([lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB]);
+            expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot.shadowDomChildren).to.have.members([lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB]);
+            expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot.lightDomChildren).to.have.members([]);
             expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB.closestDbuiChildren).to.have.members([lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA]);
+            expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB.shadowDomChildren).to.have.members([lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA]);
+            expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB.lightDomChildren).to.have.members([]);
             expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA.closestDbuiChildren).to.have.members([]);
+            expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA.shadowDomChildren).to.have.members([]);
+            expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA.lightDomChildren).to.have.members([]);
 
             expect(lightDummyDTwoInDefaultSlot.closestDbuiChildren).to.have.members([lightDummyDThreeInDefaultSlot, lightDummyDTwoInDefaultSlot_ShadowDummyB]);
+            expect(lightDummyDTwoInDefaultSlot.shadowDomChildren).to.have.members([lightDummyDTwoInDefaultSlot_ShadowDummyB]);
+            expect(lightDummyDTwoInDefaultSlot.lightDomChildren).to.have.members([lightDummyDThreeInDefaultSlot, lightDummyEInDefaultSlot]);
             expect(lightDummyDTwoInDefaultSlot_ShadowDummyB.closestDbuiChildren).to.have.members([lightDummyDTwoInDefaultSlot_ShadowDummyB_ShadowDummyA]);
+            expect(lightDummyDTwoInDefaultSlot_ShadowDummyB.shadowDomChildren).to.have.members([lightDummyDTwoInDefaultSlot_ShadowDummyB_ShadowDummyA]);
+            expect(lightDummyDTwoInDefaultSlot_ShadowDummyB.lightDomChildren).to.have.members([]);
             expect(lightDummyDTwoInDefaultSlot_ShadowDummyB_ShadowDummyA.closestDbuiChildren).to.have.members([]);
+            expect(lightDummyDTwoInDefaultSlot_ShadowDummyB_ShadowDummyA.shadowDomChildren).to.have.members([]);
+            expect(lightDummyDTwoInDefaultSlot_ShadowDummyB_ShadowDummyA.lightDomChildren).to.have.members([]);
 
             expect(lightDummyDThreeInDefaultSlot.closestDbuiChildren).to.have.members([lightDummyEInDefaultSlot, lightDummyDThreeInDefaultSlot_ShadowDummyB]);
+            expect(lightDummyDThreeInDefaultSlot.shadowDomChildren).to.have.members([lightDummyDThreeInDefaultSlot_ShadowDummyB]);
+            expect(lightDummyDThreeInDefaultSlot.lightDomChildren).to.have.members([lightDummyEInDefaultSlot]);
             expect(lightDummyDThreeInDefaultSlot_ShadowDummyB.closestDbuiChildren).to.have.members([lightDummyDThreeInDefaultSlot_ShadowDummyB_ShadowDummyA]);
+            expect(lightDummyDThreeInDefaultSlot_ShadowDummyB.shadowDomChildren).to.have.members([lightDummyDThreeInDefaultSlot_ShadowDummyB_ShadowDummyA]);
+            expect(lightDummyDThreeInDefaultSlot_ShadowDummyB.lightDomChildren).to.have.members([]);
             expect(lightDummyDThreeInDefaultSlot_ShadowDummyB_ShadowDummyA.closestDbuiChildren).to.have.members([]);
+            expect(lightDummyDThreeInDefaultSlot_ShadowDummyB_ShadowDummyA.shadowDomChildren).to.have.members([]);
+            expect(lightDummyDThreeInDefaultSlot_ShadowDummyB_ShadowDummyA.lightDomChildren).to.have.members([]);
 
             expect(lightDummyEInDefaultSlot.closestDbuiChildren).to.have.members([lightDummyEInDefaultSlot_ShadowDummyD]);
+            expect(lightDummyEInDefaultSlot.shadowDomChildren).to.have.members([lightDummyEInDefaultSlot_ShadowDummyD, lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot]);
+            expect(lightDummyEInDefaultSlot.lightDomChildren).to.have.members([]);
             expect(lightDummyEInDefaultSlot_ShadowDummyD.closestDbuiChildren).to.have.members([lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot, lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB]);
+            expect(lightDummyEInDefaultSlot_ShadowDummyD.shadowDomChildren).to.have.members([lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB]);
+            expect(lightDummyEInDefaultSlot_ShadowDummyD.lightDomChildren).to.have.members([lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot]);
             expect(lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB.closestDbuiChildren).to.have.members([lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA]);
+            expect(lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB.shadowDomChildren).to.have.members([lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA]);
+            expect(lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB.lightDomChildren).to.have.members([]);
             expect(lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA.closestDbuiChildren).to.have.members([]);
+            expect(lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA.shadowDomChildren).to.have.members([]);
+            expect(lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA.lightDomChildren).to.have.members([]);
             expect(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot.closestDbuiChildren).to.have.members([lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB]);
+            expect(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot.shadowDomChildren).to.have.members([lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB]);
+            expect(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot.lightDomChildren).to.have.members([]);
             expect(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB.closestDbuiChildren).to.have.members([lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA]);
+            expect(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB.shadowDomChildren).to.have.members([lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA]);
+            expect(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB.lightDomChildren).to.have.members([]);
             expect(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA.closestDbuiChildren).to.have.members([]);
+            expect(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA.shadowDomChildren).to.have.members([]);
+            expect(lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA.lightDomChildren).to.have.members([]);
           };
 
           Promise.all([
@@ -267,7 +412,10 @@ describe('DBUIWebComponentBase ancestors/descendants and message passing', () =>
               lightDummyDOneRoot,
               lightDummyDOneRoot_ShadowDummyB,
               lightDummyDTwoInDefaultSlot,
-              lightDummyEInNamedSlot
+              lightDummyDThreeInDefaultSlot,
+              lightDummyEInNamedSlot,
+              lightDummyEInNamedSlot_ShadowDummyD,
+              lightDummyEInDefaultSlot
             } = dbuiNodes;
 
 
@@ -276,18 +424,38 @@ describe('DBUIWebComponentBase ancestors/descendants and message passing', () =>
               lightDummyDTwoInDefaultSlot,
               lightDummyEInNamedSlot
             ]);
+            expect(lightDummyDOneRoot.closestDbuiChildren).to.have.members(lightDummyDOneRoot.closestDbuiChildrenLiveQuery);
+            expect(lightDummyDOneRoot.lightDomChildren).to.have.members([
+              lightDummyDTwoInDefaultSlot,
+              lightDummyEInNamedSlot,
+              lightDummyDThreeInDefaultSlot,
+              lightDummyEInDefaultSlot
+            ]);
             expect(lightDummyEInNamedSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
+            expect(lightDummyEInNamedSlot.lightDomParent).to.equal(lightDummyDOneRoot);
             expect(lightDummyDTwoInDefaultSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
-            expect(lightDummyEInNamedSlot.closestDbuiChildren.length).to.equal(1);
+            expect(lightDummyEInNamedSlot.closestDbuiChildren).to.have.members([lightDummyEInNamedSlot_ShadowDummyD]);
+            expect(lightDummyEInNamedSlot.closestDbuiChildren).to.have.members(lightDummyEInNamedSlot.closestDbuiChildrenLiveQuery);
+            expect(lightDummyEInNamedSlot.shadowDomChildren.length).to.equal(2);
 
             lightDummyDOneRoot.querySelector('#ul1-li1').removeChild(lightDummyEInNamedSlot);
 
-            expect(lightDummyEInNamedSlot.closestDbuiChildren.length).to.equal(0);
+            expect(lightDummyEInNamedSlot.closestDbuiChildren).to.have.members([]);
+            // children are still there but not "closest" because they unregistered
+            expect(lightDummyEInNamedSlot.closestDbuiChildrenLiveQuery).to.have.members([lightDummyEInNamedSlot_ShadowDummyD]);
+            expect(lightDummyEInNamedSlot.shadowDomChildren.length).to.equal(2);
             expect(lightDummyDOneRoot.closestDbuiChildren).to.have.members([
               lightDummyDOneRoot_ShadowDummyB,
               lightDummyDTwoInDefaultSlot
             ]);
+            expect(lightDummyDOneRoot.closestDbuiChildren).to.have.members(lightDummyDOneRoot.closestDbuiChildrenLiveQuery);
+            expect(lightDummyDOneRoot.lightDomChildren).to.have.members([
+              lightDummyDTwoInDefaultSlot,
+              lightDummyDThreeInDefaultSlot,
+              lightDummyEInDefaultSlot
+            ]);
             expect(lightDummyEInNamedSlot.closestDbuiParent).to.equal(null);
+            expect(lightDummyEInNamedSlot.lightDomParent).to.equal(null);
             expect(lightDummyDTwoInDefaultSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
 
             lightDummyDOneRoot.querySelector('#ul1-li1').appendChild(lightDummyEInNamedSlot);
@@ -297,9 +465,18 @@ describe('DBUIWebComponentBase ancestors/descendants and message passing', () =>
               lightDummyDTwoInDefaultSlot,
               lightDummyEInNamedSlot
             ]);
+            expect(lightDummyDOneRoot.closestDbuiChildren).to.have.members(lightDummyDOneRoot.closestDbuiChildrenLiveQuery);
+            expect(lightDummyDOneRoot.lightDomChildren).to.have.members([
+              lightDummyDTwoInDefaultSlot,
+              lightDummyEInNamedSlot,
+              lightDummyDThreeInDefaultSlot,
+              lightDummyEInDefaultSlot
+            ]);
             expect(lightDummyEInNamedSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
+            expect(lightDummyEInNamedSlot.lightDomParent).to.equal(lightDummyDOneRoot);
             expect(lightDummyDTwoInDefaultSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
-            expect(lightDummyEInNamedSlot.closestDbuiChildren.length).to.equal(1);
+            expect(lightDummyEInNamedSlot.closestDbuiChildren).to.have.members([lightDummyEInNamedSlot_ShadowDummyD]);
+            expect(lightDummyEInNamedSlot.shadowDomChildren.length).to.equal(2);
 
             setTimeout(() => {
               iframe.remove();

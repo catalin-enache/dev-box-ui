@@ -171,8 +171,12 @@ function getBase(win) {
         // closestDbuiParent exists but might not be connected itself
         // the children CAN register nevertheless
         this.__testClosestDbuiParent = this.closestDbuiParent;
+        this.__testShadowDomParent = this.shadowDomParent;
+        this.__testLightDomParent = this.lightDomParent;
         // closestDbuiChildren might not be complete
         this.__testClosestDbuiChildren = [...this.closestDbuiChildren];
+        this.__testShadowDomChildren = [...this.shadowDomChildren];
+        this.__testLightDomChildren = [...this.lightDomChildren];
       }
 
       static get observedAttributes() {

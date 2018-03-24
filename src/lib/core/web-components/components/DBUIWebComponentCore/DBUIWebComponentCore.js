@@ -23,6 +23,13 @@ function defineCommonCSSVars(win) {
   document.querySelector('head').appendChild(commonStyle);
 }
 
+/*
+Accessing parents and children:
+If parent is accessed in connectedCallback it exists (if it should exist), however,
+the parent might not be itself connected yet.
+If children are accessed in connectedCallback they might not be complete yet at that time.
+*/
+
 export default function getDBUIWebComponentCore(win) {
   const LocaleService = getDBUILocaleService(win);
 
@@ -71,17 +78,16 @@ export default function getDBUIWebComponentCore(win) {
       }
 
       get shadowDomChildren() {
-        // TODO: is this reliable when not ready
+        // children in slots are NOT included here
         return [...this.shadowRoot.querySelectorAll('[dbui-web-component]')];
       }
 
       get shadowDomParent() {
-        // TODO: is this reliable when not ready
         return this.getRootNode().host || null;
       }
 
       get lightDomParent() {
-        // TODO: is this reliable when not ready
+        // can return a parent which is in shadow DOM of the grand-parent
         let parent = this.parentElement;
         while (parent && !parent.hasAttribute('dbui-web-component')) {
           parent = parent.parentElement;
@@ -90,7 +96,7 @@ export default function getDBUIWebComponentCore(win) {
       }
 
       get lightDomChildren() {
-        // TODO: is this reliable when not ready
+        // children in slots ARE included here
         return [...this.querySelectorAll('[dbui-web-component]')];
       }
 
@@ -104,12 +110,7 @@ export default function getDBUIWebComponentCore(win) {
         return closestParent || this.shadowDomParent;
       }
 
-      // Can be accessed in connectedCallback, however,
-      // the parent might not be itself connected yet.
       get closestDbuiParent() {
-        // if (!this.isReady) {
-        //   throw new Error(`${this.constructor.registrationName} not ready yet`);
-        // }
         // cached
         // Reason for cache is to allow a child to unregister from its parent when unmounted
         // because when browser calls disconnectedCallback the parent is not reachable anymore.
@@ -120,29 +121,16 @@ export default function getDBUIWebComponentCore(win) {
         }
         this._closestDbuiParent = this.closestDbuiParentLiveQuery;
         return this._closestDbuiParent;
-        // let closestParent = this.parentElement;
-        // // might be null if disconnected from dom
-        // if (closestParent === null) {
-        //   this._closestDbuiParent = null;
-        // } else {
-        //   closestParent = closestParent.closest('[dbui-web-component]');
-        //   this._closestDbuiParent = closestParent || this.shadowDomParent;
-        // }
-        // return this._closestDbuiParent;
       }
 
+      // might be useful in some scenarios
       get closestDbuiChildrenLiveQuery() {
         const dbuiChildren = [...this.lightDomChildren, ...this.shadowDomChildren];
         const closestDbuiChildren = dbuiChildren.filter((child) => child.closestDbuiParentLiveQuery === this);
         return closestDbuiChildren;
       }
 
-      // Must NOT be accessed in connectedCallback
-      // as children might not be registered yet
       get closestDbuiChildren() {
-        // if (!this.isReady) {
-        //   throw new Error(`${this.constructor.registrationName} not ready yet`);
-        // }
         return this._closestDbuiChildren;
       }
 
@@ -150,6 +138,7 @@ export default function getDBUIWebComponentCore(win) {
         return this._isMounted;
       }
 
+      // TODO: do we really need this ?
       get isReady() {
         return this._isReady;
       }
