@@ -1,12 +1,6 @@
-import { expect, assert } from 'chai';
-import sinon from 'sinon';
-import getDBUIWebComponentCore from './DBUIWebComponentCore';
-import DBUICommonCssVars from './DBUICommonCssVars';
-import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
-import getDBUILocaleService from '../../../services/DBUILocaleService';
-import appendStyles from '../../../internals/appendStyles';
+import { expect } from 'chai';
+
 import inIframe from '../../../../../../testUtils/inIframe';
-import DBUIWebComponentMessage from "./DBUIWebComponentMessage";
 
 import {
   getDummyA,
@@ -959,7 +953,7 @@ describe('DBUIWebComponentBase ancestors/descendants and message passing', () =>
               lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_shadowDummyB.cloneNodeDeep({ idSuffix: '_clone' });
 
             expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_shadowDummyB.closestDbuiChildren.length).to.equal(1);
-            expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_shadowDummyB_clone.id).to.equal('shadow-dummy-b_clone')
+            expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_shadowDummyB_clone.id).to.equal('shadow-dummy-b_clone');
 
             // the clone has no parent no children yet
             expect(lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_shadowDummyB_clone.closestDbuiParent).to.equal(
