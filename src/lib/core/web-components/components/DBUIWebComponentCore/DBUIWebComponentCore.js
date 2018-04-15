@@ -1,17 +1,7 @@
 
 import getDBUILocaleService from '../../../services/DBUILocaleService';
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
-import Publisher from '../../../utils/Publisher';
-import DBUIWebComponentMessage from './DBUIWebComponentMessage';
 import DBUICommonCssVars from './DBUICommonCssVars';
-
-const PARENT_TARGET_TYPE = 'PARENT';
-const CHILDREN_TARGET_TYPE = 'CHILDREN';
-const SHADOW_DOM_TYPE = 'ShadowDom';
-const LIGHT_DOM_TYPE = 'LightDom';
-const CHANNEL_INTERNAL = 'Internal';
-const MESSAGE_SHADOW_DOM_ANCESTORS_CHAIN_CONNECTED = 'SHADOW_DOM_ANCESTORS_CHAIN_CONNECTED';
-const EVENT_READY = 'ready';
 
 const registrationName = 'DBUIWebComponentBase';
 
@@ -56,26 +46,230 @@ export default function getDBUIWebComponentCore(win) {
         return [];
       }
 
-      static get propertiesToDefine() {
+      static get attributesToDefine() {
         return { 'dbui-web-component': '' };
-      }
-
-      static get CONSTANTS() {
-        return {
-          PARENT_TARGET_TYPE,
-          CHILDREN_TARGET_TYPE,
-          SHADOW_DOM_TYPE,
-          LIGHT_DOM_TYPE,
-          CHANNEL_INTERNAL,
-          MESSAGE_SHADOW_DOM_ANCESTORS_CHAIN_CONNECTED,
-          EVENT_READY
-        };
       }
 
       // web components standard API
       static get observedAttributes() {
         return [];
       }
+
+      get isMounted() {
+        return this._isMounted;
+      }
+
+      // We need isDisconnected info when DOM tree is constructed
+      // - after constructor() and before connectedCallback() -
+      // when closestDbuiParent should not return null.
+      get isDisconnected() {
+        return this._isDisconnected;
+      }
+
+      constructor(...args) {
+        super();
+
+        this.attachShadow({
+          mode: 'open',
+          // delegatesFocus: true
+          // Not working on IPad so we do an workaround
+          // by setting "focused" attribute when needed.
+        });
+
+        this._propagatingContext = false;
+        this._providingContext = {};
+        this._lastReceivedContext = {};
+        this._closestDbuiParent = null;
+        this._closestDbuiChildren = [];
+        this._isMounted = false;
+        this._isDisconnected = false;
+        this._insertTemplate();
+
+        this.connectedCallback = this.connectedCallback.bind(this);
+        this.disconnectedCallback = this.disconnectedCallback.bind(this);
+        this.attributeChangedCallback = this.attributeChangedCallback.bind(this);
+        this.adoptedCallback = this.adoptedCallback.bind(this);
+        // TODO: _handleLocaleChange only if user sets locale-aware attribute
+        this._handleLocaleChange = this._handleLocaleChange.bind(this);
+        this.onLocaleChange = this.onLocaleChange.bind(this);
+        this.unregisterLocaleChange = null;
+
+        // provide support for traits if any as they can't override constructor
+        this.init && this.init(...args);
+      }
+
+      // ============================ [Context] >> =============================================
+
+      static get contextProvide() {
+        return [];
+      }
+
+      static get contextSubscribe() {
+        return [];
+      }
+
+      _providesContextFor(key) {
+        return this.constructor.contextProvide.some((_key) => _key === key);
+      }
+
+      _hasValueForContext(key) {
+        return this._providingContext[key] !== undefined;
+      }
+
+      _subscribesForContext(key) {
+        return this.constructor.contextSubscribe.some((_key) => _key === key);
+      }
+
+      setContext(contextObj) {
+        const newKeys = Object.keys(contextObj).filter((key) => {
+          return this._providesContextFor(key);
+        });
+
+        const contextToSet = newKeys.reduce((acc, key) => {
+          acc[key] = contextObj[key];
+          return acc;
+        }, {});
+
+        const newProvidingContext = {
+          ...this._providingContext,
+          ...contextToSet
+        };
+
+        this._providingContext = newProvidingContext;
+
+        if (this._propagatingContext) return;
+
+        this._propagateContextChanged(this._providingContext);
+      }
+
+      _propagateContextChanged(newContext) {
+        this._propagatingContext = true;
+        const newContextKeys = Object.keys(newContext);
+
+        // if context is received from ancestors
+        if (newContext !== this._providingContext) {
+          // makes self aware
+          const keysSubscribedFor = newContextKeys.reduce((acc, key) => {
+            this._subscribesForContext(key) && acc.push(key);
+            return acc;
+          }, []);
+
+          if (keysSubscribedFor.length) {
+            const contextSubscribedFor = keysSubscribedFor.reduce((acc, key) => {
+              acc[key] = newContext[key];
+              return acc;
+            }, {});
+            this._onContextChanged(contextSubscribedFor);
+            // At this point user might have call setContext inside onContextChanged
+            // in which case _providingContext is updated with latest values.
+          }
+        }
+
+        // propagate with overrides
+        // If user called setContext() from within onContextChanged() then
+        // this._providingContext has the newest values to be propagated
+        const overriddenContext = this.constructor.contextProvide.reduce((acc, key) => {
+          if (this._hasValueForContext(key)) {
+            acc[key] = this._providingContext[key];
+          }
+          return acc;
+        }, {});
+
+        const contextToPropagate = {
+          ...newContext,
+          ...overriddenContext
+        };
+
+        // children that will mount later will ask for context (_checkContext)
+        this.closestDbuiChildren.forEach((child) => {
+          child._propagateContextChanged(contextToPropagate);
+        });
+        this._propagatingContext = false;
+      }
+
+      _getContext(keys) {
+        const ownedKeys = [];
+        const keysToAskFor = [];
+        keys.forEach((key) => {
+          if (this._hasValueForContext(key)) {
+            ownedKeys.push(key);
+          } else {
+            keysToAskFor.push(key);
+          }
+        });
+        const closestDbuiParent = this.closestDbuiParent;
+        return {
+          ...ownedKeys.reduce((acc, key) => {
+            acc[key] = this._providingContext[key];
+            return acc;
+          }, {}),
+          ...(closestDbuiParent ? closestDbuiParent._getContext(keysToAskFor) : {})
+        };
+      }
+
+      _onContextChanged(newContext, { reset = false } = {}) {
+        const lastReceivedContext = this._lastReceivedContext;
+        const newContextFilteredKeys = Object.keys(newContext || {}).filter((key) => {
+          return newContext[key] !== lastReceivedContext[key];
+        });
+        // Prevents triggering onContextChanged against a context found on some ancestor
+        // which did not managed yet to setup its context
+        // due to for example attributeChangedCallback did not fired on that ancestor yet.
+        if (!newContextFilteredKeys.length && !reset) return;
+        const newContextFiltered = newContextFilteredKeys.reduce((acc, key) => {
+          acc[key] = newContext[key];
+          return acc;
+        }, {});
+        const contextToSet = reset ? {} : { ...lastReceivedContext, ...newContextFiltered };
+        this._lastReceivedContext = contextToSet;
+        const [_newContext, _prevContext] = [this._lastReceivedContext, lastReceivedContext];
+        this.onContextChanged(_newContext, _prevContext);
+      }
+
+      // Might be fired more than once until DOM tree settles down.
+      // ex: first call is the result of _checkContext which might get the top most existing context.
+      // The next ones can be the result of middle ancestors firing attributeChangeCallback
+      // which might set their context and propagate it down.
+      // eslint-disable-next-line
+      onContextChanged(newContext, prevContext) {
+        // no op
+      }
+
+      // _checkContext can propagate to the very top even if ancestors are not connected.
+      // If there is context defined somewhere upstream then it will be reached by grandchildren.
+      _checkContext() {
+        const closestDbuiParent = this.closestDbuiParent;
+        if (closestDbuiParent) {
+          const newContext = closestDbuiParent._getContext(
+            this.constructor.contextSubscribe
+          );
+          // _onContextChanged is not fired for tree root
+          this._onContextChanged(newContext);
+          // No need to propagate to the children because they can search upward for context
+          // until top of the tree is reached, even if ancestors are not connected yet.
+          // If some middle ancestor has context to provide and did not managed to provide it yet
+          // (ex: attributeChangedCallback not fired before descendants looked for upstream context)
+          // then descendants will receive first context from upstream then from middle ancestor.
+          // This was verified!
+        }
+      }
+
+      _resetContext() {
+        // this._providingContext is NOT reset from component providing context
+        // because if context is dependent on attributeChangedCallback
+        // that will not fire when component is moved from one place to another place in DOM tree.
+        const closestDbuiParent = this.closestDbuiParent;
+        // Checking closestDbuiParent to be symmetric with _checkContext
+        // or we'll end up with empty context object after reset,
+        // when it initially was undefined.
+        if (closestDbuiParent) {
+          this._onContextChanged(null, { reset: true });
+        }
+      }
+
+      // ============================ << [Context] =============================================
+
+      // ============================ [Descendants/Ancestors and registrations] >> =============================================
 
       get shadowDomChildren() {
         // children in slots are NOT included here
@@ -119,8 +313,22 @@ export default function getDBUIWebComponentCore(win) {
         if (this._closestDbuiParent) {
           return this._closestDbuiParent;
         }
+        if (this.isDisconnected) return null;
         this._closestDbuiParent = this.closestDbuiParentLiveQuery;
         return this._closestDbuiParent;
+      }
+
+      // might be useful in some scenarios
+      get topDbuiAncestor() {
+        let closestDbuiParent = this.closestDbuiParent;
+        while (closestDbuiParent) {
+          const _closestDbuiParent = closestDbuiParent.closestDbuiParent;
+          if (!_closestDbuiParent) {
+            return closestDbuiParent;
+          }
+          closestDbuiParent = _closestDbuiParent;
+        }
+        return closestDbuiParent; // this is null
       }
 
       // might be useful in some scenarios
@@ -132,177 +340,6 @@ export default function getDBUIWebComponentCore(win) {
 
       get closestDbuiChildren() {
         return this._closestDbuiChildren;
-      }
-
-      get isMounted() {
-        return this._isMounted;
-      }
-
-      // TODO: do we really need this ?
-      get isReady() {
-        return this._isReady;
-      }
-
-      constructor(...args) {
-        super();
-
-        this.attachShadow({
-          mode: 'open',
-          // delegatesFocus: true
-          // Not working on IPad so we do an workaround
-          // by setting "focused" attribute when needed.
-        });
-
-        // this._publisher = new Publisher();
-        this._providingContext = {};
-        this._lastReceivedContext = {};
-        this._closestDbuiParent = null;
-        this._closestDbuiChildren = [];
-        this._isMounted = false;
-        this._isReady = false;
-        this._insertTemplate();
-
-        this.connectedCallback = this.connectedCallback.bind(this);
-        this.disconnectedCallback = this.disconnectedCallback.bind(this);
-        // TODO: _handleLocaleChange only if user sets locale-aware attribute
-        this._handleLocaleChange = this._handleLocaleChange.bind(this);
-        this.onLocaleChange = this.onLocaleChange.bind(this);
-        this.unregisterLocaleChange = null;
-
-        // provide support for traits if any as they can't override constructor
-        this.init && this.init(...args);
-      }
-
-      static get contextProvide() {
-        return [];
-      }
-
-      static get contextSubscribe() {
-        return [];
-      }
-
-      _providesContextFor(key) {
-        return this.constructor.contextProvide.some((_key) => _key === key);
-      }
-
-      _hasValueForContext(key) {
-        return this._providingContext[key] !== undefined;
-      }
-
-      _subscribesForContext(key) {
-        return this.constructor.contextSubscribe.some((_key) => _key === key);
-      }
-
-      setContext(contextObj) {
-        const newKeys = Object.keys(contextObj).filter((key) => {
-          return this._providesContextFor(key);
-        });
-
-        const anythingChanged = newKeys.some((key) => {
-          return ![
-            this._lastReceivedContext[key]
-          ].includes(contextObj[key]);
-        });
-
-        const anythingShouldChange = this.constructor.contextProvide.some((key) => {
-          return this._hasValueForContext(key) &&
-            this._providingContext[key] !== this._lastReceivedContext[key];
-        });
-
-        if (!anythingChanged && !anythingShouldChange) return;
-
-        const newProvidingContext = {
-          ...this._providingContext,
-          ...newKeys.reduce((acc, key) => {
-            acc[key] = contextObj[key];
-            return acc;
-          }, {})
-        };
-
-        this._providingContext = newProvidingContext;
-
-        this._onContextChanged(this._providingContext);
-        this._propagateContextChanged(this._providingContext);
-      }
-
-      _propagateContextChanged(newContext) {
-        const newContextKeys = Object.keys(newContext);
-
-        // if context is received from ancestors
-        if (newContext !== this._providingContext) {
-          // makes self aware
-          const keysSubscribedFor = newContextKeys.reduce((acc, key) => {
-            this._subscribesForContext(key) && acc.push(key);
-            return acc;
-          }, []);
-
-          if (keysSubscribedFor.length) {
-            const contextSubscribedFor = keysSubscribedFor.reduce((acc, key) => {
-              acc[key] = newContext[key];
-              return acc;
-            }, {});
-            this._onContextChanged(contextSubscribedFor);
-          }
-        }
-
-        // propagate with overrides
-        const overriddenContext = this.constructor.contextProvide.reduce((acc, key) => {
-          if (this._hasValueForContext(key)) {
-            acc[key] = this._providingContext[key];
-          }
-          return acc;
-        }, {});
-
-        const contextToPropagate = {
-          ...newContext,
-          ...overriddenContext
-        };
-
-        this.closestDbuiChildren.forEach((child) => {
-          child._propagateContextChanged(contextToPropagate);
-        });
-      }
-
-      _getContext(keys) {
-        const ownedKeys = [];
-        const keysToAskFor = [];
-        keys.forEach((key) => {
-          if (this._hasValueForContext(key)) {
-            ownedKeys.push(key);
-          } else {
-            keysToAskFor.push(key);
-          }
-        });
-        const closestDbuiParent = this.closestDbuiParent;
-        return {
-          ...ownedKeys.reduce((acc, key) => {
-            acc[key] = this._providingContext[key];
-            return acc;
-          }, {}),
-          ...(closestDbuiParent ? closestDbuiParent._getContext(keysToAskFor) : {})
-        };
-        // TODO: we should propagate here to children ?
-        // because when they registered to us we were not aware of context
-      }
-
-      _onContextChanged(newContext) {
-        const lastReceivedContext = this._lastReceivedContext;
-        const contextToSet = { ...lastReceivedContext, ...newContext };
-        this._lastReceivedContext = contextToSet;
-
-        this.onContextChanged(this._lastReceivedContext, lastReceivedContext);
-      }
-
-      // eslint-disable-next-line
-      onContextChanged(newContext, prevContext) {
-        // no op
-      }
-
-      _checkContext() {
-        const newContext = this._getContext(
-          this.constructor.contextSubscribe
-        );
-        this._onContextChanged(newContext);
       }
 
       _registerSelfToClosestDbuiParent() {
@@ -326,9 +363,7 @@ export default function getDBUIWebComponentCore(win) {
           this._closestDbuiChildren.filter((_child) => _child !== child);
       }
 
-      // publish(channel, message) {
-      //   this._publisher.publish(CHANNEL_INTERNAL, message);
-      // }
+      // ============================ << [Descendants/Ancestors and registrations] =============================================
 
       // https://developers.google.com/web/fundamentals/web-components/best-practices#lazy-properties
       // https://developers.google.com/web/fundamentals/web-components/examples/howto-checkbox
@@ -344,8 +379,8 @@ export default function getDBUIWebComponentCore(win) {
         }
       }
 
-      _defineProperty(key, value) {
-        // don't override user defined value
+      _defineAttribute(key, value) {
+        // don't override user defined attribute
         if (!this.hasAttribute(key)) {
           this.setAttribute(key, value);
         }
@@ -364,46 +399,67 @@ export default function getDBUIWebComponentCore(win) {
       }
 
       // web components standard API
-      // eslint-disable-next-line
       adoptedCallback(oldDocument, newDocument) {
         // callbacks order:
         // disconnectedCallback => adoptedCallback => connectedCallback
+        this.onAdoptedCallback(oldDocument, newDocument);
       }
 
-      // web components standard API
+      // eslint-disable-next-line
+      onAdoptedCallback(oldDocument, newDocument) {
+        // pass
+      }
+
       /*
+      * web components standard API
       * connectedCallback is fired from children to parent in shadow DOM
       * but the order is less predictable in light DOM.
-      * Should not read light/shadowDomParent/Children here.
+      * Should not read light/shadowDomChildren here.
+      * Is called after attributeChangedCallback.
       * */
       connectedCallback() {
+        // Using this pattern as it seems that the component
+        // is immune to overriding connectedCallback at runtime.
+        // Most probably the browser keeps a reference to connectedCallback
+        // existing/defined at the time of upgrading and calls that one instead of the
+        // latest (monkey patched / runtime evaluated) one.
+        // Now, we can monkey patch onConnectedCallback if we want.
+        this.onConnectedCallback();
+      }
+
+      onConnectedCallback() {
         this._isMounted = true;
+        this._isDisconnected = false;
         win.addEventListener('beforeunload', this.disconnectedCallback, false);
         this.unregisterLocaleChange =
           LocaleService.onLocaleChange(this._handleLocaleChange);
-        const { propertiesToUpgrade, propertiesToDefine } = this.constructor;
+        const { propertiesToUpgrade, attributesToDefine } = this.constructor;
         propertiesToUpgrade.forEach((property) => {
           this._upgradeProperty(property);
         });
-        Object.keys(propertiesToDefine).forEach((property) => {
-          this._defineProperty(property, propertiesToDefine[property]);
+        Object.keys(attributesToDefine).forEach((property) => {
+          this._defineAttribute(property, attributesToDefine[property]);
         });
         // We can safely register to closestDbuiParent because it exists at this time
         // but we must not assume it was connected.
+        // NOTE: even if closestDbuiParent (or any ancestor) is not connected
+        // the top of the tree (topDbuiAncestor) can be reached if needed
         this._registerSelfToClosestDbuiParent();
         this._checkContext();
-
-        // this.info('connectedCallback');
-        setTimeout(this._readyCallback.bind(this), 0);
       }
 
       // web components standard API
       disconnectedCallback() {
+        this.onDisconnectedCallback();
+      }
+
+      onDisconnectedCallback() {
+        this._resetContext();
         this._unregisterSelfFromClosestDbuiParent();
         this.unregisterLocaleChange();
         win.removeEventListener('beforeunload', this.disconnectedCallback, false);
         this._isMounted = false;
-        this._isReady = false;
+        this._isDisconnected = true;
         this._closestDbuiParent = null;
       }
 
@@ -422,217 +478,26 @@ export default function getDBUIWebComponentCore(win) {
       }
 
       // web components standard API
-      // eslint-disable-next-line
+      // Scenario 1: component was created in detached tree before being defined.
+      // attributeChangedCallback will not be called when being defined but when inserted into DOM.
+      // (this implies component is upgraded after being inserted into DOM).
+      // Scenario 2: component is created in detached tree after being defined.
+      // attributeChangedCallback will be called right away
+      // (this implies component is upgraded before being inserted into DOM).
+      // When inserted in DOM then connectedCallback will be called.
+      // In any case attributeChangedCallback is called before connectedCallback.
       attributeChangedCallback(name, oldValue, newValue) {
+        this.onAttributeChangedCallback(name, oldValue, newValue);
+      }
+
+      // eslint-disable-next-line
+      onAttributeChangedCallback(name, oldValue, newValue) {
         // no op
       }
 
       onLocaleChange() {
         // no op
       }
-
-      info(step) {
-        // if (this.id !== 'light-dummy-d-three-in-default-slot') return;
-        const selfId = this.id || 'no id';
-        // const isDefined = !!win.customElements.get(this.constructor.registrationName);
-        // const hasAttr = this.hasAttribute('dbui-web-component');
-
-        // const { contextColor } = this._getContext(['color']);
-        const closestDbuiParent = this.closestDbuiParent;
-        const closestDbuiChildren = this.closestDbuiChildren;
-        const closestDbuiChildrenLiveQuery = this.closestDbuiChildrenLiveQuery;
-        const closestDbuiParent2 = this.parentElement && this.parentElement.closest('[dbui-web-component]');
-        const shadowDomParent = this.shadowDomParent;
-        const shadowDomChildren = this.shadowDomChildren;
-        const lightDomParent = this.lightDomParent;
-        const lightDomChildren = this.lightDomChildren;
-        // const lightParentHasAttr = lightDomParent && lightDomParent.hasAttribute('dbui-web-component');
-        // const ownerDocument = this.ownerDocument;
-        // const parentNode = this.parentNode;
-        // const defaultView = ownerDocument.defaultView;
-
-        console.log({
-          step,
-          selfId,
-          // contextColor,
-          // closestDbuiParent: (closestDbuiParent || {}).id || null,
-          // closestDbuiParentIsMounted: closestDbuiParent && closestDbuiParent.isMounted,
-          closestDbuiChildren: closestDbuiChildren.map((child) => child.id).join(', '),
-          // closestDbuiChildrenLiveQuery: closestDbuiChildrenLiveQuery.map((child) => child.id).join(', '),
-          // isDefined,
-          // hasAttr,
-          // ownerDocument,
-          // parentNode,
-          // defaultView,
-          // lightParentHasAttr,
-          // closestDbuiParent2: (closestDbuiParent2 || {}).id || null,
-          // lightDomParent: (lightDomParent || {}).id || null,
-          // lightDomChildren: lightDomChildren.map((child) => child.id).join(', '),
-          // shadowDomParent: (shadowDomParent || {}).id || null,
-          // shadowDomChildren: shadowDomChildren.map((child) => child.id).join(', ')
-        });
-      }
-
-      _dispatchEventReady() {
-        if (!this.isReady) return;
-        // this.info('_dispatchEventReady');
-        this.dispatchEvent(new Event(EVENT_READY, {
-          bubbles: false,
-          composed: false
-        }));
-      }
-
-      // custom internal API
-      // TODO: this should be removed
-      _readyCallback() {
-        // its possible the component was unmounted before having a chance to be ready
-        // TODO: test what happens when component is appended and immediately removed from DOM
-        // the ready event should not fire
-        if (!this.isMounted) return;
-        this._isReady = true;
-        // this.info('_readyCallback');
-        this._dispatchEventReady();
-      }
-
-      register(type, listener, ...rest) {
-        if (type === EVENT_READY) {
-          this.registerOnce(type, listener, ...rest);
-        } else {
-          super.addEventListener(type, listener, ...rest);
-        }
-      }
-
-      registerOnce(type, listener, ...rest) {
-        const internalListener = (evt, ...rest) => {
-          listener(evt, ...rest);
-          this.unregister(type, internalListener);
-        };
-        super.addEventListener(type, internalListener, { ...rest, once: true });
-        if (type === EVENT_READY && this.isReady) {
-          this._dispatchEventReady();
-        }
-      }
-
-      unregister(type, listener, ...rest) {
-        super.removeEventListener(type, listener, ...rest);
-      }
-
-      // get onReady() {
-      //   return new Promise((resolve) => {
-      //     this.registerOnce(EVENT_READY, (evt) => {
-      //       return resolve(evt);
-      //     });
-      //   });
-      // }
-
-      // _propagateMessage(messageInst) {
-      //   // Will be ignored if rememberNodesPath was false at message creation
-      //   messageInst.appendVisitedNode(this);
-      //   this.onMessageReceived(messageInst);
-      //   // Inside onMessageReceived there is a chance that
-      //   // message#stopPropagation has been called.
-      //   if (messageInst.shouldPropagate) {
-      //     this.sendMessage(messageInst);
-      //   }
-      // }
-
-      // createMessage({
-      //   channel, message, data, rememberNodesPath, targetType, domType, appendSelf = true
-      // } = {}) {
-      //   const messageInst = new DBUIWebComponentMessage({
-      //     channel,
-      //     message,
-      //     data,
-      //     source: this,
-      //     rememberNodesPath,
-      //     targetType,
-      //     domType
-      //   });
-      //   // will be ignored if rememberNodesPath was false at message creation
-      //   appendSelf && messageInst.appendVisitedNode(this);
-      //   return messageInst;
-      // }
-
-      // sendMessage(messageInst) {
-      //   const { targetType, domType } = messageInst;
-      //   if (targetType === PARENT_TARGET_TYPE) {
-      //     const parent =
-      //       domType === SHADOW_DOM_TYPE ? this.shadowDomParent : this.lightDomParent;
-      //     parent && parent._propagateMessage(messageInst.cloneOrInstance);
-      //   } else if (targetType === CHILDREN_TARGET_TYPE) {
-      //     const children =
-      //       domType === SHADOW_DOM_TYPE ? this.shadowDomChildren : this.lightDomChildren;
-      //     children.forEach((child) => {
-      //       child._propagateMessage(messageInst.cloneOrInstance);
-      //     });
-      //   }
-      // }
-
-      // onMessageReceived(messageInst) {
-      //   const { domType } = messageInst;
-      //   this[`on${domType}Message`](messageInst);
-      // }
-
-      // [`on${SHADOW_DOM_TYPE}Message`](messageInst) {
-      //   const { channel, domType } = messageInst;
-      //   const listener = `on${domType}${channel}Message`;
-      //   this[listener] && this[listener](messageInst);
-      // }
-
-      // [`on${LIGHT_DOM_TYPE}Message`](messageInst) {
-      //   const { channel, domType } = messageInst;
-      //   const listener = `on${domType}${channel}Message`;
-      //   this[listener] && this[listener](messageInst);
-      // }
-
-      // shadowDomSendMessageToParent({ channel, message, data, rememberNodesPath }) {
-      //   this.sendMessage(this.createMessage({
-      //     channel,
-      //     message,
-      //     data,
-      //     rememberNodesPath,
-      //     targetType: PARENT_TARGET_TYPE,
-      //     domType: SHADOW_DOM_TYPE
-      //   }));
-      // }
-
-      // shadowDomSendMessageToChildren({ channel, message, data, rememberNodesPath }) {
-      //   this.sendMessage(this.createMessage({
-      //     channel,
-      //     message,
-      //     data,
-      //     rememberNodesPath,
-      //     targetType: CHILDREN_TARGET_TYPE,
-      //     domType: SHADOW_DOM_TYPE
-      //   }));
-      // }
-
-      // shadowDomSendMessageToParentAndSelf({ channel, message, data, rememberNodesPath }) {
-      //   const messageInst = this.createMessage({
-      //     channel,
-      //     message,
-      //     data,
-      //     rememberNodesPath,
-      //     targetType: PARENT_TARGET_TYPE,
-      //     domType: SHADOW_DOM_TYPE,
-      //     appendSelf: false
-      //   });
-      //   this._propagateMessage(messageInst);
-      // }
-
-      // shadowDomSendMessageToChildrenAndSelf({ channel, message, data, rememberNodesPath }) {
-      //   const messageInst = this.createMessage({
-      //     channel,
-      //     message,
-      //     data,
-      //     rememberNodesPath,
-      //     targetType: CHILDREN_TARGET_TYPE,
-      //     domType: SHADOW_DOM_TYPE,
-      //     appendSelf: false
-      //   });
-      //   this._propagateMessage(messageInst);
-      // }
-
     }
 
     function defineCommonStaticMethods(klass) {
@@ -675,6 +540,7 @@ export default function getDBUIWebComponentCore(win) {
           klass.componentStyle += componentStyle;
         }
         // Do registration
+        // https://html.spec.whatwg.org/multipage/custom-elements.html#concept-upgrade-an-element
         customElements.define(registrationName, klass);
         return registrationName;
       };

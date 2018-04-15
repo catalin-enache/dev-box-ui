@@ -86,7 +86,7 @@ export default function getDBUIWebComponentFormInputText(win) {
         `;
       }
 
-      static get propertiesToDefine() {
+      static get attributesToDefine() {
         return {
           role: 'form-input'
         };

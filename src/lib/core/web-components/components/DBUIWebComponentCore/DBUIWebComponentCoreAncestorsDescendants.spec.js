@@ -1,8 +1,12 @@
 import { expect } from 'chai';
 
-import inIframe from '../../../../../../testUtils/inIframe';
+import {
+  inIframe,
+  monkeyPatch
+} from '../../../../../../testUtils';
 
 import {
+  getBase,
   getDummyA,
   getDummyB,
   getDummyC,
@@ -13,9 +17,30 @@ import {
   treeStyle
 } from './DBUITestTreeSetup';
 
+function setupOnConnectedCallback(klass) {
+  return monkeyPatch(klass).proto.set('onConnectedCallback', (getSuperDescriptor) => {
+    return {
+      writable: true,
+      value() {
+        getSuperDescriptor().value.call(this);
+        // closestDbuiParent exists but might not be connected itself
+        // the children CAN register nevertheless
+        this.__testClosestDbuiParent = this.closestDbuiParent;
+        this.__testShadowDomParent = this.shadowDomParent;
+        this.__testLightDomParent = this.lightDomParent;
+        // closestDbuiChildren might not be complete
+        this.__testClosestDbuiChildren = [...this.closestDbuiChildren];
+        this.__testShadowDomChildren = [...this.shadowDomChildren];
+        this.__testLightDomChildren = [...this.lightDomChildren];
+      }
+    };
+  });
+}
+
+
 /* eslint camelcase: 0 */
 
-describe('DBUIWebComponentBase ancestors/descendants and message passing', () => {
+describe('DBUIWebComponentBase ancestors/descendants and registrations', () => {
   describe('closestDbuiParent/closestDbuiChildren/shadowDomParent/lightDomParent/shadowDomChildren/lightDomChildren', () => {
     it('return what is expected', (done) => {
       inIframe({
@@ -27,11 +52,14 @@ describe('DBUIWebComponentBase ancestors/descendants and message passing', () =>
         `,
         onLoad: ({ contentWindow, iframe }) => {
 
+          const Base = getBase(contentWindow);
           const DummyA = getDummyA(contentWindow);
           const DummyB = getDummyB(contentWindow);
           const DummyC = getDummyC(contentWindow);
           const DummyD = getDummyD(contentWindow);
           const DummyE = getDummyE(contentWindow);
+
+          setupOnConnectedCallback(Base);
 
           const container = contentWindow.document.querySelector('#container');
 
@@ -66,11 +94,6 @@ describe('DBUIWebComponentBase ancestors/descendants and message passing', () =>
               lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB,
               lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA
             } = dbuiNodes;
-
-            Object.keys(dbuiNodes).forEach((key) => {
-              const node = dbuiNodes[key];
-              expect(node.getAttribute('context-color4')).to.equal('bisque');
-            });
 
             // Test closestDbuiParent sync.
             // Also test that closestDbuiParent existed at the time of connectedCallback.
@@ -322,6 +345,8 @@ describe('DBUIWebComponentBase ancestors/descendants and message passing', () =>
               Object.keys(dbuiNodes1).forEach((key) => {
                 const node = dbuiNodes1[key];
                 expect(node.closestDbuiChildren.length).to.equal(0);
+                expect(node.closestDbuiParent).to.equal(null);
+                expect(node.topDbuiAncestor).to.equal(null);
               });
 
               expect(contentWindow.document.querySelector('#light-dummy-d-one-root'))
@@ -338,6 +363,9 @@ describe('DBUIWebComponentBase ancestors/descendants and message passing', () =>
                   const node1 = dbuiNodes1[key];
                   // expect NOT to be same instances as we used innerHTML
                   expect(node1).to.not.equal(node);
+                  if (node !== dbuiNodes.lightDummyDOneRoot) {
+                    expect(node.topDbuiAncestor).to.equal(dbuiNodes.lightDummyDOneRoot);
+                  }
                 });
 
                 doTest();
@@ -359,6 +387,9 @@ describe('DBUIWebComponentBase ancestors/descendants and message passing', () =>
                     const node2 = dbuiNodes2[key];
                     // expect to be same instances as we used appendChild
                     expect(node2).to.equal(node);
+                    if (node !== dbuiNodes.lightDummyDOneRoot) {
+                      expect(node.topDbuiAncestor).to.equal(dbuiNodes.lightDummyDOneRoot);
+                    }
                   });
 
                   doTest();

@@ -20,6 +20,10 @@ we have to communicate (ancestors/descendants) in the shadow dom tree but in lig
 onLocaleChange should hook only when user sets locale-aware attribute and it should propagate inside shadow DOM
 eventually it should propagate locale in light DOM if user sets propagate-locale-in-light-dom
 
+use internal attributes which should be prefixed with dbui, ex: dbui-dir, dbui-lang
+
+rename shadowDomChildren, shadowDomParent, lightDomParent, lightDomChildren to
+shadowDomDbuiChildren, shadowDomDbuiParent, lightDomDbuiParent, lightDomDbuiChildren
 
 proposal:
   get lightDomChildren()

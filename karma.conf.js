@@ -42,7 +42,24 @@ module.exports = function (config) {
         reporter: 'html', // change Karma's debug.html to the mocha web reporter
         checkLeaks: true,
         ignoreLeaks: false,
-        timeout: 2000
+        timeout: 2000,
+        // accepted global leaks defined here to prevent mocha global leaks error showing on iPad
+        // https://stackoverflow.com/questions/8360318/global-leak-errors-in-mocha/10040921
+        globals: [
+          'getPasswordFormElement_',
+          'addSubmitButtonTouchEndHandler_',
+          'fillPasswordFormWithData_',
+          'getCanonicalActionForForm_',
+          'hasPasswordField_',
+          'getSameOriginFrames_',
+          'getPasswordFormDataList_',
+          'onSubmitButtonTouchEnd_',
+          'findInputByFieldIdentifier_',
+          'getFormInputElements_',
+          'viewport',
+          'end_all_frames_injected',
+          '*browserify*'
+        ]
       }
     },
     browserify: {

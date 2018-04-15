@@ -46,6 +46,16 @@ inIframe({
 });
 */
 
+const commonReportHtml = `
+{<span id="id-holder"></span>}
+[<span style="color: red;" id="context-color1">?</span>]
+[<span style="color: red;" id="context-color2">?</span>]
+[<span style="color: red;" id="context-color3">?</span>]
+[<span style="color: red;" id="context-color4">?</span>]
+(<span style="color: red;" id="context-counter1">?</span>)
+(<span style="color: red;" id="context-counter2">?</span>)
+`;
+
 const treeStyle = `
   ul, li, p {
     margin-top: 0px;
@@ -151,54 +161,29 @@ function getId(self) {
 }
 
 function getBase(win) {
-  return ensureSingleRegistration(win, 'dummyBRegistrationName', () => {
+  return ensureSingleRegistration(win, 'dummyBaseRegistrationName', () => {
     const {
       DBUIWebComponentBase,
     } = getDBUIWebComponentCore(win);
 
     class Base extends DBUIWebComponentBase {
 
-      static get contextSubscribe() {
-        return [...super.contextSubscribe, 'color1', 'color2', 'color4'];
-      }
-
-      static get contextProvide() {
-        return [...super.contextProvide, 'color4'];
-      }
-
       connectedCallback() {
         super.connectedCallback();
-        // closestDbuiParent exists but might not be connected itself
-        // the children CAN register nevertheless
-        this.__testClosestDbuiParent = this.closestDbuiParent;
-        this.__testShadowDomParent = this.shadowDomParent;
-        this.__testLightDomParent = this.lightDomParent;
-        // closestDbuiChildren might not be complete
-        this.__testClosestDbuiChildren = [...this.closestDbuiChildren];
-        this.__testShadowDomChildren = [...this.shadowDomChildren];
-        this.__testLightDomChildren = [...this.lightDomChildren];
+        this.shadowRoot.querySelector('#id-holder').innerText = getId(this);
       }
 
-      static get observedAttributes() {
-        return [...super.observedAttributes, 'context-color4'];
-      }
-
-      attributeChangedCallback(name, oldValue, newValue) {
-        super.attributeChangedCallback(name, oldValue, newValue);
-        if (name === 'context-color4') {
-          this.setContext({
-            color4: newValue
-          });
-        }
-      }
-
-      onContextChanged(newContext) {
+      onContextChanged(newContext, prevContext) {
+        this.__newContext = newContext;
+        this.__prevContext = prevContext;
 
         const {
           color1: newColor1,
           color2: newColor2,
           color3: newColor3,
           color4: newColor4,
+          counter1: newCounter1,
+          counter2: newCounter2,
         } = newContext;
 
         const contextColor1 = this.shadowRoot.querySelector('#context-color1');
@@ -214,37 +199,13 @@ function getBase(win) {
         contextColor4 && (contextColor4.innerText = (newColor4 || 'red'));
         contextColor4 && (contextColor4.style.color = (newColor4 || 'red'));
 
-        newColor1 && this.setContext({
-          color1: newColor1,
-          // color2: newColor2,
-        });
-
-        newColor4 && this.setAttribute('context-color4', newColor4);
-
+        const contextCounter1 = this.shadowRoot.querySelector('#context-counter1');
+        contextCounter1 && newCounter1 && (contextCounter1.innerText = `${newCounter1}`);
+        contextCounter1 && newCounter1 && (contextCounter1.style.color = 'black');
+        const contextCounter2 = this.shadowRoot.querySelector('#context-counter2');
+        contextCounter2 && newCounter2 && (contextCounter2.innerText = `${newCounter2}`);
+        contextCounter2 && newCounter2 && (contextCounter2.style.color = 'black');
       }
-      // TODO: this should be removed
-      _readyCallback() {
-        super._readyCallback();
-        this.shadowRoot.querySelector('#id-holder').innerText = getId(this);
-        // if (this.id === 'light-dummy-d-one-root') {
-        //   setTimeout(() => {
-        //     this.setContext({
-        //       color1: 'blue',
-        //       color2: 'indianred',
-        //       // color4: 'darkgreen',
-        //     });
-        //     setTimeout(() => {
-        //       this.setAttribute('context-color4', 'indigo');
-        //     }, 4000);
-        //   }, 2000);
-        // }
-        // if (this.id === 'light-dummy-d-three-in-default-slot') {
-        //   setTimeout(() => {
-        //     this.setAttribute('context-color4', 'darkgreen');
-        //   }, 4000);
-        // }
-      }
-
     }
 
     return Base;
@@ -269,19 +230,14 @@ function getDummyA(win) {
         return dummyARegistrationName;
       }
 
-      static get contextSubscribe() {
-        return [...super.contextSubscribe, 'color3'];
-      }
-
       static get templateInnerHTML() {
         return `
           <style>${dummyAStyle}</style>
           <div>
-            <p>Dummy A (<span id="id-holder"></span>) [<span style="color: red;" id="context-color1">?????</span>] [<span style="color: red;" id="context-color2">?????</span>] [<span style="color: red;" id="context-color3">?????</span>] [<span style="color: red;" id="context-color4">?????</span>]</p>
+            <p>Dummy A ${commonReportHtml}</p>
           </div>
         `;
       }
-
     }
 
     return Registerable(
@@ -322,7 +278,7 @@ function getDummyB(win) {
         return `
           <style>${dummyBStyle}</style>
           <div>
-            <p>Dummy B (<span id="id-holder"></span>) [<span style="color: red;" id="context-color1">?????</span>] [<span style="color: red;" id="context-color2">?????</span>] [<span style="color: red;" id="context-color3">?????</span>] [<span style="color: red;" id="context-color4">?????</span>]</p>
+            <p>Dummy B ${commonReportHtml}</p>
             <ul>
               <li>
                 <dummy-a id="shadow-dummy-a"></dummy-a>
@@ -331,7 +287,6 @@ function getDummyB(win) {
           </div>
         `;
       }
-
     }
 
     return Registerable(
@@ -354,6 +309,7 @@ function getDummyC(win) {
       defineCommonStaticMethods,
       Registerable
     } = getDBUIWebComponentCore(win);
+
     const Base = getBase(win);
 
     const DummyB = getDummyB(win);
@@ -372,7 +328,7 @@ function getDummyC(win) {
         return `
           <style>${dummyCStyle}</style>
           <div>
-            <p>Dummy C (<span id="id-holder"></span>) [<span style="color: red;" id="context-color1">?????</span>] [<span style="color: red;" id="context-color2">?????</span>] [<span style="color: red;" id="context-color3">?????</span>] [<span style="color: red;" id="context-color4">?????</span>]</p>
+            <p>Dummy C ${commonReportHtml}</p>
             <ul>
               <li>
                 <dummy-b id="shadow-dummy-b"></dummy-b>
@@ -381,7 +337,6 @@ function getDummyC(win) {
           </div>
         `;
       }
-
     }
 
     return Registerable(
@@ -404,6 +359,7 @@ function getDummyD(win) {
       defineCommonStaticMethods,
       Registerable
     } = getDBUIWebComponentCore(win);
+
     const Base = getBase(win);
 
     const DummyB = getDummyB(win);
@@ -414,41 +370,15 @@ function getDummyD(win) {
         return dummyDRegistrationName;
       }
 
-      static get observedAttributes() {
-        return [...super.observedAttributes, 'context-color1', 'context-color2', 'context-color3'];
-      }
-
       static get dependencies() {
         return [...super.dependencies, DummyB];
-      }
-
-      static get contextProvide() {
-        return [...super.contextProvide, 'color1', 'color2', 'color3'];
-      }
-
-      attributeChangedCallback(name, oldValue, newValue) {
-        super.attributeChangedCallback(name, oldValue, newValue);
-        // const hasValue = newValue !== null;
-        if (name === 'context-color1') {
-          this.setContext({
-            color1: newValue
-          });
-        } else if (name === 'context-color2') {
-          this.setContext({
-            color2: newValue
-          });
-        } else if (name === 'context-color3') {
-          this.setContext({
-            color3: newValue
-          });
-        }
       }
 
       static get templateInnerHTML() {
         return `
           <style>${dummyDStyle}</style>
           <div>
-            <p>Dummy D (<span id="id-holder"></span>) [<span style="color: red;" id="context-color1">?????</span>] [<span style="color: red;" id="context-color2">?????</span>] [<span style="color: red;" id="context-color3">?????</span>] [<span style="color: red;" id="context-color4">?????</span>]</p>
+            <p>Dummy D ${commonReportHtml}</p>
             <ul>
               <li>
                 <dummy-b id="shadow-dummy-b"></dummy-b>
@@ -501,7 +431,7 @@ function getDummyE(win) {
         return `
           <style>${dummyEStyle}</style>
           <div>
-            <p>Dummy E (<span id="id-holder"></span>) [<span style="color: red;" id="context-color1">?????</span>] [<span style="color: red;" id="context-color2">?????</span>] [<span style="color: red;" id="context-color3">?????</span>] [<span style="color: red;" id="context-color4">?????</span>]</p>
+            <p>Dummy E ${commonReportHtml}</p>
             <ul>
               <li>
                 <dummy-d id="shadow-dummy-d">
@@ -516,7 +446,6 @@ function getDummyE(win) {
           </div>
         `;
       }
-
     }
 
     return Registerable(
@@ -529,6 +458,7 @@ function getDummyE(win) {
 getDummyE.registrationName = dummyERegistrationName;
 
 export {
+  getBase,
   getDummyA,
   getDummyB,
   getDummyC,

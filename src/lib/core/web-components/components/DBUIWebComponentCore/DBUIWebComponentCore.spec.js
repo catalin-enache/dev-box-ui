@@ -35,9 +35,9 @@ function getDummyOne(win) {
         return dummyOneRegistrationName;
       }
 
-      static get propertiesToDefine() {
+      static get attributesToDefine() {
         return {
-          ...super.propertiesToDefine,
+          ...super.attributesToDefine,
           ...{ bar: 'BAR' }
         };
       }
@@ -274,41 +274,45 @@ describe('DBUIWebComponentBase', () => {
     });
   });
 
-  describe('isMounted', () => {
-    it('is true after connectedCallback and false after disconnectedCallback', (done) => {
-      inIframe({
-        bodyHTML: `
-          <dummy-one-parent></dummy-one-parent>
-          `,
-        onLoad: ({ contentWindow, iframe }) => {
-          const DummyOneParent = getDummyOneParent(contentWindow);
-          const dummyOneParentInstance = contentWindow.document.querySelector(DummyOneParent.registrationName);
+  describe('isMounted and isDisconnected', () => {
+    it(`
+    isMounted is true after connectedCallback and false after disconnectedCallback,
+    isDisconnected is false after connectedCallback and true after disconnectedCallback.
+    We need isDisconnected info when DOM tree is constructed
+    - after constructor() and before connectedCallback() -
+    when closestDbuiParent should not return null.
+    `, (done) => {
+        inIframe({
+          bodyHTML: `
+            <dummy-one-parent></dummy-one-parent>
+            `,
+          onLoad: ({ contentWindow, iframe }) => {
+            const DummyOneParent = getDummyOneParent(contentWindow);
+            const dummyOneParentInstance = contentWindow.document.querySelector(DummyOneParent.registrationName);
 
-          contentWindow.customElements.whenDefined(DummyOneParent.registrationName).then(() => {
-            const parentNode = dummyOneParentInstance.parentNode;
-            expect(dummyOneParentInstance.isMounted).to.equal(true);
-            dummyOneParentInstance.remove();
-            expect(dummyOneParentInstance.isMounted).to.equal(false);
-            parentNode.appendChild(dummyOneParentInstance);
-            expect(dummyOneParentInstance.isMounted).to.equal(true);
+            contentWindow.customElements.whenDefined(DummyOneParent.registrationName).then(() => {
+              const parentNode = dummyOneParentInstance.parentNode;
+              expect(dummyOneParentInstance.isMounted).to.equal(true);
+              expect(dummyOneParentInstance.isDisconnected).to.equal(false);
+              dummyOneParentInstance.remove();
+              expect(dummyOneParentInstance.isMounted).to.equal(false);
+              expect(dummyOneParentInstance.isDisconnected).to.equal(true);
+              parentNode.appendChild(dummyOneParentInstance);
+              expect(dummyOneParentInstance.isMounted).to.equal(true);
+              expect(dummyOneParentInstance.isDisconnected).to.equal(false);
 
-            parentNode.removeChild(dummyOneParentInstance);
-            expect(dummyOneParentInstance.isMounted).to.equal(false);
+              parentNode.removeChild(dummyOneParentInstance);
+              expect(dummyOneParentInstance.isMounted).to.equal(false);
+              expect(dummyOneParentInstance.isDisconnected).to.equal(true);
 
-            iframe.remove();
-            done();
-          });
+              iframe.remove();
+              done();
+            });
 
-          DummyOneParent.registerSelf();
-        }
+            DummyOneParent.registerSelf();
+          }
+        });
       });
-    });
-  });
-
-  describe('isReady', () => {
-    xit('returns true after it registered to new closestDbuiParent', () => {
-
-    });
   });
 
   describe('prototypeChainInfo', () => {
@@ -496,7 +500,7 @@ describe('DBUIWebComponentBase', () => {
     });
   });
 
-  describe('propertiesToDefine', () => {
+  describe('attributesToDefine', () => {
     it('are defined if not set by user', (done) => {
       inIframe({
         bodyHTML: `
@@ -504,17 +508,17 @@ describe('DBUIWebComponentBase', () => {
         `,
         onLoad: ({ contentWindow, iframe }) => {
           const DummyOne = getDummyOne(contentWindow);
-          const dummyOneDefineProperty = DummyOne.prototype._defineProperty;
-          const spyDummyOneDefineProperty = sinon.stub(DummyOne.prototype, '_defineProperty')
-            .callsFake(dummyOneDefineProperty);
+          const dummyOneDefineAttribute = DummyOne.prototype._defineAttribute;
+          const spyDummyOneDefineAttribute = sinon.stub(DummyOne.prototype, '_defineAttribute')
+            .callsFake(dummyOneDefineAttribute);
           const dummyOneInst = contentWindow.document.querySelector('dummy-one');
 
           contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
-            expect(spyDummyOneDefineProperty.callCount).to.equal(2);
-            assert(spyDummyOneDefineProperty.calledWithExactly('bar', 'BAR'), 'called with bar, BAR');
+            expect(spyDummyOneDefineAttribute.callCount).to.equal(2);
+            assert(spyDummyOneDefineAttribute.calledWithExactly('bar', 'BAR'), 'called with bar, BAR');
             expect(dummyOneInst.getAttribute('bar')).to.equal('BAR');
 
-            spyDummyOneDefineProperty.restore();
+            spyDummyOneDefineAttribute.restore();
             iframe.remove();
             done();
           });
@@ -531,19 +535,19 @@ describe('DBUIWebComponentBase', () => {
         `,
         onLoad: ({ contentWindow, iframe }) => {
           const DummyOne = getDummyOne(contentWindow);
-          const dummyOneDefineProperty = DummyOne.prototype._defineProperty;
-          const spyDummyOneDefineProperty = sinon.stub(DummyOne.prototype, '_defineProperty')
-            .callsFake(dummyOneDefineProperty);
+          const dummyOneDefineAttribute = DummyOne.prototype._defineAttribute;
+          const spyDummyOneDefineAttribute = sinon.stub(DummyOne.prototype, '_defineAttribute')
+            .callsFake(dummyOneDefineAttribute);
           const dummyOneInst = contentWindow.document.querySelector('dummy-one');
           dummyOneInst.setAttribute('bar', 'customBar');
 
           contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
-            expect(spyDummyOneDefineProperty.callCount).to.equal(2);
-            assert(spyDummyOneDefineProperty.calledWithExactly('bar', 'BAR'), 'called with bar, BAR');
+            expect(spyDummyOneDefineAttribute.callCount).to.equal(2);
+            assert(spyDummyOneDefineAttribute.calledWithExactly('bar', 'BAR'), 'called with bar, BAR');
             // user defined property was not overridden with default value
             expect(dummyOneInst.getAttribute('bar')).to.equal('customBar');
 
-            spyDummyOneDefineProperty.restore();
+            spyDummyOneDefineAttribute.restore();
             iframe.remove();
             done();
           });
@@ -662,31 +666,6 @@ describe('DBUIWebComponentBase', () => {
           });
 
           DummyOne.registerSelf();
-        }
-      });
-    });
-  });
-
-  describe('CONSTANTS', () => {
-    it('are defined', (done) => {
-      inIframe({
-        onLoad: ({ contentWindow, iframe }) => {
-          const {
-            DBUIWebComponentBase
-          } = getDBUIWebComponentCore(contentWindow);
-
-          expect(DBUIWebComponentBase.CONSTANTS).to.include.all.keys([
-            'PARENT_TARGET_TYPE',
-            'CHILDREN_TARGET_TYPE',
-            'SHADOW_DOM_TYPE',
-            'LIGHT_DOM_TYPE',
-            'CHANNEL_INTERNAL',
-            'MESSAGE_SHADOW_DOM_ANCESTORS_CHAIN_CONNECTED',
-            'EVENT_READY'
-          ]);
-
-          iframe.remove();
-          done();
         }
       });
     });
