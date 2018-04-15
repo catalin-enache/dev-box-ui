@@ -22,9 +22,6 @@ eventually it should propagate locale in light DOM if user sets propagate-locale
 
 use internal attributes which should be prefixed with dbui, ex: dbui-dir, dbui-lang
 
-rename shadowDomChildren, shadowDomParent, lightDomParent, lightDomChildren to
-shadowDomDbuiChildren, shadowDomDbuiParent, lightDomDbuiParent, lightDomDbuiChildren
-
 proposal:
   get lightDomChildren()
   get lightDomParent()

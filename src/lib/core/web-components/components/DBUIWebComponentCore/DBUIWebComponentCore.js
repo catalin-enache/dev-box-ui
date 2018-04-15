@@ -271,16 +271,16 @@ export default function getDBUIWebComponentCore(win) {
 
       // ============================ [Descendants/Ancestors and registrations] >> =============================================
 
-      get shadowDomChildren() {
+      get shadowDomDbuiChildren() {
         // children in slots are NOT included here
         return [...this.shadowRoot.querySelectorAll('[dbui-web-component]')];
       }
 
-      get shadowDomParent() {
+      get shadowDomDbuiParent() {
         return this.getRootNode().host || null;
       }
 
-      get lightDomParent() {
+      get lightDomDbuiParent() {
         // can return a parent which is in shadow DOM of the grand-parent
         let parent = this.parentElement;
         while (parent && !parent.hasAttribute('dbui-web-component')) {
@@ -289,7 +289,7 @@ export default function getDBUIWebComponentCore(win) {
         return parent || null;
       }
 
-      get lightDomChildren() {
+      get lightDomDbuiChildren() {
         // children in slots ARE included here
         return [...this.querySelectorAll('[dbui-web-component]')];
       }
@@ -301,7 +301,7 @@ export default function getDBUIWebComponentCore(win) {
           return null;
         }
         closestParent = closestParent.closest('[dbui-web-component]');
-        return closestParent || this.shadowDomParent;
+        return closestParent || this.shadowDomDbuiParent;
       }
 
       get closestDbuiParent() {
@@ -333,7 +333,7 @@ export default function getDBUIWebComponentCore(win) {
 
       // might be useful in some scenarios
       get closestDbuiChildrenLiveQuery() {
-        const dbuiChildren = [...this.lightDomChildren, ...this.shadowDomChildren];
+        const dbuiChildren = [...this.lightDomDbuiChildren, ...this.shadowDomDbuiChildren];
         const closestDbuiChildren = dbuiChildren.filter((child) => child.closestDbuiParentLiveQuery === this);
         return closestDbuiChildren;
       }
@@ -414,7 +414,7 @@ export default function getDBUIWebComponentCore(win) {
       * web components standard API
       * connectedCallback is fired from children to parent in shadow DOM
       * but the order is less predictable in light DOM.
-      * Should not read light/shadowDomChildren here.
+      * Should not read light/shadowDomDbuiChildren here.
       * Is called after attributeChangedCallback.
       * */
       connectedCallback() {
