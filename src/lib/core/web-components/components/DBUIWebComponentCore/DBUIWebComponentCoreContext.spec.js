@@ -308,6 +308,7 @@ describe('DBUIWebComponentBase context passing', () => {
               newul2.id = ul2.id;
               newul2.innerHTML = ul2InnerHTML;
 
+              // not connected yet
               expect(onConnectedCallbackCalls.length).to.equal(0);
               // because of two attributes on light-dummy-d-three-in-default-slot
               // see Scenario 2 on attributeChangedCallback comment in DummyWebComponentCore.js
@@ -333,13 +334,14 @@ describe('DBUIWebComponentBase context passing', () => {
               // expect onContextChanged was not called even component asked for context
               // because there are no context values yet
               // and _onContextChanged prevented onContextChanged being called when object found is empty
-              // or values in it are not different than _lastReceivedContext.
+              // or values in it are NOT different than _lastReceivedContext.
               expect(lightDummyDThreeInDefaultSlot.__newContext).to.deep.equal(undefined);
+              // received context from middle ancestor
               expect(lightDummyEInDefaultSlot.__newContext).to.deep.equal({ color2: 'deepskyblue' });
 
               setTimeout(() => {
 
-                // clear onConnectedCallbackCalls / onDisconnectedCallbackCalls
+                // clear
                 onConnectedCallbackCalls.splice(0);
                 onDisconnectedCallbackCalls.splice(0);
                 onAttributeChangedCallbackCalls.splice(0);
@@ -357,6 +359,7 @@ describe('DBUIWebComponentBase context passing', () => {
                 // expect onContextChanged was called because it was moved into DOM area having context
                 expect(lightDummyDTwoInDefaultSlot.__newContext).to.deep.equal({ color1: 'green', color2: 'maroon', color4: 'bisque' });
                 expect(lightDummyDThreeInDefaultSlot.__newContext).to.deep.equal({ color1: 'green', color2: 'maroon', color4: 'bisque' });
+                // expect context still overriden by middle ancestor
                 expect(lightDummyEInDefaultSlot.__newContext).to.deep.equal({ color1: 'green', color2: 'deepskyblue', color4: 'bisque' });
                 // because of three dummy-d components in the tree (light & shadow)
                 // were disconnected and then reconnected
@@ -610,9 +613,8 @@ describe('DBUIWebComponentBase context passing', () => {
                 // which have set new context propagating it down.
                 expect(onContextChangedCalls[1]).deep.equal({ newContext: { color3: 'olive' }, prevContext: { color3: 'cadetblue' } });
                 // NOTE:
-                // The previous expectations were commented as they only work on Chrome but not on Safari
                 // It seems it is a detail of implementation between browser vendors
-                // the order of the events during tree building.
+                // the order and number of the events during tree building.
               }
 
 
@@ -907,7 +909,7 @@ describe('DBUIWebComponentBase context passing', () => {
   describe('_checkContext, _getContext, _resetContext', () => {
     it(`
     _checkContext is called once by every component that subscribed for something,
-    _getContext is called by every parent (non leaf),
+    _getContext is called once by every parent (non leaf),
     _resetContext is called once by every component that was removed from DOM tree
     `, (done) => {
         inIframe({
@@ -1093,6 +1095,148 @@ describe('DBUIWebComponentBase context passing', () => {
                 } else {
                   expect(node.__newContext.color4).to.equal(undefined);
                   expect(node.__newContext).to.deep.equal(node._lastReceivedContext);
+                }
+              });
+
+              setTimeout(() => {
+                iframe.remove();
+                done();
+              }, 0);
+            });
+
+            DummyE.registerSelf();
+          }
+        });
+      });
+  });
+
+  describe('contextProvide', () => {
+    it(`
+    returns a whitelist of keys allowed to be set on context
+    `, (done) => {
+        inIframe({
+          headStyle: treeStyle,
+          bodyHTML: `
+          <div id="container">
+          </div>
+          `,
+          onLoad: ({ contentWindow, iframe }) => {
+            const Base = getBase(contentWindow);
+            const DummyA = getDummyA(contentWindow);
+            const DummyB = getDummyB(contentWindow);
+            const DummyC = getDummyC(contentWindow);
+            const DummyD = getDummyD(contentWindow);
+            const DummyE = getDummyE(contentWindow);
+
+            // const getId = (self) => `${self.id}_${(self.closestDbuiParent || {}).id || null}`;
+
+            setGetter(Base, 'contextSubscribe', () => {
+              return ['color3', 'color4'];
+            });
+
+            setGetter(Base, 'contextProvide', () => {
+              return ['color4'];
+            });
+
+            const container = contentWindow.document.querySelector('#container');
+
+            Promise.all([
+              DummyA.registrationName,
+              DummyB.registrationName,
+              DummyC.registrationName,
+              DummyD.registrationName,
+              DummyE.registrationName,
+            ].map((localName) => contentWindow.customElements.whenDefined(localName)
+            )).then(() => {
+
+              container.innerHTML = treeOne;
+
+              const dbuiNodes = treeOneGetDbuiNodes(contentWindow);
+              const {
+                lightDummyDOneRoot
+              } = dbuiNodes;
+
+              lightDummyDOneRoot.setContext({ color3: 'cadetblue', color4: 'goldenrod' });
+
+              expect(lightDummyDOneRoot._providingContext).to.deep.equal({ color4: 'goldenrod' });
+
+              Object.keys(dbuiNodes).forEach((key) => {
+                const node = dbuiNodes[key];
+                if (node === lightDummyDOneRoot) {
+                  expect(node.__newContext).to.equal(undefined);
+                } else {
+                  expect(node.__newContext).to.deep.equal({ color4: 'goldenrod' });
+                }
+              });
+
+              setTimeout(() => {
+                iframe.remove();
+                done();
+              }, 0);
+            });
+
+            DummyE.registerSelf();
+          }
+        });
+      });
+  });
+
+  describe('contextSubscribe', () => {
+    it(`
+    returns a whitelist of keys allowed to be received on context
+    `, (done) => {
+        inIframe({
+          headStyle: treeStyle,
+          bodyHTML: `
+          <div id="container">
+          </div>
+          `,
+          onLoad: ({ contentWindow, iframe }) => {
+            const Base = getBase(contentWindow);
+            const DummyA = getDummyA(contentWindow);
+            const DummyB = getDummyB(contentWindow);
+            const DummyC = getDummyC(contentWindow);
+            const DummyD = getDummyD(contentWindow);
+            const DummyE = getDummyE(contentWindow);
+
+            // const getId = (self) => `${self.id}_${(self.closestDbuiParent || {}).id || null}`;
+
+            setGetter(Base, 'contextSubscribe', () => {
+              return ['color4'];
+            });
+
+            setGetter(Base, 'contextProvide', () => {
+              return ['color3', 'color4'];
+            });
+
+            const container = contentWindow.document.querySelector('#container');
+
+            Promise.all([
+              DummyA.registrationName,
+              DummyB.registrationName,
+              DummyC.registrationName,
+              DummyD.registrationName,
+              DummyE.registrationName,
+            ].map((localName) => contentWindow.customElements.whenDefined(localName)
+            )).then(() => {
+
+              container.innerHTML = treeOne;
+
+              const dbuiNodes = treeOneGetDbuiNodes(contentWindow);
+              const {
+                lightDummyDOneRoot
+              } = dbuiNodes;
+
+              lightDummyDOneRoot.setContext({ color3: 'cadetblue', color4: 'goldenrod' });
+
+              expect(lightDummyDOneRoot._providingContext).to.deep.equal({ color3: 'cadetblue', color4: 'goldenrod' });
+
+              Object.keys(dbuiNodes).forEach((key) => {
+                const node = dbuiNodes[key];
+                if (node === lightDummyDOneRoot) {
+                  expect(node.__newContext).to.equal(undefined);
+                } else {
+                  expect(node.__newContext).to.deep.equal({ color4: 'goldenrod' });
                 }
               });
 

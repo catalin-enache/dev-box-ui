@@ -20,6 +20,7 @@ the parent might not be itself connected yet.
 If children are accessed in connectedCallback they might not be complete yet at that time.
 */
 
+// https://www.kirupa.com/html5/handling_events_for_many_elements.htm
 export default function getDBUIWebComponentCore(win) {
   const LocaleService = getDBUILocaleService(win);
 
