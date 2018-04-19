@@ -336,7 +336,7 @@ describe('DBUIWebComponentBase', () => {
   });
 
   describe('onLocaleChange', () => {
-    it('is called when locale is changed', (done) => {
+    xit('is called when locale is changed', (done) => {
       inIframe({
         bodyHTML: `
           <dummy-one></dummy-one>
@@ -643,7 +643,7 @@ describe('DBUIWebComponentBase', () => {
   });
 
   describe('disconnectedCallback', () => {
-    it('unregisterLocaleChange', (done) => {
+    xit('unregisterLocaleChange', (done) => {
       inIframe({
         bodyHTML: `
         <dummy-one></dummy-one>

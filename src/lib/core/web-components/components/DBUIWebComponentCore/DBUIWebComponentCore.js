@@ -53,7 +53,7 @@ export default function getDBUIWebComponentCore(win) {
 
       // web components standard API
       static get observedAttributes() {
-        return [];
+        return ['dir', 'lang'];
       }
 
       get isMounted() {
@@ -99,14 +99,23 @@ export default function getDBUIWebComponentCore(win) {
         this.init && this.init(...args);
       }
 
+      // ============================ [Locale] >> =============================================
+
+      _setDefaultLocale() {
+        !this.getAttribute('dir') && this.setAttribute('dbui-dir', 'ltr');
+        !this.getAttribute('lang') && this.setAttribute('dbui-lang', 'en');
+      }
+
+      // ============================ << [Locale]  =============================================
+
       // ============================ [Context] >> =============================================
 
       static get contextProvide() {
-        return [];
+        return ['dbuiDir', 'dbuiLang'];
       }
 
       static get contextSubscribe() {
-        return [];
+        return ['dbuiDir', 'dbuiLang'];
       }
 
       _providesContextFor(key) {
@@ -233,7 +242,12 @@ export default function getDBUIWebComponentCore(win) {
       // which might set their context and propagate it down.
       // eslint-disable-next-line
       onContextChanged(newContext, prevContext) {
-        // no op
+        const {
+          dbuiDir, dbuiLang
+        } = newContext;
+        // keep eventual changes done by attributeChangedCallback over onContextChanged
+        dbuiDir && !this.getAttribute('dir') && this.setAttribute('dbui-dir', dbuiDir);
+        dbuiLang && !this.getAttribute('lang') && this.setAttribute('dbui-lang', dbuiLang);
       }
 
       // _checkContext can propagate to the very top even if ancestors are not connected.
@@ -394,9 +408,13 @@ export default function getDBUIWebComponentCore(win) {
       }
 
       _handleLocaleChange(locale) {
-        this.setAttribute('dir', locale.dir);
-        this.setAttribute('lang', locale.lang);
-        this.onLocaleChange(locale);
+        // this.setAttribute('dir', locale.dir);
+        // this.setAttribute('lang', locale.lang);
+        // this.onLocaleChange(locale);
+      }
+
+      onLocaleChange() {
+        // no op
       }
 
       // web components standard API
@@ -441,11 +459,13 @@ export default function getDBUIWebComponentCore(win) {
         Object.keys(attributesToDefine).forEach((property) => {
           this._defineAttribute(property, attributesToDefine[property]);
         });
+        this._setDefaultLocale();
         // We can safely register to closestDbuiParent because it exists at this time
         // but we must not assume it was connected.
         // NOTE: even if closestDbuiParent (or any ancestor) is not connected
         // the top of the tree (topDbuiAncestor) can be reached if needed
         this._registerSelfToClosestDbuiParent();
+        // will most likely override default locale that was just set
         this._checkContext();
       }
 
@@ -493,11 +513,19 @@ export default function getDBUIWebComponentCore(win) {
 
       // eslint-disable-next-line
       onAttributeChangedCallback(name, oldValue, newValue) {
-        // no op
-      }
-
-      onLocaleChange() {
-        // no op
+        const config = {
+          dir: () => {
+            const newDir = newValue || 'ltr'; // force default
+            this.setAttribute('dbui-dir', newDir);
+            this.setContext({ dbuiDir: newDir });
+          },
+          lang: () => {
+            const newLang = newValue || 'en'; // force default
+            this.setAttribute('dbui-lang', newLang);
+            this.setContext({ dbuiLang: newLang });
+          }
+        };
+        config[name] && config[name]();
       }
     }
 

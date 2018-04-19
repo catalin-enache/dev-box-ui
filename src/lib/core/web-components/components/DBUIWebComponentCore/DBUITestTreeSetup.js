@@ -174,6 +174,7 @@ function getBase(win) {
       }
 
       onContextChanged(newContext, prevContext) {
+        super.onContextChanged(newContext, prevContext);
         this.__newContext = newContext;
         this.__prevContext = prevContext;
 
