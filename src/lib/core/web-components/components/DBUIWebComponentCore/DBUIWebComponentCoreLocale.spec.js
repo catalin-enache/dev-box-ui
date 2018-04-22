@@ -754,7 +754,8 @@ describe('DBUIWebComponentBase locale behaviour', () => {
     });
 
   it(`
-  closestDbuiParent context takes precedence over closest surrounding locale
+  closest surrounding locale is ignored for nodes that are not top dbui ancestors
+  and instead locale is read from closestDbuiParent
   `, (done) => {
       inIframe({
         headStyle: treeStyle,
@@ -785,16 +786,18 @@ describe('DBUIWebComponentBase locale behaviour', () => {
             expect(dummyDInner.getAttribute('dbui-dir')).to.equal('ltr');
             expect(dummyDInner.getAttribute('dbui-lang')).to.equal('it');
 
-            dummyDInner.setAttribute('lang', 'de');
             dummyDInner.setAttribute('dir', 'abc');
-            expect(dummyDInner.getAttribute('dbui-lang')).to.equal('de');
+            dummyDInner.setAttribute('lang', 'de');
+
             expect(dummyDInner.getAttribute('dbui-dir')).to.equal('abc');
-            dummyDInner.removeAttribute('lang');
+            expect(dummyDInner.getAttribute('dbui-lang')).to.equal('de');
+
             dummyDInner.removeAttribute('dir');
+            dummyDInner.removeAttribute('lang');
             // expect locale to be re-read from from closetDbuiParent
             // and not from closest surrounding locale
-            expect(dummyDInner.getAttribute('dbui-lang')).to.equal('it');
             expect(dummyDInner.getAttribute('dbui-dir')).to.equal('ltr');
+            expect(dummyDInner.getAttribute('dbui-lang')).to.equal('it');
 
             setTimeout(() => {
               iframe.remove();
