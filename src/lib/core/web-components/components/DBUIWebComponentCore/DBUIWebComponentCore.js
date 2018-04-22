@@ -1,5 +1,4 @@
 
-import getDBUILocaleService from '../../../services/DBUILocaleService';
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
 import DBUICommonCssVars from './DBUICommonCssVars';
 
@@ -22,8 +21,6 @@ If children are accessed in connectedCallback they might not be complete yet at 
 
 // https://www.kirupa.com/html5/handling_events_for_many_elements.htm
 export default function getDBUIWebComponentCore(win) {
-  const LocaleService = getDBUILocaleService(win);
-
   return ensureSingleRegistration(win, registrationName, () => {
     defineCommonCSSVars(win);
 
@@ -90,9 +87,6 @@ export default function getDBUIWebComponentCore(win) {
         this.disconnectedCallback = this.disconnectedCallback.bind(this);
         this.attributeChangedCallback = this.attributeChangedCallback.bind(this);
         this.adoptedCallback = this.adoptedCallback.bind(this);
-        // TODO: _handleLocaleChange only if user sets locale-aware attribute
-        this._handleLocaleChange = this._handleLocaleChange.bind(this);
-        this.onLocaleChange = this.onLocaleChange.bind(this);
         this.unregisterLocaleChange = null;
 
         // provide support for traits if any as they can't override constructor
@@ -104,6 +98,80 @@ export default function getDBUIWebComponentCore(win) {
       _setDefaultLocale() {
         !this.getAttribute('dir') && this.setAttribute('dbui-dir', 'ltr');
         !this.getAttribute('lang') && this.setAttribute('dbui-lang', 'en');
+      }
+
+      _resetLocale() {
+        // dbuiDir/Lang dbui-dir/lang can be set
+        // as a result of attributeChangedCallback
+        // or as a result of checking locale up the tree (_captureLocale).
+        // We can remove them if they were set
+        // as a result of _captureLocale
+        // because when node will be re-inserted
+        // the look-up will happen again and they will be set again.
+        // But we can't delete them if they were set onAttributeChangedCallback
+        // because that will not be fired again when node is moved in other part of the DOM.
+        if (!this.getAttribute('dir')) {
+          // we know that locale props/attrs were set
+          // as a result of checking up the tree.
+          delete this._providingContext.dbuiDir;
+          this.removeAttribute('dbui-dir');
+        }
+        if (!this.getAttribute('lang')) {
+          delete this._providingContext.dbuiLang;
+          this.removeAttribute('dbui-lang');
+        }
+      }
+
+      _onLocaleAttributeChangedCallback(name, oldValue, newValue) {
+        if (!['dir', 'lang'].includes(name)) return;
+        const defaultValue = name === 'dir' ? 'ltr' : 'en';
+        const contextKey = name === 'dir' ? 'dbuiDir' : 'dbuiLang';
+        const closestDbuiParent = this.closestDbuiParent;
+        const valueToSet = newValue ||
+          (closestDbuiParent && closestDbuiParent._getContext([contextKey])[contextKey]) ||
+          (!closestDbuiParent && this._findSurroundingLocale()[name]) ||
+          defaultValue;
+        this.setAttribute(`dbui-${name}`, valueToSet);
+        this.setContext({
+          [contextKey]: valueToSet
+        });
+      }
+
+      _findSurroundingLocale() {
+        const locale = ['dir', 'lang'].reduce((acc, attr) => {
+          // Don't override user defined locale attributes.
+          // dbuiDir/Lang were set on context onAttributeChangedCallback.
+          if (this.getAttribute(attr)) return acc;
+          // Find closest ancestor having dir or lang set.
+          const closestAncestorHavingLocale =
+            this._getClosestAncestorMatchingCondition((node) => {
+              return node.getAttribute(attr);
+            });
+
+          if (closestAncestorHavingLocale) {
+            const value =
+              closestAncestorHavingLocale.getAttribute(attr);
+            acc[attr] = value;
+          }
+          return acc;
+        }, {});
+        return locale;
+      }
+
+      _captureLocale() {
+        // Only capture locale if node is top most ancestor.
+        // The children will be notified via context.
+        if (this.closestDbuiParent) return;
+        const { dir, lang } = this._findSurroundingLocale();
+
+        if (dir || lang) {
+          dir && this.setAttribute('dbui-dir', dir);
+          lang && this.setAttribute('dbui-lang', lang);
+          const context = {};
+          dir && (context.dbuiDir = dir);
+          lang && (context.dbuiLang = lang);
+          this.setContext(context);
+        }
       }
 
       // ============================ << [Locale]  =============================================
@@ -198,6 +266,8 @@ export default function getDBUIWebComponentCore(win) {
       }
 
       _getContext(keys) {
+        // This must run always in the parent of the node asking for context
+        // and not in the node itself.
         const ownedKeys = [];
         const keysToAskFor = [];
         keys.forEach((key) => {
@@ -285,6 +355,14 @@ export default function getDBUIWebComponentCore(win) {
       // ============================ << [Context] =============================================
 
       // ============================ [Descendants/Ancestors and registrations] >> =============================================
+
+      _getClosestAncestorMatchingCondition(callback) {
+        let closestAncestor = this.parentElement;
+        while (closestAncestor && !callback(closestAncestor)) {
+          closestAncestor = closestAncestor.parentElement;
+        }
+        return closestAncestor;
+      }
 
       get shadowDomDbuiChildren() {
         // children in slots are NOT included here
@@ -407,16 +485,6 @@ export default function getDBUIWebComponentCore(win) {
         this.shadowRoot.appendChild(template.content.cloneNode(true));
       }
 
-      _handleLocaleChange(locale) {
-        // this.setAttribute('dir', locale.dir);
-        // this.setAttribute('lang', locale.lang);
-        // this.onLocaleChange(locale);
-      }
-
-      onLocaleChange() {
-        // no op
-      }
-
       // web components standard API
       adoptedCallback(oldDocument, newDocument) {
         // callbacks order:
@@ -450,8 +518,6 @@ export default function getDBUIWebComponentCore(win) {
         this._isMounted = true;
         this._isDisconnected = false;
         win.addEventListener('beforeunload', this.disconnectedCallback, false);
-        this.unregisterLocaleChange =
-          LocaleService.onLocaleChange(this._handleLocaleChange);
         const { propertiesToUpgrade, attributesToDefine } = this.constructor;
         propertiesToUpgrade.forEach((property) => {
           this._upgradeProperty(property);
@@ -459,13 +525,14 @@ export default function getDBUIWebComponentCore(win) {
         Object.keys(attributesToDefine).forEach((property) => {
           this._defineAttribute(property, attributesToDefine[property]);
         });
-        this._setDefaultLocale();
+        this._setDefaultLocale(); // run by every dbui node in the tree
+        this._captureLocale(); // only the top most dbui ancestor does this and propagates it to the descendants
         // We can safely register to closestDbuiParent because it exists at this time
         // but we must not assume it was connected.
         // NOTE: even if closestDbuiParent (or any ancestor) is not connected
         // the top of the tree (topDbuiAncestor) can be reached if needed
         this._registerSelfToClosestDbuiParent();
-        // will most likely override default locale that was just set
+        // will most likely override (default) locale that was just set
         this._checkContext();
       }
 
@@ -476,8 +543,8 @@ export default function getDBUIWebComponentCore(win) {
 
       onDisconnectedCallback() {
         this._resetContext();
+        this._resetLocale();
         this._unregisterSelfFromClosestDbuiParent();
-        this.unregisterLocaleChange();
         win.removeEventListener('beforeunload', this.disconnectedCallback, false);
         this._isMounted = false;
         this._isDisconnected = true;
@@ -507,25 +574,17 @@ export default function getDBUIWebComponentCore(win) {
       // (this implies component is upgraded before being inserted into DOM).
       // When inserted in DOM then connectedCallback will be called.
       // In any case attributeChangedCallback is called before connectedCallback.
+      // Things changed as a result of attributeChangedCallback should be preserved
+      // when disconnectedCallback because these attribute changes will not be fired again
+      // when node is removed then re-inserted back in the DOM tree.
       attributeChangedCallback(name, oldValue, newValue) {
+        if (this.getAttribute(name) === oldValue) return;
         this.onAttributeChangedCallback(name, oldValue, newValue);
       }
 
       // eslint-disable-next-line
       onAttributeChangedCallback(name, oldValue, newValue) {
-        const config = {
-          dir: () => {
-            const newDir = newValue || 'ltr'; // force default
-            this.setAttribute('dbui-dir', newDir);
-            this.setContext({ dbuiDir: newDir });
-          },
-          lang: () => {
-            const newLang = newValue || 'en'; // force default
-            this.setAttribute('dbui-lang', newLang);
-            this.setContext({ dbuiLang: newLang });
-          }
-        };
-        config[name] && config[name]();
+        this._onLocaleAttributeChangedCallback(name, oldValue, newValue);
       }
     }
 

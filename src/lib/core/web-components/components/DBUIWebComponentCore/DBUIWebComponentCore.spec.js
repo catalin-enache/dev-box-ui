@@ -3,7 +3,6 @@ import sinon from 'sinon';
 import getDBUIWebComponentCore from './DBUIWebComponentCore';
 import DBUICommonCssVars from './DBUICommonCssVars';
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
-import getDBUILocaleService from '../../../services/DBUILocaleService';
 import appendStyles from '../../../internals/appendStyles';
 import inIframe from '../../../../../../testUtils/inIframe';
 
@@ -335,41 +334,6 @@ describe('DBUIWebComponentBase', () => {
     });
   });
 
-  describe('onLocaleChange', () => {
-    xit('is called when locale is changed', (done) => {
-      inIframe({
-        bodyHTML: `
-          <dummy-one></dummy-one>
-          `,
-        onLoad: ({ contentWindow, iframe }) => {
-          const DummyOne = getDummyOne(contentWindow);
-          const dummyOneInstance = contentWindow.document.querySelector(DummyOne.registrationName);
-
-          contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
-            expect(dummyOneInstance._localeObject).to.eql({ dir: 'ltr', lang: 'en' });
-            contentWindow.document.documentElement.setAttribute('lang', 'sp');
-
-            setTimeout(() => {
-              expect(dummyOneInstance._localeObject).to.eql({ dir: 'ltr', lang: 'sp' });
-              contentWindow.document.documentElement.setAttribute('dir', 'rtl');
-
-              setTimeout(() => {
-                expect(dummyOneInstance._localeObject).to.eql({ dir: 'rtl', lang: 'sp' });
-
-                iframe.remove();
-                done();
-              }, 0);
-            }, 0);
-
-          });
-
-          DummyOne.registerSelf();
-
-        }
-      });
-    });
-  });
-
   describe('templateInnerHTML', () => {
     it('defines the component HTML structure', (done) => {
       inIframe({
@@ -642,32 +606,11 @@ describe('DBUIWebComponentBase', () => {
     });
   });
 
-  describe('disconnectedCallback', () => {
-    xit('unregisterLocaleChange', (done) => {
-      inIframe({
-        bodyHTML: `
-        <dummy-one></dummy-one>
-        `,
-        onLoad: ({ contentWindow, iframe }) => {
-          const DBUILocaleService = getDBUILocaleService(contentWindow);
-          const DummyOne = getDummyOne(contentWindow);
-          const dummyOneInst = contentWindow.document.querySelector('dummy-one');
+  xdescribe('connectedCallback', () => {
 
-          // before connected
-          expect(DBUILocaleService._callbacks.length).to.equal(0);
+  });
 
-          contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
-            expect(DBUILocaleService._callbacks.length).to.equal(1);
-            dummyOneInst.remove();
-            expect(DBUILocaleService._callbacks.length).to.equal(0);
+  xdescribe('disconnectedCallback', () => {
 
-            iframe.remove();
-            done();
-          });
-
-          DummyOne.registerSelf();
-        }
-      });
-    });
   });
 });
