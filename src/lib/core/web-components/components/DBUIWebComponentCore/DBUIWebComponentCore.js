@@ -127,14 +127,17 @@ export default function getDBUIWebComponentCore(win) {
         const defaultValue = name === 'dir' ? 'ltr' : 'en';
         const contextKey = name === 'dir' ? 'dbuiDir' : 'dbuiLang';
         const closestDbuiParent = this.closestDbuiParent;
+        const surroundingLocale =
+          !closestDbuiParent ? this._findSurroundingLocale() : null;
         const valueToSet = newValue ||
           (closestDbuiParent && closestDbuiParent._getContext([contextKey])[contextKey]) ||
-          (!closestDbuiParent && this._findSurroundingLocale()[name]) ||
+          (!closestDbuiParent && surroundingLocale[name]) ||
           defaultValue;
         this.setAttribute(`dbui-${name}`, valueToSet);
         this.setContext({
           [contextKey]: valueToSet
         });
+        surroundingLocale && this._watchLocaleChanges(surroundingLocale);
       }
 
       _findSurroundingLocale() {
@@ -152,6 +155,7 @@ export default function getDBUIWebComponentCore(win) {
             const value =
               closestAncestorHavingLocale.getAttribute(attr);
             acc[attr] = value;
+            acc[`${attr}Parent`] = closestAncestorHavingLocale;
           }
           return acc;
         }, {});
@@ -162,7 +166,8 @@ export default function getDBUIWebComponentCore(win) {
         // Only capture locale if node is top most ancestor.
         // The children will be notified via context.
         if (this.closestDbuiParent) return;
-        const { dir, lang } = this._findSurroundingLocale();
+        const { dir, lang, dirParent, langParent } =
+          this._findSurroundingLocale();
 
         if (dir || lang) {
           dir && this.setAttribute('dbui-dir', dir);
@@ -171,6 +176,63 @@ export default function getDBUIWebComponentCore(win) {
           dir && (context.dbuiDir = dir);
           lang && (context.dbuiLang = lang);
           this.setContext(context);
+          this._watchLocaleChanges({ dir, lang, dirParent, langParent });
+        }
+      }
+
+      _watchLocaleChanges({ dir, lang, dirParent, langParent }) {
+        let dirAndLangObserver = null;
+        if (dirParent && (dirParent === langParent)) {
+          dirAndLangObserver = dirParent;
+        }
+
+        if (dirAndLangObserver) {
+          this._localeDirObserver = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+              const mutationAttributeName = mutation.attributeName;
+              if (mutationAttributeName === 'dir') {
+                const value = dirParent.getAttribute('dir');
+                this.setAttribute('dbui-dir', value);
+                this.setContext({ dbuiDir: value });
+              } else if (mutationAttributeName === 'lang') {
+                const value = langParent.getAttribute('lang');
+                this.setAttribute('dbui-lang', value);
+                this.setContext({ dbuiLang: value });
+              }
+            });
+          });
+          this._localeDirObserver.observe(dirAndLangObserver, {
+            attributes: true
+          });
+          this._localeLangObserver = this._localeDirObserver;
+        } else if (dir) {
+          this._localeDirObserver = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+              const mutationAttributeName = mutation.attributeName;
+              if (mutationAttributeName === 'dir') {
+                const value = dirParent.getAttribute('dir');
+                this.setAttribute('dbui-dir', value);
+                this.setContext({ dbuiDir: value });
+              }
+            });
+          });
+          this._localeDirObserver.observe(dirParent, {
+            attributes: true
+          });
+        } else if (lang) {
+          this._localeLangObserver = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+              const mutationAttributeName = mutation.attributeName;
+              if (mutationAttributeName === 'lang') {
+                const value = langParent.getAttribute('lang');
+                this.setAttribute('dbui-lang', value);
+                this.setContext({ dbuiLang: value });
+              }
+            });
+          });
+          this._localeLangObserver.observe(langParent, {
+            attributes: true
+          });
         }
       }
 

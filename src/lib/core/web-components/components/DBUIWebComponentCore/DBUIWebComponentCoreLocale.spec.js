@@ -728,7 +728,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
             Object.keys(dbuiNodes).forEach((key) => {
               const node = dbuiNodes[key];
               // Nor context provided nor received
-              // as there is no surrounding locale.
+              // as there is no existing surrounding locale.
               if (node === lightDummyDOneRoot) {
                 expect(node.getAttribute('dir')).to.equal(null);
                 expect(node.getAttribute('lang')).to.equal('');
@@ -802,6 +802,116 @@ describe('DBUIWebComponentBase locale behaviour', () => {
             setTimeout(() => {
               iframe.remove();
               done();
+            }, 0);
+          });
+
+          DummyD.registerSelf();
+        }
+      });
+    });
+
+  it(`
+  surrounding locale is being watched for changes if initially defined
+  `, (done) => {
+      inIframe({
+        headStyle: treeStyle,
+        bodyHTML: `
+        <div id="container">
+          <div id="outer-wrapper" dir="abc" lang="de">
+            <dummy-d id="dummy-d-outer" lang="it">
+              <div id="inner-wrapper" dir="rtl" lang="fr">
+                <dummy-d id="dummy-d-inner"></dummy-d>
+              </div>
+            </dummy-d>
+          </div>
+        </div>
+        `,
+        onLoad: ({ contentWindow, iframe }) => {
+          const DummyD = getDummyD(contentWindow);
+
+          const dummyDOuter = contentWindow.document.querySelector('#dummy-d-outer');
+          const dummyDInner = contentWindow.document.querySelector('#dummy-d-inner');
+          const outerWrapper = contentWindow.document.querySelector('#outer-wrapper');
+          const innerWrapper = contentWindow.document.querySelector('#inner-wrapper');
+
+          Promise.all([
+            DummyD.registrationName,
+          ].map((localName) => contentWindow.customElements.whenDefined(localName)
+          )).then(() => {
+
+            // dir is read from outerWrapper and lang is read from dummyDOuter
+            expect(dummyDOuter.getAttribute('dbui-dir')).to.equal('abc');
+            expect(dummyDOuter.getAttribute('dbui-lang')).to.equal('it');
+            expect(dummyDInner.getAttribute('dbui-dir')).to.equal('abc');
+            expect(dummyDInner.getAttribute('dbui-lang')).to.equal('it');
+
+            outerWrapper.setAttribute('dir', 'def');
+
+            // mutations handlers are called async
+            setTimeout(() => {
+              // outerWrapper dir is watched
+              expect(dummyDOuter.getAttribute('dbui-dir')).to.equal('def');
+              expect(dummyDOuter.getAttribute('dbui-lang')).to.equal('it');
+              expect(dummyDInner.getAttribute('dbui-dir')).to.equal('def');
+              expect(dummyDInner.getAttribute('dbui-lang')).to.equal('it');
+
+              dummyDOuter.setAttribute('lang', 'po');
+
+              setTimeout(() => {
+                // dummyDOuter lang is propagated in context
+                expect(dummyDOuter.getAttribute('dbui-dir')).to.equal('def');
+                expect(dummyDOuter.getAttribute('dbui-lang')).to.equal('po');
+                expect(dummyDInner.getAttribute('dbui-dir')).to.equal('def');
+                expect(dummyDInner.getAttribute('dbui-lang')).to.equal('po');
+
+                outerWrapper.setAttribute('lang', 'ar');
+
+                setTimeout(() => {
+                  // outerWrapper lang is ignored (as dummyDOuter overrides  it)
+                  expect(dummyDOuter.getAttribute('dbui-dir')).to.equal('def');
+                  expect(dummyDOuter.getAttribute('dbui-lang')).to.equal('po');
+                  expect(dummyDInner.getAttribute('dbui-dir')).to.equal('def');
+                  expect(dummyDInner.getAttribute('dbui-lang')).to.equal('po');
+
+                  dummyDOuter.removeAttribute('lang');
+
+                  setTimeout(() => {
+                    // outerWrapper lang is checked
+                    expect(dummyDOuter.getAttribute('dbui-dir')).to.equal('def');
+                    expect(dummyDOuter.getAttribute('dbui-lang')).to.equal('ar');
+                    expect(dummyDInner.getAttribute('dbui-dir')).to.equal('def');
+                    expect(dummyDInner.getAttribute('dbui-lang')).to.equal('ar');
+
+                    outerWrapper.setAttribute('dir', 'opq');
+                    outerWrapper.setAttribute('lang', 'cd');
+
+                    setTimeout(() => {
+                      // outerWrapper dir/lang is watched
+                      expect(dummyDOuter.getAttribute('dbui-dir')).to.equal('opq');
+                      expect(dummyDOuter.getAttribute('dbui-lang')).to.equal('cd');
+                      expect(dummyDInner.getAttribute('dbui-dir')).to.equal('opq');
+                      expect(dummyDInner.getAttribute('dbui-lang')).to.equal('cd');
+
+                      innerWrapper.setAttribute('dir', 'pqr');
+                      innerWrapper.setAttribute('lang', 'ef');
+
+                      setTimeout(() => {
+                        // innerWrapper dir/lang is ignored as surrounding context is ignored
+                        // by nodes having closestDbuiParent
+                        expect(dummyDOuter.getAttribute('dbui-dir')).to.equal('opq');
+                        expect(dummyDOuter.getAttribute('dbui-lang')).to.equal('cd');
+                        expect(dummyDInner.getAttribute('dbui-dir')).to.equal('opq');
+                        expect(dummyDInner.getAttribute('dbui-lang')).to.equal('cd');
+                      });
+                    });
+                  });
+
+                  setTimeout(() => {
+                    iframe.remove();
+                    done();
+                  }, 0);
+                }, 0);
+              }, 0);
             }, 0);
           });
 
