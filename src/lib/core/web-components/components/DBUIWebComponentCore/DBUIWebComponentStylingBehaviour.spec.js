@@ -28,6 +28,7 @@ function getDummyOne(win) {
           <style>${dummyOneStyle}</style>
           <div>
             <p>dummy one component</p>
+            <slot></slot>
           </div>
         `;
       }
@@ -69,7 +70,7 @@ function getDummyOneParent(win) {
           <style>${dummyOneParentStyle}</style>
           <div>
             <p>dummy one parent component</p>
-            <dummy-one></dummy-one>
+            <dummy-one><slot></slot></dummy-one>
           </div>
         `;
       }
@@ -210,31 +211,39 @@ describe('DBUIWebComponent Styling Behaviour', () => {
       });
     });
 
-  it.only('is locale aware', (done) => {
+  it('is locale aware', (done) => {
     inIframe({
       bodyHTML: `
-        <dummy-one dir="ltr"></dummy-one>
-        <dummy-one dir="rtl"></dummy-one>
+        <div id="locale-provider" dir="abc"></div>
+        <dummy-one id="one" sync-locale-with="#locale-provider">
+          <dummy-one id="two"></dummy-one>
+        </dummy-one>
       `,
       onLoad: ({ contentWindow, iframe }) => {
         const DummyOne = getDummyOne(contentWindow);
         DummyOne.componentStyle += `
-        :host([dbui-dir=ltr]) { color: rgba(255, 0, 0, 0.5); }
-        :host([dbui-dir=rtl]) { color: rgba(0, 0, 255, 0.5); }
+        :host([dbui-dir=ltr]) { color: rgba(0, 0, 255, 0.5); }
+        :host([dbui-dir=abc]) { color: rgba(255, 0, 0, 0.5); }
         `;
-        const [dummyOneInst1, dummyOneInst2] = contentWindow.document.querySelectorAll('dummy-one');
+        const localeProvider = contentWindow.document.querySelector('#locale-provider');
+        const dummyOneInst1 = contentWindow.document.querySelector('#one');
+        const dummyOneInst2 = contentWindow.document.querySelector('#two');
 
         contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+
           const computedStyle1 = contentWindow.getComputedStyle(dummyOneInst1);
           const computedStyle2 = contentWindow.getComputedStyle(dummyOneInst2);
           expect(computedStyle1.color).to.equal('rgba(255, 0, 0, 0.5)');
-          expect(computedStyle2.color).to.equal('rgba(0, 0, 255, 0.5)');
-
-          dummyOneInst2.dir = 'ltr';
-
           expect(computedStyle2.color).to.equal('rgba(255, 0, 0, 0.5)');
 
+          localeProvider.dir = '';
+
           setTimeout(() => {
+
+            // falling back to default dir "ltr" when target dir is falsy
+            expect(computedStyle1.color).to.equal('rgba(0, 0, 255, 0.5)');
+            expect(computedStyle2.color).to.equal('rgba(0, 0, 255, 0.5)');
+
             iframe.remove();
             done();
           }, 0);
