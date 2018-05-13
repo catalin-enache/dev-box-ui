@@ -129,7 +129,6 @@ export default function getDBUIWebComponentCore(win) {
         this.disconnectedCallback = this.disconnectedCallback.bind(this);
         this.attributeChangedCallback = this.attributeChangedCallback.bind(this);
         this.adoptedCallback = this.adoptedCallback.bind(this);
-        this.unregisterLocaleChange = null;
 
         // provide support for traits if any as they can't override constructor
         this.init && this.init(...args);
@@ -497,6 +496,10 @@ export default function getDBUIWebComponentCore(win) {
        * @private
        */
       _onContextChanged(newContext, { reset = false } = {}) {
+        // Might be fired more than once until DOM tree settles down.
+        // ex: first call is the result of _checkContext which might get the top most existing context.
+        // The next ones can be the result of middle ancestors firing attributeChangeCallback
+        // which might set their context and propagate it down.
         const lastReceivedContext = this._lastReceivedContext;
         const newContextFilteredKeys = Object.keys(newContext || {}).filter((key) => {
           return newContext[key] !== lastReceivedContext[key];
@@ -512,21 +515,20 @@ export default function getDBUIWebComponentCore(win) {
         const contextToSet = reset ? {} : { ...lastReceivedContext, ...newContextFiltered };
         this._lastReceivedContext = contextToSet;
         const [_newContext, _prevContext] = [this._lastReceivedContext, lastReceivedContext];
+        this._onLocaleContextChanged(_newContext, _prevContext);
         this.onContextChanged(_newContext, _prevContext);
       }
 
 
       /**
+       * Public hook.
        *
        * @param newContext Object
        * @param prevContext Object
        */
+      // eslint-disable-next-line
       onContextChanged(newContext, prevContext) {
-        // Might be fired more than once until DOM tree settles down.
-        // ex: first call is the result of _checkContext which might get the top most existing context.
-        // The next ones can be the result of middle ancestors firing attributeChangeCallback
-        // which might set their context and propagate it down.
-        this._onLocaleContextChanged(newContext, prevContext);
+        // pass
       }
 
       _checkContext() {
@@ -766,10 +768,22 @@ export default function getDBUIWebComponentCore(win) {
         // web components standard API
         // callbacks order:
         // disconnectedCallback => adoptedCallback => connectedCallback
+        this._onAdoptedCallback(oldDocument, newDocument);
+      }
+
+      /**
+       *
+       * @param oldDocument HTMLDocument
+       * @param newDocument HTMLDocument
+       * @private
+       */
+      _onAdoptedCallback(oldDocument, newDocument) {
+        // Call public hook.
         this.onAdoptedCallback(oldDocument, newDocument);
       }
 
       /**
+       * Public hook.
        *
        * @param oldDocument HTMLDocument
        * @param newDocument HTMLDocument
@@ -793,10 +807,13 @@ export default function getDBUIWebComponentCore(win) {
         // existing/defined at the time of upgrading and calls that one instead of the
         // latest (monkey patched / runtime evaluated) one.
         // Now, we can monkey patch onConnectedCallback if we want.
-        this.onConnectedCallback();
+        this._onConnectedCallback();
       }
 
-      onConnectedCallback() {
+      /**
+       * @private
+       */
+      _onConnectedCallback() {
         this._isMounted = true;
         this._isDisconnected = false;
         win.addEventListener('beforeunload', this.disconnectedCallback, false);
@@ -816,14 +833,26 @@ export default function getDBUIWebComponentCore(win) {
         // makes top most ancestors or dbui components having localeTarget specified
         // to set dbuiDir/Locale on context
         this._syncLocaleAndMonitorChanges();
+        // Call public hook.
+        this.onConnectedCallback();
+      }
+
+      /**
+       * Public hook.
+       */
+      onConnectedCallback() {
+        // pass
       }
 
       // web components standard API
       disconnectedCallback() {
-        this.onDisconnectedCallback();
+        this._onDisconnectedCallback();
       }
 
-      onDisconnectedCallback() {
+      /**
+       * @private
+       */
+      _onDisconnectedCallback() {
         this._resetContext();
         this._resetProvidedLocale();
         this._unregisterSelfFromClosestDbuiParent();
@@ -831,6 +860,15 @@ export default function getDBUIWebComponentCore(win) {
         this._isMounted = false;
         this._isDisconnected = true;
         this._closestDbuiParent = null;
+        // Call public hook.
+        this.onDisconnectedCallback();
+      }
+
+      /**
+       * Public hook.
+       */
+      onDisconnectedCallback() {
+        // pass
       }
 
       cloneNodeDeep({ idPrefix = '', idSuffix = '' }) {
@@ -868,7 +906,7 @@ export default function getDBUIWebComponentCore(win) {
         // when disconnectedCallback because these attribute changes will not be fired again
         // when node is removed then re-inserted back in the DOM tree.
         if (this.getAttribute(name) === oldValue) return;
-        this.onAttributeChangedCallback(name, oldValue, newValue);
+        this._onAttributeChangedCallback(name, oldValue, newValue);
       }
 
       /**
@@ -876,10 +914,24 @@ export default function getDBUIWebComponentCore(win) {
        * @param name String
        * @param oldValue String
        * @param newValue String
+       * @private
+       */
+      _onAttributeChangedCallback(name, oldValue, newValue) {
+        this._onLocaleAttributeChangedCallback(name, oldValue, newValue);
+        // Call public hook.
+        this.onAttributeChangedCallback(name, oldValue, newValue);
+      }
+
+      /**
+       * Public hook.
+       *
+       * @param name String
+       * @param oldValue String
+       * @param newValue String
        */
       // eslint-disable-next-line
       onAttributeChangedCallback(name, oldValue, newValue) {
-        this._onLocaleAttributeChangedCallback(name, oldValue, newValue);
+        // pass
       }
     }
 
