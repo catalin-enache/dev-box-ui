@@ -210,7 +210,7 @@ describe('DBUIWebComponent Styling Behaviour', () => {
       });
     });
 
-  it('is locale aware', (done) => {
+  it.only('is locale aware', (done) => {
     inIframe({
       bodyHTML: `
         <dummy-one dir="ltr"></dummy-one>
@@ -219,8 +219,8 @@ describe('DBUIWebComponent Styling Behaviour', () => {
       onLoad: ({ contentWindow, iframe }) => {
         const DummyOne = getDummyOne(contentWindow);
         DummyOne.componentStyle += `
-        :host([dir=ltr]) { color: rgba(255, 0, 0, 0.5); }
-        :host([dir=rtl]) { color: rgba(0, 0, 255, 0.5); }
+        :host([dbui-dir=ltr]) { color: rgba(255, 0, 0, 0.5); }
+        :host([dbui-dir=rtl]) { color: rgba(0, 0, 255, 0.5); }
         `;
         const [dummyOneInst1, dummyOneInst2] = contentWindow.document.querySelectorAll('dummy-one');
 
