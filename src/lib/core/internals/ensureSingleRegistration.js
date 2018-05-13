@@ -1,5 +1,11 @@
 
-
+/**
+ *
+ * @param win Window
+ * @param name String
+ * @param callback Function
+ * @return *
+ */
 export default function ensureSingleRegistration(win, name, callback) {
   if (!win.DBUIWebComponents) {
     win.DBUIWebComponents = { registrations: {} };

@@ -366,395 +366,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
     });
 
   it(`
-  it captures locale from closest ancestor having locale defined
-  if locale value no defined on self
-  `, (done) => {
-      inIframe({
-        headStyle: treeStyle,
-        bodyHTML: `
-        <div id="container">
-          <div dir="abc" lang="ab">
-            <div id="box1"></div>
-            <div id="box2" dir="def"></div>
-            <div id="box3" lang="cd"></div>
-            <div id="box4" dir="ghi" lang="de"></div>
-          </div>
-          <div id="box5"></div>
-        </div>
-        `,
-        onLoad: ({ contentWindow, iframe }) => {
-          const DummyA = getDummyA(contentWindow);
-          const DummyB = getDummyB(contentWindow);
-          const DummyC = getDummyC(contentWindow);
-          const DummyD = getDummyD(contentWindow);
-          const DummyE = getDummyE(contentWindow);
-
-          const box1 = contentWindow.document.querySelector('#box1');
-          const box2 = contentWindow.document.querySelector('#box2');
-          const box3 = contentWindow.document.querySelector('#box3');
-          const box4 = contentWindow.document.querySelector('#box4');
-          const box5 = contentWindow.document.querySelector('#box5');
-
-          Promise.all([
-            DummyA.registrationName,
-            DummyB.registrationName,
-            DummyC.registrationName,
-            DummyD.registrationName,
-            DummyE.registrationName,
-          ].map((localName) => contentWindow.customElements.whenDefined(localName)
-          )).then(() => {
-
-            const doTest = ({
-              firstSectionDir,
-              firstSectionLang,
-              secondSectionDir,
-              secondSectionLang,
-              dbuiNodes = treeOneGetDbuiNodes(contentWindow)
-            }) => {
-              const {
-                lightDummyDOneRoot,
-                lightDummyDOneRoot_ShadowDummyB,
-                lightDummyDOneRoot_ShadowDummyB_ShadowDummyA,
-
-                lightDummyEInNamedSlot,
-                lightDummyEInNamedSlot_ShadowDummyD,
-                lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB,
-                lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA,
-                lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot,
-                lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB,
-                lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA,
-
-                lightDummyDTwoInDefaultSlot,
-                lightDummyDTwoInDefaultSlot_ShadowDummyB,
-                lightDummyDTwoInDefaultSlot_ShadowDummyB_ShadowDummyA,
-
-                lightDummyDThreeInDefaultSlot,
-                lightDummyDThreeInDefaultSlot_ShadowDummyB,
-                lightDummyDThreeInDefaultSlot_ShadowDummyB_ShadowDummyA,
-
-                lightDummyEInDefaultSlot,
-                lightDummyEInDefaultSlot_ShadowDummyD,
-                lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB,
-                lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA,
-                lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot,
-                lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB,
-                lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA
-              } = dbuiNodes;
-
-              const firstSection = [
-                lightDummyDOneRoot,
-                lightDummyDOneRoot_ShadowDummyB,
-                lightDummyDOneRoot_ShadowDummyB_ShadowDummyA,
-
-                lightDummyEInNamedSlot,
-                lightDummyEInNamedSlot_ShadowDummyD,
-                lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB,
-                lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA,
-                lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot,
-                lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB,
-                lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA,
-
-                lightDummyDTwoInDefaultSlot,
-                lightDummyDTwoInDefaultSlot_ShadowDummyB,
-                lightDummyDTwoInDefaultSlot_ShadowDummyB_ShadowDummyA
-              ];
-
-              const secondSection = [
-                lightDummyDThreeInDefaultSlot,
-                lightDummyDThreeInDefaultSlot_ShadowDummyB,
-                lightDummyDThreeInDefaultSlot_ShadowDummyB_ShadowDummyA,
-
-                lightDummyEInDefaultSlot,
-                lightDummyEInDefaultSlot_ShadowDummyD,
-                lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB,
-                lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA,
-                lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot,
-                lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB,
-                lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA
-              ];
-
-              firstSection.forEach((node) => {
-                expect(node.getAttribute('dbui-dir')).to.equal(firstSectionDir);
-                expect(node.getAttribute('dbui-lang')).to.equal(firstSectionLang);
-              });
-
-              secondSection.forEach((node) => {
-                expect(node.getAttribute('dbui-dir')).to.equal(secondSectionDir);
-                expect(node.getAttribute('dbui-lang')).to.equal(secondSectionLang);
-              });
-            };
-
-            box1.innerHTML = treeOne;
-
-            const dbuiNodes = treeOneGetDbuiNodes(contentWindow);
-
-            doTest({
-              firstSectionDir: 'abc',
-              firstSectionLang: 'ab',
-              secondSectionDir: 'abc',
-              secondSectionLang: 'ab',
-              dbuiNodes
-            });
-
-            const {
-              lightDummyDOneRoot
-            } = dbuiNodes;
-
-            Object.keys(dbuiNodes).forEach((key) => {
-              const node = dbuiNodes[key];
-              expect(node.getAttribute('dir')).to.equal(null);
-              expect(node.getAttribute('lang')).to.equal(null);
-              if (node === lightDummyDOneRoot) {
-                expect(node._providingContext).to.deep.equal({ dbuiDir: 'abc', dbuiLang: 'ab' });
-                expect(node._lastReceivedContext).to.deep.equal({});
-              } else {
-                expect(node._providingContext).to.deep.equal({});
-                expect(node._lastReceivedContext).to.deep.equal({ dbuiDir: 'abc', dbuiLang: 'ab' });
-              }
-            });
-
-            lightDummyDOneRoot.remove();
-
-            doTest({
-              firstSectionDir: null,
-              firstSectionLang: null,
-              secondSectionDir: null,
-              secondSectionLang: null,
-              dbuiNodes
-            });
-
-            Object.keys(dbuiNodes).forEach((key) => {
-              const node = dbuiNodes[key];
-              expect(node.getAttribute('dir')).to.equal(null);
-              expect(node.getAttribute('lang')).to.equal(null);
-              if (node === lightDummyDOneRoot) {
-                expect(node._providingContext).to.deep.equal({}); // reset by _resetLocale
-                expect(node._lastReceivedContext).to.deep.equal({});
-              } else {
-                expect(node._providingContext).to.deep.equal({});
-                expect(node._lastReceivedContext).to.deep.equal({});// reset by _resetContext
-              }
-            });
-
-            box2.appendChild(lightDummyDOneRoot);
-
-            doTest({
-              firstSectionDir: 'def',
-              firstSectionLang: 'ab',
-              secondSectionDir: 'def',
-              secondSectionLang: 'ab',
-              dbuiNodes
-            });
-
-            Object.keys(dbuiNodes).forEach((key) => {
-              const node = dbuiNodes[key];
-              expect(node.getAttribute('dir')).to.equal(null);
-              expect(node.getAttribute('lang')).to.equal(null);
-              if (node === lightDummyDOneRoot) {
-                expect(node._providingContext).to.deep.equal({ dbuiDir: 'def', dbuiLang: 'ab' });
-                expect(node._lastReceivedContext).to.deep.equal({});
-              } else {
-                expect(node._providingContext).to.deep.equal({});
-                expect(node._lastReceivedContext).to.deep.equal({ dbuiDir: 'def', dbuiLang: 'ab' });
-              }
-            });
-
-            box3.appendChild(lightDummyDOneRoot);
-
-            doTest({
-              firstSectionDir: 'abc',
-              firstSectionLang: 'cd',
-              secondSectionDir: 'abc',
-              secondSectionLang: 'cd',
-              dbuiNodes
-            });
-
-            Object.keys(dbuiNodes).forEach((key) => {
-              const node = dbuiNodes[key];
-              expect(node.getAttribute('dir')).to.equal(null);
-              expect(node.getAttribute('lang')).to.equal(null);
-              if (node === lightDummyDOneRoot) {
-                expect(node._providingContext).to.deep.equal({ dbuiDir: 'abc', dbuiLang: 'cd' });
-                expect(node._lastReceivedContext).to.deep.equal({});
-              } else {
-                expect(node._providingContext).to.deep.equal({});
-                expect(node._lastReceivedContext).to.deep.equal({ dbuiDir: 'abc', dbuiLang: 'cd' });
-              }
-            });
-
-            box4.appendChild(lightDummyDOneRoot);
-
-            doTest({
-              firstSectionDir: 'ghi',
-              firstSectionLang: 'de',
-              secondSectionDir: 'ghi',
-              secondSectionLang: 'de',
-              dbuiNodes
-            });
-
-            Object.keys(dbuiNodes).forEach((key) => {
-              const node = dbuiNodes[key];
-              expect(node.getAttribute('dir')).to.equal(null);
-              expect(node.getAttribute('lang')).to.equal(null);
-              if (node === lightDummyDOneRoot) {
-                expect(node._providingContext).to.deep.equal({ dbuiDir: 'ghi', dbuiLang: 'de' });
-                expect(node._lastReceivedContext).to.deep.equal({});
-              } else {
-                expect(node._providingContext).to.deep.equal({});
-                expect(node._lastReceivedContext).to.deep.equal({ dbuiDir: 'ghi', dbuiLang: 'de' });
-              }
-            });
-
-            box5.appendChild(lightDummyDOneRoot); // provides no locale
-
-            doTest({
-              firstSectionDir: 'ltr',
-              firstSectionLang: 'en',
-              secondSectionDir: 'ltr',
-              secondSectionLang: 'en',
-              dbuiNodes
-            });
-
-            Object.keys(dbuiNodes).forEach((key) => {
-              const node = dbuiNodes[key];
-              expect(node.getAttribute('dir')).to.equal(null);
-              expect(node.getAttribute('lang')).to.equal(null);
-              // Nor context provided nor received
-              // as there is no surrounding locale.
-              if (node === lightDummyDOneRoot) {
-                expect(node._providingContext).to.deep.equal({});
-                expect(node._lastReceivedContext).to.deep.equal({});
-              } else {
-                expect(node._providingContext).to.deep.equal({});
-                expect(node._lastReceivedContext).to.deep.equal({});
-              }
-            });
-
-            lightDummyDOneRoot.dir = 'mno';
-            lightDummyDOneRoot.lang = 'pq';
-
-            doTest({
-              firstSectionDir: 'mno',
-              firstSectionLang: 'pq',
-              secondSectionDir: 'mno',
-              secondSectionLang: 'pq',
-              dbuiNodes
-            });
-
-            Object.keys(dbuiNodes).forEach((key) => {
-              const node = dbuiNodes[key];
-
-              if (node === lightDummyDOneRoot) {
-                expect(node.getAttribute('dir')).to.equal('mno');
-                expect(node.getAttribute('lang')).to.equal('pq');
-                expect(node._providingContext).to.deep.equal({ dbuiDir: 'mno', dbuiLang: 'pq' });
-                expect(node._lastReceivedContext).to.deep.equal({});
-              } else {
-                expect(node.getAttribute('dir')).to.equal(null);
-                expect(node.getAttribute('lang')).to.equal(null);
-                expect(node._providingContext).to.deep.equal({});
-                expect(node._lastReceivedContext).to.deep.equal({ dbuiDir: 'mno', dbuiLang: 'pq' });
-              }
-            });
-
-            box3.appendChild(lightDummyDOneRoot);
-
-            // no change after re-insert because locale values are defined on tree root
-            doTest({
-              firstSectionDir: 'mno',
-              firstSectionLang: 'pq',
-              secondSectionDir: 'mno',
-              secondSectionLang: 'pq',
-              dbuiNodes
-            });
-
-            // no change
-            Object.keys(dbuiNodes).forEach((key) => {
-              const node = dbuiNodes[key];
-
-              if (node === lightDummyDOneRoot) {
-                expect(node.getAttribute('dir')).to.equal('mno');
-                expect(node.getAttribute('lang')).to.equal('pq');
-                expect(node._providingContext).to.deep.equal({ dbuiDir: 'mno', dbuiLang: 'pq' });
-                expect(node._lastReceivedContext).to.deep.equal({});
-              } else {
-                expect(node.getAttribute('dir')).to.equal(null);
-                expect(node.getAttribute('lang')).to.equal(null);
-                expect(node._providingContext).to.deep.equal({});
-                expect(node._lastReceivedContext).to.deep.equal({ dbuiDir: 'mno', dbuiLang: 'pq' });
-              }
-            });
-
-            lightDummyDOneRoot.removeAttribute('dir');
-            lightDummyDOneRoot.lang = '';
-
-            // When locale value is changed to falsy value
-            // it looks for surrounding locale before setting default.
-            // These values are now inherited from ancestors.
-            doTest({
-              firstSectionDir: 'abc',
-              firstSectionLang: 'cd',
-              secondSectionDir: 'abc',
-              secondSectionLang: 'cd',
-              dbuiNodes
-            });
-
-            Object.keys(dbuiNodes).forEach((key) => {
-              const node = dbuiNodes[key];
-
-              if (node === lightDummyDOneRoot) {
-                expect(node.getAttribute('dir')).to.equal(null);
-                expect(node.getAttribute('lang')).to.equal('');
-                expect(node._providingContext).to.deep.equal({ dbuiDir: 'abc', dbuiLang: 'cd' });
-                expect(node._lastReceivedContext).to.deep.equal({});
-              } else {
-                expect(node.getAttribute('dir')).to.equal(null);
-                expect(node.getAttribute('lang')).to.equal(null);
-                expect(node._providingContext).to.deep.equal({});
-                expect(node._lastReceivedContext).to.deep.equal({ dbuiDir: 'abc', dbuiLang: 'cd' });
-              }
-            });
-
-            box5.appendChild(lightDummyDOneRoot); // provides no locale
-
-            doTest({
-              firstSectionDir: 'ltr',
-              firstSectionLang: 'en',
-              secondSectionDir: 'ltr',
-              secondSectionLang: 'en',
-              dbuiNodes
-            });
-
-            Object.keys(dbuiNodes).forEach((key) => {
-              const node = dbuiNodes[key];
-              // Nor context provided nor received
-              // as there is no existing surrounding locale.
-              if (node === lightDummyDOneRoot) {
-                expect(node.getAttribute('dir')).to.equal(null);
-                expect(node.getAttribute('lang')).to.equal('');
-                expect(node._providingContext).to.deep.equal({});
-                expect(node._lastReceivedContext).to.deep.equal({});
-              } else {
-                expect(node.getAttribute('dir')).to.equal(null);
-                expect(node.getAttribute('lang')).to.equal(null);
-                expect(node._providingContext).to.deep.equal({});
-                expect(node._lastReceivedContext).to.deep.equal({});
-              }
-            });
-
-            setTimeout(() => {
-              iframe.remove();
-              done();
-            }, 0);
-          });
-
-          DummyE.registerSelf();
-        }
-      });
-    });
-
-  it(`
-  closest surrounding locale is ignored for nodes that are not top dbui ancestors
+  closest surrounding locale is ignored by descendant nodes
   and instead locale is read from closestDbuiParent
   `, (done) => {
       inIframe({
@@ -810,114 +422,1494 @@ describe('DBUIWebComponentBase locale behaviour', () => {
       });
     });
 
-  it(`
-  surrounding locale is being watched for changes if initially defined
-  `, (done) => {
-      inIframe({
-        headStyle: treeStyle,
-        bodyHTML: `
-        <div id="container">
-          <div id="outer-wrapper" dir="abc" lang="de">
-            <dummy-d id="dummy-d-outer" lang="it">
-              <div id="inner-wrapper" dir="rtl" lang="fr">
-                <dummy-d id="dummy-d-inner"></dummy-d>
-              </div>
-            </dummy-d>
-          </div>
-        </div>
-        `,
-        onLoad: ({ contentWindow, iframe }) => {
-          const DummyD = getDummyD(contentWindow);
+  describe(`
+  _localeTarget
+  `, () => {
+      it(`
+      returns node found at "sync-locale-with" or root html node
+      `, (done) => {
+          inIframe({
+            headStyle: treeStyle,
+            bodyHTML: `
+            <div id="container">
+              <div id="locale-provider"></div>
+              <dummy-d id="dummy-d-one" sync-locale-with="#locale-provider"></dummy-d>
+              <dummy-d id="dummy-d-two"></dummy-d>
+            </div>
+            `,
+            onLoad: ({ contentWindow, iframe }) => {
+              const DummyD = getDummyD(contentWindow);
 
-          const dummyDOuter = contentWindow.document.querySelector('#dummy-d-outer');
-          const dummyDInner = contentWindow.document.querySelector('#dummy-d-inner');
-          const outerWrapper = contentWindow.document.querySelector('#outer-wrapper');
-          const innerWrapper = contentWindow.document.querySelector('#inner-wrapper');
+              const html = contentWindow.document.querySelector('html');
+              const localeProvider = contentWindow.document.querySelector('#locale-provider');
+              const dummyDOne = contentWindow.document.querySelector('#dummy-d-one');
+              const dummyDTwo = contentWindow.document.querySelector('#dummy-d-two');
 
-          Promise.all([
-            DummyD.registrationName,
-          ].map((localName) => contentWindow.customElements.whenDefined(localName)
-          )).then(() => {
+              Promise.all([
+                DummyD.registrationName,
+              ].map((localName) => contentWindow.customElements.whenDefined(localName)
+              )).then(() => {
 
-            // dir is read from outerWrapper and lang is read from dummyDOuter
-            expect(dummyDOuter.getAttribute('dbui-dir')).to.equal('abc');
-            expect(dummyDOuter.getAttribute('dbui-lang')).to.equal('it');
-            expect(dummyDInner.getAttribute('dbui-dir')).to.equal('abc');
-            expect(dummyDInner.getAttribute('dbui-lang')).to.equal('it');
-
-            outerWrapper.setAttribute('dir', 'def');
-
-            // mutations handlers are called async
-            setTimeout(() => {
-              // outerWrapper dir is watched
-              expect(dummyDOuter.getAttribute('dbui-dir')).to.equal('def');
-              expect(dummyDOuter.getAttribute('dbui-lang')).to.equal('it');
-              expect(dummyDInner.getAttribute('dbui-dir')).to.equal('def');
-              expect(dummyDInner.getAttribute('dbui-lang')).to.equal('it');
-
-              dummyDOuter.setAttribute('lang', 'po');
-
-              setTimeout(() => {
-                // dummyDOuter lang is propagated in context
-                expect(dummyDOuter.getAttribute('dbui-dir')).to.equal('def');
-                expect(dummyDOuter.getAttribute('dbui-lang')).to.equal('po');
-                expect(dummyDInner.getAttribute('dbui-dir')).to.equal('def');
-                expect(dummyDInner.getAttribute('dbui-lang')).to.equal('po');
-
-                outerWrapper.setAttribute('lang', 'ar');
+                expect(dummyDOne._localeTarget).to.equal(localeProvider);
+                expect(dummyDTwo._localeTarget).to.equal(html);
 
                 setTimeout(() => {
-                  // outerWrapper lang is ignored (as dummyDOuter overrides  it)
-                  expect(dummyDOuter.getAttribute('dbui-dir')).to.equal('def');
-                  expect(dummyDOuter.getAttribute('dbui-lang')).to.equal('po');
-                  expect(dummyDInner.getAttribute('dbui-dir')).to.equal('def');
-                  expect(dummyDInner.getAttribute('dbui-lang')).to.equal('po');
+                  iframe.remove();
+                  done();
+                }, 0);
+              });
 
-                  dummyDOuter.removeAttribute('lang');
+              DummyD.registerSelf();
+            }
+          });
+        });
+    });
 
-                  setTimeout(() => {
-                    // outerWrapper lang is checked
-                    expect(dummyDOuter.getAttribute('dbui-dir')).to.equal('def');
-                    expect(dummyDOuter.getAttribute('dbui-lang')).to.equal('ar');
-                    expect(dummyDInner.getAttribute('dbui-dir')).to.equal('def');
-                    expect(dummyDInner.getAttribute('dbui-lang')).to.equal('ar');
+  describe(`
+  _targetedLocale
+  `, () => {
+      it(`
+      returns object { dir, lang } from _localeTarget or defaults to { dir: 'ltr', lang: 'en' }
+      `, (done) => {
+          inIframe({
+            headStyle: treeStyle,
+            bodyHTML: `
+            <div id="container">
+              <div id="locale-provider"></div>
+              <dummy-d id="dummy-d-one" sync-locale-with="#locale-provider"></dummy-d>
+              <dummy-d id="dummy-d-two"></dummy-d>
+            </div>
+            `,
+            onLoad: ({ contentWindow, iframe }) => {
+              const DummyD = getDummyD(contentWindow);
 
-                    outerWrapper.setAttribute('dir', 'opq');
-                    outerWrapper.setAttribute('lang', 'cd');
+              const html = contentWindow.document.querySelector('html');
+              html.setAttribute('lang', 'it');
+              html.setAttribute('dir', 'rtl');
+              const dummyDOne = contentWindow.document.querySelector('#dummy-d-one');
+              const dummyDTwo = contentWindow.document.querySelector('#dummy-d-two');
+
+              Promise.all([
+                DummyD.registrationName,
+              ].map((localName) => contentWindow.customElements.whenDefined(localName)
+              )).then(() => {
+
+                expect(dummyDOne._targetedLocale).to.deep.equal({ dir: 'ltr', lang: 'en' });
+                expect(dummyDTwo._targetedLocale).to.deep.equal({ dir: 'rtl', lang: 'it' });
+
+                setTimeout(() => {
+                  iframe.remove();
+                  done();
+                }, 0);
+              });
+
+              DummyD.registerSelf();
+            }
+          });
+        });
+    });
+
+  describe(`
+    _resetProvidedLocale
+    `, () => {
+      describe(`
+      when when dir/lang attributes are truthy
+      `, () => {
+          it(`
+          does NOT reset _providingContext and does NOT reset dbui-dir/locale
+          `, (done) => {
+              inIframe({
+                headStyle: treeStyle,
+                bodyHTML: `
+                <div id="container">
+                  <div id="locale-provider" dir="abc" lang="de"></div>
+                  <dummy-d id="dummy-d-one" dir="rtl" lang="it" sync-locale-with="#locale-provider"></dummy-d>
+                </div>
+                `,
+                onLoad: ({ contentWindow, iframe }) => {
+                  const DummyD = getDummyD(contentWindow);
+
+                  const container = contentWindow.document.querySelector('#container');
+                  const localeProvider = contentWindow.document.querySelector('#locale-provider');
+                  const dummyDOne = contentWindow.document.querySelector('#dummy-d-one');
+
+                  Promise.all([
+                    DummyD.registrationName,
+                  ].map((localName) => contentWindow.customElements.whenDefined(localName)
+                  )).then(() => {
+
+                    expect(dummyDOne.getAttribute('dbui-dir')).to.equal('rtl');
+                    expect(dummyDOne.getAttribute('dbui-lang')).to.equal('it');
+                    expect(dummyDOne._providingContext).to.deep.equal({ dbuiDir: 'rtl', dbuiLang: 'it' });
+
+                    dummyDOne.remove();
+
+                    expect(dummyDOne.getAttribute('dbui-dir')).to.equal('rtl');
+                    expect(dummyDOne.getAttribute('dbui-lang')).to.equal('it');
+                    expect(dummyDOne._providingContext).to.deep.equal({ dbuiDir: 'rtl', dbuiLang: 'it' });
+
+                    localeProvider.lang = 'pq';
+                    container.appendChild(dummyDOne);
+
+                    expect(dummyDOne.getAttribute('dbui-dir')).to.equal('rtl');
+                    expect(dummyDOne.getAttribute('dbui-lang')).to.equal('it');
+                    expect(dummyDOne._providingContext).to.deep.equal({ dbuiDir: 'rtl', dbuiLang: 'it' });
 
                     setTimeout(() => {
-                      // outerWrapper dir/lang is watched
-                      expect(dummyDOuter.getAttribute('dbui-dir')).to.equal('opq');
-                      expect(dummyDOuter.getAttribute('dbui-lang')).to.equal('cd');
-                      expect(dummyDInner.getAttribute('dbui-dir')).to.equal('opq');
-                      expect(dummyDInner.getAttribute('dbui-lang')).to.equal('cd');
-
-                      innerWrapper.setAttribute('dir', 'pqr');
-                      innerWrapper.setAttribute('lang', 'ef');
-
-                      setTimeout(() => {
-                        // innerWrapper dir/lang is ignored as surrounding context is ignored
-                        // by nodes having closestDbuiParent
-                        expect(dummyDOuter.getAttribute('dbui-dir')).to.equal('opq');
-                        expect(dummyDOuter.getAttribute('dbui-lang')).to.equal('cd');
-                        expect(dummyDInner.getAttribute('dbui-dir')).to.equal('opq');
-                        expect(dummyDInner.getAttribute('dbui-lang')).to.equal('cd');
-                      });
-                    });
+                      iframe.remove();
+                      done();
+                    }, 0);
                   });
 
+                  DummyD.registerSelf();
+                }
+              });
+            });
+        });
+
+      describe(`
+      when when dir/lang attributes are falsy
+      `, () => {
+          it(`
+          resets _providingContext and removes dbui-dir/locale
+          `, (done) => {
+              inIframe({
+                headStyle: treeStyle,
+                bodyHTML: `
+                <div id="container">
+                  <div id="locale-provider" dir="rtl" lang="it"></div>
+                  <dummy-d id="dummy-d-one" sync-locale-with="#locale-provider"></dummy-d>
+                </div>
+                `,
+                onLoad: ({ contentWindow, iframe }) => {
+                  const DummyD = getDummyD(contentWindow);
+
+                  const container = contentWindow.document.querySelector('#container');
+                  const localeProvider = contentWindow.document.querySelector('#locale-provider');
+                  const dummyDOne = contentWindow.document.querySelector('#dummy-d-one');
+
+                  Promise.all([
+                    DummyD.registrationName,
+                  ].map((localName) => contentWindow.customElements.whenDefined(localName)
+                  )).then(() => {
+
+                    expect(dummyDOne.getAttribute('dbui-dir')).to.equal('rtl');
+                    expect(dummyDOne.getAttribute('dbui-lang')).to.equal('it');
+                    expect(dummyDOne._providingContext).to.deep.equal({ dbuiDir: 'rtl', dbuiLang: 'it' });
+
+                    dummyDOne.remove();
+
+                    expect(dummyDOne.getAttribute('dbui-dir')).to.equal(null);
+                    expect(dummyDOne.getAttribute('dbui-lang')).to.equal(null);
+                    expect(dummyDOne._providingContext).to.deep.equal({});
+
+                    localeProvider.lang = 'de';
+                    container.appendChild(dummyDOne);
+
+                    expect(dummyDOne.getAttribute('dbui-dir')).to.equal('rtl');
+                    expect(dummyDOne.getAttribute('dbui-lang')).to.equal('de');
+                    expect(dummyDOne._providingContext).to.deep.equal({ dbuiDir: 'rtl', dbuiLang: 'de' });
+
+                    setTimeout(() => {
+                      iframe.remove();
+                      done();
+                    }, 0);
+                  });
+
+                  DummyD.registerSelf();
+                }
+              });
+            });
+        });
+
+      it(`
+        resets _localeObserver if any
+        `, (done) => {
+          inIframe({
+            headStyle: treeStyle,
+            bodyHTML: `
+            <div id="container">
+              <div id="locale-provider" dir="rtl" lang="it"></div>
+              <dummy-d id="dummy-d-one" sync-locale-with="#locale-provider"></dummy-d>
+            </div>
+            `,
+            onLoad: ({ contentWindow, iframe }) => {
+              const DummyD = getDummyD(contentWindow);
+
+              const container = contentWindow.document.querySelector('#container');
+              const dummyDOne = contentWindow.document.querySelector('#dummy-d-one');
+
+              Promise.all([
+                DummyD.registrationName,
+              ].map((localName) => contentWindow.customElements.whenDefined(localName)
+              )).then(() => {
+
+                const localeObserver1 = dummyDOne._localeObserver;
+                const localeObserver1Disconnect = localeObserver1.disconnect;
+                let disconnectWasCalled = false;
+                localeObserver1.disconnect = () => {
+                  localeObserver1Disconnect.call(localeObserver1);
+                  disconnectWasCalled = true;
+                };
+
+                expect(localeObserver1).to.not.equal(null);
+
+                dummyDOne.remove();
+
+                const localeObserver2 = dummyDOne._localeObserver;
+                expect(disconnectWasCalled).to.equal(true);
+                expect(localeObserver2).to.equal(null);
+
+                container.appendChild(dummyDOne);
+
+                const localeObserver3 = dummyDOne._localeObserver;
+                expect(localeObserver3).to.not.equal(null);
+                expect(localeObserver3.disconnect).to.not.equal(null);
+                expect(localeObserver3).to.not.equal(localeObserver1);
+
+                setTimeout(() => {
+                  iframe.remove();
+                  done();
+                }, 0);
+              });
+
+              DummyD.registerSelf();
+            }
+          });
+        });
+    });
+
+  describe(`
+  sync-locale-with
+  `, () => {
+      describe(`
+      when target found
+      `, () => {
+          it(`
+          syncs locale with target
+          `, (done) => {
+              inIframe({
+                headStyle: treeStyle,
+                bodyHTML: `
+                <div id="container">
+                  <div id="locale-provider" dir="rtl" lang="it"></div>
+                  <dummy-d id="dummy-d-one" sync-locale-with="#locale-provider"></dummy-d>
+                </div>
+                `,
+                onLoad: ({ contentWindow, iframe }) => {
+                  const DummyD = getDummyD(contentWindow);
+
+                  const container = contentWindow.document.querySelector('#container');
+                  const dummyDOne = contentWindow.document.querySelector('#dummy-d-one');
+
+                  Promise.all([
+                    DummyD.registrationName,
+                  ].map((localName) => contentWindow.customElements.whenDefined(localName)
+                  )).then(() => {
+
+                    expect(dummyDOne.getAttribute('dbui-dir')).to.equal('rtl');
+                    expect(dummyDOne.getAttribute('dbui-lang')).to.equal('it');
+                    expect(dummyDOne._providingContext.dbuiDir).to.equal('rtl');
+                    expect(dummyDOne._providingContext.dbuiLang).to.equal('it');
+
+                    dummyDOne.remove();
+
+                    expect(dummyDOne.getAttribute('dbui-dir')).to.equal(null);
+                    expect(dummyDOne.getAttribute('dbui-lang')).to.equal(null);
+                    expect(dummyDOne._providingContext.dbuiDir).to.equal(undefined);
+                    expect(dummyDOne._providingContext.dbuiLang).to.equal(undefined);
+
+                    container.appendChild(dummyDOne);
+
+                    expect(dummyDOne.getAttribute('dbui-dir')).to.equal('rtl');
+                    expect(dummyDOne.getAttribute('dbui-lang')).to.equal('it');
+                    expect(dummyDOne._providingContext.dbuiDir).to.equal('rtl');
+                    expect(dummyDOne._providingContext.dbuiLang).to.equal('it');
+
+                    setTimeout(() => {
+                      iframe.remove();
+                      done();
+                    }, 0);
+                  });
+
+                  DummyD.registerSelf();
+                }
+              });
+            });
+        });
+
+      describe(`
+      when target changed
+      `, () => {
+          it(`
+          syncs locale with new target
+          `, (done) => {
+              inIframe({
+                headStyle: treeStyle,
+                bodyHTML: `
+                <div id="container">
+                  <div id="locale-provider1" dir="rtl" lang="it"></div>
+                  <div id="locale-provider2" dir="abc" lang="ab"></div>
+                  <dummy-d id="dummy-d-one" sync-locale-with="#locale-provider1"></dummy-d>
+                </div>
+                `,
+                onLoad: ({ contentWindow, iframe }) => {
+                  const DummyD = getDummyD(contentWindow);
+
+                  const dummyDOne = contentWindow.document.querySelector('#dummy-d-one');
+
+                  Promise.all([
+                    DummyD.registrationName,
+                  ].map((localName) => contentWindow.customElements.whenDefined(localName)
+                  )).then(() => {
+
+                    expect(dummyDOne.getAttribute('dbui-dir')).to.equal('rtl');
+                    expect(dummyDOne.getAttribute('dbui-lang')).to.equal('it');
+                    expect(dummyDOne._providingContext.dbuiDir).to.equal('rtl');
+                    expect(dummyDOne._providingContext.dbuiLang).to.equal('it');
+
+                    dummyDOne.setAttribute('sync-locale-with', '#locale-provider2');
+
+                    expect(dummyDOne.getAttribute('dbui-dir')).to.equal('abc');
+                    expect(dummyDOne.getAttribute('dbui-lang')).to.equal('ab');
+                    expect(dummyDOne._providingContext.dbuiDir).to.equal('abc');
+                    expect(dummyDOne._providingContext.dbuiLang).to.equal('ab');
+
+                    setTimeout(() => {
+                      iframe.remove();
+                      done();
+                    }, 0);
+                  });
+
+                  DummyD.registerSelf();
+                }
+              });
+            });
+        });
+
+      describe(`
+      when target not found
+      `, () => {
+          describe(`
+          when node is top most dbui ancestor
+          `, () => {
+              it('syncs with html node', (done) => {
+                inIframe({
+                  headStyle: treeStyle,
+                  bodyHTML: `
+                  <div id="container">
+                    <div id="locale-provider1" dir="rtl" lang="it"></div>
+                    <dummy-d id="dummy-d-one" sync-locale-with="#non-existing"></dummy-d>
+                  </div>
+                  `,
+                  onLoad: ({ contentWindow, iframe }) => {
+                    const DummyD = getDummyD(contentWindow);
+
+                    const dummyDOne = contentWindow.document.querySelector('#dummy-d-one');
+                    const html = contentWindow.document.querySelector('html');
+                    html.dir = 'abc';
+                    html.lang = 'bc';
+
+                    Promise.all([
+                      DummyD.registrationName,
+                    ].map((localName) => contentWindow.customElements.whenDefined(localName)
+                    )).then(() => {
+
+                      expect(dummyDOne.getAttribute('dbui-dir')).to.equal('abc');
+                      expect(dummyDOne.getAttribute('dbui-lang')).to.equal('bc');
+                      expect(dummyDOne._providingContext.dbuiDir).to.equal('abc');
+                      expect(dummyDOne._providingContext.dbuiLang).to.equal('bc');
+
+                      dummyDOne.setAttribute('sync-locale-with', '#locale-provider1');
+
+                      expect(dummyDOne.getAttribute('dbui-dir')).to.equal('rtl');
+                      expect(dummyDOne.getAttribute('dbui-lang')).to.equal('it');
+                      expect(dummyDOne._providingContext.dbuiDir).to.equal('rtl');
+                      expect(dummyDOne._providingContext.dbuiLang).to.equal('it');
+
+                      html.dir = 'bcd';
+                      html.lang = 'cd';
+                      dummyDOne.setAttribute('sync-locale-with', '#not-existing');
+
+                      expect(dummyDOne.getAttribute('dbui-dir')).to.equal('bcd');
+                      expect(dummyDOne.getAttribute('dbui-lang')).to.equal('cd');
+                      expect(dummyDOne._providingContext.dbuiDir).to.equal('bcd');
+                      expect(dummyDOne._providingContext.dbuiLang).to.equal('cd');
+
+                      setTimeout(() => {
+                        iframe.remove();
+                        done();
+                      }, 0);
+                    });
+
+                    DummyD.registerSelf();
+                  }
+                });
+
+              });
+            });
+
+          describe(`
+          when node is descendant dbui
+          `, () => {
+              it('syncs with closestDbuiParent', (done) => {
+                inIframe({
+                  headStyle: treeStyle,
+                  bodyHTML: `
+                  <div id="container">
+                    <div id="locale-provider1" dir="rtl" lang="it"></div>
+                    <dummy-d id="dummy-d-outer" sync-locale-with="#non-existing">
+                      <dummy-d id="dummy-d-one" sync-locale-with="#non-existing"></dummy-d>
+                    </dummy-d>
+                  </div>
+                  `,
+                  onLoad: ({ contentWindow, iframe }) => {
+                    const DummyD = getDummyD(contentWindow);
+
+                    const dummyDOne = contentWindow.document.querySelector('#dummy-d-one');
+                    const dummyDOuter = contentWindow.document.querySelector('#dummy-d-outer');
+                    const html = contentWindow.document.querySelector('html');
+                    html.dir = 'abc';
+                    html.lang = 'bc';
+
+                    Promise.all([
+                      DummyD.registrationName,
+                    ].map((localName) => contentWindow.customElements.whenDefined(localName)
+                    )).then(() => {
+
+                      expect(dummyDOuter._localeTarget).to.equal(html);
+
+                      expect(dummyDOuter.getAttribute('dbui-dir')).to.equal('abc');
+                      expect(dummyDOuter.getAttribute('dbui-lang')).to.equal('bc');
+                      expect(dummyDOuter._providingContext.dbuiDir).to.equal('abc');
+                      expect(dummyDOuter._providingContext.dbuiLang).to.equal('bc');
+                      expect(dummyDOne.getAttribute('dbui-dir')).to.equal('abc');
+                      expect(dummyDOne.getAttribute('dbui-lang')).to.equal('bc');
+                      expect(dummyDOne._providingContext.dbuiDir).to.equal('abc');
+                      expect(dummyDOne._providingContext.dbuiLang).to.equal('bc');
+
+                      html.setAttribute('dir', 'bcd');
+                      html.setAttribute('lang', 'cd');
+
+                      setTimeout(() => {
+                        expect(dummyDOuter.getAttribute('dbui-dir')).to.equal('bcd');
+                        expect(dummyDOuter.getAttribute('dbui-lang')).to.equal('cd');
+                        expect(dummyDOuter._providingContext.dbuiDir).to.equal('bcd');
+                        expect(dummyDOuter._providingContext.dbuiLang).to.equal('cd');
+                        expect(dummyDOne.getAttribute('dbui-dir')).to.equal('bcd');
+                        expect(dummyDOne.getAttribute('dbui-lang')).to.equal('cd');
+                        expect(dummyDOne._providingContext.dbuiDir).to.equal('bcd');
+                        expect(dummyDOne._providingContext.dbuiLang).to.equal('cd');
+
+                        setTimeout(() => {
+                          iframe.remove();
+                          done();
+                        }, 0);
+                      }, 0);
+                    });
+
+                    DummyD.registerSelf();
+                  }
+                });
+              });
+            });
+        });
+    });
+
+  describe(`
+    _onLocaleContextChanged
+    `, () => {
+      describe(`
+      when monitoring locale on target
+      `, () => {
+          it(`
+          ignores context notification but locale is propagated with overrides
+          `, (done) => {
+              inIframe({
+                headStyle: treeStyle,
+                bodyHTML: `
+                <div id="container">
+                  <div id="locale-provider" dir="rtl" lang="it"></div>
+                  <dummy-d id="dummy-d-one" dir="abc" lang="ab">
+                    <dummy-d id="dummy-d-two" sync-locale-with="#locale-provider">
+                      <dummy-d id="dummy-d-three"></dummy-d>
+                    </dummy-d>
+                  </dummy-d>
+                </div>
+                `,
+                onLoad: ({ contentWindow, iframe }) => {
+                  const DummyD = getDummyD(contentWindow);
+
+                  const dummyDOne = contentWindow.document.querySelector('#dummy-d-one');
+                  const dummyDTwo = contentWindow.document.querySelector('#dummy-d-two');
+                  const dummyDThree = contentWindow.document.querySelector('#dummy-d-three');
+
+                  Promise.all([
+                    DummyD.registrationName,
+                  ].map((localName) => contentWindow.customElements.whenDefined(localName)
+                  )).then(() => {
+
+                    expect(dummyDOne.getAttribute('dbui-dir')).to.equal('abc');
+                    expect(dummyDOne.getAttribute('dbui-lang')).to.equal('ab');
+                    expect(dummyDOne._providingContext.dbuiDir).to.equal('abc');
+                    expect(dummyDOne._providingContext.dbuiLang).to.equal('ab');
+                    expect(dummyDTwo.getAttribute('dbui-dir')).to.equal('rtl');
+                    expect(dummyDTwo.getAttribute('dbui-lang')).to.equal('it');
+                    expect(dummyDTwo._providingContext.dbuiDir).to.equal('rtl');
+                    expect(dummyDTwo._providingContext.dbuiLang).to.equal('it');
+                    expect(dummyDThree.getAttribute('dbui-dir')).to.equal('rtl');
+                    expect(dummyDThree.getAttribute('dbui-lang')).to.equal('it');
+                    expect(dummyDThree._lastReceivedContext.dbuiDir).to.equal('rtl');
+                    expect(dummyDThree._lastReceivedContext.dbuiLang).to.equal('it');
+
+                    dummyDOne.dir = 'bcd';
+                    dummyDOne.lang = 'cd';
+
+                    expect(dummyDOne.getAttribute('dbui-dir')).to.equal('bcd');
+                    expect(dummyDOne.getAttribute('dbui-lang')).to.equal('cd');
+                    expect(dummyDOne._providingContext.dbuiDir).to.equal('bcd');
+                    expect(dummyDOne._providingContext.dbuiLang).to.equal('cd');
+                    expect(dummyDTwo.getAttribute('dbui-dir')).to.equal('rtl');
+                    expect(dummyDTwo.getAttribute('dbui-lang')).to.equal('it');
+                    expect(dummyDTwo._providingContext.dbuiDir).to.equal('rtl');
+                    expect(dummyDTwo._providingContext.dbuiLang).to.equal('it');
+                    expect(dummyDThree.getAttribute('dbui-dir')).to.equal('rtl');
+                    expect(dummyDThree.getAttribute('dbui-lang')).to.equal('it');
+                    expect(dummyDThree._lastReceivedContext.dbuiDir).to.equal('rtl');
+                    expect(dummyDThree._lastReceivedContext.dbuiLang).to.equal('it');
+
+                    setTimeout(() => {
+                      iframe.remove();
+                      done();
+                    }, 0);
+                  });
+
+                  DummyD.registerSelf();
+                }
+              });
+            });
+        });
+
+      describe(`
+      when dir/lang are truthy
+      `, () => {
+          it(`
+          ignores context notification but locale is propagated with overrides
+          `, (done) => {
+              inIframe({
+                headStyle: treeStyle,
+                bodyHTML: `
+                <div id="container">
+                  <dummy-d id="dummy-d-one" dir="abc" lang="ab">
+                    <dummy-d id="dummy-d-two" dir="bcd">
+                      <dummy-d id="dummy-d-three"></dummy-d>
+                    </dummy-d>
+                  </dummy-d>
+                </div>
+                `,
+                onLoad: ({ contentWindow, iframe }) => {
+                  const DummyD = getDummyD(contentWindow);
+
+                  const dummyDOne = contentWindow.document.querySelector('#dummy-d-one');
+                  const dummyDTwo = contentWindow.document.querySelector('#dummy-d-two');
+                  const dummyDThree = contentWindow.document.querySelector('#dummy-d-three');
+
+                  Promise.all([
+                    DummyD.registrationName,
+                  ].map((localName) => contentWindow.customElements.whenDefined(localName)
+                  )).then(() => {
+
+                    expect(dummyDOne.getAttribute('dbui-dir')).to.equal('abc');
+                    expect(dummyDOne.getAttribute('dbui-lang')).to.equal('ab');
+                    expect(dummyDOne._providingContext.dbuiDir).to.equal('abc');
+                    expect(dummyDOne._providingContext.dbuiLang).to.equal('ab');
+                    expect(dummyDTwo.getAttribute('dbui-dir')).to.equal('bcd');
+                    expect(dummyDTwo.getAttribute('dbui-lang')).to.equal('ab');
+                    expect(dummyDTwo._providingContext.dbuiDir).to.equal('bcd');
+                    expect(dummyDTwo._providingContext.dbuiLang).to.equal(undefined);
+                    expect(dummyDTwo._lastReceivedContext.dbuiLang).to.equal('ab');
+                    expect(dummyDThree.getAttribute('dbui-dir')).to.equal('bcd');
+                    expect(dummyDThree.getAttribute('dbui-lang')).to.equal('ab');
+                    expect(dummyDThree._lastReceivedContext.dbuiDir).to.equal('bcd');
+                    expect(dummyDThree._lastReceivedContext.dbuiLang).to.equal('ab');
+
+                    dummyDOne.dir = 'cde';
+                    dummyDOne.lang = 'de';
+
+                    expect(dummyDOne.getAttribute('dbui-dir')).to.equal('cde');
+                    expect(dummyDOne.getAttribute('dbui-lang')).to.equal('de');
+                    expect(dummyDOne._providingContext.dbuiDir).to.equal('cde');
+                    expect(dummyDOne._providingContext.dbuiLang).to.equal('de');
+                    expect(dummyDTwo.getAttribute('dbui-dir')).to.equal('bcd');
+                    expect(dummyDTwo.getAttribute('dbui-lang')).to.equal('de');
+                    expect(dummyDTwo._providingContext.dbuiDir).to.equal('bcd');
+                    expect(dummyDTwo._providingContext.dbuiLang).to.equal(undefined);
+                    expect(dummyDTwo._lastReceivedContext.dbuiLang).to.equal('de');
+                    expect(dummyDThree.getAttribute('dbui-dir')).to.equal('bcd');
+                    expect(dummyDThree.getAttribute('dbui-lang')).to.equal('de');
+                    expect(dummyDThree._lastReceivedContext.dbuiDir).to.equal('bcd');
+                    expect(dummyDThree._lastReceivedContext.dbuiLang).to.equal('de');
+
+                    setTimeout(() => {
+                      iframe.remove();
+                      done();
+                    }, 0);
+                  });
+
+                  DummyD.registerSelf();
+                }
+              });
+            });
+        });
+
+      describe(`
+      when dir/lang are falsy and NOT monitoring locale on target
+      `, () => {
+          it(`
+          sets dbui-dir/lang and locale change is further propagated
+          `, (done) => {
+              inIframe({
+                headStyle: treeStyle,
+                bodyHTML: `
+                <div id="container">
+                  <dummy-d id="dummy-d-one" dir="abc" lang="ab">
+                    <dummy-d id="dummy-d-two">
+                      <dummy-d id="dummy-d-three"></dummy-d>
+                    </dummy-d>
+                  </dummy-d>
+                </div>
+                `,
+                onLoad: ({ contentWindow, iframe }) => {
+                  const DummyD = getDummyD(contentWindow);
+
+                  const dummyDOne = contentWindow.document.querySelector('#dummy-d-one');
+                  const dummyDTwo = contentWindow.document.querySelector('#dummy-d-two');
+                  const dummyDThree = contentWindow.document.querySelector('#dummy-d-three');
+
+                  Promise.all([
+                    DummyD.registrationName,
+                  ].map((localName) => contentWindow.customElements.whenDefined(localName)
+                  )).then(() => {
+
+                    expect(dummyDOne.getAttribute('dbui-dir')).to.equal('abc');
+                    expect(dummyDOne.getAttribute('dbui-lang')).to.equal('ab');
+                    expect(dummyDOne._providingContext.dbuiDir).to.equal('abc');
+                    expect(dummyDOne._providingContext.dbuiLang).to.equal('ab');
+                    expect(dummyDTwo.getAttribute('dbui-dir')).to.equal('abc');
+                    expect(dummyDTwo.getAttribute('dbui-lang')).to.equal('ab');
+                    expect(dummyDTwo._lastReceivedContext.dbuiDir).to.equal('abc');
+                    expect(dummyDTwo._lastReceivedContext.dbuiLang).to.equal('ab');
+                    expect(dummyDThree.getAttribute('dbui-dir')).to.equal('abc');
+                    expect(dummyDThree.getAttribute('dbui-lang')).to.equal('ab');
+                    expect(dummyDThree._lastReceivedContext.dbuiDir).to.equal('abc');
+                    expect(dummyDThree._lastReceivedContext.dbuiLang).to.equal('ab');
+
+                    dummyDOne.dir = 'cde';
+                    dummyDOne.lang = 'de';
+
+                    expect(dummyDOne.getAttribute('dbui-dir')).to.equal('cde');
+                    expect(dummyDOne.getAttribute('dbui-lang')).to.equal('de');
+                    expect(dummyDOne._providingContext.dbuiDir).to.equal('cde');
+                    expect(dummyDOne._providingContext.dbuiLang).to.equal('de');
+                    expect(dummyDTwo.getAttribute('dbui-dir')).to.equal('cde');
+                    expect(dummyDTwo.getAttribute('dbui-lang')).to.equal('de');
+                    expect(dummyDTwo._lastReceivedContext.dbuiDir).to.equal('cde');
+                    expect(dummyDTwo._lastReceivedContext.dbuiLang).to.equal('de');
+                    expect(dummyDThree.getAttribute('dbui-dir')).to.equal('cde');
+                    expect(dummyDThree.getAttribute('dbui-lang')).to.equal('de');
+                    expect(dummyDThree._lastReceivedContext.dbuiDir).to.equal('cde');
+                    expect(dummyDThree._lastReceivedContext.dbuiLang).to.equal('de');
+
+                    setTimeout(() => {
+                      iframe.remove();
+                      done();
+                    }, 0);
+                  });
+
+                  DummyD.registerSelf();
+                }
+              });
+            });
+        });
+    });
+
+  describe(`
+  _onLocaleAttributeChangedCallback
+  `, () => {
+      describe(`
+      when dir/lang are truthy
+      `, () => {
+          it(`
+          it takes precedence over locale target or over context from closest dbui parent
+          `, (done) => {
+              inIframe({
+                headStyle: treeStyle,
+                bodyHTML: `
+                <div id="container">
+                  <div id="locale-provider" dir="abc" lang="ab"></div>
+                  <dummy-d id="dummy-d-one">
+                    <dummy-d id="dummy-d-two" sync-locale-with="#locale-provider">
+                      <dummy-d id="dummy-d-three"></dummy-d>
+                    </dummy-d>
+                  </dummy-d>
+                  <dummy-d id="dummy-d-four" dir="cde" lang="de">
+                    <dummy-d id="dummy-d-five">
+                      <dummy-d id="dummy-d-six"></dummy-d>
+                    </dummy-d>
+                  </dummy-d>
+                </div>
+                `,
+                onLoad: ({ contentWindow, iframe }) => {
+                  const DummyD = getDummyD(contentWindow);
+
+                  const dummyDOne = contentWindow.document.querySelector('#dummy-d-one');
+                  const dummyDTwo = contentWindow.document.querySelector('#dummy-d-two');
+                  const dummyDThree = contentWindow.document.querySelector('#dummy-d-three');
+                  const dummyDFour = contentWindow.document.querySelector('#dummy-d-four');
+                  const dummyDFive = contentWindow.document.querySelector('#dummy-d-five');
+                  const dummyDSix = contentWindow.document.querySelector('#dummy-d-six');
+
+                  Promise.all([
+                    DummyD.registrationName,
+                  ].map((localName) => contentWindow.customElements.whenDefined(localName)
+                  )).then(() => {
+
+                    const test = ({
+                      oneDir, oneLang, twoDir, twoLang, threeDir, threeLang,
+                      fourDir, fourLang, fiveDir, fiveLang, sixDir, sixLang,
+                    }) => {
+                      expect(dummyDOne.getAttribute('dbui-dir')).to.equal(oneDir);
+                      expect(dummyDOne.getAttribute('dbui-lang')).to.equal(oneLang);
+                      expect(dummyDTwo.getAttribute('dbui-dir')).to.equal(twoDir);
+                      expect(dummyDTwo.getAttribute('dbui-lang')).to.equal(twoLang);
+                      expect(dummyDThree.getAttribute('dbui-dir')).to.equal(threeDir);
+                      expect(dummyDThree.getAttribute('dbui-lang')).to.equal(threeLang);
+                      expect(dummyDFour.getAttribute('dbui-dir')).to.equal(fourDir);
+                      expect(dummyDFour.getAttribute('dbui-lang')).to.equal(fourLang);
+                      expect(dummyDFive.getAttribute('dbui-dir')).to.equal(fiveDir);
+                      expect(dummyDFive.getAttribute('dbui-lang')).to.equal(fiveLang);
+                      expect(dummyDSix.getAttribute('dbui-dir')).to.equal(sixDir);
+                      expect(dummyDSix.getAttribute('dbui-lang')).to.equal(sixLang);
+                    };
+
+                    /* eslint object-property-newline: 0 */
+                    test({
+                      oneDir: 'ltr', oneLang: 'en', twoDir: 'abc', twoLang: 'ab', threeDir: 'abc', threeLang: 'ab',
+                      fourDir: 'cde', fourLang: 'de', fiveDir: 'cde', fiveLang: 'de', sixDir: 'cde', sixLang: 'de',
+                    });
+
+                    dummyDTwo.dir = 'efg';
+                    dummyDTwo.lang = 'ef';
+                    dummyDFive.dir = 'fgh';
+                    dummyDFive.lang = 'fg';
+
+                    test({
+                      oneDir: 'ltr', oneLang: 'en', twoDir: 'efg', twoLang: 'ef', threeDir: 'efg', threeLang: 'ef',
+                      fourDir: 'cde', fourLang: 'de', fiveDir: 'fgh', fiveLang: 'fg', sixDir: 'fgh', sixLang: 'fg',
+                    });
+
+                    setTimeout(() => {
+                      iframe.remove();
+                      done();
+                    }, 0);
+                  });
+
+                  DummyD.registerSelf();
+                }
+              });
+            });
+        });
+
+      describe(`
+      when dir/lang is falsy but there is a truthy value on locale target
+      `, () => {
+          it(`
+          it syncs with and monitors locale target
+          `, (done) => {
+              inIframe({
+                headStyle: treeStyle,
+                bodyHTML: `
+                <div id="container">
+                  <div id="locale-provider" dir="abc" lang="ab"></div>
+                  <dummy-d id="dummy-d-one">
+                    <dummy-d id="dummy-d-two" dir="bcd" lang="bc" sync-locale-with="#locale-provider">
+                      <dummy-d id="dummy-d-three"></dummy-d>
+                    </dummy-d>
+                  </dummy-d>
+                </div>
+                `,
+                onLoad: ({ contentWindow, iframe }) => {
+                  const DummyD = getDummyD(contentWindow);
+
+                  const localeProvider = contentWindow.document.querySelector('#locale-provider');
+                  const dummyDOne = contentWindow.document.querySelector('#dummy-d-one');
+                  const dummyDTwo = contentWindow.document.querySelector('#dummy-d-two');
+                  const dummyDThree = contentWindow.document.querySelector('#dummy-d-three');
+
+                  Promise.all([
+                    DummyD.registrationName,
+                  ].map((localName) => contentWindow.customElements.whenDefined(localName)
+                  )).then(() => {
+
+                    const test = ({
+                      oneDir, oneLang, twoDir, twoLang, threeDir, threeLang
+                    }) => {
+                      expect(dummyDOne.getAttribute('dbui-dir')).to.equal(oneDir);
+                      expect(dummyDOne.getAttribute('dbui-lang')).to.equal(oneLang);
+                      expect(dummyDTwo.getAttribute('dbui-dir')).to.equal(twoDir);
+                      expect(dummyDTwo.getAttribute('dbui-lang')).to.equal(twoLang);
+                      expect(dummyDThree.getAttribute('dbui-dir')).to.equal(threeDir);
+                      expect(dummyDThree.getAttribute('dbui-lang')).to.equal(threeLang);
+                    };
+
+                    test({
+                      oneDir: 'ltr', oneLang: 'en', twoDir: 'bcd', twoLang: 'bc', threeDir: 'bcd', threeLang: 'bc'
+                    });
+
+                    dummyDTwo.dir = '';
+                    dummyDTwo.lang = '';
+
+                    test({
+                      oneDir: 'ltr', oneLang: 'en', twoDir: 'abc', twoLang: 'ab', threeDir: 'abc', threeLang: 'ab'
+                    });
+
+                    localeProvider.dir = 'def';
+                    localeProvider.lang = 'de';
+
+                    setTimeout(() => {
+                      test({
+                        oneDir: 'ltr', oneLang: 'en', twoDir: 'def', twoLang: 'de', threeDir: 'def', threeLang: 'de'
+                      });
+
+                      iframe.remove();
+                      done();
+                    }, 0);
+                  });
+
+                  DummyD.registerSelf();
+                }
+              });
+            });
+        });
+
+      describe(`
+      when dir/lang is falsy and there is no locale target
+      `, () => {
+          it(`
+          it syncs with closest dbui parent
+          and propagates context from parent to self and ancestors
+          `, (done) => {
+              inIframe({
+                headStyle: treeStyle,
+                bodyHTML: `
+                <div id="container">
+                  <dummy-d id="dummy-d-one" dir="bcd" lang="bc">
+                    <dummy-d id="dummy-d-two" dir="cde" lang="cd">
+                      <dummy-d id="dummy-d-three"></dummy-d>
+                    </dummy-d>
+                  </dummy-d>
+                </div>
+                `,
+                onLoad: ({ contentWindow, iframe }) => {
+                  const DummyD = getDummyD(contentWindow);
+
+                  const dummyDOne = contentWindow.document.querySelector('#dummy-d-one');
+                  const dummyDTwo = contentWindow.document.querySelector('#dummy-d-two');
+                  const dummyDThree = contentWindow.document.querySelector('#dummy-d-three');
+
+                  Promise.all([
+                    DummyD.registrationName,
+                  ].map((localName) => contentWindow.customElements.whenDefined(localName)
+                  )).then(() => {
+
+                    const test = ({
+                      oneDir, oneLang, twoDir, twoLang, threeDir, threeLang
+                    }) => {
+                      expect(dummyDOne.getAttribute('dbui-dir')).to.equal(oneDir);
+                      expect(dummyDOne.getAttribute('dbui-lang')).to.equal(oneLang);
+                      expect(dummyDTwo.getAttribute('dbui-dir')).to.equal(twoDir);
+                      expect(dummyDTwo.getAttribute('dbui-lang')).to.equal(twoLang);
+                      expect(dummyDThree.getAttribute('dbui-dir')).to.equal(threeDir);
+                      expect(dummyDThree.getAttribute('dbui-lang')).to.equal(threeLang);
+                    };
+
+                    test({
+                      oneDir: 'bcd', oneLang: 'bc', twoDir: 'cde', twoLang: 'cd', threeDir: 'cde', threeLang: 'cd'
+                    });
+
+                    expect(dummyDTwo._providingContext.dbuiDir).to.equal('cde');
+                    expect(dummyDTwo._providingContext.dbuiLang).to.equal('cd');
+                    expect(dummyDTwo._lastReceivedContext.dbuiDir).to.equal('bcd');
+                    expect(dummyDTwo._lastReceivedContext.dbuiLang).to.equal('bc');
+
+                    dummyDTwo.dir = '';
+                    dummyDTwo.lang = '';
+
+                    test({
+                      oneDir: 'bcd', oneLang: 'bc', twoDir: 'bcd', twoLang: 'bc', threeDir: 'bcd', threeLang: 'bc'
+                    });
+
+                    expect(dummyDTwo._providingContext.dbuiDir).to.equal(undefined);
+                    expect(dummyDTwo._providingContext.dbuiLang).to.equal(undefined);
+                    expect(dummyDTwo._lastReceivedContext.dbuiDir).to.equal('bcd');
+                    expect(dummyDTwo._lastReceivedContext.dbuiLang).to.equal('bc');
+
+                    dummyDOne.dir = 'def';
+                    dummyDOne.lang = 'de';
+
+                    test({
+                      oneDir: 'def', oneLang: 'de', twoDir: 'def', twoLang: 'de', threeDir: 'def', threeLang: 'de'
+                    });
+
+                    expect(dummyDTwo._providingContext.dbuiDir).to.equal(undefined);
+                    expect(dummyDTwo._providingContext.dbuiLang).to.equal(undefined);
+                    expect(dummyDTwo._lastReceivedContext.dbuiDir).to.equal('def');
+                    expect(dummyDTwo._lastReceivedContext.dbuiLang).to.equal('de');
+
+                    setTimeout(() => {
+                      iframe.remove();
+                      done();
+                    }, 0);
+                  });
+
+                  DummyD.registerSelf();
+                }
+              });
+            });
+        });
+
+    });
+
+  describe('_syncLocaleAndMonitorChanges', () => {
+    describe('when node is top most dbui ancestor', () => {
+      describe('when node targets another node for locale sync', () => {
+        it('syncs with locale target and monitors changes', (done) => {
+          inIframe({
+            headStyle: treeStyle,
+            bodyHTML: `
+            <div id="container">
+              <div id="locale-provider" dir="abc" lang="ab"></div>
+              <dummy-d id="dummy-d-one" sync-locale-with="#locale-provider">
+                <dummy-d id="dummy-d-two"></dummy-d>
+              </dummy-d>
+            </div>
+            `,
+            onLoad: ({ contentWindow, iframe }) => {
+              const DummyD = getDummyD(contentWindow);
+
+              const localeProvider = contentWindow.document.querySelector('#locale-provider');
+              const dummyDOne = contentWindow.document.querySelector('#dummy-d-one');
+              const dummyDTwo = contentWindow.document.querySelector('#dummy-d-two');
+
+              Promise.all([
+                DummyD.registrationName,
+              ].map((localName) => contentWindow.customElements.whenDefined(localName)
+              )).then(() => {
+
+                const test = ({
+                  oneDir, oneLang, twoDir, twoLang
+                }) => {
+                  expect(dummyDOne.getAttribute('dbui-dir')).to.equal(oneDir);
+                  expect(dummyDOne.getAttribute('dbui-lang')).to.equal(oneLang);
+                  expect(dummyDTwo.getAttribute('dbui-dir')).to.equal(twoDir);
+                  expect(dummyDTwo.getAttribute('dbui-lang')).to.equal(twoLang);
+                };
+
+                test({
+                  oneDir: 'abc', oneLang: 'ab', twoDir: 'abc', twoLang: 'ab'
+                });
+
+                localeProvider.dir = 'bcd';
+                localeProvider.lang = 'bc';
+
+                setTimeout(() => {
+                  test({
+                    oneDir: 'bcd', oneLang: 'bc', twoDir: 'bcd', twoLang: 'bc'
+                  });
+
+                  iframe.remove();
+                  done();
+                }, 0);
+              });
+
+              DummyD.registerSelf();
+            }
+          });
+        });
+      });
+
+      describe('when node does NOT target another node for locale sync', () => {
+        it('syncs with html node and monitors changes', (done) => {
+          inIframe({
+            headStyle: treeStyle,
+            bodyHTML: `
+            <div id="container">
+              <dummy-d id="dummy-d-one">
+                <dummy-d id="dummy-d-two"></dummy-d>
+              </dummy-d>
+            </div>
+            `,
+            onLoad: ({ contentWindow, iframe }) => {
+              const DummyD = getDummyD(contentWindow);
+
+              const html = contentWindow.document.querySelector('html');
+              const dummyDOne = contentWindow.document.querySelector('#dummy-d-one');
+              const dummyDTwo = contentWindow.document.querySelector('#dummy-d-two');
+
+              Promise.all([
+                DummyD.registrationName,
+              ].map((localName) => contentWindow.customElements.whenDefined(localName)
+              )).then(() => {
+
+                const test = ({
+                  oneDir, oneLang, twoDir, twoLang
+                }) => {
+                  expect(dummyDOne.getAttribute('dbui-dir')).to.equal(oneDir);
+                  expect(dummyDOne.getAttribute('dbui-lang')).to.equal(oneLang);
+                  expect(dummyDTwo.getAttribute('dbui-dir')).to.equal(twoDir);
+                  expect(dummyDTwo.getAttribute('dbui-lang')).to.equal(twoLang);
+                };
+
+                test({
+                  oneDir: 'ltr', oneLang: 'en', twoDir: 'ltr', twoLang: 'en'
+                });
+
+                html.dir = 'bcd';
+                html.lang = 'bc';
+
+                setTimeout(() => {
+                  test({
+                    oneDir: 'bcd', oneLang: 'bc', twoDir: 'bcd', twoLang: 'bc'
+                  });
+
+                  iframe.remove();
+                  done();
+                }, 0);
+              });
+
+              DummyD.registerSelf();
+            }
+          });
+        });
+      });
+    });
+
+    describe('when node is descendant dbui', () => {
+      describe('when node targets another node for locale sync', () => {
+        it('syncs with locale target and monitors changes', (done) => {
+          inIframe({
+            headStyle: treeStyle,
+            bodyHTML: `
+            <div id="container">
+              <div id="locale-provider" dir="abc" lang="ab"></div>
+              <dummy-d id="dummy-d-one" dir="bcd" lang="bc">
+                <dummy-d id="dummy-d-two" sync-locale-with="#locale-provider">
+                  <dummy-d id="dummy-d-three"></dummy-d>
+                </dummy-d>
+              </dummy-d>
+            </div>
+            `,
+            onLoad: ({ contentWindow, iframe }) => {
+              const DummyD = getDummyD(contentWindow);
+
+              const localeProvider = contentWindow.document.querySelector('#locale-provider');
+              const dummyDOne = contentWindow.document.querySelector('#dummy-d-one');
+              const dummyDTwo = contentWindow.document.querySelector('#dummy-d-two');
+              const dummyDThree = contentWindow.document.querySelector('#dummy-d-three');
+
+              Promise.all([
+                DummyD.registrationName,
+              ].map((localName) => contentWindow.customElements.whenDefined(localName)
+              )).then(() => {
+
+                const test = ({
+                  oneDir, oneLang, twoDir, twoLang, threeDir, threeLang
+                }) => {
+                  expect(dummyDOne.getAttribute('dbui-dir')).to.equal(oneDir);
+                  expect(dummyDOne.getAttribute('dbui-lang')).to.equal(oneLang);
+                  expect(dummyDTwo.getAttribute('dbui-dir')).to.equal(twoDir);
+                  expect(dummyDTwo.getAttribute('dbui-lang')).to.equal(twoLang);
+                  expect(dummyDThree.getAttribute('dbui-dir')).to.equal(threeDir);
+                  expect(dummyDThree.getAttribute('dbui-lang')).to.equal(threeLang);
+                };
+
+                test({
+                  oneDir: 'bcd', oneLang: 'bc', twoDir: 'abc', twoLang: 'ab', threeDir: 'abc', threeLang: 'ab'
+                });
+
+                localeProvider.dir = 'cde';
+                localeProvider.lang = 'cd';
+
+                setTimeout(() => {
+                  test({
+                    oneDir: 'bcd', oneLang: 'bc', twoDir: 'cde', twoLang: 'cd', threeDir: 'cde', threeLang: 'cd'
+                  });
+
+                  iframe.remove();
+                  done();
+                }, 0);
+              });
+
+              DummyD.registerSelf();
+            }
+          });
+        });
+      });
+
+      describe('when node does NOT target another node for locale sync', () => {
+        it('syncs with closestDbuiParent', (done) => {
+          inIframe({
+            headStyle: treeStyle,
+            bodyHTML: `
+            <div id="container">
+              <dummy-d id="dummy-d-one" dir="bcd" lang="bc">
+                <dummy-d id="dummy-d-two">
+                  <dummy-d id="dummy-d-three"></dummy-d>
+                </dummy-d>
+              </dummy-d>
+            </div>
+            `,
+            onLoad: ({ contentWindow, iframe }) => {
+              const DummyD = getDummyD(contentWindow);
+
+              const dummyDOne = contentWindow.document.querySelector('#dummy-d-one');
+              const dummyDTwo = contentWindow.document.querySelector('#dummy-d-two');
+              const dummyDThree = contentWindow.document.querySelector('#dummy-d-three');
+
+              Promise.all([
+                DummyD.registrationName,
+              ].map((localName) => contentWindow.customElements.whenDefined(localName)
+              )).then(() => {
+
+                const test = ({
+                  oneDir, oneLang, twoDir, twoLang, threeDir, threeLang
+                }) => {
+                  expect(dummyDOne.getAttribute('dbui-dir')).to.equal(oneDir);
+                  expect(dummyDOne.getAttribute('dbui-lang')).to.equal(oneLang);
+                  expect(dummyDTwo.getAttribute('dbui-dir')).to.equal(twoDir);
+                  expect(dummyDTwo.getAttribute('dbui-lang')).to.equal(twoLang);
+                  expect(dummyDThree.getAttribute('dbui-dir')).to.equal(threeDir);
+                  expect(dummyDThree.getAttribute('dbui-lang')).to.equal(threeLang);
+                };
+
+                test({
+                  oneDir: 'bcd', oneLang: 'bc', twoDir: 'bcd', twoLang: 'bc', threeDir: 'bcd', threeLang: 'bc'
+                });
+
+                dummyDOne.dir = 'cde';
+                dummyDOne.lang = 'cd';
+
+                setTimeout(() => {
+                  test({
+                    oneDir: 'cde', oneLang: 'cd', twoDir: 'cde', twoLang: 'cd', threeDir: 'cde', threeLang: 'cd'
+                  });
+
+                  iframe.remove();
+                  done();
+                }, 0);
+              });
+
+              DummyD.registerSelf();
+            }
+          });
+        });
+      });
+    });
+  });
+
+  describe('_watchLocaleChanges', () => {
+    it(`
+    monitors the target for dir/lang attribute changes,
+    sets dbui-dir/lang on self and sets dbuiDir/Lang on context.
+    `, (done) => {
+        inIframe({
+          headStyle: treeStyle,
+          bodyHTML: `
+          <div id="container">
+            <div id="locale-provider"></div>
+            <dummy-d id="dummy-d-one" sync-locale-with="#locale-provider">
+              <dummy-d id="dummy-d-two">
+              </dummy-d>
+            </dummy-d>
+          </div>
+          `,
+          onLoad: ({ contentWindow, iframe }) => {
+            const DummyD = getDummyD(contentWindow);
+
+            const localeProvider = contentWindow.document.querySelector('#locale-provider');
+            const dummyDOne = contentWindow.document.querySelector('#dummy-d-one');
+            const dummyDTwo = contentWindow.document.querySelector('#dummy-d-two');
+
+            Promise.all([
+              DummyD.registrationName,
+            ].map((localName) => contentWindow.customElements.whenDefined(localName)
+            )).then(() => {
+
+              const test = ({
+                oneDir, oneLang, twoDir, twoLang
+              }) => {
+                expect(dummyDOne.getAttribute('dbui-dir')).to.equal(oneDir);
+                expect(dummyDOne.getAttribute('dbui-lang')).to.equal(oneLang);
+                expect(dummyDTwo.getAttribute('dbui-dir')).to.equal(twoDir);
+                expect(dummyDTwo.getAttribute('dbui-lang')).to.equal(twoLang);
+              };
+
+              test({
+                oneDir: 'ltr', oneLang: 'en', twoDir: 'ltr', twoLang: 'en'
+              });
+
+              localeProvider.dir = 'cde';
+              localeProvider.lang = 'cd';
+
+              setTimeout(() => {
+                test({
+                  oneDir: 'cde', oneLang: 'cd', twoDir: 'cde', twoLang: 'cd'
+                });
+
+                localeProvider.dir = '';
+                localeProvider.lang = '';
+
+                setTimeout(() => {
+                  // falls back to defaults
+                  test({
+                    oneDir: 'ltr', oneLang: 'en', twoDir: 'ltr', twoLang: 'en'
+                  });
+
+                  localeProvider.dir = 'def';
+                  localeProvider.lang = 'de';
+
                   setTimeout(() => {
+                    test({
+                      oneDir: 'def', oneLang: 'de', twoDir: 'def', twoLang: 'de'
+                    });
+
                     iframe.remove();
                     done();
                   }, 0);
                 }, 0);
               }, 0);
-            }, 0);
-          });
+            });
 
-          DummyD.registerSelf();
-        }
+            DummyD.registerSelf();
+          }
+        });
       });
+
+    it(`
+    resets previous _localeObserver
+    `, (done) => {
+        inIframe({
+          headStyle: treeStyle,
+          bodyHTML: `
+          <div id="container">
+            <div id="locale-provider1" dir="abc" lang="ab"></div>
+            <div id="locale-provider2" dir="bcd" lang="bc"></div>
+            <dummy-d id="dummy-d-one" sync-locale-with="#locale-provider1"></dummy-d>
+          </div>
+          `,
+          onLoad: ({ contentWindow, iframe }) => {
+            const DummyD = getDummyD(contentWindow);
+
+            const dummyDOne = contentWindow.document.querySelector('#dummy-d-one');
+
+            Promise.all([
+              DummyD.registrationName,
+            ].map((localName) => contentWindow.customElements.whenDefined(localName)
+            )).then(() => {
+
+              const dummyDOne__localeObserver1 = dummyDOne._localeObserver;
+              const dummyDOne__localeObserver1_disconnect = dummyDOne__localeObserver1.disconnect;
+              let disconnected1 = false;
+              dummyDOne__localeObserver1.disconnect = () => {
+                disconnected1 = true;
+                dummyDOne__localeObserver1_disconnect.call(dummyDOne__localeObserver1);
+              };
+
+              dummyDOne.setAttribute('sync-locale-with', '#locale-observer2');
+
+              const dummyDOne__localeObserver2 = dummyDOne._localeObserver;
+              const dummyDOne__localeObserver2_disconnect = dummyDOne__localeObserver2.disconnect;
+              let disconnected2 = false;
+              dummyDOne__localeObserver2.disconnect = () => {
+                disconnected2 = true;
+                dummyDOne__localeObserver2_disconnect.call(dummyDOne__localeObserver2);
+              };
+
+              expect(disconnected1).to.equal(true);
+              // new MutationObserver
+              expect(!!dummyDOne__localeObserver2.disconnect).to.equal(true);
+              // MutationObservers are different instances
+              expect(dummyDOne__localeObserver2).to.not.equal(dummyDOne__localeObserver1);
+
+              dummyDOne.remove();
+
+              expect(disconnected2).to.equal(true);
+              expect(dummyDOne._localeObserver).to.equal(null);
+
+              setTimeout(() => {
+                iframe.remove();
+                done();
+              }, 0);
+
+            });
+
+            DummyD.registerSelf();
+          }
+        });
+      });
+  });
+
+  describe(`
+  when top most dbui ancestor becomes descendant
+  and when dbui descendant becomes top most dbui ancestor
+  `, () => {
+      describe(`
+      when sync-locale-with is NOT specified
+      `, () => {
+          it(`
+          syncs locale with closest dbui parent when becoming descendant
+          and syncs locale with html root when becoming dbui root
+          `, (done) => {
+              inIframe({
+                headStyle: treeStyle,
+                bodyHTML: `
+                <div id="container">
+                  <dummy-d id="dummy-d-one" dir="bcd" lang="bc">
+                    <dummy-d id="dummy-d-two">
+                      <dummy-d id="dummy-d-three">
+                      </dummy-d>
+                    </dummy-d>
+                  </dummy-d>
+                </div>
+                `,
+                onLoad: ({ contentWindow, iframe }) => {
+                  const DummyD = getDummyD(contentWindow);
+
+                  const html = contentWindow.document.querySelector('html');
+                  const container = contentWindow.document.querySelector('#container');
+                  const dummyDOne = contentWindow.document.querySelector('#dummy-d-one');
+                  const dummyDTwo = contentWindow.document.querySelector('#dummy-d-two');
+                  const dummyDThree = contentWindow.document.querySelector('#dummy-d-three');
+
+                  Promise.all([
+                    DummyD.registrationName,
+                  ].map((localName) => contentWindow.customElements.whenDefined(localName)
+                  )).then(() => {
+
+                    const test = ({
+                      oneDir, oneLang, twoDir, twoLang, threeDir, threeLang
+                    }) => {
+                      expect(dummyDOne.getAttribute('dbui-dir')).to.equal(oneDir);
+                      expect(dummyDOne.getAttribute('dbui-lang')).to.equal(oneLang);
+                      expect(dummyDTwo.getAttribute('dbui-dir')).to.equal(twoDir);
+                      expect(dummyDTwo.getAttribute('dbui-lang')).to.equal(twoLang);
+                      expect(dummyDThree.getAttribute('dbui-dir')).to.equal(threeDir);
+                      expect(dummyDThree.getAttribute('dbui-lang')).to.equal(threeLang);
+                    };
+
+                    html.dir = 'abc';
+                    html.lang = 'ab';
+
+                    test({
+                      oneDir: 'bcd', oneLang: 'bc', twoDir: 'bcd', twoLang: 'bc', threeDir: 'bcd', threeLang: 'bc'
+                    });
+
+                    container.appendChild(dummyDTwo);
+
+                    test({
+                      oneDir: 'bcd', oneLang: 'bc', twoDir: 'abc', twoLang: 'ab', threeDir: 'abc', threeLang: 'ab'
+                    });
+
+                    dummyDOne.appendChild(dummyDTwo);
+
+                    test({
+                      oneDir: 'bcd', oneLang: 'bc', twoDir: 'bcd', twoLang: 'bc', threeDir: 'bcd', threeLang: 'bc'
+                    });
+
+                    setTimeout(() => {
+                      iframe.remove();
+                      done();
+                    }, 0);
+
+                  });
+
+                  DummyD.registerSelf();
+                }
+              });
+            });
+        });
+
+      describe(`
+      when sync-locale-with IS specified
+      `, () => {
+          it(`
+          continue syncing with localeTarget
+          `, (done) => {
+              inIframe({
+                headStyle: treeStyle,
+                bodyHTML: `
+                <div id="container">
+                  <div id="locale-provider" dir="abc" lang="ab"></div>
+                  <dummy-d id="dummy-d-one" dir="bcd" lang="bc">
+                    <dummy-d id="dummy-d-two" sync-locale-with="#locale-provider">
+                      <dummy-d id="dummy-d-three">
+                      </dummy-d>
+                    </dummy-d>
+                  </dummy-d>
+                </div>
+                `,
+                onLoad: ({ contentWindow, iframe }) => {
+                  const DummyD = getDummyD(contentWindow);
+
+                  const container = contentWindow.document.querySelector('#container');
+                  const dummyDOne = contentWindow.document.querySelector('#dummy-d-one');
+                  const dummyDTwo = contentWindow.document.querySelector('#dummy-d-two');
+                  const dummyDThree = contentWindow.document.querySelector('#dummy-d-three');
+
+                  Promise.all([
+                    DummyD.registrationName,
+                  ].map((localName) => contentWindow.customElements.whenDefined(localName)
+                  )).then(() => {
+
+                    const test = ({
+                      oneDir, oneLang, twoDir, twoLang, threeDir, threeLang
+                    }) => {
+                      expect(dummyDOne.getAttribute('dbui-dir')).to.equal(oneDir);
+                      expect(dummyDOne.getAttribute('dbui-lang')).to.equal(oneLang);
+                      expect(dummyDTwo.getAttribute('dbui-dir')).to.equal(twoDir);
+                      expect(dummyDTwo.getAttribute('dbui-lang')).to.equal(twoLang);
+                      expect(dummyDThree.getAttribute('dbui-dir')).to.equal(threeDir);
+                      expect(dummyDThree.getAttribute('dbui-lang')).to.equal(threeLang);
+                    };
+
+                    test({
+                      oneDir: 'bcd', oneLang: 'bc', twoDir: 'abc', twoLang: 'ab', threeDir: 'abc', threeLang: 'ab'
+                    });
+
+                    container.appendChild(dummyDTwo);
+
+                    test({
+                      oneDir: 'bcd', oneLang: 'bc', twoDir: 'abc', twoLang: 'ab', threeDir: 'abc', threeLang: 'ab'
+                    });
+
+                    dummyDOne.appendChild(dummyDTwo);
+
+                    test({
+                      oneDir: 'bcd', oneLang: 'bc', twoDir: 'abc', twoLang: 'ab', threeDir: 'abc', threeLang: 'ab'
+                    });
+
+                    setTimeout(() => {
+                      iframe.remove();
+                      done();
+                    }, 0);
+
+                  });
+
+                  DummyD.registerSelf();
+                }
+              });
+            });
+        });
     });
 
 });

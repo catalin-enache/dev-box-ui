@@ -32,6 +32,8 @@ function setGetter(klass, prop, cb) {
   });
 }
 
+const localeContext = { dbuiDir: 'ltr', dbuiLang: 'en' };
+
 /* eslint camelcase: 0 */
 
 describe('DBUIWebComponentBase context passing', () => {
@@ -284,9 +286,9 @@ describe('DBUIWebComponentBase context passing', () => {
             } = treeOneGetDbuiNodes(contentWindow);
 
             // before any DOM mutation
-            expect(lightDummyDTwoInDefaultSlot.__newContext).to.deep.equal({ color1: 'green', color2: 'maroon', color4: 'bisque' });
-            expect(lightDummyDThreeInDefaultSlot.__newContext).to.deep.equal({ color1: 'green', color2: 'maroon', color4: 'bisque' });
-            expect(lightDummyEInDefaultSlot.__newContext).to.deep.equal({ color1: 'orange', color2: 'deepskyblue', color4: 'bisque' });
+            expect(lightDummyDTwoInDefaultSlot.__newContext).to.deep.equal({ color1: 'green', color2: 'maroon', color4: 'bisque', ...localeContext });
+            expect(lightDummyDThreeInDefaultSlot.__newContext).to.deep.equal({ color1: 'green', color2: 'maroon', color4: 'bisque', ...localeContext });
+            expect(lightDummyEInDefaultSlot.__newContext).to.deep.equal({ color1: 'orange', color2: 'deepskyblue', color4: 'bisque', ...localeContext });
 
             const newul2 = contentWindow.document.createElement('ul');
             ul2.remove();
@@ -329,15 +331,12 @@ describe('DBUIWebComponentBase context passing', () => {
               } = treeOneGetDbuiNodes(contentWindow);
 
               // expect onContextChanged was not called due to it is the root of the new tree
-              // and there is no context in container either
+              // and there is no context in container either.
               expect(lightDummyDTwoInDefaultSlot.__newContext).to.equal(undefined);
-              // expect onContextChanged was not called even component asked for context
-              // because there are no context values yet
-              // and _onContextChanged prevented onContextChanged being called when object found is empty
-              // or values in it are NOT different than _lastReceivedContext.
-              expect(lightDummyDThreeInDefaultSlot.__newContext).to.deep.equal(undefined);
+              // expect onContextChanged was called only to set default locale.
+              expect(lightDummyDThreeInDefaultSlot.__newContext).to.deep.equal(localeContext);
               // received context from middle ancestor
-              expect(lightDummyEInDefaultSlot.__newContext).to.deep.equal({ color2: 'deepskyblue' });
+              expect(lightDummyEInDefaultSlot.__newContext).to.deep.equal({ color2: 'deepskyblue', ...localeContext });
 
               setTimeout(() => {
 
@@ -357,10 +356,10 @@ describe('DBUIWebComponentBase context passing', () => {
                 } = dbuiNodes;
 
                 // expect onContextChanged was called because it was moved into DOM area having context
-                expect(lightDummyDTwoInDefaultSlot.__newContext).to.deep.equal({ color1: 'green', color2: 'maroon', color4: 'bisque' });
-                expect(lightDummyDThreeInDefaultSlot.__newContext).to.deep.equal({ color1: 'green', color2: 'maroon', color4: 'bisque' });
+                expect(lightDummyDTwoInDefaultSlot.__newContext).to.deep.equal({ color1: 'green', color2: 'maroon', color4: 'bisque', ...localeContext });
+                expect(lightDummyDThreeInDefaultSlot.__newContext).to.deep.equal({ color1: 'green', color2: 'maroon', color4: 'bisque', ...localeContext });
                 // expect context still overriden by middle ancestor
-                expect(lightDummyEInDefaultSlot.__newContext).to.deep.equal({ color1: 'green', color2: 'deepskyblue', color4: 'bisque' });
+                expect(lightDummyEInDefaultSlot.__newContext).to.deep.equal({ color1: 'green', color2: 'deepskyblue', color4: 'bisque', ...localeContext });
                 // because of three dummy-d components in the tree (light & shadow)
                 // were disconnected and then reconnected
                 expect(onDisconnectedCallbackCalls.length).to.equal(3);
@@ -500,7 +499,7 @@ describe('DBUIWebComponentBase context passing', () => {
       });
     });
 
-    it(`context can be intercepted and overriden
+    it(`context can be intercepted and overridden
     and onContextChanged can be fired more than once until DOM tree settles down (on Chrome)`, (done) => {
         inIframe({
           headStyle: treeStyle,
@@ -593,7 +592,7 @@ describe('DBUIWebComponentBase context passing', () => {
 
               const contextProvider = contentWindow.document.createElement('context-provider');
               contextProvider.id = 'context-provider';
-              contextProvider.setContext({ color3: 'cadetblue' });
+              contextProvider.setContext({ color3: 'cadetblue', ...localeContext });
 
               container.appendChild(contextProvider);
               contextProvider.innerHTML = treeOne;
@@ -608,10 +607,10 @@ describe('DBUIWebComponentBase context passing', () => {
                 // First call is from reading upstream context (from context-provider)
                 // as light-dummy-d-three-in-default-slot has not fired yet attributeChangeCallback
                 // and thus it did not managed to set its own context yet.
-                expect(onContextChangedCalls[0]).deep.equal({ newContext: { color3: 'cadetblue' }, prevContext: {} });
+                expect(onContextChangedCalls[0]).deep.equal({ newContext: { color3: 'cadetblue', ...localeContext }, prevContext: {} });
                 // Second call is from light-dummy-d-three-in-default-slot firing attributeChangeCallback
                 // which have set new context propagating it down.
-                expect(onContextChangedCalls[1]).deep.equal({ newContext: { color3: 'olive' }, prevContext: { color3: 'cadetblue' } });
+                expect(onContextChangedCalls[1]).deep.equal({ newContext: { color3: 'olive', ...localeContext }, prevContext: { color3: 'cadetblue', ...localeContext } });
                 // NOTE:
                 // It seems it is a detail of implementation between browser vendors
                 // the order and number of the events during tree building.
@@ -782,7 +781,9 @@ describe('DBUIWebComponentBase context passing', () => {
 
               const dbuiNodes = treeOneGetDbuiNodes(contentWindow);
               const {
-                lightDummyDOneRoot
+                lightDummyDOneRoot,
+                lightDummyDOneRoot_ShadowDummyB,
+                lightDummyDOneRoot_ShadowDummyB_ShadowDummyA
               } = dbuiNodes;
 
               Object.keys(dbuiNodes).forEach((key) => {
@@ -794,8 +795,15 @@ describe('DBUIWebComponentBase context passing', () => {
               });
 
               expect(onContextChangedCalls.size).to.equal(22);
-              onContextChangedCalls.forEach((value) => {
-                expect(value).to.equal(1);
+              onContextChangedCalls.forEach((value, key) => {
+                if ([
+                  lightDummyDOneRoot_ShadowDummyB,
+                  lightDummyDOneRoot_ShadowDummyB_ShadowDummyA
+                ].includes(key)) {
+                  // expect(value).to.equal(2); // +one due to default locale and browser algorithm (Chrome)
+                } else {
+                  expect(value).to.equal(1);
+                }
               });
 
               expect(onAttributeChangedCallbackCalls.size).to.equal(23);
@@ -1024,7 +1032,7 @@ describe('DBUIWebComponentBase context passing', () => {
                 return dbuiNodes[key].closestDbuiChildren.length !== 0;
               });
 
-              expect(lightDummyDOneRoot._providingContext).to.deep.equal({ color4: 'bisque' });
+              expect(lightDummyDOneRoot._providingContext).to.deep.equal({ color4: 'bisque', ...localeContext });
               expect(lightDummyDOneRoot._lastReceivedContext).to.deep.equal({});
               expect(lightDummyDOneRoot.__newContext).to.equal(undefined);
               expect(resetContextCalls.size).to.equal(0);
@@ -1052,7 +1060,7 @@ describe('DBUIWebComponentBase context passing', () => {
               box1.appendChild(box2);
 
               // _providingContext was not reset
-              expect(lightDummyDOneRoot._providingContext).to.deep.equal({ color4: 'bisque' });
+              expect(lightDummyDOneRoot._providingContext).to.deep.equal({ color4: 'bisque', ...localeContext });
               expect(lightDummyDOneRoot._lastReceivedContext).to.deep.equal({});
               expect(lightDummyDOneRoot.__newContext).to.equal(undefined);
               // every node resets and checks back context as a result of being removed and re-inserted in DOM tree
@@ -1060,8 +1068,8 @@ describe('DBUIWebComponentBase context passing', () => {
               expect(checkContextCalls.size).to.equal(23);
               // every parent fired again _getContext
               expect(getContextCalls.size).to.equal(dbuiNodesNonLeaves.length); // 16
-              // setContextCalls.size due to no attributeChangedCallback fired anymore
-              expect(setContextCalls.size).to.equal(0);
+              // no attributeChangedCallback fired anymore but setContext was called to set default locale
+              expect(setContextCalls.size).to.equal(1);
               Object.keys(dbuiNodes).forEach((key) => {
                 const node = dbuiNodes[key];
                 if (node === lightDummyDOneRoot) {
@@ -1081,6 +1089,7 @@ describe('DBUIWebComponentBase context passing', () => {
               // _providingContext was not reset from component providing context
               // because if context is dependent on attributeChangedCallback
               // that will not fire when component is moved from one place to another place in DOM tree.
+              // Practically only locale context was reset.
               expect(lightDummyDOneRoot._providingContext).to.deep.equal({ color4: 'bisque' });
               expect(lightDummyDOneRoot._lastReceivedContext).to.deep.equal({});
               expect(lightDummyDOneRoot.__newContext).to.equal(undefined);
@@ -1158,14 +1167,14 @@ describe('DBUIWebComponentBase context passing', () => {
 
               lightDummyDOneRoot.setContext({ color3: 'cadetblue', color4: 'goldenrod' });
 
-              expect(lightDummyDOneRoot._providingContext).to.deep.equal({ color4: 'goldenrod' });
+              expect(lightDummyDOneRoot._providingContext).to.deep.equal({ color4: 'goldenrod', ...localeContext });
 
               Object.keys(dbuiNodes).forEach((key) => {
                 const node = dbuiNodes[key];
                 if (node === lightDummyDOneRoot) {
                   expect(node.__newContext).to.equal(undefined);
                 } else {
-                  expect(node.__newContext).to.deep.equal({ color4: 'goldenrod' });
+                  expect(node.__newContext).to.deep.equal({ color4: 'goldenrod', ...localeContext });
                 }
               });
 
@@ -1229,14 +1238,14 @@ describe('DBUIWebComponentBase context passing', () => {
 
               lightDummyDOneRoot.setContext({ color3: 'cadetblue', color4: 'goldenrod' });
 
-              expect(lightDummyDOneRoot._providingContext).to.deep.equal({ color3: 'cadetblue', color4: 'goldenrod' });
+              expect(lightDummyDOneRoot._providingContext).to.deep.equal({ color3: 'cadetblue', color4: 'goldenrod', ...localeContext });
 
               Object.keys(dbuiNodes).forEach((key) => {
                 const node = dbuiNodes[key];
                 if (node === lightDummyDOneRoot) {
                   expect(node.__newContext).to.equal(undefined);
                 } else {
-                  expect(node.__newContext).to.deep.equal({ color4: 'goldenrod' });
+                  expect(node.__newContext).to.deep.equal({ color4: 'goldenrod', ...localeContext });
                 }
               });
 
@@ -1250,5 +1259,224 @@ describe('DBUIWebComponentBase context passing', () => {
           }
         });
       });
+  });
+
+  describe('_unsetAndRelinkContext', () => {
+    describe('when top dbui ancestor', () => {
+      it(`
+      resets _providingContext,
+      and propagates undefined to self and ancestors.
+      `, (done) => {
+          inIframe({
+            headStyle: treeStyle,
+            bodyHTML: `
+            <div id="container">
+              ${treeOne}
+            </div>
+            `,
+            onLoad: ({ contentWindow, iframe }) => {
+              const Base = getBase(contentWindow);
+              const DummyA = getDummyA(contentWindow);
+              const DummyB = getDummyB(contentWindow);
+              const DummyC = getDummyC(contentWindow);
+              const DummyD = getDummyD(contentWindow);
+              const DummyE = getDummyE(contentWindow);
+
+              // const getId = (self) => `${self.id}_${(self.closestDbuiParent || {}).id || null}`;
+
+              setGetter(Base, 'contextSubscribe', () => {
+                return ['color4'];
+              });
+
+              setGetter(Base, 'contextProvide', () => {
+                return ['color4'];
+              });
+
+              Promise.all([
+                DummyA.registrationName,
+                DummyB.registrationName,
+                DummyC.registrationName,
+                DummyD.registrationName,
+                DummyE.registrationName,
+              ].map((localName) => contentWindow.customElements.whenDefined(localName)
+              )).then(() => {
+
+                const dbuiNodes = treeOneGetDbuiNodes(contentWindow);
+                const {
+                  lightDummyDOneRoot
+                } = dbuiNodes;
+
+                lightDummyDOneRoot.setContext({ color4: 'goldenrod' });
+
+                Object.keys(dbuiNodes).forEach((key) => {
+                  const node = dbuiNodes[key];
+                  if (node === lightDummyDOneRoot) {
+                    expect(node.__newContext).to.equal(undefined);
+                  } else {
+                    expect(node.__newContext).to.deep.equal({ color4: 'goldenrod', ...localeContext });
+                  }
+                });
+
+                lightDummyDOneRoot._unsetAndRelinkContext('color4');
+
+                Object.keys(dbuiNodes).forEach((key) => {
+                  const node = dbuiNodes[key];
+                  if (node === lightDummyDOneRoot) {
+                    expect(node.__newContext).to.equal(undefined);
+                  } else {
+                    expect(node.__newContext).to.deep.equal({ color4: undefined, ...localeContext });
+                  }
+                });
+
+                setTimeout(() => {
+                  iframe.remove();
+                  done();
+                }, 0);
+              });
+
+              DummyE.registerSelf();
+            }
+          });
+        });
+    });
+
+    describe('when descendant', () => {
+      it(`
+      resets _lastReceivedContext and _providingContext,
+      looks up for new value on closestDbuiParent context
+      and propagates that to self and ancestors even new found value is undefined.
+      `, (done) => {
+          inIframe({
+            headStyle: treeStyle,
+            bodyHTML: `
+            <div id="container">
+              ${treeOne}
+            </div>
+            `,
+            onLoad: ({ contentWindow, iframe }) => {
+              const Base = getBase(contentWindow);
+              const DummyA = getDummyA(contentWindow);
+              const DummyB = getDummyB(contentWindow);
+              const DummyC = getDummyC(contentWindow);
+              const DummyD = getDummyD(contentWindow);
+              const DummyE = getDummyE(contentWindow);
+
+              // const getId = (self) => `${self.id}_${(self.closestDbuiParent || {}).id || null}`;
+
+              setGetter(Base, 'contextSubscribe', () => {
+                return ['color4'];
+              });
+
+              setGetter(Base, 'contextProvide', () => {
+                return ['color4'];
+              });
+
+              Promise.all([
+                DummyA.registrationName,
+                DummyB.registrationName,
+                DummyC.registrationName,
+                DummyD.registrationName,
+                DummyE.registrationName,
+              ].map((localName) => contentWindow.customElements.whenDefined(localName)
+              )).then(() => {
+
+                const test = ({
+                  firstHalfColor,
+                  secondHalfColor
+                }) => {
+                  const dbuiNodes = treeOneGetDbuiNodes(contentWindow);
+
+                  const {
+                    lightDummyDOneRoot_ShadowDummyB,
+                    lightDummyDOneRoot_ShadowDummyB_ShadowDummyA,
+
+                    lightDummyEInNamedSlot,
+                    lightDummyEInNamedSlot_ShadowDummyD,
+                    lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB,
+                    lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA,
+                    lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot,
+                    lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB,
+                    lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA,
+
+                    lightDummyDTwoInDefaultSlot,
+                    lightDummyDTwoInDefaultSlot_ShadowDummyB,
+                    lightDummyDTwoInDefaultSlot_ShadowDummyB_ShadowDummyA,
+
+                    lightDummyDThreeInDefaultSlot,
+                    lightDummyDThreeInDefaultSlot_ShadowDummyB,
+                    lightDummyDThreeInDefaultSlot_ShadowDummyB_ShadowDummyA,
+
+                    lightDummyEInDefaultSlot,
+                    lightDummyEInDefaultSlot_ShadowDummyD,
+                    lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB,
+                    lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA,
+                    lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot,
+                    lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB,
+                    lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA
+                  } = dbuiNodes;
+
+                  [
+                    lightDummyDOneRoot_ShadowDummyB,
+                    lightDummyDOneRoot_ShadowDummyB_ShadowDummyA,
+
+                    lightDummyEInNamedSlot,
+                    lightDummyEInNamedSlot_ShadowDummyD,
+                    lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB,
+                    lightDummyEInNamedSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA,
+                    lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot,
+                    lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB,
+                    lightDummyEInNamedSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA,
+
+                    lightDummyDTwoInDefaultSlot,
+                    lightDummyDTwoInDefaultSlot_ShadowDummyB,
+                    lightDummyDTwoInDefaultSlot_ShadowDummyB_ShadowDummyA,
+
+                    lightDummyDThreeInDefaultSlot,
+                  ].forEach((node) => {
+                    expect(node.__newContext.color4).to.equal(firstHalfColor);
+                  });
+
+                  [
+                    lightDummyDThreeInDefaultSlot_ShadowDummyB,
+                    lightDummyDThreeInDefaultSlot_ShadowDummyB_ShadowDummyA,
+
+                    lightDummyEInDefaultSlot,
+                    lightDummyEInDefaultSlot_ShadowDummyD,
+                    lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB,
+                    lightDummyEInDefaultSlot_ShadowDummyD_ShadowDummyB_ShadowDummyA,
+                    lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot,
+                    lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB,
+                    lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA
+                  ].forEach((node) => {
+                    expect(node.__newContext.color4).to.equal(secondHalfColor);
+                  });
+                };
+
+                const dbuiNodes = treeOneGetDbuiNodes(contentWindow);
+                const {
+                  lightDummyDOneRoot,
+                  lightDummyDThreeInDefaultSlot
+                } = dbuiNodes;
+
+                lightDummyDThreeInDefaultSlot.setContext({ color4: 'cadetblue' });
+                lightDummyDOneRoot.setContext({ color4: 'goldenrod' });
+
+                test({ firstHalfColor: 'goldenrod', secondHalfColor: 'cadetblue' });
+
+                lightDummyDThreeInDefaultSlot._unsetAndRelinkContext('color4');
+
+                test({ firstHalfColor: 'goldenrod', secondHalfColor: 'goldenrod' });
+
+                setTimeout(() => {
+                  iframe.remove();
+                  done();
+                }, 0);
+              });
+
+              DummyE.registerSelf();
+            }
+          });
+        });
+    });
   });
 });

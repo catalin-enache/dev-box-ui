@@ -20,6 +20,15 @@ If children are accessed in connectedCallback they might not be complete yet at 
 */
 
 // https://www.kirupa.com/html5/handling_events_for_many_elements.htm
+/**
+ *
+ * @param win Window
+ * @return {
+ *   DBUIWebComponentBase,
+ *   defineCommonStaticMethods,
+ *   Registerable
+ * }
+ */
 export default function getDBUIWebComponentCore(win) {
   return ensureSingleRegistration(win, registrationName, () => {
     defineCommonCSSVars(win);
@@ -28,39 +37,71 @@ export default function getDBUIWebComponentCore(win) {
 
     class DBUIWebComponentBase extends HTMLElement {
 
+      /**
+       *
+       * @return String
+       */
       static get registrationName() {
         throw new Error('registrationName must be defined in derived classes');
       }
 
+      /**
+       *
+       * @return String HTML
+       */
       static get templateInnerHTML() {
         return '<style></style><slot></slot>';
       }
 
+      /**
+       *
+       * @return Array<DBUIWebComponent>
+       */
       static get dependencies() {
         return [];
       }
 
+      /**
+       *
+       * @return Array<String>
+       */
       static get propertiesToUpgrade() {
         return [];
       }
 
+      /**
+       *
+       * @return Object { String, String }
+       */
       static get attributesToDefine() {
         return { 'dbui-web-component': '' };
       }
 
-      // web components standard API
+      /**
+       *
+       * @return Array<String>
+       */
       static get observedAttributes() {
-        return ['dir', 'lang'];
+        // web components standard API
+        return ['dir', 'lang', 'sync-locale-with'];
       }
 
+      /**
+       *
+       * @return Boolean
+       */
       get isMounted() {
         return this._isMounted;
       }
 
-      // We need isDisconnected info when DOM tree is constructed
-      // - after constructor() and before connectedCallback() -
-      // when closestDbuiParent should not return null.
+      /**
+       *
+       * @return Boolean
+       */
       get isDisconnected() {
+        // We need isDisconnected info when DOM tree is constructed
+        // - after constructor() and before connectedCallback() -
+        // when closestDbuiParent should not return null.
         return this._isDisconnected;
       }
 
@@ -81,6 +122,7 @@ export default function getDBUIWebComponentCore(win) {
         this._closestDbuiChildren = [];
         this._isMounted = false;
         this._isDisconnected = false;
+        this._localeObserver = null;
         this._insertTemplate();
 
         this.connectedCallback = this.connectedCallback.bind(this);
@@ -95,171 +137,230 @@ export default function getDBUIWebComponentCore(win) {
 
       // ============================ [Locale] >> =============================================
 
-      _setDefaultLocale() {
-        !this.getAttribute('dir') && this.setAttribute('dbui-dir', 'ltr');
-        !this.getAttribute('lang') && this.setAttribute('dbui-lang', 'en');
+      /**
+       *
+       * @return HTMLElement
+       * @private
+       */
+      get _localeTarget() {
+        const target = document.querySelector(this.getAttribute('sync-locale-with'));
+        const defaultTarget = document.querySelector('html');
+        return target || defaultTarget;
       }
 
-      _resetLocale() {
+      /**
+       *
+       * @return Object { dir, lang }
+       * @private
+       */
+      get _targetedLocale() {
+        // Return locale from target
+        const target = this._localeTarget;
+        return {
+          dir: target.getAttribute('dir') || 'ltr',
+          lang: target.getAttribute('lang') || 'en',
+        };
+      }
+
+      _resetProvidedLocale() {
+        // Called onDisconnectedCallback.
+        //
         // dbuiDir/Lang dbui-dir/lang can be set
         // as a result of attributeChangedCallback
-        // or as a result of checking locale up the tree (_captureLocale).
+        // or as a result of syncing with (or monitoring) locale target (_syncLocaleAndMonitorChanges).
         // We can remove them if they were set
-        // as a result of _captureLocale
-        // because when node will be re-inserted
-        // the look-up will happen again and they will be set again.
+        // as a result of _syncLocaleAndMonitorChanges
+        // because when this node will be re-inserted
+        // the syncing will happen again and dbui-dir/lang attrs and dbuiDir/Lang provided context will be set again.
         // But we can't delete them if they were set onAttributeChangedCallback
         // because that will not be fired again when node is moved in other part of the DOM.
         if (!this.getAttribute('dir')) {
-          // we know that locale props/attrs were set
-          // as a result of checking up the tree.
-          delete this._providingContext.dbuiDir;
-          this.removeAttribute('dbui-dir');
+          // We know that locale props/attrs were set
+          // as a result of locale syncing
+          // and we can reset locale from _providingContext.
+          delete this._providingContext.dbuiDir; // affects context providers / no effect on context receivers
+          this.removeAttribute('dbui-dir'); // affects providers and receivers
         }
+
         if (!this.getAttribute('lang')) {
           delete this._providingContext.dbuiLang;
           this.removeAttribute('dbui-lang');
         }
+
+        if (this._localeObserver) {
+          this._localeObserver.disconnect();
+          this._localeObserver = null;
+        }
       }
 
+      /**
+       *
+       * @param newContext Object
+       * @param prevContext Object
+       * @private
+       */
+      // eslint-disable-next-line
+      _onLocaleContextChanged(newContext, prevContext) {
+        // If we are monitoring locale from elsewhere discard this notification.
+        if (this._localeObserver) return;
+        const {
+          dbuiDir, dbuiLang
+        } = newContext;
+        // changes done by attributeChangedCallback(dir/lang) takes precedence over onContextChanged
+        !this.getAttribute('dir') && this.setAttribute('dbui-dir', dbuiDir);
+        !this.getAttribute('lang') && this.setAttribute('dbui-lang', dbuiLang);
+      }
+
+      /**
+       *
+       * @param name String
+       * @param oldValue String
+       * @param newValue String
+       * @private
+       */
       _onLocaleAttributeChangedCallback(name, oldValue, newValue) {
-        if (!['dir', 'lang'].includes(name)) return;
-        const defaultValue = name === 'dir' ? 'ltr' : 'en';
+        // If locale value is truthy, set it (on context too)
+        // else read value from _targetedLocale
+        // or from closestDbuiParent context.
+        if (!['dir', 'lang', 'sync-locale-with'].includes(name)) return;
+
+        if (name === 'sync-locale-with') {
+          // stop monitoring old target and start monitoring new target
+          this._syncLocaleAndMonitorChanges();
+          return;
+        }
+
         const contextKey = name === 'dir' ? 'dbuiDir' : 'dbuiLang';
+        const hasLocaleSync = !!this.hasAttribute('sync-locale-with');
         const closestDbuiParent = this.closestDbuiParent;
-        const surroundingLocale =
-          !closestDbuiParent ? this._findSurroundingLocale() : null;
+        const isTopDbuiAncestor = !closestDbuiParent;
+        const targetedLocale =
+          (hasLocaleSync || isTopDbuiAncestor) ? this._targetedLocale : null;
         const valueToSet = newValue ||
-          (closestDbuiParent && closestDbuiParent._getContext([contextKey])[contextKey]) ||
-          (!closestDbuiParent && surroundingLocale[name]) ||
-          defaultValue;
-        this.setAttribute(`dbui-${name}`, valueToSet);
+          (targetedLocale && targetedLocale[name]) ||
+          closestDbuiParent._getContext([contextKey])[contextKey];
+
+        if (newValue || targetedLocale) {
+          this.setAttribute(`dbui-${name}`, valueToSet);
+          this.setContext({
+            [contextKey]: valueToSet
+          });
+          targetedLocale && this._watchLocaleChanges();
+        } else {
+          this._resetProvidedLocale();
+          this._unsetAndRelinkContext(contextKey);
+        }
+      }
+
+      _syncLocaleAndMonitorChanges() {
+        // Called onConnectedCallback and _onLocaleAttributeChangedCallback (only for sync-locale-with).
+        //
+        // If being top most dbui ancestor or having attr "sync-locale-with" defined,
+        // read locale from target, set values on context
+        // then watch for locale changes on target.
+        const isDescendantDbui = !!this.closestDbuiParent;
+        const hasLocaleSync = !!this.hasAttribute('sync-locale-with');
+        if (isDescendantDbui && !hasLocaleSync) return;
+
+        const { dir: targetedDir, lang: targetedLang } = this._targetedLocale;
+        const selfDir = this.getAttribute('dir');
+        const selfLang = this.getAttribute('lang');
+        const newDir = selfDir || targetedDir;
+        const newLang = selfLang || targetedLang;
+
+        this.setAttribute('dbui-dir', newDir);
+        this.setAttribute('dbui-lang', newLang);
+
         this.setContext({
-          [contextKey]: valueToSet
+          dbuiDir: newDir,
+          dbuiLang: newLang
         });
-        surroundingLocale && this._watchLocaleChanges(surroundingLocale);
+
+        this._watchLocaleChanges();
       }
 
-      _findSurroundingLocale() {
-        const locale = ['dir', 'lang'].reduce((acc, attr) => {
-          // Don't override user defined locale attributes.
-          // dbuiDir/Lang were set on context onAttributeChangedCallback.
-          if (this.getAttribute(attr)) return acc;
-          // Find closest ancestor having dir or lang set.
-          const closestAncestorHavingLocale =
-            this._getClosestAncestorMatchingCondition((node) => {
-              return node.getAttribute(attr);
-            });
-
-          if (closestAncestorHavingLocale) {
-            const value =
-              closestAncestorHavingLocale.getAttribute(attr);
-            acc[attr] = value;
-            acc[`${attr}Parent`] = closestAncestorHavingLocale;
-          }
-          return acc;
-        }, {});
-        return locale;
-      }
-
-      _captureLocale() {
-        // Only capture locale if node is top most ancestor.
-        // The children will be notified via context.
-        if (this.closestDbuiParent) return;
-        const { dir, lang, dirParent, langParent } =
-          this._findSurroundingLocale();
-
-        if (dir || lang) {
-          dir && this.setAttribute('dbui-dir', dir);
-          lang && this.setAttribute('dbui-lang', lang);
-          const context = {};
-          dir && (context.dbuiDir = dir);
-          lang && (context.dbuiLang = lang);
-          this.setContext(context);
-          this._watchLocaleChanges({ dir, lang, dirParent, langParent });
-        }
-      }
-
-      _watchLocaleChanges({ dir, lang, dirParent, langParent }) {
-        let dirAndLangObserver = null;
-        if (dirParent && (dirParent === langParent)) {
-          dirAndLangObserver = dirParent;
+      _watchLocaleChanges() {
+        // Called from _syncLocaleAndMonitorChanges and _onLocaleAttributeChangedCallback (only for dir/lang).
+        if (this._localeObserver) {
+          this._localeObserver.disconnect();
         }
 
-        if (dirAndLangObserver) {
-          this._localeDirObserver = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-              const mutationAttributeName = mutation.attributeName;
-              if (mutationAttributeName === 'dir') {
-                const value = dirParent.getAttribute('dir');
-                this.setAttribute('dbui-dir', value);
-                this.setContext({ dbuiDir: value });
-              } else if (mutationAttributeName === 'lang') {
-                const value = langParent.getAttribute('lang');
-                this.setAttribute('dbui-lang', value);
-                this.setContext({ dbuiLang: value });
-              }
+        const localeTarget = this._localeTarget;
+
+        this._localeObserver = new MutationObserver((mutations) => {
+          mutations.forEach((mutation) => {
+            const attr = mutation.attributeName;
+            const value = this._targetedLocale[attr];
+            const attrKey = `dbui-${attr}`;
+            const contextKey = `dbui${attr.charAt(0).toUpperCase() + attr.slice(1)}`;
+
+            this.setAttribute(attrKey, value);
+            this.setContext({
+              [contextKey]: value
             });
           });
-          this._localeDirObserver.observe(dirAndLangObserver, {
-            attributes: true
-          });
-          this._localeLangObserver = this._localeDirObserver;
-        } else if (dir) {
-          this._localeDirObserver = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-              const mutationAttributeName = mutation.attributeName;
-              if (mutationAttributeName === 'dir') {
-                const value = dirParent.getAttribute('dir');
-                this.setAttribute('dbui-dir', value);
-                this.setContext({ dbuiDir: value });
-              }
-            });
-          });
-          this._localeDirObserver.observe(dirParent, {
-            attributes: true
-          });
-        } else if (lang) {
-          this._localeLangObserver = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-              const mutationAttributeName = mutation.attributeName;
-              if (mutationAttributeName === 'lang') {
-                const value = langParent.getAttribute('lang');
-                this.setAttribute('dbui-lang', value);
-                this.setContext({ dbuiLang: value });
-              }
-            });
-          });
-          this._localeLangObserver.observe(langParent, {
-            attributes: true
-          });
-        }
+        });
+
+        this._localeObserver.observe(localeTarget, {
+          attributes: true,
+          attributeFilter: ['dir', 'lang']
+        });
       }
 
       // ============================ << [Locale]  =============================================
 
       // ============================ [Context] >> =============================================
 
+      /**
+       *
+       * @return Array<String>
+       */
       static get contextProvide() {
         return ['dbuiDir', 'dbuiLang'];
       }
 
+      /**
+       *
+       * @return Array<String>
+       */
       static get contextSubscribe() {
         return ['dbuiDir', 'dbuiLang'];
       }
 
+      /**
+       *
+       * @param key String
+       * @return Boolean
+       * @private
+       */
       _providesContextFor(key) {
         return this.constructor.contextProvide.some((_key) => _key === key);
       }
 
+      /**
+       *
+       * @param key String
+       * @return Boolean
+       * @private
+       */
       _hasValueForContext(key) {
         return this._providingContext[key] !== undefined;
       }
 
+      /**
+       *
+       * @param key String
+       * @return Boolean
+       * @private
+       */
       _subscribesForContext(key) {
         return this.constructor.contextSubscribe.some((_key) => _key === key);
       }
 
+      /**
+       *
+       * @param contextObj Object
+       */
       setContext(contextObj) {
         const newKeys = Object.keys(contextObj).filter((key) => {
           return this._providesContextFor(key);
@@ -282,6 +383,10 @@ export default function getDBUIWebComponentCore(win) {
         this._propagateContextChanged(this._providingContext);
       }
 
+      /**
+       *
+       * @param newContext Object
+       */
       _propagateContextChanged(newContext) {
         this._propagatingContext = true;
         const newContextKeys = Object.keys(newContext);
@@ -327,6 +432,42 @@ export default function getDBUIWebComponentCore(win) {
         this._propagatingContext = false;
       }
 
+      /**
+       * Resets _lastReceivedContext and _providingContext,
+       * looks up for new value on closestDbuiParent context
+       * and propagates that to self and ancestors.
+       *
+       * @param contextKey String | Array<String>
+       * @private
+       */
+      _unsetAndRelinkContext(contextKey) {
+        const contextKeys = Array.isArray(contextKey) ? contextKey : [contextKey];
+
+        contextKeys.forEach((key) => {
+          delete this._lastReceivedContext[key];
+          delete this._providingContext[key];
+        });
+
+        const closestDbuiParent = this.closestDbuiParent;
+        const valuesToSet =
+            !closestDbuiParent ?
+              undefined :
+              closestDbuiParent._getContext(contextKeys);
+
+        const newContext = contextKeys.reduce((acc, key) => {
+          acc[key] = (valuesToSet || {})[key];
+          return acc;
+        }, {});
+
+        this._propagateContextChanged(newContext);
+      }
+
+      /**
+       *
+       * @param keys Array<String>
+       * @return Object
+       * @private
+       */
       _getContext(keys) {
         // This must run always in the parent of the node asking for context
         // and not in the node itself.
@@ -349,6 +490,12 @@ export default function getDBUIWebComponentCore(win) {
         };
       }
 
+      /**
+       *
+       * @param newContext Object
+       * @param options { reset = false }
+       * @private
+       */
       _onContextChanged(newContext, { reset = false } = {}) {
         const lastReceivedContext = this._lastReceivedContext;
         const newContextFilteredKeys = Object.keys(newContext || {}).filter((key) => {
@@ -368,37 +515,37 @@ export default function getDBUIWebComponentCore(win) {
         this.onContextChanged(_newContext, _prevContext);
       }
 
-      // Might be fired more than once until DOM tree settles down.
-      // ex: first call is the result of _checkContext which might get the top most existing context.
-      // The next ones can be the result of middle ancestors firing attributeChangeCallback
-      // which might set their context and propagate it down.
-      // eslint-disable-next-line
+
+      /**
+       *
+       * @param newContext Object
+       * @param prevContext Object
+       */
       onContextChanged(newContext, prevContext) {
-        const {
-          dbuiDir, dbuiLang
-        } = newContext;
-        // keep eventual changes done by attributeChangedCallback over onContextChanged
-        dbuiDir && !this.getAttribute('dir') && this.setAttribute('dbui-dir', dbuiDir);
-        dbuiLang && !this.getAttribute('lang') && this.setAttribute('dbui-lang', dbuiLang);
+        // Might be fired more than once until DOM tree settles down.
+        // ex: first call is the result of _checkContext which might get the top most existing context.
+        // The next ones can be the result of middle ancestors firing attributeChangeCallback
+        // which might set their context and propagate it down.
+        this._onLocaleContextChanged(newContext, prevContext);
       }
 
-      // _checkContext can propagate to the very top even if ancestors are not connected.
-      // If there is context defined somewhere upstream then it will be reached by grandchildren.
       _checkContext() {
+        // _checkContext can propagate recursively to the very top even if ancestors are not connected.
+        // If there is context defined somewhere upstream then it will be reached by descendants.
         const closestDbuiParent = this.closestDbuiParent;
-        if (closestDbuiParent) {
-          const newContext = closestDbuiParent._getContext(
-            this.constructor.contextSubscribe
-          );
-          // _onContextChanged is not fired for tree root
-          this._onContextChanged(newContext);
-          // No need to propagate to the children because they can search upward for context
-          // until top of the tree is reached, even if ancestors are not connected yet.
-          // If some middle ancestor has context to provide and did not managed to provide it yet
-          // (ex: attributeChangedCallback not fired before descendants looked for upstream context)
-          // then descendants will receive first context from upstream then from middle ancestor.
-          // This was verified!
-        }
+        // no need to check context if is top most dbui ancestor
+        if (!closestDbuiParent) return;
+
+        const newContext = closestDbuiParent._getContext(
+          this.constructor.contextSubscribe
+        );
+        this._onContextChanged(newContext);
+        // No need to propagate to the children because they can search upward for context
+        // until top of the tree is reached, even if ancestors are not connected yet.
+        // If some middle ancestor has context to provide and did not managed to provide it yet
+        // (ex: attributeChangedCallback not fired before descendants looked for upstream context)
+        // then descendants will receive first context from upstream then from middle ancestor.
+        // This was verified!
       }
 
       _resetContext() {
@@ -418,7 +565,12 @@ export default function getDBUIWebComponentCore(win) {
 
       // ============================ [Descendants/Ancestors and registrations] >> =============================================
 
-      _getClosestAncestorMatchingCondition(callback) {
+      /**
+       *
+       * @param callback Function
+       * @return HTMLElement
+       */
+      getClosestAncestorMatchingCondition(callback) {
         let closestAncestor = this.parentElement;
         while (closestAncestor && !callback(closestAncestor)) {
           closestAncestor = closestAncestor.parentElement;
@@ -426,15 +578,27 @@ export default function getDBUIWebComponentCore(win) {
         return closestAncestor;
       }
 
+      /**
+       *
+       * @return Array<DBUIWebComponent>
+       */
       get shadowDomDbuiChildren() {
         // children in slots are NOT included here
         return [...this.shadowRoot.querySelectorAll('[dbui-web-component]')];
       }
 
+      /**
+       *
+       * @return DBUIWebComponent | null
+       */
       get shadowDomDbuiParent() {
         return this.getRootNode().host || null;
       }
 
+      /**
+       *
+       * @return DBUIWebComponent | null
+       */
       get lightDomDbuiParent() {
         // can return a parent which is in shadow DOM of the grand-parent
         let parent = this.parentElement;
@@ -444,11 +608,19 @@ export default function getDBUIWebComponentCore(win) {
         return parent || null;
       }
 
+      /**
+       *
+       * @return Array<DBUIWebComponent>
+       */
       get lightDomDbuiChildren() {
         // children in slots ARE included here
         return [...this.querySelectorAll('[dbui-web-component]')];
       }
 
+      /**
+       *
+       * @return DBUIWebComponent | null
+       */
       get closestDbuiParentLiveQuery() {
         let closestParent = this.parentElement;
         // might be null if disconnected from dom
@@ -459,6 +631,10 @@ export default function getDBUIWebComponentCore(win) {
         return closestParent || this.shadowDomDbuiParent;
       }
 
+      /**
+       *
+       * @return DBUIWebComponent | null
+       */
       get closestDbuiParent() {
         // cached
         // Reason for cache is to allow a child to unregister from its parent when unmounted
@@ -473,6 +649,10 @@ export default function getDBUIWebComponentCore(win) {
         return this._closestDbuiParent;
       }
 
+      /**
+       *
+       * @return DBUIWebComponent | null
+       */
       // might be useful in some scenarios
       get topDbuiAncestor() {
         let closestDbuiParent = this.closestDbuiParent;
@@ -486,6 +666,10 @@ export default function getDBUIWebComponentCore(win) {
         return closestDbuiParent; // this is null
       }
 
+      /**
+       *
+       * @return Array<DBUIWebComponent>
+       */
       // might be useful in some scenarios
       get closestDbuiChildrenLiveQuery() {
         const dbuiChildren = [...this.lightDomDbuiChildren, ...this.shadowDomDbuiChildren];
@@ -493,6 +677,10 @@ export default function getDBUIWebComponentCore(win) {
         return closestDbuiChildren;
       }
 
+      /**
+       *
+       * @return Array<DBUIWebComponent>
+       */
       get closestDbuiChildren() {
         return this._closestDbuiChildren;
       }
@@ -509,10 +697,20 @@ export default function getDBUIWebComponentCore(win) {
         closestDbuiParent._unregisterChild(this);
       }
 
+      /**
+       *
+       * @param child DBUIWebComponent
+       * @private
+       */
       _registerChild(child) {
         this._closestDbuiChildren.push(child);
       }
 
+      /**
+       *
+       * @param child DBUIWebComponent
+       * @private
+       */
       _unregisterChild(child) {
         this._closestDbuiChildren =
           this._closestDbuiChildren.filter((_child) => _child !== child);
@@ -520,10 +718,16 @@ export default function getDBUIWebComponentCore(win) {
 
       // ============================ << [Descendants/Ancestors and registrations] =============================================
 
-      // https://developers.google.com/web/fundamentals/web-components/best-practices#lazy-properties
-      // https://developers.google.com/web/fundamentals/web-components/examples/howto-checkbox
-      /* eslint no-prototype-builtins: 0 */
+
+      /**
+       *
+       * @param prop String
+       * @private
+       */
       _upgradeProperty(prop) {
+        // https://developers.google.com/web/fundamentals/web-components/best-practices#lazy-properties
+        // https://developers.google.com/web/fundamentals/web-components/examples/howto-checkbox
+        /* eslint no-prototype-builtins: 0 */
         if (this.hasOwnProperty(prop)) {
           const value = this[prop];
           // get rid of the property that might shadow a setter/getter
@@ -534,6 +738,12 @@ export default function getDBUIWebComponentCore(win) {
         }
       }
 
+      /**
+       *
+       * @param key String
+       * @param value String
+       * @private
+       */
       _defineAttribute(key, value) {
         // don't override user defined attribute
         if (!this.hasAttribute(key)) {
@@ -547,13 +757,23 @@ export default function getDBUIWebComponentCore(win) {
         this.shadowRoot.appendChild(template.content.cloneNode(true));
       }
 
-      // web components standard API
+      /**
+       *
+       * @param oldDocument HTMLDocument
+       * @param newDocument HTMLDocument
+       */
       adoptedCallback(oldDocument, newDocument) {
+        // web components standard API
         // callbacks order:
         // disconnectedCallback => adoptedCallback => connectedCallback
         this.onAdoptedCallback(oldDocument, newDocument);
       }
 
+      /**
+       *
+       * @param oldDocument HTMLDocument
+       * @param newDocument HTMLDocument
+       */
       // eslint-disable-next-line
       onAdoptedCallback(oldDocument, newDocument) {
         // pass
@@ -587,15 +807,15 @@ export default function getDBUIWebComponentCore(win) {
         Object.keys(attributesToDefine).forEach((property) => {
           this._defineAttribute(property, attributesToDefine[property]);
         });
-        this._setDefaultLocale(); // run by every dbui node in the tree
-        this._captureLocale(); // only the top most dbui ancestor does this and propagates it to the descendants
         // We can safely register to closestDbuiParent because it exists at this time
         // but we must not assume it was connected.
         // NOTE: even if closestDbuiParent (or any ancestor) is not connected
         // the top of the tree (topDbuiAncestor) can be reached if needed
         this._registerSelfToClosestDbuiParent();
-        // will most likely override (default) locale that was just set
-        this._checkContext();
+        this._checkContext(); // is ignored by top most dbui ancestors
+        // makes top most ancestors or dbui components having localeTarget specified
+        // to set dbuiDir/Locale on context
+        this._syncLocaleAndMonitorChanges();
       }
 
       // web components standard API
@@ -605,7 +825,7 @@ export default function getDBUIWebComponentCore(win) {
 
       onDisconnectedCallback() {
         this._resetContext();
-        this._resetLocale();
+        this._resetProvidedLocale();
         this._unregisterSelfFromClosestDbuiParent();
         win.removeEventListener('beforeunload', this.disconnectedCallback, false);
         this._isMounted = false;
@@ -627,40 +847,62 @@ export default function getDBUIWebComponentCore(win) {
         return clone;
       }
 
-      // web components standard API
-      // Scenario 1: component was created in detached tree before being defined.
-      // attributeChangedCallback will not be called when being defined but when inserted into DOM.
-      // (this implies component is upgraded after being inserted into DOM).
-      // Scenario 2: component is created in detached tree after being defined.
-      // attributeChangedCallback will be called right away
-      // (this implies component is upgraded before being inserted into DOM).
-      // When inserted in DOM then connectedCallback will be called.
-      // In any case attributeChangedCallback is called before connectedCallback.
-      // Things changed as a result of attributeChangedCallback should be preserved
-      // when disconnectedCallback because these attribute changes will not be fired again
-      // when node is removed then re-inserted back in the DOM tree.
+
+      /**
+       *
+       * @param name String
+       * @param oldValue String
+       * @param newValue String
+       */
       attributeChangedCallback(name, oldValue, newValue) {
+        // web components standard API
+        // Scenario 1: component was created in detached tree BEFORE being defined.
+        // attributeChangedCallback will not be called when being defined but when inserted into DOM.
+        // (this implies component is upgraded after being inserted into DOM).
+        // Scenario 2: component is created in detached tree AFTER being defined.
+        // attributeChangedCallback will be called right away
+        // (this implies component is upgraded before being inserted into DOM).
+        // When inserted in DOM then connectedCallback will be called.
+        // In any case attributeChangedCallback is called before connectedCallback.
+        // Things changed as a result of attributeChangedCallback should be preserved
+        // when disconnectedCallback because these attribute changes will not be fired again
+        // when node is removed then re-inserted back in the DOM tree.
         if (this.getAttribute(name) === oldValue) return;
         this.onAttributeChangedCallback(name, oldValue, newValue);
       }
 
+      /**
+       *
+       * @param name String
+       * @param oldValue String
+       * @param newValue String
+       */
       // eslint-disable-next-line
       onAttributeChangedCallback(name, oldValue, newValue) {
         this._onLocaleAttributeChangedCallback(name, oldValue, newValue);
       }
     }
 
+    /**
+     * @param klass Class
+     */
     function defineCommonStaticMethods(klass) {
       const templateInnerHTML = klass.templateInnerHTML;
       const template = document.createElement('template');
       template.innerHTML = templateInnerHTML;
 
+      /**
+       * @property template (getter) template element
+       */
       Object.defineProperty(klass, 'template', {
         get() { return template; },
         enumerable: false,
         configurable: true
       });
 
+      /**
+       * @property componentStyle (getter/setter) String
+       */
       Object.defineProperty(klass, 'componentStyle', {
         get() {
           return klass.template.content.querySelector('style').innerHTML;
@@ -695,6 +937,9 @@ export default function getDBUIWebComponentCore(win) {
         return registrationName;
       };
 
+      /**
+       * @property prototypeChainInfo (getter) Array<Prototype>
+       */
       Object.defineProperty(klass, 'prototypeChainInfo', {
         get() {
           const chain = [klass];
