@@ -1,9 +1,8 @@
-import { expect, assert } from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
 import getDBUIWebComponentCore from './DBUIWebComponentCore';
 import DBUICommonCssVars from './DBUICommonCssVars';
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
-import getDBUILocaleService from '../../../services/DBUILocaleService';
 import appendStyles from '../../../internals/appendStyles';
 import inIframe from '../../../../../../testUtils/inIframe';
 
@@ -210,8 +209,8 @@ describe('DBUIWebComponent Styling Behaviour', () => {
         }
       });
     });
-  // TODO: fix when locale aware will be shared in context
-  xit('is locale aware', (done) => {
+
+  it('is locale aware', (done) => {
     inIframe({
       bodyHTML: `
         <dummy-one dir="ltr"></dummy-one>
@@ -228,9 +227,12 @@ describe('DBUIWebComponent Styling Behaviour', () => {
         contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
           const computedStyle1 = contentWindow.getComputedStyle(dummyOneInst1);
           const computedStyle2 = contentWindow.getComputedStyle(dummyOneInst2);
-          console.log(dummyOneInst1, dummyOneInst2);
           expect(computedStyle1.color).to.equal('rgba(255, 0, 0, 0.5)');
           expect(computedStyle2.color).to.equal('rgba(0, 0, 255, 0.5)');
+
+          dummyOneInst2.dir = 'ltr';
+
+          expect(computedStyle2.color).to.equal('rgba(255, 0, 0, 0.5)');
 
           setTimeout(() => {
             iframe.remove();
