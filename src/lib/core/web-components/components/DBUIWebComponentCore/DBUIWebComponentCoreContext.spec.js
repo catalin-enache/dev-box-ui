@@ -16,7 +16,7 @@ import {
   treeOne,
   treeOneGetDbuiNodes,
   treeStyle
-} from './DBUITestTreeSetup';
+} from './DBUITestTreeSetup.forSpec';
 
 function setGetter(klass, prop, cb) {
   return monkeyPatch(klass).set(prop, (getSuperDescriptor) => {

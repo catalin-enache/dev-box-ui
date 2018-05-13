@@ -606,11 +606,33 @@ describe('DBUIWebComponentBase', () => {
     });
   });
 
-  xdescribe('connectedCallback', () => {
+  describe('getClosestAncestorMatchingCondition', () => {
+    it('return closest ancestor matching condition', (done) => {
+      inIframe({
+        bodyHTML: `
+        <div id="one" foo="bar">
+          <div id="two">
+            <dummy-one></dummy-one>
+          </div>
+        </div>
+        `,
+        onLoad: ({ contentWindow, iframe }) => {
+          const DummyOne = getDummyOne(contentWindow);
+          const dummyOneInst = contentWindow.document.querySelector('dummy-one');
 
-  });
+          contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+            const closestAncestorMatchingCondition =
+              dummyOneInst.getClosestAncestorMatchingCondition((node) => {
+                return node.getAttribute('foo') === 'bar';
+              });
+            expect(closestAncestorMatchingCondition.id).to.equal('one');
+            iframe.remove();
+            done();
+          });
 
-  xdescribe('disconnectedCallback', () => {
-
+          DummyOne.registerSelf();
+        }
+      });
+    });
   });
 });

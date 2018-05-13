@@ -14,7 +14,7 @@ import {
   treeOne,
   treeOneGetDbuiNodes,
   treeStyle
-} from './DBUITestTreeSetup';
+} from './DBUITestTreeSetup.forSpec';
 
 const treeWithLocale = `
 <div id="container">

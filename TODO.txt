@@ -8,8 +8,6 @@ make setters and getters dynamically to avoid boilerplate
 
 intelligent forms (with message passing, value aggregating, validating)
 
-use internal attributes which should be prefixed with dbui, ex: dbui-dir, dbui-lang
-
 what behaviour when component is adopted ?
 inject global css to handle dbui-web-component (hide when not defined, un hide when defined)
 

@@ -15,7 +15,7 @@ import {
   treeOne,
   treeOneGetDbuiNodes,
   treeStyle
-} from './DBUITestTreeSetup';
+} from './DBUITestTreeSetup.forSpec';
 
 function setupOnConnectedCallback(klass) {
   return monkeyPatch(klass).proto.set('onConnectedCallback', (getSuperDescriptor) => {
