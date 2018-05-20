@@ -37,6 +37,8 @@ export default function Focusable(Klass) {
   }
   `;
 
+  // https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-within
+
   class Focusable extends Klass {
 
     static get name() {
@@ -58,9 +60,11 @@ export default function Focusable(Klass) {
       super(...args);
 
       this._currentInnerFocused = null;
+      this._sideEffectsAppliedFor = null;
       this._onInnerFocusableFocused = this._onInnerFocusableFocused.bind(this);
       this._onFocus = this._onFocus.bind(this);
       this._onBlur = this._onBlur.bind(this);
+      this._onTap = this._onTap.bind(this);
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
@@ -82,13 +86,17 @@ export default function Focusable(Klass) {
         }
       });
 
-      if (!this.disabled) {
-        this.setAttribute('tabindex', 0);
+      if (this.disabled) {
+        this._applyDisabledSideEffects();
+      } else {
+        this._applyEnabledSideEffects();
       }
 
       // when component focused/blurred
       this.addEventListener('focus', this._onFocus);
       this.addEventListener('blur', this._onBlur);
+      this.ownerDocument.addEventListener('mousedown', this._onTap);
+      this.ownerDocument.addEventListener('touchstart', this._onTap);
 
       this._innerFocusables.forEach((focusable) => {
         // when inner focusable focused
@@ -101,13 +109,18 @@ export default function Focusable(Klass) {
 
       this.removeEventListener('focus', this._onFocus);
       this.removeEventListener('blur', this._onBlur);
+      this.ownerDocument.removeEventListener('mousedown', this._onTap);
+      this.ownerDocument.removeEventListener('touchstart', this._onTap);
 
       this._innerFocusables.forEach((focusable) => {
         focusable.removeEventListener('focus', this._onInnerFocusableFocused);
       });
     }
 
-    // read-only
+    /**
+     * Read only.
+     * @return Boolean
+     */
     get focused() {
       return this.hasAttribute('focused');
     }
@@ -116,6 +129,10 @@ export default function Focusable(Klass) {
       console.warn(ERROR_MESSAGES.focused);
     }
 
+    /**
+     *
+     * @return Boolean
+     */
     get disabled() {
       return this.hasAttribute('disabled');
     }
@@ -129,14 +146,40 @@ export default function Focusable(Klass) {
       }
     }
 
+    /**
+     *
+     * @return Array<HTMLElement>
+     * @private
+     */
     get _innerFocusables() {
       return this.shadowRoot.querySelectorAll('[tabindex]') || [];
     }
 
+    /**
+     *
+     * @return HTMLElement || null
+     * @private
+     */
     get _firstInnerFocusable() {
       return this.shadowRoot.querySelector('[tabindex]');
     }
 
+    /**
+     *
+     * @param evt Event (mousedown/touchstart)
+     * @private
+     */
+    _onTap(evt) {
+      if (evt.target !== this) {
+        this.blur();
+      }
+    }
+
+    /**
+     *
+     * @param evt Event (FocusEvent)
+     * @private
+     */
     _onInnerFocusableFocused(evt) {
       this._currentInnerFocused = evt.target;
     }
@@ -181,28 +224,31 @@ export default function Focusable(Klass) {
     }
 
     _applyDisabledSideEffects() {
+      if (this._sideEffectsAppliedFor === 'disabled') return;
+      this._lastTabIndexValue = this.getAttribute('tabindex');
       this.removeAttribute('tabindex');
       this._innerFocusables.forEach((innerFocusable) => {
         innerFocusable.setAttribute('tabindex', '-1');
+        innerFocusable.setAttribute('disabled', 'disabled');
         if (innerFocusable.hasAttribute('contenteditable')) {
           innerFocusable.setAttribute('contenteditable', 'false');
-        } else {
-          innerFocusable.disabled = true;
         }
       });
       this.blur();
+      this._sideEffectsAppliedFor = 'disabled';
     }
 
     _applyEnabledSideEffects() {
-      this.setAttribute('tabindex', '0');
+      if (this._sideEffectsAppliedFor === 'enabled') return;
+      !this.getAttribute('tabindex') && this.setAttribute('tabindex', this._lastTabIndexValue || 0);
       this._innerFocusables.forEach((innerFocusable) => {
         innerFocusable.setAttribute('tabindex', '0');
+        innerFocusable.removeAttribute('disabled');
         if (innerFocusable.hasAttribute('contenteditable')) {
           innerFocusable.setAttribute('contenteditable', 'true');
-        } else {
-          innerFocusable.disabled = false;
         }
       });
+      this._sideEffectsAppliedFor = 'enabled';
     }
   }
 

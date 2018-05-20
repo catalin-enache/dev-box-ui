@@ -11,6 +11,8 @@ intelligent forms (with message passing, value aggregating, validating)
 what behaviour when component is adopted ?
 inject global css to handle dbui-web-component (hide when not defined, un hide when defined)
 
+make selection disableable behaviour
+
 add doc-blocks
 
 improve appearance of title and sections on mobile

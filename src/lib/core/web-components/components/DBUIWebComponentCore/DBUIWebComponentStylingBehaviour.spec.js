@@ -1,8 +1,6 @@
 import { expect } from 'chai';
 import getDBUIWebComponentCore from './DBUIWebComponentCore';
-import DBUICommonCssVars from './DBUICommonCssVars';
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
-import appendStyles from '../../../internals/appendStyles';
 import inIframe from '../../../../../../testUtils/inIframe';
 
 
@@ -305,8 +303,8 @@ describe('DBUIWebComponent Styling Behaviour', () => {
       onLoad: ({ contentWindow, iframe }) => {
         const DummyOne = getDummyOne(contentWindow);
         DummyOne.componentStyle += `
-        :host([dbui-dir=ltr]) { color: rgba(0, 0, 255, 0.5); }
-        :host([dbui-dir=abc]) { color: rgba(255, 0, 0, 0.5); }
+        :host([dbui-dir=ltr]) { color: rgba(0, 0, 255, 0.4); }
+        :host([dbui-dir=abc]) { color: rgba(255, 0, 0, 0.4); }
         `;
         const localeProvider = contentWindow.document.querySelector('#locale-provider');
         const dummyOneInst1 = contentWindow.document.querySelector('#one');
@@ -316,16 +314,16 @@ describe('DBUIWebComponent Styling Behaviour', () => {
 
           const computedStyle1 = contentWindow.getComputedStyle(dummyOneInst1);
           const computedStyle2 = contentWindow.getComputedStyle(dummyOneInst2);
-          expect(computedStyle1.color).to.equal('rgba(255, 0, 0, 0.5)');
-          expect(computedStyle2.color).to.equal('rgba(255, 0, 0, 0.5)');
+          expect(computedStyle1.color).to.equal('rgba(255, 0, 0, 0.4)');
+          expect(computedStyle2.color).to.equal('rgba(255, 0, 0, 0.4)');
 
           localeProvider.dir = '';
 
           setTimeout(() => {
 
             // falling back to default dir "ltr" when target dir is falsy
-            expect(computedStyle1.color).to.equal('rgba(0, 0, 255, 0.5)');
-            expect(computedStyle2.color).to.equal('rgba(0, 0, 255, 0.5)');
+            expect(computedStyle1.color).to.equal('rgba(0, 0, 255, 0.4)');
+            expect(computedStyle2.color).to.equal('rgba(0, 0, 255, 0.4)');
 
             iframe.remove();
             done();

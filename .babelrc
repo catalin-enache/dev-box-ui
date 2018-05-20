@@ -16,7 +16,8 @@
             "**/src/lib/styles/**",
             "**/src/lib/index.js",
             "**/src/lib/react-components/**",
-            "**/test/**"
+            "**/test/**",
+            "**/testUtils/**"
           ]
         }]
       ]
