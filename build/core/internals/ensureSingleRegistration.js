@@ -4,6 +4,14 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = ensureSingleRegistration;
+
+/**
+ *
+ * @param win Window
+ * @param name String
+ * @param callback Function
+ * @return *
+ */
 function ensureSingleRegistration(win, name, callback) {
   if (!win.DBUIWebComponents) {
     win.DBUIWebComponents = { registrations: {} };

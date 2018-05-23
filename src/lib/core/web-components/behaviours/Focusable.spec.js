@@ -218,113 +218,113 @@ describe('Focusable', () => {
     when focused, if not disabled, will focus the first inner focusable,
     when blurred, if previously focused, will blur first inner focusable 
     `, (done) => {
-        inIframe({
-          headStyle: `
-          `,
-          bodyHTML: `
-          <dummy-one id="one"></dummy-one>
-          <dummy-one id="two" disabled></dummy-one>
-          
-          `,
-          onLoad: ({ contentWindow, iframe }) => {
-            const dummyOne = contentWindow.document.querySelector('#one');
-            const dummyTwo = contentWindow.document.querySelector('#two');
+      inIframe({
+        headStyle: `
+        `,
+        bodyHTML: `
+        <dummy-one id="one"></dummy-one>
+        <dummy-one id="two" disabled></dummy-one>
+        
+        `,
+        onLoad: ({ contentWindow, iframe }) => {
+          const dummyOne = contentWindow.document.querySelector('#one');
+          const dummyTwo = contentWindow.document.querySelector('#two');
 
-            const DummyOne = getDummyOne(contentWindow);
-            contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+          const DummyOne = getDummyOne(contentWindow);
+          contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
 
-              const dummyOneFirstInnerFocusable = dummyOne._firstInnerFocusable;
-              const dummyTwoFirstInnerFocusable = dummyTwo._firstInnerFocusable;
+            const dummyOneFirstInnerFocusable = dummyOne._firstInnerFocusable;
+            const dummyTwoFirstInnerFocusable = dummyTwo._firstInnerFocusable;
 
-              // const release = onScreenConsole();
+            // const release = onScreenConsole();
 
-              if (!(navigator.vendor === 'Apple Computer, Inc.' && navigator.platform === 'MacIntel')) {
-                expect(contentWindow.getComputedStyle(dummyOneFirstInnerFocusable).backgroundColor).to.equal('rgba(0, 0, 0, 0.2)');
+            // if (!(navigator.vendor === 'Apple Computer, Inc.' && navigator.platform === 'MacIntel')) {
+            expect(contentWindow.getComputedStyle(dummyOneFirstInnerFocusable).backgroundColor).to.equal('rgba(0, 0, 0, 0.2)');
 
-                dummyOne.focus();
+            dummyOne.focus();
 
-                expect(contentWindow.getComputedStyle(dummyOneFirstInnerFocusable).backgroundColor).to.equal('rgba(255, 0, 0, 0.4)');
+            expect(contentWindow.getComputedStyle(dummyOneFirstInnerFocusable).backgroundColor).to.equal('rgba(255, 0, 0, 0.4)');
 
-                dummyOne.blur();
+            dummyOne.blur();
 
-                expect(contentWindow.getComputedStyle(dummyOneFirstInnerFocusable).backgroundColor).to.equal('rgba(0, 0, 0, 0.2)');
-                expect(contentWindow.getComputedStyle(dummyTwoFirstInnerFocusable).backgroundColor).to.equal('rgba(0, 0, 0, 0.2)');
+            expect(contentWindow.getComputedStyle(dummyOneFirstInnerFocusable).backgroundColor).to.equal('rgba(0, 0, 0, 0.2)');
+            expect(contentWindow.getComputedStyle(dummyTwoFirstInnerFocusable).backgroundColor).to.equal('rgba(0, 0, 0, 0.2)');
 
-                dummyTwo.focus();
+            dummyTwo.focus();
 
-                // no change as dummyTwo is disabled
-                expect(contentWindow.getComputedStyle(dummyTwoFirstInnerFocusable).backgroundColor).to.equal('rgba(0, 0, 0, 0.2)');
+            // no change as dummyTwo is disabled
+            expect(contentWindow.getComputedStyle(dummyTwoFirstInnerFocusable).backgroundColor).to.equal('rgba(0, 0, 0, 0.2)');
 
-                dummyTwo.blur();
+            dummyTwo.blur();
 
-              } else {
-                console.log('"when focused, when blurred" test skipped for Safari on Mac');
-              }
+            // } else {
+            //   console.log('"when focused, when blurred" test skipped for Safari on Mac');
+            // }
 
-              setTimeout(() => {
-                // release();
-                iframe.remove();
-                done();
-              }, 0);
-            });
+            setTimeout(() => {
+              // release();
+              iframe.remove();
+              done();
+            }, 0);
+          });
 
-            DummyOne.registerSelf();
-          }
-        });
+          DummyOne.registerSelf();
+        }
       });
+    });
   });
 
   describe('when becoming disabled', () => {
     it(`
     it removes tabindex attr but preserve the value to restore it when re-enabled
     `, (done) => {
-        inIframe({
-          headStyle: `
-          `,
-          bodyHTML: `
-          <dummy-one id="one" tabindex="-1"></dummy-one>
-          <dummy-one id="two"></dummy-one>
-          <dummy-one id="three" tabindex="1" disabled></dummy-one>
-          `,
-          onLoad: ({ contentWindow, iframe }) => {
+      inIframe({
+        headStyle: `
+        `,
+        bodyHTML: `
+        <dummy-one id="one" tabindex="-1"></dummy-one>
+        <dummy-one id="two"></dummy-one>
+        <dummy-one id="three" tabindex="1" disabled></dummy-one>
+        `,
+        onLoad: ({ contentWindow, iframe }) => {
 
-            const dummyOne = contentWindow.document.querySelector('#one');
-            const dummyTwo = contentWindow.document.querySelector('#two');
-            const dummyThree = contentWindow.document.querySelector('#three');
-            dummyOne.disabled = true;
-            dummyTwo.tabIndex = 1;
+          const dummyOne = contentWindow.document.querySelector('#one');
+          const dummyTwo = contentWindow.document.querySelector('#two');
+          const dummyThree = contentWindow.document.querySelector('#three');
+          dummyOne.disabled = true;
+          dummyTwo.tabIndex = 1;
 
-            const DummyOne = getDummyOne(contentWindow);
-            contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+          const DummyOne = getDummyOne(contentWindow);
+          contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
 
-              expect(dummyOne.getAttribute('tabindex')).to.equal(null);
-              expect(dummyTwo.getAttribute('tabindex')).to.equal('1');
-              expect(dummyThree.getAttribute('tabindex')).to.equal(null);
+            expect(dummyOne.getAttribute('tabindex')).to.equal(null);
+            expect(dummyTwo.getAttribute('tabindex')).to.equal('1');
+            expect(dummyThree.getAttribute('tabindex')).to.equal(null);
 
-              dummyTwo.disabled = true;
+            dummyTwo.disabled = true;
 
-              expect(dummyOne.getAttribute('tabindex')).to.equal(null);
-              expect(dummyTwo.getAttribute('tabindex')).to.equal(null);
-              expect(dummyThree.getAttribute('tabindex')).to.equal(null);
+            expect(dummyOne.getAttribute('tabindex')).to.equal(null);
+            expect(dummyTwo.getAttribute('tabindex')).to.equal(null);
+            expect(dummyThree.getAttribute('tabindex')).to.equal(null);
 
-              dummyOne.disabled = false;
-              dummyTwo.disabled = false;
-              dummyThree.disabled = false;
+            dummyOne.disabled = false;
+            dummyTwo.disabled = false;
+            dummyThree.disabled = false;
 
-              expect(dummyOne.getAttribute('tabindex')).to.equal('-1');
-              expect(dummyTwo.getAttribute('tabindex')).to.equal('1');
-              expect(dummyThree.getAttribute('tabindex')).to.equal('1');
+            expect(dummyOne.getAttribute('tabindex')).to.equal('-1');
+            expect(dummyTwo.getAttribute('tabindex')).to.equal('1');
+            expect(dummyThree.getAttribute('tabindex')).to.equal('1');
 
-              setTimeout(() => {
-                iframe.remove();
-                done();
-              }, 0);
-            });
+            setTimeout(() => {
+              iframe.remove();
+              done();
+            }, 0);
+          });
 
-            DummyOne.registerSelf();
-          }
-        });
+          DummyOne.registerSelf();
+        }
       });
+    });
   });
 
   describe('when moved around', () => {
@@ -554,31 +554,31 @@ describe('Focusable', () => {
             const dummyOneFirstInnerFocusable = dummyOne._innerFocusables[0];
             const dummyOneSecondInnerFocusable = dummyOne._innerFocusables[1];
 
-            if (!(navigator.vendor === 'Apple Computer, Inc.' && navigator.platform === 'MacIntel')) {
-              expect(contentWindow.getComputedStyle(dummyOne).backgroundColor).to.equal('rgba(255, 100, 0, 0.2)');
-              expect(contentWindow.getComputedStyle(dummyOneFirstInnerFocusable).backgroundColor).to.equal('rgba(0, 0, 0, 0.2)');
+            // if (!(navigator.vendor === 'Apple Computer, Inc.' && navigator.platform === 'MacIntel')) {
+            expect(contentWindow.getComputedStyle(dummyOne).backgroundColor).to.equal('rgba(255, 100, 0, 0.2)');
+            expect(contentWindow.getComputedStyle(dummyOneFirstInnerFocusable).backgroundColor).to.equal('rgba(0, 0, 0, 0.2)');
 
-              dummyOne.focus();
+            dummyOne.focus();
 
-              expect(contentWindow.getComputedStyle(dummyOne).backgroundColor).to.equal('rgba(0, 255, 0, 0.4)');
-              expect(contentWindow.getComputedStyle(dummyOneFirstInnerFocusable).backgroundColor).to.equal('rgba(255, 0, 0, 0.4)');
+            expect(contentWindow.getComputedStyle(dummyOne).backgroundColor).to.equal('rgba(0, 255, 0, 0.4)');
+            expect(contentWindow.getComputedStyle(dummyOneFirstInnerFocusable).backgroundColor).to.equal('rgba(255, 0, 0, 0.4)');
 
-              dummyOne.blur();
+            dummyOne.blur();
 
-              expect(contentWindow.getComputedStyle(dummyOne).backgroundColor).to.equal('rgba(255, 100, 0, 0.2)');
-              expect(contentWindow.getComputedStyle(dummyOneFirstInnerFocusable).backgroundColor).to.equal('rgba(0, 0, 0, 0.2)');
+            expect(contentWindow.getComputedStyle(dummyOne).backgroundColor).to.equal('rgba(255, 100, 0, 0.2)');
+            expect(contentWindow.getComputedStyle(dummyOneFirstInnerFocusable).backgroundColor).to.equal('rgba(0, 0, 0, 0.2)');
 
-              dummyOneSecondInnerFocusable.focus();
+            dummyOneSecondInnerFocusable.focus();
 
-              expect(contentWindow.getComputedStyle(dummyOne).backgroundColor).to.equal('rgba(0, 255, 0, 0.4)');
-              expect(contentWindow.getComputedStyle(dummyOneFirstInnerFocusable).backgroundColor).to.equal('rgba(0, 0, 0, 0.2)');
-              expect(contentWindow.getComputedStyle(dummyOneSecondInnerFocusable).backgroundColor).to.equal('rgba(255, 0, 0, 0.4)');
+            expect(contentWindow.getComputedStyle(dummyOne).backgroundColor).to.equal('rgba(0, 255, 0, 0.4)');
+            expect(contentWindow.getComputedStyle(dummyOneFirstInnerFocusable).backgroundColor).to.equal('rgba(0, 0, 0, 0.2)');
+            expect(contentWindow.getComputedStyle(dummyOneSecondInnerFocusable).backgroundColor).to.equal('rgba(255, 0, 0, 0.4)');
 
-              dummyOneSecondInnerFocusable.blur();
+            dummyOneSecondInnerFocusable.blur();
 
-            } else {
-              console.log('"first inner focusable will not get focus" test skipped for Safari on Mac');
-            }
+            // } else {
+            //   console.log('"first inner focusable will not get focus" test skipped for Safari on Mac');
+            // }
 
             setTimeout(() => {
               iframe.remove();
