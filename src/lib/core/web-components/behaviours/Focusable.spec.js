@@ -3,6 +3,7 @@ import getDBUIWebComponentCore from '../components/DBUIWebComponentCore/DBUIWebC
 import ensureSingleRegistration from '../../internals/ensureSingleRegistration';
 import inIframe from '../../../../../testUtils/inIframe';
 import Focusable from '../behaviours/Focusable';
+import { sendTapEvent } from '../../../../../testUtils/simulateEvents';
 // import onScreenConsole from '../../utils/onScreenConsole';
 
 /* eslint camelcase: 0 */
@@ -648,6 +649,45 @@ describe('Focusable', () => {
             expect(consoleWarnCalls).to.equal(3);
 
             console.warn = consoleWarn;
+
+            setTimeout(() => {
+              iframe.remove();
+              done();
+            }, 0);
+          });
+
+          DummyOne.registerSelf();
+        }
+      });
+    });
+  });
+
+  describe('_onDocumentTap', () => {
+    it(`
+    blurs the component when target is not the component itself
+    `, (done) => {
+      inIframe({
+        headStyle: `
+        `,
+        bodyHTML: `
+        <dummy-one id="one"></dummy-one>
+        
+        `,
+        onLoad: ({ contentWindow, iframe }) => {
+          const dummyOne = contentWindow.document.querySelector('#one');
+
+          const DummyOne = getDummyOne(contentWindow);
+          contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+
+            expect(dummyOne.hasAttribute('focused')).to.equal(false);
+
+            dummyOne.focus();
+
+            expect(dummyOne.hasAttribute('focused')).to.equal(true);
+
+            sendTapEvent(dummyOne.ownerDocument, 'start');
+
+            expect(dummyOne.hasAttribute('focused')).to.equal(false);
 
             setTimeout(() => {
               iframe.remove();
