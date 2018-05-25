@@ -281,37 +281,37 @@ describe('DBUIWebComponentBase', () => {
     - after constructor() and before connectedCallback() -
     when closestDbuiParent should not return null.
     `, (done) => {
-        inIframe({
-          bodyHTML: `
-            <dummy-one-parent></dummy-one-parent>
-            `,
-          onLoad: ({ contentWindow, iframe }) => {
-            const DummyOneParent = getDummyOneParent(contentWindow);
-            const dummyOneParentInstance = contentWindow.document.querySelector(DummyOneParent.registrationName);
+      inIframe({
+        bodyHTML: `
+          <dummy-one-parent></dummy-one-parent>
+          `,
+        onLoad: ({ contentWindow, iframe }) => {
+          const DummyOneParent = getDummyOneParent(contentWindow);
+          const dummyOneParentInstance = contentWindow.document.querySelector(DummyOneParent.registrationName);
 
-            contentWindow.customElements.whenDefined(DummyOneParent.registrationName).then(() => {
-              const parentNode = dummyOneParentInstance.parentNode;
-              expect(dummyOneParentInstance.isMounted).to.equal(true);
-              expect(dummyOneParentInstance.isDisconnected).to.equal(false);
-              dummyOneParentInstance.remove();
-              expect(dummyOneParentInstance.isMounted).to.equal(false);
-              expect(dummyOneParentInstance.isDisconnected).to.equal(true);
-              parentNode.appendChild(dummyOneParentInstance);
-              expect(dummyOneParentInstance.isMounted).to.equal(true);
-              expect(dummyOneParentInstance.isDisconnected).to.equal(false);
+          contentWindow.customElements.whenDefined(DummyOneParent.registrationName).then(() => {
+            const parentNode = dummyOneParentInstance.parentNode;
+            expect(dummyOneParentInstance.isMounted).to.equal(true);
+            expect(dummyOneParentInstance.isDisconnected).to.equal(false);
+            dummyOneParentInstance.remove();
+            expect(dummyOneParentInstance.isMounted).to.equal(false);
+            expect(dummyOneParentInstance.isDisconnected).to.equal(true);
+            parentNode.appendChild(dummyOneParentInstance);
+            expect(dummyOneParentInstance.isMounted).to.equal(true);
+            expect(dummyOneParentInstance.isDisconnected).to.equal(false);
 
-              parentNode.removeChild(dummyOneParentInstance);
-              expect(dummyOneParentInstance.isMounted).to.equal(false);
-              expect(dummyOneParentInstance.isDisconnected).to.equal(true);
+            parentNode.removeChild(dummyOneParentInstance);
+            expect(dummyOneParentInstance.isMounted).to.equal(false);
+            expect(dummyOneParentInstance.isDisconnected).to.equal(true);
 
-              iframe.remove();
-              done();
-            });
+            iframe.remove();
+            done();
+          });
 
-            DummyOneParent.registerSelf();
-          }
-        });
+          DummyOneParent.registerSelf();
+        }
       });
+    });
   });
 
   describe('prototypeChainInfo', () => {
