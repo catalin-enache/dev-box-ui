@@ -1,6 +1,4 @@
 
-/* eslint import/prefer-default-export: 0 */
-
 // https://stackoverflow.com/questions/29018151/how-do-i-programmatically-create-a-touchevent-in-chrome-41
 // https://developer.mozilla.org/en-US/docs/Web/API/TouchEvent/TouchEvent
 // https://developer.mozilla.org/en-US/docs/Web/API/Touch/Touch
