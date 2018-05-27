@@ -3,7 +3,7 @@ import getDBUIWebComponentCore from './DBUIWebComponentCore';
 
 import inIframe from '../../../../../../testUtils/inIframe';
 
-import monkeyPatch from '../../../utils/monkeyPatch';
+import monkeyPatch from '../../../../../../testUtils/monkeyPatch';
 
 import {
   getBase,
