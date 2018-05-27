@@ -1,8 +1,6 @@
 import { expect } from 'chai';
 
-import {
-  inIframe
-} from '../../../../../../testUtils';
+import inIframe from '../../../../../../testUtils/inIframe';
 
 import {
   getBase,

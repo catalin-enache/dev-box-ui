@@ -1,9 +1,8 @@
 import { expect } from 'chai';
 
-import {
-  inIframe,
-  monkeyPatch
-} from '../../../../../../testUtils';
+import inIframe from '../../../../../../testUtils/inIframe';
+
+import monkeyPatch from '../../../utils/monkeyPatch';
 
 import {
   getBase,
