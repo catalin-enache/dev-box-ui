@@ -22,6 +22,7 @@ export default function getDBUIWebComponentFormInputText(win) {
       }
 
       static get templateInnerHTML() {
+        // noinspection CssUnresolvedCustomProperty
         return `
           <style>
           :host {
