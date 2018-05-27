@@ -154,7 +154,9 @@ describe('DBUIWebComponentBase', () => {
           expect(contentWindow.document.querySelector('style[dbui-common-css-vars]')).to.equal(null);
           getDBUIWebComponentCore(contentWindow);
           // style[dbui-common-css-vars] has been injected
-          expect(contentWindow.document.querySelector('style[dbui-common-css-vars]').innerText).to.equal(DBUICommonCssVars);
+          expect(
+            contentWindow.document.querySelector('style[dbui-common-css-vars]'
+            ).innerText).to.equal(DBUICommonCssVars);
           iframe.remove();
           done();
         }

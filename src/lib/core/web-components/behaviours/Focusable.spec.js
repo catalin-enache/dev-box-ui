@@ -7,6 +7,7 @@ import { sendTapEvent } from '../../../../../testUtils/simulateEvents';
 // import onScreenConsole from '../../utils/onScreenConsole';
 
 /* eslint camelcase: 0 */
+/* eslint max-len: 0 */
 
 const dummyOneRegistrationName = 'dummy-one';
 function getDummyOne(win) {
@@ -629,8 +630,10 @@ describe('Focusable', () => {
         `,
         onLoad: ({ contentWindow, iframe }) => {
 
+          // eslint-disable-next-line
           const consoleWarn = console.warn;
           let consoleWarnCalls = 0;
+          // eslint-disable-next-line
           console.warn = () => {
             consoleWarnCalls += 1;
           };
@@ -648,6 +651,7 @@ describe('Focusable', () => {
             expect(dummyThree.getAttribute('focused')).to.equal(null);
             expect(consoleWarnCalls).to.equal(3);
 
+            // eslint-disable-next-line
             console.warn = consoleWarn;
 
             setTimeout(() => {

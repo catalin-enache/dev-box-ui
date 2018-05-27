@@ -1,4 +1,4 @@
-
+/* eslint max-len: 0 */
 // Helpers
 import dbuiWebComponentsSetUp from './web-components/helpers/dbuiWebComponentsSetup';
 
@@ -55,7 +55,7 @@ function quickSetupAndLoad(win = window) {
    * }
    * @return Object { <registrationName>, <componentClass> }
    */
-  return function (components) {
+  return (components) => {
     return dbuiWebComponentsSetUp(win)(components)
       .reduce((acc, { registrationName }) => {
         const componentClass = registrations[registrationName](window);

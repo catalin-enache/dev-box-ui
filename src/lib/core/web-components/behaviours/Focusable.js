@@ -82,6 +82,7 @@ export default function Focusable(Klass) {
       readOnlyProperties.forEach((readOnlyProperty) => {
         if (this.hasAttribute(readOnlyProperty)) {
           this.removeAttribute(readOnlyProperty);
+          // eslint-disable-next-line
           console.warn(ERROR_MESSAGES[readOnlyProperty]);
         }
       });
@@ -126,6 +127,7 @@ export default function Focusable(Klass) {
     }
 
     set focused(_) {
+      // eslint-disable-next-line
       console.warn(ERROR_MESSAGES.focused);
     }
 

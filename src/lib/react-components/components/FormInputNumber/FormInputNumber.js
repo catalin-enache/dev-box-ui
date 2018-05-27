@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import FormInput from '../FormInput/FormInput';
 import formatters from '../../../core/utils/formatters';
 
+// eslint-disable-next-line
 class FormInputNumber extends React.PureComponent {
   constructor(props) {
     super(props);

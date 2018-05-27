@@ -97,6 +97,7 @@ export default function getDBUIWebComponentDummy(win) {
         `;
       }
 
+      // eslint-disable-next-line
       onLocaleChange(locale) {
         // console.log('onLocaleChange', locale);
       }

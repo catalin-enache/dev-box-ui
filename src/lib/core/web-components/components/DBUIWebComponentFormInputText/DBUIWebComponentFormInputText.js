@@ -1,4 +1,6 @@
 
+/* eslint max-len: 0 */
+
 import getDBUIWebComponentCore from '../DBUIWebComponentCore/DBUIWebComponentCore';
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
 import Focusable from '../../behaviours/Focusable';
@@ -92,6 +94,7 @@ export default function getDBUIWebComponentFormInputText(win) {
         };
       }
 
+      // eslint-disable-next-line
       onLocaleChange(locale) {
         if (process.env.NODE_ENV !== 'production') {
           /* eslint no-console: 0 */

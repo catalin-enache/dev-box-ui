@@ -17,6 +17,8 @@ import {
   treeStyle
 } from './DBUITestTreeSetup.forSpec';
 
+/* eslint max-len: 0 */
+
 function setupOnConnectedCallback(klass) {
   return monkeyPatch(klass).proto.set('onConnectedCallback', (getSuperDescriptor) => {
     return {
@@ -520,108 +522,108 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations', () => {
   describe('when node is replaced in light DOM', () => {
     it(`unregisters self from closetDbuiParent and registers to the new closetDbuiParent
     while keeping the same closest children`, (done) => {
-        inIframe({
-          headStyle: treeStyle,
-          bodyHTML: `
-          <div id="container">
-            ${treeOne}
-          </div>
-          `,
-          onLoad: ({ contentWindow, iframe }) => {
-            const DummyA = getDummyA(contentWindow);
-            const DummyB = getDummyB(contentWindow);
-            const DummyC = getDummyC(contentWindow);
-            const DummyD = getDummyD(contentWindow);
-            const DummyE = getDummyE(contentWindow);
+      inIframe({
+        headStyle: treeStyle,
+        bodyHTML: `
+        <div id="container">
+          ${treeOne}
+        </div>
+        `,
+        onLoad: ({ contentWindow, iframe }) => {
+          const DummyA = getDummyA(contentWindow);
+          const DummyB = getDummyB(contentWindow);
+          const DummyC = getDummyC(contentWindow);
+          const DummyD = getDummyD(contentWindow);
+          const DummyE = getDummyE(contentWindow);
 
-            Promise.all([
-              DummyA.registrationName,
-              DummyB.registrationName,
-              DummyC.registrationName,
-              DummyD.registrationName,
-              DummyE.registrationName,
-            ].map((localName) => contentWindow.customElements.whenDefined(localName)
-            )).then(() => {
-              const dbuiNodes = treeOneGetDbuiNodes(contentWindow);
-              const {
-                lightDummyDOneRoot,
-                lightDummyDOneRoot_ShadowDummyB,
-                lightDummyDTwoInDefaultSlot,
-                lightDummyDThreeInDefaultSlot,
-                lightDummyDThreeInDefaultSlot_ShadowDummyB,
-                lightDummyEInNamedSlot,
-                lightDummyEInDefaultSlot
-              } = dbuiNodes;
+          Promise.all([
+            DummyA.registrationName,
+            DummyB.registrationName,
+            DummyC.registrationName,
+            DummyD.registrationName,
+            DummyE.registrationName,
+          ].map((localName) => contentWindow.customElements.whenDefined(localName)
+          )).then(() => {
+            const dbuiNodes = treeOneGetDbuiNodes(contentWindow);
+            const {
+              lightDummyDOneRoot,
+              lightDummyDOneRoot_ShadowDummyB,
+              lightDummyDTwoInDefaultSlot,
+              lightDummyDThreeInDefaultSlot,
+              lightDummyDThreeInDefaultSlot_ShadowDummyB,
+              lightDummyEInNamedSlot,
+              lightDummyEInDefaultSlot
+            } = dbuiNodes;
 
-              const doTest = () => {
-                expect(lightDummyDOneRoot.closestDbuiChildren).to.have.members([
-                  lightDummyDOneRoot_ShadowDummyB,
-                  lightDummyDTwoInDefaultSlot,
-                  lightDummyEInNamedSlot
-                ]);
-                expect(lightDummyEInNamedSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
-                expect(lightDummyDTwoInDefaultSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
-                expect(lightDummyDTwoInDefaultSlot.closestDbuiChildren).to.include(lightDummyDThreeInDefaultSlot);
-                expect(lightDummyDThreeInDefaultSlot.closestDbuiParent).to.equal(lightDummyDTwoInDefaultSlot);
-                expect(lightDummyDThreeInDefaultSlot.closestDbuiChildren).to.have.members([lightDummyEInDefaultSlot, lightDummyDThreeInDefaultSlot_ShadowDummyB]);
-                expect(lightDummyEInDefaultSlot.closestDbuiParent).to.equal(lightDummyDThreeInDefaultSlot);
-                expect(lightDummyDOneRoot.querySelector('#ul2-li1-ul1-li1').children.length).to.equal(1);
-              };
-
-              doTest();
-
-              lightDummyDOneRoot.querySelector('#ul1-li1').replaceChild(lightDummyDThreeInDefaultSlot, lightDummyEInNamedSlot);
-
-              // Replaced child did unregistered from its parent (synchronously)
-              expect(lightDummyEInNamedSlot.closestDbuiParent).to.equal(null);
-              expect(lightDummyEInNamedSlot.closestDbuiChildren.length).to.equal(0);
-
-              // Replacing child also did unregistered from its parent (synchronously)
-              // and has registered to the new parent.
-              expect(lightDummyDTwoInDefaultSlot.closestDbuiChildren).to.not.include(lightDummyDThreeInDefaultSlot);
-              expect(lightDummyDThreeInDefaultSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
-              expect(lightDummyDThreeInDefaultSlot.closestDbuiChildren.length).to.equal(2);
-
+            const doTest = () => {
               expect(lightDummyDOneRoot.closestDbuiChildren).to.have.members([
                 lightDummyDOneRoot_ShadowDummyB,
                 lightDummyDTwoInDefaultSlot,
-                // replacing child
-                lightDummyDThreeInDefaultSlot
+                lightDummyEInNamedSlot
               ]);
-              expect(lightDummyDTwoInDefaultSlot.closestDbuiChildren).to.not.include(lightDummyDThreeInDefaultSlot);
-              // replacing child
-              // has new closest parent
-              expect(lightDummyDThreeInDefaultSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
-              // has the same closest children
+              expect(lightDummyEInNamedSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
+              expect(lightDummyDTwoInDefaultSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
+              expect(lightDummyDTwoInDefaultSlot.closestDbuiChildren).to.include(lightDummyDThreeInDefaultSlot);
+              expect(lightDummyDThreeInDefaultSlot.closestDbuiParent).to.equal(lightDummyDTwoInDefaultSlot);
               expect(lightDummyDThreeInDefaultSlot.closestDbuiChildren).to.have.members([lightDummyEInDefaultSlot, lightDummyDThreeInDefaultSlot_ShadowDummyB]);
               expect(lightDummyEInDefaultSlot.closestDbuiParent).to.equal(lightDummyDThreeInDefaultSlot);
-              expect(lightDummyEInNamedSlot.closestDbuiParent).to.equal(null);
-              expect(lightDummyDOneRoot.querySelector('#ul2-li1-ul1-li1').children.length).to.equal(0);
+              expect(lightDummyDOneRoot.querySelector('#ul2-li1-ul1-li1').children.length).to.equal(1);
+            };
 
-              // put nodes back as they were and redo initial test
-              lightDummyDOneRoot.querySelector('#ul1-li1').appendChild(lightDummyEInNamedSlot);
+            doTest();
 
-              // intermediary test
-              expect(lightDummyEInNamedSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
-              expect(lightDummyDOneRoot.closestDbuiChildren).to.have.members([
-                lightDummyDOneRoot_ShadowDummyB,
-                lightDummyDTwoInDefaultSlot,
-                lightDummyEInNamedSlot,
-                lightDummyDThreeInDefaultSlot
-              ]);
+            lightDummyDOneRoot.querySelector('#ul1-li1').replaceChild(lightDummyDThreeInDefaultSlot, lightDummyEInNamedSlot);
 
-              lightDummyDOneRoot.querySelector('#ul2-li1-ul1-li1').appendChild(lightDummyDThreeInDefaultSlot);
+            // Replaced child did unregistered from its parent (synchronously)
+            expect(lightDummyEInNamedSlot.closestDbuiParent).to.equal(null);
+            expect(lightDummyEInNamedSlot.closestDbuiChildren.length).to.equal(0);
 
-              doTest();
-              setTimeout(() => {
-                iframe.remove();
-                done();
-              }, 0);
-            });
-            DummyE.registerSelf();
-          }
-        });
+            // Replacing child also did unregistered from its parent (synchronously)
+            // and has registered to the new parent.
+            expect(lightDummyDTwoInDefaultSlot.closestDbuiChildren).to.not.include(lightDummyDThreeInDefaultSlot);
+            expect(lightDummyDThreeInDefaultSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
+            expect(lightDummyDThreeInDefaultSlot.closestDbuiChildren.length).to.equal(2);
+
+            expect(lightDummyDOneRoot.closestDbuiChildren).to.have.members([
+              lightDummyDOneRoot_ShadowDummyB,
+              lightDummyDTwoInDefaultSlot,
+              // replacing child
+              lightDummyDThreeInDefaultSlot
+            ]);
+            expect(lightDummyDTwoInDefaultSlot.closestDbuiChildren).to.not.include(lightDummyDThreeInDefaultSlot);
+            // replacing child
+            // has new closest parent
+            expect(lightDummyDThreeInDefaultSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
+            // has the same closest children
+            expect(lightDummyDThreeInDefaultSlot.closestDbuiChildren).to.have.members([lightDummyEInDefaultSlot, lightDummyDThreeInDefaultSlot_ShadowDummyB]);
+            expect(lightDummyEInDefaultSlot.closestDbuiParent).to.equal(lightDummyDThreeInDefaultSlot);
+            expect(lightDummyEInNamedSlot.closestDbuiParent).to.equal(null);
+            expect(lightDummyDOneRoot.querySelector('#ul2-li1-ul1-li1').children.length).to.equal(0);
+
+            // put nodes back as they were and redo initial test
+            lightDummyDOneRoot.querySelector('#ul1-li1').appendChild(lightDummyEInNamedSlot);
+
+            // intermediary test
+            expect(lightDummyEInNamedSlot.closestDbuiParent).to.equal(lightDummyDOneRoot);
+            expect(lightDummyDOneRoot.closestDbuiChildren).to.have.members([
+              lightDummyDOneRoot_ShadowDummyB,
+              lightDummyDTwoInDefaultSlot,
+              lightDummyEInNamedSlot,
+              lightDummyDThreeInDefaultSlot
+            ]);
+
+            lightDummyDOneRoot.querySelector('#ul2-li1-ul1-li1').appendChild(lightDummyDThreeInDefaultSlot);
+
+            doTest();
+            setTimeout(() => {
+              iframe.remove();
+              done();
+            }, 0);
+          });
+          DummyE.registerSelf();
+        }
       });
+    });
   });
 
   describe('when node is appended under a new parent while being removed from an old parent in light DOM', () => {

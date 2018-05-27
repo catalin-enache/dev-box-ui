@@ -23,6 +23,7 @@ const lang2Translations1 = {
   },
 };
 
+// eslint-disable-next-line
 let TestComp = class TestComp extends React.Component {
   componentWillReceiveProps(nextProps) {
     this.props.compReceivedProps(nextProps);

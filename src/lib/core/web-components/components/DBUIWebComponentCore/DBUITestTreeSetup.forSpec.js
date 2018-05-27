@@ -1,6 +1,8 @@
 import getDBUIWebComponentCore from './DBUIWebComponentCore';
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
 
+/* eslint max-len: 0 */
+
 /*
 inIframe({
   headStyle: treeStyle,

@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import cn from 'classnames';
 
+// eslint-disable-next-line
 class FormInput extends React.PureComponent {
   constructor(props) {
     super(props);
