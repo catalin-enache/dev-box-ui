@@ -15,6 +15,7 @@
             "**/*.spec.js",
             "**/src/lib/styles/**",
             "**/src/lib/index.js",
+            "**/src/lib/core/utils/onScreenConsole.js",
             "**/src/lib/react-components/**",
             "**/test/**",
             "**/testUtils/**"
