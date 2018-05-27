@@ -701,4 +701,56 @@ describe('Focusable', () => {
     });
   });
 
+  describe('focus propagation', () => {
+    it(`
+    is propagated to ownerDocument as it should
+    `, (done) => {
+      inIframe({
+        headStyle: `
+        `,
+        bodyHTML: `
+        <div><input id="input" /></div>
+        <div><dummy-one id="one"></dummy-one></div>
+        
+        `,
+        onLoad: ({ contentWindow, iframe }) => {
+          const input = contentWindow.document.querySelector('#input');
+          const dummyOne = contentWindow.document.querySelector('#one');
+
+          let activeElement = null;
+          contentWindow.document.addEventListener('focus', () => {
+            activeElement = contentWindow.document.activeElement;
+          }, true);
+
+          contentWindow.document.addEventListener('blur', () => {
+            activeElement = contentWindow.document.activeElement;
+          }, true);
+
+          const DummyOne = getDummyOne(contentWindow);
+          contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+
+            input.focus();
+
+            expect(activeElement).to.equal(input);
+
+            dummyOne._focusFirstInnerFocusable();
+
+            expect(activeElement).to.equal(dummyOne);
+
+            dummyOne.blur();
+
+            expect(activeElement).to.equal(contentWindow.document.body);
+
+            setTimeout(() => {
+              iframe.remove();
+              done();
+            }, 0);
+          });
+
+          DummyOne.registerSelf();
+        }
+      });
+    });
+  });
+
 });

@@ -262,35 +262,35 @@ describe('DBUIWebComponent Styling Behaviour', () => {
   even if :host { all: initial; } was specified
   given that the property was explicitly set to inherit
   `, (done) => {
-      inIframe({
-        bodyHTML: `
-        <div style="color: rgba(250, 0, 0, 0.2);">
-          <dummy-one></dummy-one>
-        </div>
-        `,
-        onLoad: ({ contentWindow, iframe }) => {
-          const DummyOne = getDummyOne(contentWindow);
-          DummyOne.componentStyle += `
-          :host { all: initial; color: inherit; }
-          `;
-          const dummyOneInst = contentWindow.document.querySelector('dummy-one');
+    inIframe({
+      bodyHTML: `
+      <div style="color: rgba(250, 0, 0, 0.2);">
+        <dummy-one></dummy-one>
+      </div>
+      `,
+      onLoad: ({ contentWindow, iframe }) => {
+        const DummyOne = getDummyOne(contentWindow);
+        DummyOne.componentStyle += `
+        :host { all: initial; color: inherit; }
+        `;
+        const dummyOneInst = contentWindow.document.querySelector('dummy-one');
 
-          contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
-            const computedStyle = contentWindow.getComputedStyle(dummyOneInst);
+        contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+          const computedStyle = contentWindow.getComputedStyle(dummyOneInst);
 
-            // color was inherited due to being explicitly set to inherit despite all: initial rule
-            expect(computedStyle.color).to.equal('rgba(250, 0, 0, 0.2)');
+          // color was inherited due to being explicitly set to inherit despite all: initial rule
+          expect(computedStyle.color).to.equal('rgba(250, 0, 0, 0.2)');
 
-            setTimeout(() => {
-              iframe.remove();
-              done();
-            }, 0);
-          });
+          setTimeout(() => {
+            iframe.remove();
+            done();
+          }, 0);
+        });
 
-          DummyOne.registerSelf();
-        }
-      });
+        DummyOne.registerSelf();
+      }
     });
+  });
 
   it('is locale aware', (done) => {
     inIframe({
