@@ -40,7 +40,7 @@ export default function localeAware(Component) {
       return (
         <Component { ...this.props }
           locale={ locale }
-          translations={ i18nService.currentLangTranslations }
+          translations={ i18nService.translations[locale.lang] || {} }
           ref={ comp => this._component = comp }
         />
       );

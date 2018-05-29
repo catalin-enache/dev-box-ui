@@ -88,6 +88,22 @@ export default function getDBUIWebComponentCore(win) {
 
       /**
        *
+       * @return Array<String>
+       */
+      get observedDynamicAttributes() {
+        return [];
+      }
+
+      /**
+       *
+       * @return Boolean
+       */
+      get hasDynamicAttributes() {
+        return false;
+      }
+
+      /**
+       *
        * @return Boolean
        */
       get isMounted() {
@@ -123,6 +139,7 @@ export default function getDBUIWebComponentCore(win) {
         this._isMounted = false;
         this._isDisconnected = false;
         this._localeObserver = null;
+        this._dynamicAttributesObserver = null;
         this._insertTemplate();
 
         this.connectedCallback = this.connectedCallback.bind(this);
@@ -133,6 +150,34 @@ export default function getDBUIWebComponentCore(win) {
         // provide support for traits if any as they can't override constructor
         this.init && this.init(...args);
       }
+
+      // ============================ [Observe Dynamic Attributes] >> =============================================
+
+      _initializeDynamicAttributesObserver() {
+        if (!this.hasDynamicAttributes) return;
+
+        this._dynamicAttributesObserver = new win.MutationObserver((mutations) => {
+          mutations.forEach((mutation) => {
+            const { value: newValue, oldValue, attributeName } = mutation;
+            if (!this.observedDynamicAttributes.includes(attributeName)) return;
+            this.attributeChangedCallback(attributeName, oldValue, newValue);
+          });
+        });
+
+        this._dynamicAttributesObserver.observe(this, {
+          attributes: true,
+          attributeOldValue: true
+        });
+      }
+
+      _dismissDynamicAttributesObserver() {
+        if (!this._dynamicAttributesObserver) return;
+
+        this._dynamicAttributesObserver.disconnect();
+        this._dynamicAttributesObserver = null;
+      }
+
+      // ============================ << [Observe Dynamic Attributes] =============================================
 
       // ============================ [Locale] >> =============================================
 
@@ -286,7 +331,7 @@ export default function getDBUIWebComponentCore(win) {
 
         const localeTarget = this._localeTarget;
 
-        this._localeObserver = new MutationObserver((mutations) => {
+        this._localeObserver = new win.MutationObserver((mutations) => {
           mutations.forEach((mutation) => {
             const attr = mutation.attributeName;
             const value = this._targetedLocale[attr];
@@ -833,6 +878,7 @@ export default function getDBUIWebComponentCore(win) {
         // makes top most ancestors or dbui components having localeTarget specified
         // to set dbuiDir/Locale on context
         this._syncLocaleAndMonitorChanges();
+        this._initializeDynamicAttributesObserver();
         // Call public hook.
         this.onConnectedCallback();
       }
@@ -860,6 +906,7 @@ export default function getDBUIWebComponentCore(win) {
         this._isMounted = false;
         this._isDisconnected = true;
         this._closestDbuiParent = null;
+        this._dismissDynamicAttributesObserver();
         // Call public hook.
         this.onDisconnectedCallback();
       }

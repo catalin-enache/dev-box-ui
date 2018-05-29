@@ -1,9 +1,7 @@
 import { expect } from 'chai';
 
-import getDBUIlocaleService from './DBUILocaleService';
 import getDBUII18nService from './DBUII18nService';
 
-const localeService = getDBUIlocaleService(window);
 const i18nService = getDBUII18nService(window);
 
 const lang1 = 'xy';
@@ -42,7 +40,7 @@ describe('i18nService', () => {
     expect(i18nService.translations[lang1]).to.equal(undefined);
   });
 
-  it('is locale aware, it reacts to locale changes', (done) => {
+  it('returns translations for specified lang', (done) => {
     i18nService.clearTranslations(lang1);
     i18nService.clearTranslations(lang2);
 
@@ -51,17 +49,14 @@ describe('i18nService', () => {
       ...lang2Translations1
     });
 
-    localeService.locale = { lang: lang1 };
     setTimeout(() => {
-      expect(i18nService.currentLangTranslations).to.deep.equal(lang1Translations1[lang1]);
-      expect(i18nService.translate('one')).to.equal(lang1Translations1[lang1].one);
+      expect(i18nService.translations[lang1]).to.deep.equal(lang1Translations1[lang1]);
+      expect(i18nService.translate('one', lang1)).to.equal(lang1Translations1[lang1].one);
 
-      localeService.locale = { lang: lang2 };
       setTimeout(() => {
-        expect(i18nService.currentLangTranslations).to.deep.equal(lang2Translations1[lang2]);
-        expect(i18nService.translate('one')).to.equal(lang2Translations1[lang2].one);
+        expect(i18nService.translations[lang2]).to.deep.equal(lang2Translations1[lang2]);
+        expect(i18nService.translate('one', lang2)).to.equal(lang2Translations1[lang2].one);
 
-        localeService.locale = { lang: 'en' };
         setTimeout(() => {
           done();
         }, 0);
