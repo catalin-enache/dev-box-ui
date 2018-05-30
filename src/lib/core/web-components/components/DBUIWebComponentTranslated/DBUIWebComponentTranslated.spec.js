@@ -1,4 +1,4 @@
-// import { expect } from 'chai';
+import { expect } from 'chai';
 import inIframe from '../../../../../../testUtils/inIframe';
 import getDBUIWebComponentTranslated from './DBUIWebComponentTranslated';
 import getDBUII18nService from '../../../services/DBUII18nService';
@@ -16,7 +16,7 @@ const translations = {
 };
 
 describe('Translated', () => {
-  xit('test', (done) => {
+  it('behaves as expected', (done) => {
     inIframe({
       headStyle: '',
       bodyHTML: `
@@ -47,30 +47,50 @@ describe('Translated', () => {
         ].map((localName) => contentWindow.customElements.whenDefined(localName)
         )).then(() => {
 
+          expect(one.shadowRoot.querySelector('span').innerHTML).to.equal(
+            '<span style="color: green; font-weight: bold;">Hello</span> John 22 zero one'
+          );
+
           setTimeout(() => {
             one.setAttribute('message-name', 'Will');
             one.setAttribute('message-age', '32');
 
             setTimeout(() => {
+              expect(one.shadowRoot.querySelector('span').innerHTML).to.equal(
+                '<span style="color: green; font-weight: bold;">Hello</span> Will 32 zero one'
+              );
+
               container.lang = 'sp';
 
               setTimeout(() => {
+                expect(one.shadowRoot.querySelector('span').innerHTML).to.equal(
+                  '<span style="color: blue; font-weight: bold;">Hola</span> Will 32 one zero'
+                );
+
                 one.setAttribute('message', 'Bye');
-                one.setAttribute('message-name', 'Wick');
+                one.setAttribute('message-name', 'John Wick');
                 one.setAttribute('message-interval', '24h');
 
                 setTimeout(() => {
+                  expect(one.shadowRoot.querySelector('span').innerHTML).to.equal(
+                    'Adios John Wick - 24h'
+                  );
+
                   container.lang = 'en';
-                }, 1000);
-              }, 1000);
-            }, 1000);
 
-          }, 1000);
+                  setTimeout(() => {
+                    expect(one.shadowRoot.querySelector('span').innerHTML).to.equal(
+                      'Good bye John Wick - 24h'
+                    );
+                    iframe.remove();
+                    done();
+                  });
 
-          setTimeout(() => {
-            iframe.remove();
-            done();
-          }, 55000);
+                }, 0);
+              }, 0);
+            }, 0);
+
+          }, 0);
 
         });
 

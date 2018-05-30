@@ -101,11 +101,7 @@ export default function getDBUIWebComponentTranslated(win) {
         this._updateTranslation();
       }
 
-      onAttributeChangedCallback(name) {
-        if (![
-          ...this.observedDynamicAttributes,
-          ...this.constructor.observedAttributes
-        ].includes(name)) return;
+      onAttributeChangedCallback() {
         this._updateTranslation();
       }
 
