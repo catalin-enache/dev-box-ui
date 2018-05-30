@@ -5,6 +5,7 @@ import DBUICommonCssVars from './DBUICommonCssVars';
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
 import appendStyles from '../../../internals/appendStyles';
 import inIframe from '../../../../../../testUtils/inIframe';
+import monkeyPatch from '../../../../../../testUtils/monkeyPatch';
 
 /* eslint camelcase: 0 */
 
@@ -45,10 +46,6 @@ function getDummyOne(win) {
         return [...super.propertiesToUpgrade, 'foo'];
       }
 
-      init() {
-        this._init = true;
-      }
-
       /**
        * @return {string}
        */
@@ -70,10 +67,6 @@ function getDummyOne(win) {
             <p style="padding: 0px; margin: 0px;">dummy one component</p>
           </div>
         `;
-      }
-
-      onLocaleChange(locale) {
-        this._localeObject = locale;
       }
 
       static get observedAttributes() {
@@ -207,30 +200,6 @@ describe('DBUIWebComponentBase', () => {
             // prototype has been upgraded
             expect(dummyOneInstance.constructor).to.equal(DummyOne);
             expect(dummyOneInstance.constructor.name).to.equal('DummyOne');
-
-            setTimeout(() => {
-              iframe.remove();
-              done();
-            }, 0);
-          });
-
-          DummyOne.registerSelf();
-        }
-      });
-    });
-
-    it('calls init to support mixins', (done) => {
-      inIframe({
-        bodyHTML: `
-        <dummy-one></dummy-one>
-        `,
-        onLoad: ({ contentWindow, iframe }) => {
-          const DummyOne = getDummyOne(contentWindow);
-          const dummyOneInstance = contentWindow.document.querySelector(DummyOne.registrationName);
-          expect(dummyOneInstance._init).to.equal(undefined);
-
-          contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
-            expect(dummyOneInstance._init).to.equal(true);
 
             setTimeout(() => {
               iframe.remove();
@@ -634,6 +603,154 @@ describe('DBUIWebComponentBase', () => {
 
           DummyOne.registerSelf();
         }
+      });
+    });
+  });
+
+  describe('observedDynamicAttributes', () => {
+    describe('when NOT hasDynamicAttributes', () => {
+      it('does not have _dynamicAttributesObserver', (done) => {
+        inIframe({
+          bodyHTML: `
+            <dummy-one></dummy-one>
+          `,
+          onLoad: ({ contentWindow, iframe }) => {
+            const DummyOne = getDummyOne(contentWindow);
+            const dummyOneInst = contentWindow.document.querySelector('dummy-one');
+
+            contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+
+              expect(dummyOneInst._dynamicAttributesObserver).to.equal(null);
+              expect(dummyOneInst.hasDynamicAttributes).to.equal(false);
+              expect(dummyOneInst.observedDynamicAttributes).to.deep.equal([]);
+
+              iframe.remove();
+              done();
+            });
+
+            DummyOne.registerSelf();
+          }
+        });
+      });
+    });
+
+    describe('when hasDynamicAttributes', () => {
+      it('has _dynamicAttributesObserver observing observedDynamicAttributes', (done) => {
+        inIframe({
+          bodyHTML: `
+            <div id="container">
+              <dummy-one dynamic-one="one" dynamic-two="two"></dummy-one>
+            </div>
+          `,
+          onLoad: ({ contentWindow, iframe }) => {
+            const DummyOne = getDummyOne(contentWindow);
+
+            monkeyPatch(DummyOne).proto.set('hasDynamicAttributes', () => {
+              return {
+                get() {
+                  return true;
+                }
+              };
+            });
+
+            monkeyPatch(DummyOne).proto.set('observedDynamicAttributes', () => {
+              return {
+                get() {
+                  // noinspection JSCheckFunctionSignatures
+                  return Array.from(this.attributes)
+                    .filter((attr) => attr.name.startsWith('dynamic-'))
+                    .map((attr) => attr.name);
+                }
+              };
+            });
+
+            const container = contentWindow.document.querySelector('#container');
+            const dummyOneInst = contentWindow.document.querySelector('dummy-one');
+
+            contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+              const dynamicAttributesObserver1 = dummyOneInst._dynamicAttributesObserver;
+
+              expect(dynamicAttributesObserver1)
+                .to.be.an.instanceof(contentWindow.MutationObserver);
+
+              const attributeChangedCallbackCalls = [];
+
+              const attributeChangedCallback = dummyOneInst.attributeChangedCallback;
+              dummyOneInst.attributeChangedCallback = (name, oldValue, newValue) => {
+                attributeChangedCallbackCalls.push({
+                  name, oldValue, newValue
+                });
+                attributeChangedCallback.call(this, name, oldValue, newValue);
+              };
+
+              expect(dummyOneInst.observedDynamicAttributes).to.deep.equal([
+                'dynamic-one', 'dynamic-two'
+              ]);
+
+              dummyOneInst.setAttribute('dynamic-one', '_one');
+
+              setTimeout(() => {
+                expect(attributeChangedCallbackCalls[0]).to.deep.equal({
+                  name: 'dynamic-one', newValue: '_one', oldValue: 'one'
+                });
+
+                dummyOneInst.setAttribute('dynamic-three', 'three');
+
+                setTimeout(() => {
+                  expect(dummyOneInst.observedDynamicAttributes).to.deep.equal([
+                    'dynamic-one', 'dynamic-two', 'dynamic-three'
+                  ]);
+                  expect(dummyOneInst._previouslyObservedDynamicAttributes['dynamic-three']).to.equal('three');
+
+                  expect(attributeChangedCallbackCalls[1]).to.deep.equal({
+                    name: 'dynamic-three', newValue: 'three', oldValue: null
+                  });
+
+                  setTimeout(() => {
+                    dummyOneInst.removeAttribute('dynamic-three');
+
+                    setTimeout(() => {
+                      expect(dummyOneInst.observedDynamicAttributes).to.deep.equal([
+                        'dynamic-one', 'dynamic-two'
+                      ]);
+                      expect(Object.keys(dummyOneInst._previouslyObservedDynamicAttributes))
+                        .to.not.include('dynamic-three');
+                      expect(attributeChangedCallbackCalls[2]).to.deep.equal({
+                        name: 'dynamic-three', newValue: null, oldValue: 'three'
+                      });
+
+                      dummyOneInst.remove();
+
+                      expect(dummyOneInst._dynamicAttributesObserver)
+                        .to.equal(null);
+
+                      container.appendChild(dummyOneInst);
+
+                      const dynamicAttributesObserver2 = dummyOneInst._dynamicAttributesObserver;
+                      expect(dynamicAttributesObserver2)
+                        .to.be.an.instanceof(contentWindow.MutationObserver);
+                      expect(dynamicAttributesObserver2).to.not.equal(dynamicAttributesObserver1);
+
+                      dummyOneInst.setAttribute('dynamic-one', 'one');
+
+                      setTimeout(() => {
+                        expect(attributeChangedCallbackCalls[3]).to.deep.equal({
+                          name: 'dynamic-one', newValue: 'one', oldValue: '_one'
+                        });
+
+                        iframe.remove();
+                        done();
+                      });
+
+                    });
+                  });
+                });
+              });
+            });
+
+            DummyOne.registerSelf();
+          }
+        });
       });
     });
   });

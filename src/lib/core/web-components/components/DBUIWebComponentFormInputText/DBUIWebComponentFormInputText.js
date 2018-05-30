@@ -95,14 +95,6 @@ export default function getDBUIWebComponentFormInputText(win) {
         };
       }
 
-      // eslint-disable-next-line
-      onLocaleChange(locale) {
-        if (process.env.NODE_ENV !== 'production') {
-          /* eslint no-console: 0 */
-          // console.log('onLocaleChange', locale);
-        }
-      }
-
     }
 
     return Registerable(

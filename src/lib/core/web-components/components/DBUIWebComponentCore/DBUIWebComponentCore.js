@@ -121,7 +121,7 @@ export default function getDBUIWebComponentCore(win) {
         return this._isDisconnected;
       }
 
-      constructor(...args) {
+      constructor() {
         super();
 
         this.attachShadow({
@@ -140,15 +140,13 @@ export default function getDBUIWebComponentCore(win) {
         this._isDisconnected = false;
         this._localeObserver = null;
         this._dynamicAttributesObserver = null;
+        this._previouslyObservedDynamicAttributes = {};
         this._insertTemplate();
 
         this.connectedCallback = this.connectedCallback.bind(this);
         this.disconnectedCallback = this.disconnectedCallback.bind(this);
         this.attributeChangedCallback = this.attributeChangedCallback.bind(this);
         this.adoptedCallback = this.adoptedCallback.bind(this);
-
-        // provide support for traits if any as they can't override constructor
-        this.init && this.init(...args);
       }
 
       // ============================ [Observe Dynamic Attributes] >> =============================================
@@ -158,9 +156,29 @@ export default function getDBUIWebComponentCore(win) {
 
         this._dynamicAttributesObserver = new win.MutationObserver((mutations) => {
           mutations.forEach((mutation) => {
-            const { value: newValue, oldValue, attributeName } = mutation;
-            if (!this.observedDynamicAttributes.includes(attributeName)) return;
-            this.attributeChangedCallback(attributeName, oldValue, newValue);
+            const { oldValue, attributeName } = mutation;
+            const newValue = this.getAttribute(attributeName);
+            const currentlyObservedDynamicAttributesKeys = this.observedDynamicAttributes;
+            const previouslyObservedDynamicAttributes = this._previouslyObservedDynamicAttributes;
+            const previouslyObservedDynamicAttributesKeys = Object.keys(previouslyObservedDynamicAttributes);
+            const isInCurrentlyObservedDynamicAttributes =
+              currentlyObservedDynamicAttributesKeys.includes(attributeName);
+            const isInPreviouslyObservedDynamicAttributes =
+              previouslyObservedDynamicAttributesKeys.includes(attributeName);
+
+            if (isInCurrentlyObservedDynamicAttributes) {
+              this._previouslyObservedDynamicAttributes[attributeName] = newValue;
+              this.attributeChangedCallback(
+                attributeName, oldValue, newValue
+              );
+            } else if (isInPreviouslyObservedDynamicAttributes) {
+              const oldValue = this._previouslyObservedDynamicAttributes[attributeName];
+              delete this._previouslyObservedDynamicAttributes[attributeName];
+              this.attributeChangedCallback(
+                attributeName, oldValue, null
+              );
+            }
+
           });
         });
 
