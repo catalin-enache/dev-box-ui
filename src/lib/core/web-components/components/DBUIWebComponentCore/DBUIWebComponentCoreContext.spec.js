@@ -309,18 +309,28 @@ describe('DBUIWebComponentBase context passing', () => {
               // in a context-less zone then re-inserting it in a zone having context.
 
               newul2.id = ul2.id;
+              // !!! Safari randomly reports that
+              // this._onAttributeChangedCallback
+              // or this._onConnectedCallback
+              // or closestDbuiParent._getContext
+              // or closestDbuiParent._registerChild
+              // is undefined
               newul2.innerHTML = ul2InnerHTML;
 
               // not connected yet
               expect(onConnectedCallbackCalls.length).to.equal(0);
               // because of two attributes on light-dummy-d-three-in-default-slot
               // see Scenario 2 on attributeChangedCallback comment in DummyWebComponentCore.js
+              // !!! expected 0 to equal 2 randomly fails on Safari for the next expectation
+              // correlated with previous randomly Safari report
               expect(onAttributeChangedCallbackCalls.length).to.equal(2);
 
               // inserting in context-less zone
               container.appendChild(newul2);
 
               // because of three dummy-d components in the tree (light & shadow)
+              // !!! expected 2 to equal 3 randomly fails on Safari for the next expectation
+              // correlated with previous randomly Safari report
               expect(onConnectedCallbackCalls.length).to.equal(3);
               // remains unchanged / not fired again
               expect(onAttributeChangedCallbackCalls.length).to.equal(2);

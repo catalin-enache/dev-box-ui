@@ -82,16 +82,32 @@ describe('Translated', () => {
                     expect(one.shadowRoot.querySelector('span').innerHTML).to.equal(
                       'Good bye John Wick - 24h'
                     );
-                    iframe.remove();
-                    done();
-                  });
 
+                    one.remove();
+                    container.appendChild(one);
+
+                    setTimeout(() => {
+                      expect(one.shadowRoot.querySelector('span').innerHTML).to.equal(
+                        'Good bye John Wick - 24h'
+                      );
+
+                      one.remove();
+                      container.lang = 'sp';
+                      container.appendChild(one);
+
+                      setTimeout(() => {
+                        expect(one.shadowRoot.querySelector('span').innerHTML).to.equal(
+                          'Adios John Wick - 24h'
+                        );
+                        iframe.remove();
+                        done();
+                      }, 0);
+                    }, 0);
+                  }, 0);
                 }, 0);
               }, 0);
             }, 0);
-
           }, 0);
-
         });
 
         Translated.registerSelf();
