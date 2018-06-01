@@ -1,6 +1,6 @@
 
-// Behaviours
-import localeAware from './behaviours/localeAware';
+// Decorators
+import localeAware from './decorators/localeAware';
 
 // Components
 import Hello from './components/Hello/Hello';
@@ -12,7 +12,7 @@ import DisableSelection from './components/DisableSelection/DisableSelection';
 
 
 export {
-  // Behaviours
+  // Decorators
   localeAware,
 
   // Components

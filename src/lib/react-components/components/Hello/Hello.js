@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import FaSpinner from 'react-icons/lib/fa/spinner';
 import List from '../List/List';
 import World from '../World/World';
-import localeAware from '../../behaviours/localeAware';
+import localeAware from '../../decorators/localeAware';
 import getDBUII18nService from './../../../core/services/DBUII18nService';
 import template from '../../../core/utils/template';
 

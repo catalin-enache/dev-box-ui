@@ -92,7 +92,7 @@ const enableSelection = (node) => {
   node.removeEventListener('mousedown', _handleTapStart);
 };
 
-export {
+export default {
   disableSelection,
   enableSelection
 };

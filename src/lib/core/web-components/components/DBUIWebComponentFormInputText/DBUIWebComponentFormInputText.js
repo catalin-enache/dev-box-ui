@@ -3,7 +3,7 @@
 
 import getDBUIWebComponentCore from '../DBUIWebComponentCore/DBUIWebComponentCore';
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
-import Focusable from '../../behaviours/Focusable';
+import Focusable from '../../decorators/Focusable';
 
 const registrationName = 'dbui-web-component-form-input-text';
 

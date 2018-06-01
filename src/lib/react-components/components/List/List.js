@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import localeAware from '../../behaviours/localeAware';
+import localeAware from '../../decorators/localeAware';
 import getDBUII18nService from './../../../core/services/DBUII18nService';
 import template from '../../../core/utils/template';
 

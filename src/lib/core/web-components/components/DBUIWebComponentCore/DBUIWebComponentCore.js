@@ -1,10 +1,12 @@
 
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
 import DBUICommonCssVars from './DBUICommonCssVars';
-import {
+import toggleSelectable from '../../../utils/toggleSelectable';
+
+const {
   disableSelection,
   enableSelection
-} from '../../../utils/toggleSelectable';
+} = toggleSelectable;
 
 const registrationName = 'DBUIWebComponentBase';
 

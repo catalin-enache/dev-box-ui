@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import getDBUIWebComponentCore from '../components/DBUIWebComponentCore/DBUIWebComponentCore';
 import ensureSingleRegistration from '../../internals/ensureSingleRegistration';
 import inIframe from '../../../../../testUtils/inIframe';
-import Focusable from '../behaviours/Focusable';
+import Focusable from '../decorators/Focusable';
 import { sendTapEvent } from '../../../../../testUtils/simulateEvents';
 // import onScreenConsole from '../../utils/onScreenConsole';
 

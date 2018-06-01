@@ -8,8 +8,8 @@ import ensureSingleRegistration from './internals/ensureSingleRegistration';
 // ComponentBase
 import getDBUIWebComponentCore from './web-components/components/DBUIWebComponentCore/DBUIWebComponentCore';
 
-// Behaviours
-import Focusable from './web-components/behaviours/Focusable';
+// Decorators
+import Focusable from './web-components/decorators/Focusable';
 
 // Services
 import getDBUILocaleService from './services/DBUILocaleService';
@@ -17,7 +17,7 @@ import getDBUII18nService from './services/DBUII18nService';
 
 // Utils
 import formatters from './utils/formatters';
-import traits from './utils/traits';
+import toggleSelectable from './utils/toggleSelectable';
 import template from './utils/template';
 import onScreenConsole from './utils/onScreenConsole';
 
@@ -79,7 +79,7 @@ export {
   // ComponentCore
   getDBUIWebComponentCore,
 
-  // Behaviours
+  // Decorators
   Focusable,
 
   // Services
@@ -88,7 +88,7 @@ export {
 
   // Utils
   formatters,
-  traits,
+  toggleSelectable,
   template,
   onScreenConsole,
 
