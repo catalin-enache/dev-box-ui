@@ -6,6 +6,7 @@ import ensureSingleRegistration from '../../../internals/ensureSingleRegistratio
 import appendStyles from '../../../internals/appendStyles';
 import inIframe from '../../../../../../testUtils/inIframe';
 import monkeyPatch from '../../../../../../testUtils/monkeyPatch';
+import { sendTapEvent } from '../../../../../../testUtils/simulateEvents';
 
 /* eslint camelcase: 0 */
 
@@ -65,12 +66,13 @@ function getDummyOne(win) {
           <style>${dummyOneStyle}</style>
           <div>
             <p style="padding: 0px; margin: 0px;">dummy one component</p>
+            <slot></slot>
           </div>
         `;
       }
 
       static get observedAttributes() {
-        return ['baz'];
+        return [...super.observedAttributes, 'baz'];
       }
 
       attributeChangedCallback(name, oldValue, newValue) {
@@ -417,7 +419,7 @@ describe('DBUIWebComponentBase', () => {
           expect(dummyOneInst._foo).to.equal(undefined);
 
           contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
-            expect(spyDummyOneUpgradeProperty.callCount).to.equal(1);
+            expect(spyDummyOneUpgradeProperty.callCount).to.equal(2);
             assert(spyDummyOneUpgradeProperty.calledWithExactly('foo'), 'called with foo');
             // foo setter has been called as a result of upgrading foo property
             expect(dummyOneInst._foo).to.equal('__fooValue__');
@@ -751,6 +753,73 @@ describe('DBUIWebComponentBase', () => {
             DummyOne.registerSelf();
           }
         });
+      });
+    });
+  });
+
+  describe('unselectable', () => {
+    it('test', (done) => {
+      inIframe({
+        headStyle: `
+        /*
+        :root {
+          -webkit-touch-callout:none;               
+          -webkit-text-size-adjust:none;          
+          -webkit-tap-highlight-color:rgba(0,0,0,0);
+        }
+        */
+        `,
+        bodyHTML: `
+          <div id="container">
+            <div>light DOM text</div>
+            <dummy-one unselectable>dummy one slot text content</dummy-one>
+            <div>light DOM text</div>
+          </div>
+        `,
+        onLoad: ({ contentWindow, iframe }) => {
+          const DummyOne = getDummyOne(contentWindow);
+          const dummyOneInst = contentWindow.document.querySelector('dummy-one');
+
+          contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+
+            expect(dummyOneInst.style.userSelect).to.equal('none');
+            expect(dummyOneInst.unselectable).to.equal(true);
+
+            dummyOneInst.unselectable = false;
+            expect(dummyOneInst.hasAttribute('unselectable')).to.equal(false);
+            expect(dummyOneInst.style.userSelect || '').to.equal('');
+
+            dummyOneInst.unselectable = true;
+            expect(dummyOneInst.style.userSelect).to.equal('none');
+            expect(dummyOneInst.hasAttribute('unselectable')).to.equal(true);
+            expect(dummyOneInst.style.userSelect).to.equal('none');
+
+            const contentWindowGetSelection = contentWindow.getSelection;
+            let contentWindowGetSelectionCalls = 0;
+            contentWindow.getSelection = () => {
+              return {
+                removeAllRanges() {
+                  contentWindowGetSelectionCalls += 1;
+                }
+              };
+            };
+
+            sendTapEvent(dummyOneInst, 'start');
+            sendTapEvent(dummyOneInst, 'move');
+            sendTapEvent(dummyOneInst, 'end');
+
+            expect(contentWindowGetSelectionCalls).to.equal(2);
+
+            contentWindow.getSelection = contentWindowGetSelection;
+
+            setTimeout(() => {
+              iframe.remove();
+              done();
+            }, 0);
+          });
+
+          DummyOne.registerSelf();
+        }
       });
     });
   });

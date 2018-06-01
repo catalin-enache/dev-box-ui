@@ -1,6 +1,10 @@
 
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
 import DBUICommonCssVars from './DBUICommonCssVars';
+import {
+  disableSelection,
+  enableSelection
+} from '../../../utils/toggleSelectable';
 
 const registrationName = 'DBUIWebComponentBase';
 
@@ -66,7 +70,7 @@ export default function getDBUIWebComponentCore(win) {
        * @return Array<String>
        */
       static get propertiesToUpgrade() {
-        return [];
+        return ['unselectable'];
       }
 
       /**
@@ -83,7 +87,7 @@ export default function getDBUIWebComponentCore(win) {
        */
       static get observedAttributes() {
         // web components standard API
-        return ['dir', 'lang', 'sync-locale-with'];
+        return ['dir', 'lang', 'sync-locale-with', 'unselectable'];
       }
 
       /**
@@ -284,7 +288,6 @@ export default function getDBUIWebComponentCore(win) {
         // If locale value is truthy, set it (on context too)
         // else read value from _targetedLocale
         // or from closestDbuiParent context.
-        if (!['dir', 'lang', 'sync-locale-with'].includes(name)) return;
 
         if (name === 'sync-locale-with') {
           // stop monitoring old target and start monitoring new target
@@ -784,6 +787,33 @@ export default function getDBUIWebComponentCore(win) {
       // ============================ << [Descendants/Ancestors and registrations] =============================================
 
 
+      // ============================ [unselectable] >> =============================================
+
+      _onUnselectableAttributeChanged() {
+        const unselectable = this.unselectable;
+
+        if (unselectable) {
+          disableSelection(this);
+        } else {
+          enableSelection(this);
+        }
+      }
+
+      get unselectable() {
+        return this.hasAttribute('unselectable');
+      }
+
+      set unselectable(value) {
+        const hasValue = Boolean(value);
+        if (hasValue) {
+          this.setAttribute('unselectable', '');
+        } else {
+          this.removeAttribute('unselectable');
+        }
+      }
+
+      // ============================ << [unselectable] =============================================
+
       /**
        *
        * @param prop String
@@ -982,7 +1012,10 @@ export default function getDBUIWebComponentCore(win) {
        * @private
        */
       _onAttributeChangedCallback(name, oldValue, newValue) {
-        this._onLocaleAttributeChangedCallback(name, oldValue, newValue);
+        ['dir', 'lang', 'sync-locale-with'].includes(name) &&
+          this._onLocaleAttributeChangedCallback(name, oldValue, newValue);
+        name === 'unselectable' &&
+          this._onUnselectableAttributeChanged();
         // Call public hook.
         this.onAttributeChangedCallback(name, oldValue, newValue);
       }
