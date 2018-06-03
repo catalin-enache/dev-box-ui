@@ -757,8 +757,8 @@ describe('DBUIWebComponentBase', () => {
     });
   });
 
-  describe('unselectable', () => {
-    it('test', (done) => {
+  describe('unselectable attribute', () => {
+    it('makes component unselectable', (done) => {
       inIframe({
         headStyle: `
         /*
