@@ -72,11 +72,11 @@
     } = devBoxUiCore;
     const {
       /* Returns the components classes for eventually specified component names. */
-      'dbui-web-component-dummy-parent': DBUIWebComponentDummyParentClass,
+      'dbui-dummy-parent': DBUIDummyParent,
     } = quickSetupAndLoad(window)([ /* Accepts an array of objects specifying components to setup and load. */
       {
         /* Component to setup and load. */
-        registrationName: 'dbui-web-component-dummy',
+        registrationName: 'dbui-dummy',
         /* Override default style for targeted component. */
         componentStyle: \`
          b {
@@ -88,16 +88,16 @@
       },
       {
         /* Another component to setup and load without style override (using default style). */
-        registrationName: 'dbui-web-component-dummy-parent'
+        registrationName: 'dbui-dummy-parent'
       }
     ]);
 
     /* Inspect component's class prototype chain. */
-    console.log(DBUIWebComponentDummyParentClass.prototypeChainInfo);
+    console.log(DBUIDummyParent.prototypeChainInfo);
   <\/script>
 </head>
 <body>
-  <dbui-web-component-dummy-parent>hello 1</dbui-web-component-dummy-parent>
+  <dbui-dummy-parent>hello 1</dbui-dummy-parent>
 </body>
 </html>
 `;
@@ -132,7 +132,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <style>
-    dbui-web-component-dummy-parent {
+    dbui-dummy-parent {
       /* overrides existing css var the component is already aware of */
       --dummy-inner-sections-border-radius: 10px;
       /* new css var used in custom overriding style later */
@@ -148,21 +148,21 @@
       /* Import general DBUI setup helper. */
       dbuiWebComponentsSetUp,
       /* Import getters for targeted components. */
-      getDBUIWebComponentDummy,
-      getDBUIWebComponentDummyParent
+      getDBUIDummy,
+      getDBUIDummyParent
     } = devBoxUiCore;
 
     /* Provide window and retrieve component classes from their getters. */
-    const DBUIWebComponentDummyClass = getDBUIWebComponentDummy(window);
-    const DBUIWebComponentDummyParentClass = getDBUIWebComponentDummyParent(window);
+    const DBUIDummy = getDBUIDummy(window);
+    const DBUIDummyParent = getDBUIDummyParent(window);
 
     /* Inspect component default style. */
-    console.log(DBUIWebComponentDummyClass.componentStyle);
+    console.log(DBUIDummy.componentStyle);
 
     /* Override component default style. */
     dbuiWebComponentsSetUp(window)([
         {
-          registrationName: 'dbui-web-component-dummy',
+          registrationName: 'dbui-dummy',
           componentStyle: \`
             #container > div {
               background-color: var(--dummy-inner-sections-bg-color, transparent);
@@ -175,20 +175,20 @@
       ]);
 
     /* Inspect component's class prototype chain. */
-    console.log(DBUIWebComponentDummyParentClass.prototypeChainInfo);
+    console.log(DBUIDummyParent.prototypeChainInfo);
 
     /* Components can be registered/upgraded at any time. */
     setTimeout(() => {
-      DBUIWebComponentDummyClass.registerSelf();
-      DBUIWebComponentDummyParentClass.registerSelf();
+      DBUIDummy.registerSelf();
+      DBUIDummyParent.registerSelf();
 
       /* Inspect again component default style to see custom overrides being appended. */
-      console.log(DBUIWebComponentDummyClass.componentStyle);
+      console.log(DBUIDummy.componentStyle);
     }, 2000);
   <\/script>
 </head>
 <body>
-  <dbui-web-component-dummy-parent>hello 1</dbui-web-component-dummy-parent>
+  <dbui-dummy-parent>hello 1</dbui-dummy-parent>
 </body>
 </html>
 `;
@@ -215,17 +215,17 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 /* minimal web-components lib import */
-import getDBUIWebComponentDummyParent from 'dev-box-ui/core/web-components/components/DBUIWebComponentDummyParent/DBUIWebComponentDummyParent';
+import getDBUIDummyParent from 'dev-box-ui/core/web-components/components/DBUIDummyParent/DBUIDummyParent';
 /* minimal react-components lib import */
 import Hello from 'dev-box-ui/react-components/components/Hello/Hello';
 
-const DBUIWebComponentDummyParent = getDBUIWebComponentDummyParent(window);
+const DBUIDummyParent = getDBUIDummyParent(window);
 
 setTimeout(() => {
-  console.log(document.querySelector('dbui-web-component-dummy-parent').constructor.name);
-  DBUIWebComponentDummyParent.registerSelf();
-  console.log(document.querySelector('dbui-web-component-dummy-parent').constructor.name);
-  console.log('DBUIWebComponentDummyParent registered', DBUIWebComponentDummyParent.prototypeChainInfo);
+  console.log(document.querySelector('dbui-dummy-parent').constructor.name);
+  DBUIDummyParent.registerSelf();
+  console.log(document.querySelector('dbui-dummy-parent').constructor.name);
+  console.log('DBUIDummyParent registered', DBUIDummyParent.prototypeChainInfo);
   ReactDOM.render(<Hello />, document.querySelector('#demo'));
 }, 2000);
   </code></pre>
@@ -252,19 +252,19 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 /* full web-components lib import */
-import { getDBUIWebComponentDummyParent } from 'dev-box-ui/core';
-/* import { getDBUIWebComponentDummyParent } from 'dev-box-ui'; */
+import { getDBUIDummyParent } from 'dev-box-ui/core';
+/* import { getDBUIDummyParent } from 'dev-box-ui'; */
 
 /* full react-components lib import */
 import { Hello } from 'dev-box-ui/react-components';
 
-const DBUIWebComponentDummyParent = getDBUIWebComponentDummyParent(window);
+const DBUIDummyParent = getDBUIDummyParent(window);
 
 setTimeout(() => {
-  console.log(document.querySelector('dbui-web-component-dummy-parent').constructor.name);
-  DBUIWebComponentDummyParent.registerSelf();
-  console.log(document.querySelector('dbui-web-component-dummy-parent').constructor.name);
-  console.log('DBUIWebComponentDummyParent registered', DBUIWebComponentDummyParent.prototypeChainInfo);
+  console.log(document.querySelector('dbui-dummy-parent').constructor.name);
+  DBUIDummyParent.registerSelf();
+  console.log(document.querySelector('dbui-dummy-parent').constructor.name);
+  console.log('DBUIDummyParent registered', DBUIDummyParent.prototypeChainInfo);
   ReactDOM.render(<Hello />, document.querySelector('#demo'));
 }, 2000);
   </code></pre>

@@ -1,31 +1,18 @@
-'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = getDBUIWebComponentDummy;
+import getDBUIWebComponentCore from '../DBUIWebComponentCore/DBUIWebComponentCore';
+import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
 
-var _DBUIWebComponentCore = require('../DBUIWebComponentCore/DBUIWebComponentCore');
+const registrationName = 'dbui-dummy';
 
-var _DBUIWebComponentCore2 = _interopRequireDefault(_DBUIWebComponentCore);
-
-var _ensureSingleRegistration = require('../../../internals/ensureSingleRegistration');
-
-var _ensureSingleRegistration2 = _interopRequireDefault(_ensureSingleRegistration);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-const registrationName = 'dbui-web-component-dummy';
-
-function getDBUIWebComponentDummy(win) {
-  return (0, _ensureSingleRegistration2.default)(win, registrationName, () => {
+export default function getDBUIDummy(win) {
+  return ensureSingleRegistration(win, registrationName, () => {
     const {
       DBUIWebComponentBase,
       defineCommonStaticMethods,
       Registerable
-    } = (0, _DBUIWebComponentCore2.default)(win);
+    } = getDBUIWebComponentCore(win);
 
-    class DBUIWebComponentDummy extends DBUIWebComponentBase {
+    class DBUIDummy extends DBUIWebComponentBase {
 
       static get registrationName() {
         return registrationName;
@@ -109,14 +96,15 @@ function getDBUIWebComponentDummy(win) {
           </div>
         `;
       }
-
-      onLocaleChange(locale) {
-        // console.log('onLocaleChange', locale);
-      }
     }
 
-    return Registerable(defineCommonStaticMethods(DBUIWebComponentDummy));
+    return Registerable(
+      defineCommonStaticMethods(
+        DBUIDummy
+      )
+    );
   });
 }
 
-getDBUIWebComponentDummy.registrationName = registrationName;
+getDBUIDummy.registrationName = registrationName;
+

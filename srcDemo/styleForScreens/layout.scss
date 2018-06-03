@@ -22,7 +22,7 @@
       border-bottom: 3px solid $page-header-background;
       box-shadow: 0 8px 6px -6px rgba(0, 0, 0, .5);
 
-      dbui-web-component-icon {
+      dbui-icon {
         font-size: $page-header-icon-size;
         cursor: pointer;
       }
@@ -74,7 +74,7 @@
           top: -$page-header-height + $page-header-border-width;
         }
 
-        dbui-web-component-icon {
+        dbui-icon {
           font-size: $page-header-icon-size;
           cursor: pointer;
         }

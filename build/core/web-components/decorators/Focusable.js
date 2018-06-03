@@ -70,7 +70,7 @@ function Focusable(Klass) {
       this._onInnerFocusableFocused = this._onInnerFocusableFocused.bind(this);
       this._onFocus = this._onFocus.bind(this);
       this._onBlur = this._onBlur.bind(this);
-      this._onTap = this._onTap.bind(this);
+      this._onDocumentTap = this._onDocumentTap.bind(this);
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
@@ -88,6 +88,7 @@ function Focusable(Klass) {
       readOnlyProperties.forEach(readOnlyProperty => {
         if (this.hasAttribute(readOnlyProperty)) {
           this.removeAttribute(readOnlyProperty);
+          // eslint-disable-next-line
           console.warn(ERROR_MESSAGES[readOnlyProperty]);
         }
       });
@@ -101,8 +102,8 @@ function Focusable(Klass) {
       // when component focused/blurred
       this.addEventListener('focus', this._onFocus);
       this.addEventListener('blur', this._onBlur);
-      this.ownerDocument.addEventListener('mousedown', this._onTap);
-      this.ownerDocument.addEventListener('touchstart', this._onTap);
+      this.ownerDocument.addEventListener('mousedown', this._onDocumentTap);
+      this.ownerDocument.addEventListener('touchstart', this._onDocumentTap);
 
       this._innerFocusables.forEach(focusable => {
         // when inner focusable focused
@@ -115,8 +116,8 @@ function Focusable(Klass) {
 
       this.removeEventListener('focus', this._onFocus);
       this.removeEventListener('blur', this._onBlur);
-      this.ownerDocument.removeEventListener('mousedown', this._onTap);
-      this.ownerDocument.removeEventListener('touchstart', this._onTap);
+      this.ownerDocument.removeEventListener('mousedown', this._onDocumentTap);
+      this.ownerDocument.removeEventListener('touchstart', this._onDocumentTap);
 
       this._innerFocusables.forEach(focusable => {
         focusable.removeEventListener('focus', this._onInnerFocusableFocused);
@@ -132,6 +133,7 @@ function Focusable(Klass) {
     }
 
     set focused(_) {
+      // eslint-disable-next-line
       console.warn(ERROR_MESSAGES.focused);
     }
 
@@ -175,7 +177,7 @@ function Focusable(Klass) {
      * @param evt Event (mousedown/touchstart)
      * @private
      */
-    _onTap(evt) {
+    _onDocumentTap(evt) {
       if (evt.target !== this) {
         this.blur();
       }

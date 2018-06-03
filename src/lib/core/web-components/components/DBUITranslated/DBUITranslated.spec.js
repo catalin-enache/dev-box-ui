@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import inIframe from '../../../../../../testUtils/inIframe';
-import getDBUIWebComponentTranslated from './DBUIWebComponentTranslated';
+import getDBUITranslated from './DBUITranslated';
 import getDBUII18nService from '../../../services/DBUII18nService';
 import template from '../../../utils/template';
 
@@ -34,7 +34,7 @@ describe('Translated', () => {
       
       `,
       onLoad: ({ contentWindow, iframe }) => {
-        const Translated = getDBUIWebComponentTranslated(contentWindow);
+        const Translated = getDBUITranslated(contentWindow);
         const i18nService = getDBUII18nService(contentWindow);
 
         i18nService.registerTranslations(translations);

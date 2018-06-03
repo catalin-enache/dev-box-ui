@@ -6,7 +6,7 @@ const registrationName = 'DBUII18nService';
 
 export default function getDBUII18nService(win) {
   return ensureSingleRegistration(win, registrationName, () => {
-    class I18nService {
+    class DBUII18nService {
       constructor() {
         this._translations = {};
       }
@@ -34,7 +34,7 @@ export default function getDBUII18nService(win) {
       }
     }
 
-    const i18nService = new I18nService();
-    return i18nService;
+    const dbuiI18nService = new DBUII18nService();
+    return dbuiI18nService;
   });
 }

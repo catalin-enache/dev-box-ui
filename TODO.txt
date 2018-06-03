@@ -37,7 +37,7 @@ remove log messages in production (NODE_ENV)
 
 when react-components will wrap web-components there will be no need for classnames dependency
 
-expose utils, decorators, traits and base classes
+expose utils, decorators and base classes
 document how user can extend Base class and apply existing behaviours
 in other words document how user can define its web-components using exposed internals
 

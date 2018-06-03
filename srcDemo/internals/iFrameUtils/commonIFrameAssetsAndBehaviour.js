@@ -36,6 +36,7 @@ function injectLocaleSwitch() {
     </div>`;
 
     localeSwitchPlaceholder.innerHTML = `${hasLang ? langSwitchHTML : ''}${hasDir ? dirSwitchHTML : ''}`;
+    localeSwitchPlaceholder.style.textAlign = 'left';
   });
 }
 
@@ -51,12 +52,12 @@ function switchLocale(evt) {
   const selectObj = evt.target;
   const idx = selectObj.selectedIndex;
   const nextValue = selectObj.options[idx].value;
-  const localeRoot = getLocaleRoot();
-  localeRoot.setAttribute(isLocaleLangSwitcher ? 'lang' : 'dir', nextValue);
+  const localeRoot = document.querySelector(evt.target.parentElement.parentElement.getAttribute('target')); // getLocaleRoot();
+  localeRoot && localeRoot.setAttribute(isLocaleLangSwitcher ? 'lang' : 'dir', nextValue);
 
-  document
-    .querySelectorAll(`.locale-${isLocaleLangSwitcher ? 'lang' : 'dir'}-switcher [value="${nextValue}"]`)
-    .forEach((option) => option.selected = true);
+  // document
+  //   .querySelectorAll(`.locale-${isLocaleLangSwitcher ? 'lang' : 'dir'}-switcher [value="${nextValue}"]`)
+  //   .forEach((option) => option.selected = true);
 
   // document.querySelectorAll('.locale-lang-switcher').forEach((select) => {
   //   const opts = Array.from(select.options);

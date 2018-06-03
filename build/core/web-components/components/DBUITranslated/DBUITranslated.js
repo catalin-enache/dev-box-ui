@@ -1,23 +1,39 @@
+'use strict';
 
-import getDBUIWebComponentCore from '../DBUIWebComponentCore/DBUIWebComponentCore';
-import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
-import getDBUII18nService from '../../../services/DBUII18nService';
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = getDBUITranslated;
+
+var _DBUIWebComponentCore = require('../DBUIWebComponentCore/DBUIWebComponentCore');
+
+var _DBUIWebComponentCore2 = _interopRequireDefault(_DBUIWebComponentCore);
+
+var _ensureSingleRegistration = require('../../../internals/ensureSingleRegistration');
+
+var _ensureSingleRegistration2 = _interopRequireDefault(_ensureSingleRegistration);
+
+var _DBUII18nService = require('../../../services/DBUII18nService');
+
+var _DBUII18nService2 = _interopRequireDefault(_DBUII18nService);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 const INTERPOLATION_ATTR_PREFIX = 'message-';
 
 const registrationName = 'dbui-translated';
 
-export default function getDBUIWebComponentTranslated(win) {
-  return ensureSingleRegistration(win, registrationName, () => {
+function getDBUITranslated(win) {
+  return (0, _ensureSingleRegistration2.default)(win, registrationName, () => {
     const {
       DBUIWebComponentBase,
       defineCommonStaticMethods,
       Registerable
-    } = getDBUIWebComponentCore(win);
+    } = (0, _DBUIWebComponentCore2.default)(win);
 
-    const i18nService = getDBUII18nService(win);
+    const i18nService = (0, _DBUII18nService2.default)(win);
 
-    class DBUIWebComponentTranslated extends DBUIWebComponentBase {
+    class DBUITranslated extends DBUIWebComponentBase {
 
       static get registrationName() {
         return registrationName;
@@ -64,37 +80,31 @@ export default function getDBUIWebComponentTranslated(win) {
 
       get _interpolationAttributes() {
         // noinspection JSCheckFunctionSignatures
-        return Array.from(this.attributes)
-          .filter((attr) => attr.name.startsWith(INTERPOLATION_ATTR_PREFIX));
+        return Array.from(this.attributes).filter(attr => attr.name.startsWith(INTERPOLATION_ATTR_PREFIX));
       }
 
       get _interpolationAttributesNames() {
-        return this._interpolationAttributes.map((attr) => attr.name);
+        return this._interpolationAttributes.map(attr => attr.name);
       }
 
       get _interpolations() {
         // noinspection JSCheckFunctionSignatures
-        return this._interpolationAttributes
-          .reduce((acc, attr) => {
-            acc[attr.name.slice(INTERPOLATION_ATTR_PREFIX.length)] = attr.value;
-            return acc;
-          }, {});
+        return this._interpolationAttributes.reduce((acc, attr) => {
+          acc[attr.name.slice(INTERPOLATION_ATTR_PREFIX.length)] = attr.value;
+          return acc;
+        }, {});
       }
-
 
       _updateTranslation() {
         const interpolations = this._interpolations;
         const args = [];
         const kwargs = {};
 
-        Object.keys(interpolations).forEach((key) => {
-          Number.isInteger(Number(key)) ?
-            args.push(interpolations[key]) :
-            (kwargs[key] = interpolations[key]);
+        Object.keys(interpolations).forEach(key => {
+          Number.isInteger(Number(key)) ? args.push(interpolations[key]) : kwargs[key] = interpolations[key];
         });
 
-        this.shadowRoot.querySelector('span').innerHTML =
-          this._template(...args, kwargs);
+        this.shadowRoot.querySelector('span').innerHTML = this._template(...args, kwargs);
       }
 
       onConnectedCallback() {
@@ -107,13 +117,8 @@ export default function getDBUIWebComponentTranslated(win) {
 
     }
 
-    return Registerable(
-      defineCommonStaticMethods(
-        DBUIWebComponentTranslated
-      )
-    );
+    return Registerable(defineCommonStaticMethods(DBUITranslated));
   });
 }
 
-getDBUIWebComponentTranslated.registrationName = registrationName;
-
+getDBUITranslated.registrationName = registrationName;

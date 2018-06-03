@@ -5,9 +5,9 @@ import getDBUIWebComponentCore from '../DBUIWebComponentCore/DBUIWebComponentCor
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
 import Focusable from '../../decorators/Focusable';
 
-const registrationName = 'dbui-web-component-form-input-text';
+const registrationName = 'dbui-form-input-text';
 
-export default function getDBUIWebComponentFormInputText(win) {
+export default function getDBUIFormInputText(win) {
   return ensureSingleRegistration(win, registrationName, () => {
     const {
       DBUIWebComponentBase,
@@ -15,7 +15,7 @@ export default function getDBUIWebComponentFormInputText(win) {
       Registerable
     } = getDBUIWebComponentCore(win);
 
-    class DBUIWebComponentFormInputText extends DBUIWebComponentBase {
+    class DBUIFormInputText extends DBUIWebComponentBase {
 
       static get registrationName() {
         return registrationName;
@@ -29,18 +29,18 @@ export default function getDBUIWebComponentFormInputText(win) {
             all: initial; 
             display: inline-block;
             width: 100%;
-            /*height: var(--dbui-web-component-form-input-height);*/
-            /*line-height: var(--dbui-web-component-form-input-height);*/
+            /*height: var(--dbui-form-input-height);*/
+            /*line-height: var(--dbui-form-input-height);*/
             height: 300px;
             padding: 0px;
             font-size: 18px;
-            color: var(--dbui-web-component-form-input-color);
-            /*background-color: var(--dbui-web-component-form-input-background-color);*/
+            color: var(--dbui-form-input-color);
+            /*background-color: var(--dbui-form-input-background-color);*/
             background-color: rgba(255, 100, 0, 0.1);
             unicode-bidi: bidi-override;
             box-sizing: border-box;
             border: none;
-            border-bottom: var(--dbui-web-component-form-input-border-width) var(--dbui-web-component-form-input-border-style) var(--dbui-web-component-form-input-border-color);
+            border-bottom: var(--dbui-form-input-border-width) var(--dbui-form-input-border-style) var(--dbui-form-input-border-color);
           }
           
           :host [tabindex] {
@@ -81,7 +81,7 @@ export default function getDBUIWebComponentFormInputText(win) {
           
           }
           </style>
-          <p>DBUIWebComponentFormInputText</p>
+          <p>DBUIFormInputText</p>
           <div contenteditable="true" tabindex="0"></div>
           <div contenteditable="true" tabindex="0"></div>
           <input type="text" tabindex="0" />
@@ -100,7 +100,7 @@ export default function getDBUIWebComponentFormInputText(win) {
     return Registerable(
       Focusable(
         defineCommonStaticMethods(
-          DBUIWebComponentFormInputText
+          DBUIFormInputText
         )
       )
     );
@@ -108,5 +108,5 @@ export default function getDBUIWebComponentFormInputText(win) {
   });
 }
 
-getDBUIWebComponentFormInputText.registrationName = registrationName;
+getDBUIFormInputText.registrationName = registrationName;
 

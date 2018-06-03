@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = getDBUIWebComponentFormInputText;
+exports.default = getDBUIFormInputText;
 
 var _DBUIWebComponentCore = require('../DBUIWebComponentCore/DBUIWebComponentCore');
 
@@ -13,15 +13,16 @@ var _ensureSingleRegistration = require('../../../internals/ensureSingleRegistra
 
 var _ensureSingleRegistration2 = _interopRequireDefault(_ensureSingleRegistration);
 
-var _Focusable = require('../../behaviours/Focusable');
+var _Focusable = require('../../decorators/Focusable');
 
 var _Focusable2 = _interopRequireDefault(_Focusable);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const registrationName = 'dbui-web-component-form-input-text';
+const registrationName = 'dbui-form-input-text';
+/* eslint max-len: 0 */
 
-function getDBUIWebComponentFormInputText(win) {
+function getDBUIFormInputText(win) {
   return (0, _ensureSingleRegistration2.default)(win, registrationName, () => {
     const {
       DBUIWebComponentBase,
@@ -29,31 +30,32 @@ function getDBUIWebComponentFormInputText(win) {
       Registerable
     } = (0, _DBUIWebComponentCore2.default)(win);
 
-    class DBUIWebComponentFormInputText extends DBUIWebComponentBase {
+    class DBUIFormInputText extends DBUIWebComponentBase {
 
       static get registrationName() {
         return registrationName;
       }
 
       static get templateInnerHTML() {
+        // noinspection CssUnresolvedCustomProperty
         return `
           <style>
           :host {
             all: initial; 
             display: inline-block;
             width: 100%;
-            /*height: var(--dbui-web-component-form-input-height);*/
-            /*line-height: var(--dbui-web-component-form-input-height);*/
+            /*height: var(--dbui-form-input-height);*/
+            /*line-height: var(--dbui-form-input-height);*/
             height: 300px;
             padding: 0px;
             font-size: 18px;
-            color: var(--dbui-web-component-form-input-color);
-            /*background-color: var(--dbui-web-component-form-input-background-color);*/
+            color: var(--dbui-form-input-color);
+            /*background-color: var(--dbui-form-input-background-color);*/
             background-color: rgba(255, 100, 0, 0.1);
             unicode-bidi: bidi-override;
             box-sizing: border-box;
             border: none;
-            border-bottom: var(--dbui-web-component-form-input-border-width) var(--dbui-web-component-form-input-border-style) var(--dbui-web-component-form-input-border-color);
+            border-bottom: var(--dbui-form-input-border-width) var(--dbui-form-input-border-style) var(--dbui-form-input-border-color);
           }
           
           :host [tabindex] {
@@ -94,7 +96,7 @@ function getDBUIWebComponentFormInputText(win) {
           
           }
           </style>
-          <p>DBUIWebComponentFormInputText</p>
+          <p>DBUIFormInputText</p>
           <div contenteditable="true" tabindex="0"></div>
           <div contenteditable="true" tabindex="0"></div>
           <input type="text" tabindex="0" />
@@ -108,17 +110,10 @@ function getDBUIWebComponentFormInputText(win) {
         };
       }
 
-      onLocaleChange(locale) {
-        if (process.env.NODE_ENV !== 'production') {
-          /* eslint no-console: 0 */
-          // console.log('onLocaleChange', locale);
-        }
-      }
-
     }
 
-    return Registerable((0, _Focusable2.default)(defineCommonStaticMethods(DBUIWebComponentFormInputText)));
+    return Registerable((0, _Focusable2.default)(defineCommonStaticMethods(DBUIFormInputText)));
   });
 }
 
-getDBUIWebComponentFormInputText.registrationName = registrationName;
+getDBUIFormInputText.registrationName = registrationName;

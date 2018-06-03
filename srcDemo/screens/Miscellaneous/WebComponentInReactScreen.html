@@ -2,13 +2,13 @@
 <html dir="ltr" lang="en">
 <head>
   <style>
-    dbui-web-component-dummy.custom-1 {
+    dbui-dummy.custom-1 {
       color: orange;
       font-style: oblique;
       --dummy-inner-sections-border-radius: 10px;
       --dummy-inner-sections-bg-color: #00bcd455;
     }
-    dbui-web-component-dummy.custom-2 {
+    dbui-dummy.custom-2 {
       --dummy-b-text-shadow: 2px 2px 2px #000000;
     }
   </style>
@@ -18,13 +18,13 @@
     window.addEventListener('DBUIWebComponentsCoreLoaded', () => {
       const {
         dbuiWebComponentsSetUp,
-        getDBUIWebComponentDummy,
-        getDBUIWebComponentDummyParent
+        getDBUIDummy,
+        getDBUIDummyParent
       } = require('dev-box-ui-core');
 
       dbuiWebComponentsSetUp(window)([
         {
-          registrationName: 'dbui-web-component-dummy',
+          registrationName: 'dbui-dummy',
           componentStyle: `
             #container > div {
               background-color: var(--dummy-inner-sections-bg-color, transparent);
@@ -35,12 +35,12 @@
             }`
         }
       ]);
-      const DBUIWebComponentDummy = getDBUIWebComponentDummy(window);
-      const DBUIWebComponentDummyParent = getDBUIWebComponentDummyParent(window);
+      const DBUIDummy = getDBUIDummy(window);
+      const DBUIDummyParent = getDBUIDummyParent(window);
 
       setTimeout(() => {
-        DBUIWebComponentDummy.registerSelf();
-        DBUIWebComponentDummyParent.registerSelf();
+        DBUIDummy.registerSelf();
+        DBUIDummyParent.registerSelf();
       }, 2000);
     });
 
@@ -65,17 +65,17 @@
   <div class="tabs">
     <section x-name="RESULT" x-checked="1">
       <div class="locale-switch" x-lang="" x-dir=""></div>
-      <dbui-web-component-dummy class="custom-1">
+      <dbui-dummy class="custom-1">
         hello 1
-      </dbui-web-component-dummy>
+      </dbui-dummy>
 
-      <dbui-web-component-dummy class="custom-2">
+      <dbui-dummy class="custom-2">
         hello 2
-      </dbui-web-component-dummy>
+      </dbui-dummy>
 
-      <dbui-web-component-dummy-parent>
+      <dbui-dummy-parent>
         hello 3
-      </dbui-web-component-dummy-parent>
+      </dbui-dummy-parent>
     </section>
 
     <section x-name="HTML" x-highlight="html">
@@ -119,17 +119,23 @@ class Car extends SuperClass {
             return (
               <div>
 
-                <dbui-web-component-dummy class="custom-1" style={{ color: 'green' }}>
+                <dbui-dummy class="custom-1"
+                            foo-bar="baz"
+                            barBaz="foo"
+                            onTouchStart={(e) => {e.target.style.backgroundColor = 'red'}}
+                            onTouchEnd={(e) => {e.target.style.backgroundColor = 'orange'}}
+                            onOther="other"
+                            style={{ color: 'green', backgroundColor: 'orange' }}>
                   <span>hello 1</span>
-                </dbui-web-component-dummy>
+                </dbui-dummy>
 
-                <dbui-web-component-dummy class="custom-2" style={{ color: 'blue' }}>
+                <dbui-dummy class="custom-2" style={{ color: 'blue' }}>
                   <span>hello 2</span>
-                </dbui-web-component-dummy>
+                </dbui-dummy>
 
-                <dbui-web-component-dummy-parent>
+                <dbui-dummy-parent>
                   hello 3
-                </dbui-web-component-dummy-parent>
+                </dbui-dummy-parent>
 
               </div>
             );

@@ -24,7 +24,7 @@ var _World = require('../World/World');
 
 var _World2 = _interopRequireDefault(_World);
 
-var _localeAware = require('../../behaviours/localeAware');
+var _localeAware = require('../../decorators/localeAware');
 
 var _localeAware2 = _interopRequireDefault(_localeAware);
 

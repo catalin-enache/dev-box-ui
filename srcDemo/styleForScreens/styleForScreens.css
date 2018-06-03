@@ -12,7 +12,7 @@ html, body {
   box-sizing: border-box; }
 
 html, * {
-  -webkit-tap-highlight-color: transparent; }
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0); }
 
 *:defined {
   transition: opacity 1s; }
@@ -54,7 +54,7 @@ html[dir=ltr] #demo {
       border-top: 3px solid #00BCD4;
       border-bottom: 3px solid #00BCD4;
       box-shadow: 0 8px 6px -6px rgba(0, 0, 0, 0.5); }
-      html[dir=ltr] #demo > div .page-header dbui-web-component-icon {
+      html[dir=ltr] #demo > div .page-header dbui-icon {
         font-size: 25px;
         cursor: pointer; }
       @media (max-width: 992px) {
@@ -97,7 +97,7 @@ html[dir=ltr] #demo {
             line-height: 44px;
             text-align: center;
             top: -47px; } }
-        html[dir=ltr] #demo > div .demo-wrapper #links-toggle-label dbui-web-component-icon {
+        html[dir=ltr] #demo > div .demo-wrapper #links-toggle-label dbui-icon {
           font-size: 25px;
           cursor: pointer; }
       html[dir=ltr] #demo > div .demo-wrapper #links-toggle {
@@ -366,7 +366,7 @@ html[dir=rtl] #demo {
       border-top: 3px solid #00BCD4;
       border-bottom: 3px solid #00BCD4;
       box-shadow: 0 8px 6px -6px rgba(0, 0, 0, 0.5); }
-      html[dir=rtl] #demo > div .page-header dbui-web-component-icon {
+      html[dir=rtl] #demo > div .page-header dbui-icon {
         font-size: 25px;
         cursor: pointer; }
       @media (max-width: 992px) {
@@ -409,7 +409,7 @@ html[dir=rtl] #demo {
             line-height: 44px;
             text-align: center;
             top: -47px; } }
-        html[dir=rtl] #demo > div .demo-wrapper #links-toggle-label dbui-web-component-icon {
+        html[dir=rtl] #demo > div .demo-wrapper #links-toggle-label dbui-icon {
           font-size: 25px;
           cursor: pointer; }
       html[dir=rtl] #demo > div .demo-wrapper #links-toggle {

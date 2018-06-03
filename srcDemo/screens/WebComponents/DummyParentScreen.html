@@ -2,24 +2,24 @@
 <html dir="ltr" lang="en">
 <head>
   <style>
-    dbui-web-component-dummy-parent[dir=ltr] {
+    dbui-dummy-parent[dir=ltr] {
       --dummy-b-bg-color: gray;
       --dummy-b-border-radius: 0px 15px 0px 15px;
     }
 
-    dbui-web-component-dummy-parent[dir=rtl] {
+    dbui-dummy-parent[dir=rtl] {
       --dummy-b-color: deepskyblue;
       --dummy-b-bg-color: #444;
       --dummy-b-border-radius: 15px 0px 15px 0px;
     }
 
-    dbui-web-component-dummy-parent.custom-1 {
+    dbui-dummy-parent.custom-1 {
       color: green;
       --dummy-b-color: orange;
       --dummy-b-bg-color: #0000ff55;
     }
 
-    dbui-web-component-dummy {
+    dbui-dummy {
       --dummy-b-border-radius: 15px 0px 15px 0px;
       --dummy-b-bg-color: #00770055;
     }
@@ -36,10 +36,10 @@
         quickSetupAndLoad
       } = require('dev-box-ui-core');
       const {
-        'dbui-web-component-dummy-parent': dbuiWebComponentDummyParentClass,
+        'dbui-dummy-parent': DBUIDummyParent,
       } = quickSetupAndLoad(window)([
         {
-          registrationName: 'dbui-web-component-dummy',
+          registrationName: 'dbui-dummy',
           componentStyle: `
            b {
              color: var(--dummy-b-color, inherit);
@@ -49,7 +49,7 @@
           `
         },
         {
-          registrationName: 'dbui-web-component-dummy-parent'
+          registrationName: 'dbui-dummy-parent'
         }
       ]);
     });
@@ -67,9 +67,9 @@
   <script src="../../internals/iFrameUtils/demoScreenStartScript.js"></script>
 <!-- standard template end -->
   <div class="locale-switch" x-lang="" x-dir=""></div>
-  <dbui-web-component-dummy-parent>hello 1</dbui-web-component-dummy-parent>
-  <dbui-web-component-dummy-parent class="custom-1">hello 2</dbui-web-component-dummy-parent>
-  <dbui-web-component-dummy>hello 3</dbui-web-component-dummy>
+  <dbui-dummy-parent>hello 1</dbui-dummy-parent>
+  <dbui-dummy-parent class="custom-1">hello 2</dbui-dummy-parent>
+  <dbui-dummy>hello 3</dbui-dummy>
   <p>p</p>
   <p>p</p>
   <p>p</p>

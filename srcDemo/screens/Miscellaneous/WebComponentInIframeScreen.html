@@ -34,8 +34,8 @@
         window.addEventListener('load', () => {
           const {
             dbuiWebComponentsSetUp,
-            getDBUIWebComponentDummy,
-            getDBUIWebComponentDummyParent
+            getDBUIDummy,
+            getDBUIDummyParent
           } = require('dev-box-ui-core');
 
           const iframe = document.createElement('iframe');
@@ -52,14 +52,14 @@
             target.contentWindow.document.write(`
               <html>
               <body>
-                <dbui-web-component-dummy
+                <dbui-dummy
                   style="color: blue"
                 >
                   <span>hello 1</span>
-                </dbui-web-component-dummy>
-                <dbui-web-component-dummy-parent>
+                </dbui-dummy>
+                <dbui-dummy-parent>
                   hello 2
-                </dbui-web-component-dummy-parent>
+                </dbui-dummy-parent>
               </body>
               <script>
                 window.onmessage = function (msg) {
@@ -73,7 +73,7 @@
 
             dbuiWebComponentsSetUp(target.contentWindow)([
               {
-                registrationName: 'dbui-web-component-dummy',
+                registrationName: 'dbui-dummy',
                 componentStyle: `
                 b {
                   font-style: oblique;
@@ -81,11 +81,11 @@
                 }`
               }
             ]);
-            const DBUIWebComponentDummy2 = getDBUIWebComponentDummy(target.contentWindow);
-            const DBUIWebComponentDummyParent2 = getDBUIWebComponentDummyParent(target.contentWindow);
+            const DBUIDummy2 = getDBUIDummy(target.contentWindow);
+            const DBUIDummyParent2 = getDBUIDummyParent(target.contentWindow);
             setTimeout(() => {
-              DBUIWebComponentDummy2.registerSelf();
-              DBUIWebComponentDummyParent2.registerSelf();
+              DBUIDummy2.registerSelf();
+              DBUIDummyParent2.registerSelf();
 
               setTimeout(() => {
                 // target.remove();

@@ -13,7 +13,16 @@ var _DBUICommonCssVars = require('./DBUICommonCssVars');
 
 var _DBUICommonCssVars2 = _interopRequireDefault(_DBUICommonCssVars);
 
+var _toggleSelectable = require('../../../utils/toggleSelectable');
+
+var _toggleSelectable2 = _interopRequireDefault(_toggleSelectable);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+const {
+  disableSelection,
+  enableSelection
+} = _toggleSelectable2.default;
 
 const registrationName = 'DBUIWebComponentBase';
 
@@ -79,7 +88,7 @@ function getDBUIWebComponentCore(win) {
        * @return Array<String>
        */
       static get propertiesToUpgrade() {
-        return [];
+        return ['unselectable'];
       }
 
       /**
@@ -96,7 +105,23 @@ function getDBUIWebComponentCore(win) {
        */
       static get observedAttributes() {
         // web components standard API
-        return ['dir', 'lang', 'sync-locale-with'];
+        return ['dir', 'lang', 'sync-locale-with', 'unselectable'];
+      }
+
+      /**
+       *
+       * @return Array<String>
+       */
+      get observedDynamicAttributes() {
+        return [];
+      }
+
+      /**
+       *
+       * @return Boolean
+       */
+      get hasDynamicAttributes() {
+        return false;
       }
 
       /**
@@ -118,7 +143,7 @@ function getDBUIWebComponentCore(win) {
         return this._isDisconnected;
       }
 
-      constructor(...args) {
+      constructor() {
         super();
 
         this.attachShadow({
@@ -136,16 +161,56 @@ function getDBUIWebComponentCore(win) {
         this._isMounted = false;
         this._isDisconnected = false;
         this._localeObserver = null;
+        this._dynamicAttributesObserver = null;
+        this._previouslyObservedDynamicAttributes = {};
         this._insertTemplate();
 
         this.connectedCallback = this.connectedCallback.bind(this);
         this.disconnectedCallback = this.disconnectedCallback.bind(this);
         this.attributeChangedCallback = this.attributeChangedCallback.bind(this);
         this.adoptedCallback = this.adoptedCallback.bind(this);
-
-        // provide support for traits if any as they can't override constructor
-        this.init && this.init(...args);
       }
+
+      // ============================ [Observe Dynamic Attributes] >> =============================================
+
+      _initializeDynamicAttributesObserver() {
+        if (!this.hasDynamicAttributes) return;
+
+        this._dynamicAttributesObserver = new win.MutationObserver(mutations => {
+          mutations.forEach(mutation => {
+            const { oldValue, attributeName } = mutation;
+            const newValue = this.getAttribute(attributeName);
+            const currentlyObservedDynamicAttributesKeys = this.observedDynamicAttributes;
+            const previouslyObservedDynamicAttributes = this._previouslyObservedDynamicAttributes;
+            const previouslyObservedDynamicAttributesKeys = Object.keys(previouslyObservedDynamicAttributes);
+            const isInCurrentlyObservedDynamicAttributes = currentlyObservedDynamicAttributesKeys.includes(attributeName);
+            const isInPreviouslyObservedDynamicAttributes = previouslyObservedDynamicAttributesKeys.includes(attributeName);
+
+            if (isInCurrentlyObservedDynamicAttributes) {
+              this._previouslyObservedDynamicAttributes[attributeName] = newValue;
+              this.attributeChangedCallback(attributeName, oldValue, newValue);
+            } else if (isInPreviouslyObservedDynamicAttributes) {
+              const oldValue = this._previouslyObservedDynamicAttributes[attributeName];
+              delete this._previouslyObservedDynamicAttributes[attributeName];
+              this.attributeChangedCallback(attributeName, oldValue, null);
+            }
+          });
+        });
+
+        this._dynamicAttributesObserver.observe(this, {
+          attributes: true,
+          attributeOldValue: true
+        });
+      }
+
+      _dismissDynamicAttributesObserver() {
+        if (!this._dynamicAttributesObserver) return;
+
+        this._dynamicAttributesObserver.disconnect();
+        this._dynamicAttributesObserver = null;
+      }
+
+      // ============================ << [Observe Dynamic Attributes] =============================================
 
       // ============================ [Locale] >> =============================================
 
@@ -234,7 +299,6 @@ function getDBUIWebComponentCore(win) {
         // If locale value is truthy, set it (on context too)
         // else read value from _targetedLocale
         // or from closestDbuiParent context.
-        if (!['dir', 'lang', 'sync-locale-with'].includes(name)) return;
 
         if (name === 'sync-locale-with') {
           // stop monitoring old target and start monitoring new target
@@ -296,7 +360,7 @@ function getDBUIWebComponentCore(win) {
 
         const localeTarget = this._localeTarget;
 
-        this._localeObserver = new MutationObserver(mutations => {
+        this._localeObserver = new win.MutationObserver(mutations => {
           mutations.forEach(mutation => {
             const attr = mutation.attributeName;
             const value = this._targetedLocale[attr];
@@ -715,6 +779,33 @@ function getDBUIWebComponentCore(win) {
       // ============================ << [Descendants/Ancestors and registrations] =============================================
 
 
+      // ============================ [unselectable] >> =============================================
+
+      _onUnselectableAttributeChanged() {
+        const unselectable = this.unselectable;
+
+        if (unselectable) {
+          disableSelection(this);
+        } else {
+          enableSelection(this);
+        }
+      }
+
+      get unselectable() {
+        return this.hasAttribute('unselectable');
+      }
+
+      set unselectable(value) {
+        const hasValue = Boolean(value);
+        if (hasValue) {
+          this.setAttribute('unselectable', '');
+        } else {
+          this.removeAttribute('unselectable');
+        }
+      }
+
+      // ============================ << [unselectable] =============================================
+
       /**
        *
        * @param prop String
@@ -826,6 +917,7 @@ function getDBUIWebComponentCore(win) {
         // makes top most ancestors or dbui components having localeTarget specified
         // to set dbuiDir/Locale on context
         this._syncLocaleAndMonitorChanges();
+        this._initializeDynamicAttributesObserver();
         // Call public hook.
         this.onConnectedCallback();
       }
@@ -853,6 +945,7 @@ function getDBUIWebComponentCore(win) {
         this._isMounted = false;
         this._isDisconnected = true;
         this._closestDbuiParent = null;
+        this._dismissDynamicAttributesObserver();
         // Call public hook.
         this.onDisconnectedCallback();
       }
@@ -909,7 +1002,8 @@ function getDBUIWebComponentCore(win) {
        * @private
        */
       _onAttributeChangedCallback(name, oldValue, newValue) {
-        this._onLocaleAttributeChangedCallback(name, oldValue, newValue);
+        ['dir', 'lang', 'sync-locale-with'].includes(name) && this._onLocaleAttributeChangedCallback(name, oldValue, newValue);
+        name === 'unselectable' && this._onUnselectableAttributeChanged();
         // Call public hook.
         this.onAttributeChangedCallback(name, oldValue, newValue);
       }

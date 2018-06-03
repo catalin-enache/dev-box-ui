@@ -1,21 +1,8 @@
-'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = getDBUIWebComponentIcon;
+import getDBUIWebComponentCore from '../DBUIWebComponentCore/DBUIWebComponentCore';
+import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
 
-var _DBUIWebComponentCore = require('../DBUIWebComponentCore/DBUIWebComponentCore');
-
-var _DBUIWebComponentCore2 = _interopRequireDefault(_DBUIWebComponentCore);
-
-var _ensureSingleRegistration = require('../../../internals/ensureSingleRegistration');
-
-var _ensureSingleRegistration2 = _interopRequireDefault(_ensureSingleRegistration);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-const registrationName = 'dbui-web-component-icon';
+const registrationName = 'dbui-icon';
 
 // https://github.com/gorangajic/react-icon-base/blob/master/index.js
 // https://raw.githubusercontent.com/gorangajic/react-icons/master/icons/go/mark-github.svg
@@ -23,15 +10,15 @@ const registrationName = 'dbui-web-component-icon';
 // https://github.com/gorangajic/react-icons/blob/master/go/mark-github.js
 // https://gorangajic.github.io/react-icons/go.html
 
-function getDBUIWebComponentIcon(win) {
-  return (0, _ensureSingleRegistration2.default)(win, registrationName, () => {
+export default function getDBUIIcon(win) {
+  return ensureSingleRegistration(win, registrationName, () => {
     const {
       DBUIWebComponentBase,
       defineCommonStaticMethods,
       Registerable
-    } = (0, _DBUIWebComponentCore2.default)(win);
+    } = getDBUIWebComponentCore(win);
 
-    class DBUIWebComponentIcon extends DBUIWebComponentBase {
+    class DBUIIcon extends DBUIWebComponentBase {
 
       static get registrationName() {
         return registrationName;
@@ -88,7 +75,8 @@ function getDBUIWebComponentIcon(win) {
       }
 
       attributeChangedCallback(name, oldValue, newValue) {
-        super.attributeChangedCallback && super.attributeChangedCallback(name, oldValue, newValue);
+        super.attributeChangedCallback &&
+          super.attributeChangedCallback(name, oldValue, newValue);
 
         const hasValue = ![undefined, null].includes(newValue);
         if (name === 'shape') {
@@ -108,8 +96,14 @@ function getDBUIWebComponentIcon(win) {
 
     }
 
-    return Registerable(defineCommonStaticMethods(DBUIWebComponentIcon));
+    return Registerable(
+      defineCommonStaticMethods(
+        DBUIIcon
+      )
+    );
+
   });
 }
 
-getDBUIWebComponentIcon.registrationName = registrationName;
+getDBUIIcon.registrationName = registrationName;
+

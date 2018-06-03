@@ -12,7 +12,7 @@ var _propTypes = require('prop-types');
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _localeAware = require('../../behaviours/localeAware');
+var _localeAware = require('../../decorators/localeAware');
 
 var _localeAware2 = _interopRequireDefault(_localeAware);
 

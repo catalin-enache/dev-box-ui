@@ -3,15 +3,15 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = getDBUIWebComponentDummyParent;
+exports.default = getDBUIDummyParent;
 
 var _DBUIWebComponentCore = require('../DBUIWebComponentCore/DBUIWebComponentCore');
 
 var _DBUIWebComponentCore2 = _interopRequireDefault(_DBUIWebComponentCore);
 
-var _DBUIWebComponentDummy = require('../DBUIWebComponentDummy/DBUIWebComponentDummy');
+var _DBUIDummy = require('../DBUIDummy/DBUIDummy');
 
-var _DBUIWebComponentDummy2 = _interopRequireDefault(_DBUIWebComponentDummy);
+var _DBUIDummy2 = _interopRequireDefault(_DBUIDummy);
 
 var _ensureSingleRegistration = require('../../../internals/ensureSingleRegistration');
 
@@ -19,18 +19,18 @@ var _ensureSingleRegistration2 = _interopRequireDefault(_ensureSingleRegistratio
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const registrationName = 'dbui-web-component-dummy-parent';
+const registrationName = 'dbui-dummy-parent';
 
-function getDBUIWebComponentDummyParent(win) {
+function getDBUIDummyParent(win) {
   return (0, _ensureSingleRegistration2.default)(win, registrationName, () => {
     const {
       DBUIWebComponentBase,
       defineCommonStaticMethods,
       Registerable
     } = (0, _DBUIWebComponentCore2.default)(win);
-    const DBUIWebComponentDummy = (0, _DBUIWebComponentDummy2.default)(win);
+    const DBUIDummy = (0, _DBUIDummy2.default)(win);
 
-    class DBUIWebComponentDummyParent extends DBUIWebComponentBase {
+    class DBUIDummyParent extends DBUIWebComponentBase {
 
       static get registrationName() {
         return registrationName;
@@ -50,20 +50,20 @@ function getDBUIWebComponentDummyParent(win) {
               <b>Dummy Parent shadow</b>
             </div>
             <div>
-              <dbui-web-component-dummy><slot></slot></dbui-web-component-dummy>
+              <dbui-dummy><slot></slot></dbui-dummy>
             </div>
           </div>
         `;
       }
 
       static get dependencies() {
-        return [DBUIWebComponentDummy];
+        return [DBUIDummy];
       }
 
     }
 
-    return Registerable(defineCommonStaticMethods(DBUIWebComponentDummyParent));
+    return Registerable(defineCommonStaticMethods(DBUIDummyParent));
   });
 }
 
-getDBUIWebComponentDummyParent.registrationName = registrationName;
+getDBUIDummyParent.registrationName = registrationName;

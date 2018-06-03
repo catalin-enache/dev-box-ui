@@ -10,7 +10,7 @@ const registrationName = 'DBUILocaleService';
 
 export default function getDBUILocaleService(win) {
   return ensureSingleRegistration(win, registrationName, () => {
-    class LocaleService {
+    class DBUILocaleService {
       constructor() {
         this._callbacks = [];
         this._localeAttrs = Object.keys(defaultLocale);
@@ -62,7 +62,7 @@ export default function getDBUILocaleService(win) {
       }
     }
 
-    const localeService = new LocaleService();
-    return localeService;
+    const dbuiLocaleService = new DBUILocaleService();
+    return dbuiLocaleService;
   });
 }

@@ -22,20 +22,23 @@ import template from './utils/template';
 import onScreenConsole from './utils/onScreenConsole';
 
 // Components
-import getDBUIWebComponentDummy from './web-components/components/DBUIWebComponentDummy/DBUIWebComponentDummy';
-import getDBUIWebComponentDummyParent from './web-components/components/DBUIWebComponentDummyParent/DBUIWebComponentDummyParent';
-import getDBUIWebComponentFormInputText from './web-components/components/DBUIWebComponentFormInputText/DBUIWebComponentFormInputText';
-import getDBUIWebComponentIcon from './web-components/components/DBUIWebComponentIcon/DBUIWebComponentIcon';
+import getDBUIDummy from './web-components/components/DBUIDummy/DBUIDummy';
+import getDBUIDummyParent from './web-components/components/DBUIDummyParent/DBUIDummyParent';
+import getDBUIFormInputText from './web-components/components/DBUIFormInputText/DBUIFormInputText';
+import getDBUIIcon from './web-components/components/DBUIIcon/DBUIIcon';
+import getDBUITranslated from './web-components/components/DBUITranslated/DBUITranslated';
 
 const registrations = {
-  [getDBUIWebComponentDummy.registrationName]:
-    getDBUIWebComponentDummy,
-  [getDBUIWebComponentDummyParent.registrationName]:
-    getDBUIWebComponentDummyParent,
-  [getDBUIWebComponentFormInputText.registrationName]:
-    getDBUIWebComponentFormInputText,
-  [getDBUIWebComponentIcon.registrationName]:
-    getDBUIWebComponentIcon
+  [getDBUIDummy.registrationName]:
+    getDBUIDummy,
+  [getDBUIDummyParent.registrationName]:
+    getDBUIDummyParent,
+  [getDBUIFormInputText.registrationName]:
+    getDBUIFormInputText,
+  [getDBUIIcon.registrationName]:
+    getDBUIIcon,
+  [getDBUITranslated.registrationName]:
+    getDBUITranslated
 };
 
 /*
@@ -93,10 +96,11 @@ export {
   onScreenConsole,
 
   // Components
-  getDBUIWebComponentDummy,
-  getDBUIWebComponentDummyParent,
-  getDBUIWebComponentFormInputText,
-  getDBUIWebComponentIcon
+  getDBUIDummy,
+  getDBUIDummyParent,
+  getDBUIFormInputText,
+  getDBUIIcon,
+  getDBUITranslated
 };
 
 /* eslint no-console: 0 */

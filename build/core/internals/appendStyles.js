@@ -9,7 +9,7 @@ will read componentStyle from win.DBUIWebComponents
 when klass.registerSelf() is called giving a chance to override default web-component style
 just before it is registered.
 */
-const appendStyle = win => (registrationName, componentStyle) => {
+const _appendStyle = exports._appendStyle = win => (registrationName, componentStyle) => {
   if (!win.DBUIWebComponents) {
     win.DBUIWebComponents = {};
   }
@@ -22,7 +22,7 @@ const appendStyle = win => (registrationName, componentStyle) => {
 
 const appendStyles = win => components => {
   components.forEach(({ registrationName, componentStyle }) => {
-    appendStyle(win)(registrationName, componentStyle);
+    _appendStyle(win)(registrationName, componentStyle);
   });
   return components;
 };

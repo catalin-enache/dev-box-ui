@@ -1,21 +1,21 @@
 
 
 import getDBUIWebComponentCore from '../DBUIWebComponentCore/DBUIWebComponentCore';
-import getDBUIWebComponentDummy from '../DBUIWebComponentDummy/DBUIWebComponentDummy';
+import getDBUIDummy from '../DBUIDummy/DBUIDummy';
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
 
-const registrationName = 'dbui-web-component-dummy-parent';
+const registrationName = 'dbui-dummy-parent';
 
-export default function getDBUIWebComponentDummyParent(win) {
+export default function getDBUIDummyParent(win) {
   return ensureSingleRegistration(win, registrationName, () => {
     const {
       DBUIWebComponentBase,
       defineCommonStaticMethods,
       Registerable
     } = getDBUIWebComponentCore(win);
-    const DBUIWebComponentDummy = getDBUIWebComponentDummy(win);
+    const DBUIDummy = getDBUIDummy(win);
 
-    class DBUIWebComponentDummyParent extends DBUIWebComponentBase {
+    class DBUIDummyParent extends DBUIWebComponentBase {
 
       static get registrationName() {
         return registrationName;
@@ -35,25 +35,25 @@ export default function getDBUIWebComponentDummyParent(win) {
               <b>Dummy Parent shadow</b>
             </div>
             <div>
-              <dbui-web-component-dummy><slot></slot></dbui-web-component-dummy>
+              <dbui-dummy><slot></slot></dbui-dummy>
             </div>
           </div>
         `;
       }
 
       static get dependencies() {
-        return [DBUIWebComponentDummy];
+        return [DBUIDummy];
       }
 
     }
 
     return Registerable(
       defineCommonStaticMethods(
-        DBUIWebComponentDummyParent
+        DBUIDummyParent
       )
     );
   });
 }
 
-getDBUIWebComponentDummyParent.registrationName = registrationName;
+getDBUIDummyParent.registrationName = registrationName;
 

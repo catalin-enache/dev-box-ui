@@ -2,7 +2,7 @@
 <html dir="ltr" lang="en">
 <head>
   <style>
-    dbui-web-component-form-input-text[focused] {
+    dbui-form-input-text[focused] {
       border: 2px solid green;
     }
   </style>
@@ -13,10 +13,10 @@
         quickSetupAndLoad
       } = require('dev-box-ui-core');
       const {
-        'dbui-web-component-form-input-text': dbuiWebComponentFormInputTextClass,
+        'dbui-form-input-text': DBUIFormInputText,
       } = quickSetupAndLoad(window)([
         {
-          registrationName: 'dbui-web-component-form-input-text',
+          registrationName: 'dbui-form-input-text',
           componentStyle: `
           :host input {
 
@@ -24,7 +24,7 @@
           `
         }
       ]);
-      // console.log(dbuiWebComponentFormInputTextClass.prototypeChainInfo);
+      // console.log(DBUIFormInputText.prototypeChainInfo);
     });
 
     window.addEventListener('DBUIWebComponentsDefined', () => {
@@ -41,9 +41,9 @@
   <script src="../../internals/iFrameUtils/demoScreenStartScript.js"></script>
 <!-- standard template end -->
   <div class="locale-switch" x-dir=""></div>
-  <dbui-web-component-form-input-text id="one" name="one"></dbui-web-component-form-input-text>
+  <dbui-form-input-text id="one" name="one"></dbui-form-input-text>
   <br /><br />
-  <dbui-web-component-form-input-text id="two" name="two" disabled></dbui-web-component-form-input-text>
+  <dbui-form-input-text id="two" name="two" disabled></dbui-form-input-text>
   <input type="text" id="three" tabindex="0" />
 
   <script>
@@ -156,7 +156,7 @@
               <Draggable style={{ border: '1px solid blue', width: 200, height: 200, overflowX: 'scroll', overflowY: 'scroll' }}>
                 <div>
                   <p>Draggable</p>
-                  <dbui-web-component-form-input-text></dbui-web-component-form-input-text>
+                  <dbui-form-input-text></dbui-form-input-text>
                 </div>
               </Draggable>
               }

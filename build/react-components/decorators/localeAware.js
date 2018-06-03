@@ -62,7 +62,7 @@ function localeAware(Component) {
       const { locale } = this.state;
       return _react2.default.createElement(Component, _extends({}, this.props, {
         locale: locale,
-        translations: i18nService.currentLangTranslations,
+        translations: i18nService.translations[locale.lang] || {},
         ref: comp => this._component = comp
       }));
     }

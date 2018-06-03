@@ -15,6 +15,8 @@ var _ensureSingleRegistration2 = _interopRequireDefault(_ensureSingleRegistratio
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+/* eslint max-len: 0 */
+
 /*
 inIframe({
   headStyle: treeStyle,

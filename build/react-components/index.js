@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.DisableSelection = exports.Draggable = exports.FormInputNumber = exports.FormInput = exports.List = exports.Hello = exports.localeAware = undefined;
 
-var _localeAware = require('./behaviours/localeAware');
+var _localeAware = require('./decorators/localeAware');
 
 var _localeAware2 = _interopRequireDefault(_localeAware);
 
@@ -43,4 +43,4 @@ exports.FormInput = _FormInput2.default;
 exports.FormInputNumber = _FormInputNumber2.default;
 exports.Draggable = _Draggable2.default;
 exports.DisableSelection = _DisableSelection2.default;
-// Behaviours
+// Decorators
