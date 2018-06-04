@@ -2,6 +2,15 @@
 <html dir="ltr" lang="en">
 <head>
   <style>
+    dbui-translated {
+      font-style: italic;
+    }
+    dbui-translated.one {
+      background-color: orange;
+    }
+    dbui-translated.two {
+      background-color: deepskyblue;
+    }
   </style>
 
 <!-- standard template start -->
@@ -16,11 +25,11 @@
       const translations = {
         en: {
           Hello: template`<span style="color: green; font-weight: bold;">Hello</span> ${'name'} ${'age'}`,
-          Bye: template`Good bye ${'name'} - ${'interval'}`
+          Bye: template`Good bye ${'name'} - ${0}`
         },
         other: {
           Hello: template`<span style="color: blue; font-weight: bold;">Hola</span> ${'name'} ${'age'}`,
-          Bye: template`Adios ${'name'} - ${'interval'}`
+          Bye: template`Adios ${'name'} - ${0}`
         }
       };
       const i18nService = getDBUII18nService(window);
@@ -50,26 +59,126 @@
   <script src="../../internals/iFrameUtils/demoScreenStartScript.js"></script>
 <!-- standard template end -->
 
-  <h2 class="title">Dummy Web Component</h2>
+  <h2 class="title">Translated</h2>
 
-  <h3 class="section">Stuff One</h3>
+  <h3 class="section">Usage as Web Component</h3>
 
   <div class="tabs">
     <section x-name="RESULT" x-checked="1">
-      <div class="locale-switch" x-lang="" x-dir="" target="#locale-provider"></div>
-      <div id="locale-provider"></div>
+      <div class="locale-switch" x-lang target="[x-id=one]"></div>
       <div>
         <dbui-translated
-          sync-locale-with="#locale-provider"
+          x-id="one"
           message="Hello"
           message-age="22"
           message-name="John"
         ></dbui-translated>
       </div>
-      <script>
-        window.addEventListener('load', () => {
+    </section>
 
-        });
+    <section x-name="HTML" x-highlight="html">
+<p>draggable</p>
+<span>react</span>
+    </section>
+
+    <section x-name="CSS" x-highlight="css">
+body {
+  color: red;
+}
+    </section>
+
+    <section x-name="JS" x-highlight="javascript">
+class Car extends SuperClass {
+  constructor() {
+    super();
+  }
+
+  onInit() {
+    this.do(() => {
+      console.log(print);
+    });
+  }
+}
+    </section>
+  </div>
+
+
+  <h3 class="section">Usage in React</h3>
+
+  <div class="tabs">
+    <section x-name="RESULT" x-checked="1">
+      <div id="root"></div>
+      <script type="text/babel">
+        // window.addEventListener('runBabel', function () {
+
+          const ReactDOM = require('react-dom');
+          const React = require('react');
+
+          class TranslatedDemo extends React.Component {
+            constructor(props) {
+              super(props);
+              this.state = {
+                name: 'John',
+                age: 22,
+                message: 'Hello',
+                0: 'one week',
+                lang: 'en',
+                class: 'one'
+              }
+            }
+
+            render() {
+              return (
+                <div>
+                  <div>
+                    name: <input value={this.state.name} onChange={(evt) => {
+                      this.setState({ name: evt.target.value })
+                    }} />
+                    age: <input value={this.state.age} onChange={(evt) => {
+                      this.setState({ age: evt.target.value })
+                    }} />
+                    interval: <input value={this.state[0]} onChange={(evt) => {
+                      this.setState({ 0: evt.target.value })
+                    }} />
+                    message: <select value={this.state.message} onChange={(evt) => {
+                      this.setState({ message: evt.target.value })
+                    }}>
+                      <option value="Hello">Hello</option>
+                      <option value="Bye">Bye</option>
+                    </select>
+                    lang: <select value={this.state.lang} onChange={(evt) => {
+                      this.setState({ lang: evt.target.value })
+                    }}>
+                      <option value="en">en</option>
+                      <option value="other">other</option>
+                    </select>
+                  </div>
+                  <div>
+                    <dbui-translated
+                      class={this.state.class}
+                      style={{ border: '1px solid blue', paddingLeft: 15 }}
+                      lang={this.state.lang}
+                      message={this.state.message}
+                      message-age={this.state.age}
+                      message-name={this.state.name}
+                      message-0={this.state[0]}
+                      onClick={() => {
+                        this.setState({
+                          class: this.state.class === 'one' ? 'two' : 'one'
+                        })
+                      }}
+                    ></dbui-translated>
+                  </div>
+                </div>
+              );
+            }
+          }
+
+          ReactDOM.render(
+            <TranslatedDemo />,
+            document.getElementById('root')
+          );
+        // });
       </script>
     </section>
 
