@@ -15,7 +15,7 @@ const translations = {
   }
 };
 
-describe('Translated', () => {
+describe('DBUITranslated', () => {
   it('behaves as expected', (done) => {
     inIframe({
       headStyle: '',
@@ -34,7 +34,7 @@ describe('Translated', () => {
       
       `,
       onLoad: ({ contentWindow, iframe }) => {
-        const Translated = getDBUITranslated(contentWindow);
+        const DBUITranslated = getDBUITranslated(contentWindow);
         const i18nService = getDBUII18nService(contentWindow);
 
         i18nService.registerTranslations(translations);
@@ -43,7 +43,7 @@ describe('Translated', () => {
         const one = contentWindow.document.querySelector('#one');
 
         Promise.all([
-          Translated.registrationName,
+          DBUITranslated.registrationName,
         ].map((localName) => contentWindow.customElements.whenDefined(localName)
         )).then(() => {
 
@@ -110,7 +110,7 @@ describe('Translated', () => {
           }, 0);
         });
 
-        Translated.registerSelf();
+        DBUITranslated.registerSelf();
       }
     });
   });

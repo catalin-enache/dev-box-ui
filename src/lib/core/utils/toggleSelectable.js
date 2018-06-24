@@ -2,7 +2,10 @@
 // import onScreenConsole from '../utils/onScreenConsole';
 
 const _cssDisableSelection = (node) => {
-  node.style.cursor = 'default';
+  const win = node.ownerDocument.defaultView;
+  const cursorStyle = win.getComputedStyle(node).cursor;
+  const newCursorStyle = cursorStyle === 'pointer' ? cursorStyle : 'default';
+  node.style.cursor = newCursorStyle;
   node.style.MozUserSelect = 'none';
   node.style.WebkitUserSelect = 'none';
   node.style.MsUserSelect = 'none';
@@ -10,7 +13,7 @@ const _cssDisableSelection = (node) => {
 };
 
 const _cssEnableSelection = (node) => {
-  node.style.cursor = 'auto';
+  node.style.removeProperty('cursor');
   node.style.MozUserSelect = null;
   node.style.WebkitUserSelect = null;
   node.style.MsUserSelect = null;
