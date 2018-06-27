@@ -31,7 +31,7 @@ const eventOptions = { capture: true, passive: false };
 
 /**
  *
- * @param evt TouchEvent || MouseEvent coming from Draggable
+ * @param evt TouchEvent || MouseEvent always coming from Draggable
  */
 function registerDocumentEvents(evt) {
   const type = isTouchEvent(evt) ? 'touch' : 'mouse';
@@ -64,7 +64,7 @@ function registerDocumentEvents(evt) {
 
 /**
  *
- * @param evt TouchEvent || MouseEvent coming from Document
+ * @param evt TouchEvent || MouseEvent always coming from Document
  */
 function unregisterDocumentEvents(evt) {
   const type = isTouchEvent(evt) ? 'touch' : 'mouse';
@@ -127,7 +127,7 @@ function isTouchEvent(evt) {
 
 /**
  *
- * @param evt Touch || TouchEvent || MouseEvent
+ * @param evt Touch || TouchEvent || MouseEvent coming from either Draggable or Document
  * @return HTMLElement || null
  */
 function getElementBeingDragged(evt) {
@@ -154,7 +154,7 @@ function getElementBeingDragged(evt) {
 
 /**
  *
- * @param evt Event
+ * @param evt Event coming from either Draggable or Document
  * @return Event || null
  */
 function extractSingleEvent(evt) {
@@ -165,6 +165,11 @@ function extractSingleEvent(evt) {
     evt;
 }
 
+/**
+ *
+ * @param evt MouseEvent || TouchEvent always coming from Draggable
+ * @return { startX, startY, translateX, translateY }
+ */
 function getMeasurements(evt) {
   const self = evt.currentTarget;
   const win = self.ownerDocument.defaultView;
@@ -179,14 +184,26 @@ function getMeasurements(evt) {
   return ret;
 }
 
+/**
+ *
+ * @param evt MouseEvent always coming from Draggable
+ */
 function handleMouseDown(evt) {
   onPointerDown(evt);
 }
 
+/**
+ *
+ * @param evt TouchEvent always coming from Draggable
+ */
 function handleTouchStart(evt) {
   onPointerDown(evt);
 }
 
+/**
+ *
+ * @param evt MouseEvent || TouchEvent always coming from Draggable
+ */
 function onPointerDown(evt) {
   evt.preventDefault(); // prevents TouchEvent to trigger MouseEvent
   const self = evt.currentTarget;
@@ -194,6 +211,10 @@ function onPointerDown(evt) {
   registerDocumentEvents(evt);
 }
 
+/**
+ *
+ * @param evt MouseEvent (mousemove) || TouchEvent (touchmove) always coming from Document
+ */
 function doMove(_evt) {
   _evt.preventDefault(); // prevent selection and scrolling
   const evt = extractSingleEvent(_evt);
@@ -245,7 +266,7 @@ export default function getDBUIDraggable(win) {
       Registerable
     } = getDBUIWebComponentCore(win);
 
-    // onScreenConsole();
+    onScreenConsole();
 
     class DBUIDraggable extends DBUIWebComponentBase {
 
