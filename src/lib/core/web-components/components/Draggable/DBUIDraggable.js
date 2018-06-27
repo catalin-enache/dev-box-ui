@@ -72,7 +72,13 @@ function unregisterDocumentEvents(evt) {
 
   const self = getElementBeingDragged(evt);
 
-  if (!self) return;
+  if (!self) {
+    // may occur when
+    // 1. touchstart inside draggable
+    // 2. touchstart outside draggable
+    // 3. touchend outside draggable => this event is not for self
+    return;
+  }
 
   const eventHandlers = win._dbuiDraggableRegisteredEvents.get(self);
 
@@ -197,6 +203,15 @@ function doMove(_evt) {
   }
 
   const self = getElementBeingDragged(evt);
+
+  if (!self) {
+    // may occur when
+    // 1. touchstart inside draggable
+    // 2. touchstart outside draggable
+    // 3. touchmove outside draggable => this event is not for self
+    return;
+  }
+
   const { win } = getDocAndWin(evt);
 
   if (self._dragRunning) { return; }
