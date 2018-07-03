@@ -279,6 +279,22 @@ function doMove(_evt) {
   });
 }
 
+/*
+TODO:
+1.
+dir rtl ?
+2.
+attributeChanged
+3.
+predefined constraints
+4.
+steps ?
+5.
+write from the outside
+6.
+work with react
+*/
+
 export default function getDBUIDraggable(win) {
   return ensureSingleRegistration(win, registrationName, () => {
     const {
@@ -306,11 +322,9 @@ export default function getDBUIDraggable(win) {
           }
           
           :host([dbui-dir=ltr]) {
-            
           }
           
           :host([dbui-dir=rtl]) {
-            
           }
           </style>
           <slot></slot>
@@ -328,7 +342,6 @@ export default function getDBUIDraggable(win) {
       constructor() {
         super();
         this._cachedTargetToDrag = null;
-        this._targetToDragInitialStyle = null;
         this._dbuiDraggable = true;
       }
 
@@ -369,19 +382,15 @@ export default function getDBUIDraggable(win) {
       _initializeTargetToDrag() {
         this._cachedTargetToDrag = null; // needed when drag-target attribute changes
         const targetToDrag = this._targetToDrag;
-        this._targetToDragInitialStyle = targetToDrag.style;
         targetToDrag.setAttribute('dbui-draggable-target', '');
-        targetToDrag.style.transform = `translate(${0}px,${0}px)`;
+        targetToDrag.style.transform = `translate(${this.translateX}px,${this.translateY}px)`;
         targetToDrag.style.transformOrigin = 'center';
       }
 
       _resetTargetToDrag() {
         const targetToDrag = this._targetToDrag;
         targetToDrag.removeAttribute('dbui-draggable-target');
-        this._targetToDragInitialStyle &&
-          (targetToDrag.style = this._targetToDragInitialStyle);
         this._cachedTargetToDrag = null;
-        this._targetToDragInitialStyle = null;
       }
 
       onConnectedCallback() {
@@ -403,11 +412,11 @@ export default function getDBUIDraggable(win) {
         switch (name) {
           case 'translate-x':
             valueToSet = (Number(newValue) || 0).toString();
-            this.style.transform = `translate(${valueToSet}px,${this.translateY}px)`;
+            this._targetToDrag.style.transform = `translate(${valueToSet}px,${this.translateY}px)`;
             break;
           case 'translate-y':
             valueToSet = (Number(newValue) || 0).toString();
-            this.style.transform = `translate(${this.translateX}px,${valueToSet}px)`;
+            this._targetToDrag.style.transform = `translate(${this.translateX}px,${valueToSet}px)`;
             break;
           case 'drag-target':
             this._resetTargetToDrag();

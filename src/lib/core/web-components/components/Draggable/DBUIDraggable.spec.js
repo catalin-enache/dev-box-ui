@@ -10,33 +10,49 @@ describe('DBUIDraggable', () => {
         width: 300px;
         height: 100px;
       }
+      
+      #container {
+        position: relative;
+      }
+      
       #wrapper-draggable-one, #wrapper-draggable-two, #wrapper-draggable-three {
         position: absolute;
         width: 500px;
         height: 180px;
+      }
+      
+      #wrapper-draggable-one { top: 0px; }
+      
+      #wrapper-draggable-two { top: 200px; }
+      
+      #wrapper-draggable-three { top: 400px; }
+      
+      
+      #wrapper-draggable-one, #wrapper-draggable-two, #wrapper-draggable-three {
         border: 1px solid green;
       }
+      
       dbui-draggable {
         border: 1px solid #ddd;
       }
       `,
       bodyHTML: `
       <span id="locale-provider" dir="rtl"></span>
-      <div id="container" style="position: relative;">
+      <div id="container">
 
-        <div id="wrapper-draggable-one" dir="rtl" style="top: 0px;">
-          <dbui-draggable id="draggable-one" drag-target="#wrapper-draggable-one">
+        <div id="wrapper-draggable-one" dir="rtl">
+          <dbui-draggable id="draggable-one" drag-target="#wrapper-draggable-one" translate-x="10" translate-y="10">
             <p id="draggable-two-content">draggable content 1</p>
           </dbui-draggable>
         </div>
         
-        <div id="wrapper-draggable-two" style="top: 200px;">
+        <div id="wrapper-draggable-two">
           <dbui-draggable id="draggable-two" sync-locale-with="#locale-provider">
             <p id="draggable-two-content">draggable content 2</p>
           </dbui-draggable>
         </div>
         
-        <div id="wrapper-draggable-three" style="top: 400px;">
+        <div id="wrapper-draggable-three">
           <dbui-draggable id="draggable-three" dir="rtl">
             <p id="draggable-three-content">draggable content 3</p>
           </dbui-draggable>
@@ -63,7 +79,7 @@ describe('DBUIDraggable', () => {
             translateX,
             translateY
           } = evt.detail;
-          wrapperDraggableTwo.style.transform = `translate(${translateX}px,${translateY}px)`;
+          // wrapperDraggableTwo.style.transform = `translate(${translateX}px,${translateY}px)`;
         });
 
         draggableTwo.applyCorrection = ({ translateX, translateY, width, height }) => {
