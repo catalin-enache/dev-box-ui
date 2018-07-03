@@ -2,6 +2,7 @@ import { expect, assert } from 'chai';
 import sinon from 'sinon';
 import getDBUIWebComponentCore from './DBUIWebComponentCore';
 import DBUICommonCssVars from './DBUICommonCssVars';
+import DBUICommonCssClasses from './DBUICommonCssClasses';
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
 import appendStyles from '../../../internals/appendStyles';
 import inIframe from '../../../../../../testUtils/inIframe';
@@ -142,18 +143,25 @@ getDummyOneParent.registrationName = dummyOneParentRegistrationName;
 
 describe('DBUIWebComponentBase', () => {
   describe('when loaded', () => {
-    it('injects dbui-common-css-vars into window document head', (done) => {
+    it('injects dbui-common-css into window document head', (done) => {
       inIframe({
         onLoad: ({ contentWindow, iframe }) => {
           // style[dbui-common-css-vars] not injected yet
           expect(contentWindow.document.querySelector('style[dbui-common-css-vars]')).to.equal(null);
+          expect(contentWindow.document.querySelector('style[dbui-common-css-classes]')).to.equal(null);
           getDBUIWebComponentCore(contentWindow);
           // style[dbui-common-css-vars] has been injected
           expect(
             contentWindow.document.querySelector('style[dbui-common-css-vars]'
             ).innerText).to.equal(DBUICommonCssVars);
-          iframe.remove();
-          done();
+          expect(
+            contentWindow.document.querySelector('style[dbui-common-css-classes]'
+            ).innerText).to.equal(DBUICommonCssClasses);
+
+          setTimeout(() => {
+            iframe.remove();
+            done();
+          }, 0);
         }
       });
     });

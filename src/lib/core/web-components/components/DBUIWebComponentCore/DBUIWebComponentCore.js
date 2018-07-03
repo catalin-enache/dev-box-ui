@@ -1,6 +1,7 @@
 
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
 import DBUICommonCssVars from './DBUICommonCssVars';
+import DBUICommonCssClasses from './DBUICommonCssClasses';
 import toggleSelectable from '../../../utils/toggleSelectable';
 
 const {
@@ -10,13 +11,21 @@ const {
 
 const registrationName = 'DBUIWebComponentBase';
 
-function defineCommonCSSVars(win) {
+const cssMap = {
+  'dbui-common-css-vars': DBUICommonCssVars,
+  'dbui-common-css-classes': DBUICommonCssClasses,
+};
+
+function defineCommonCSS(win) {
   const { document } = win;
-  const commonStyle = document.createElement('style');
-  commonStyle.setAttribute('dbui-common-css-vars', '');
-  commonStyle.innerHTML = DBUICommonCssVars;
-  document.querySelector('head').appendChild(commonStyle);
+  Object.keys(cssMap).forEach((key) => {
+    const commonStyle = document.createElement('style');
+    commonStyle.setAttribute(key, '');
+    commonStyle.innerHTML = cssMap[key];
+    document.querySelector('head').appendChild(commonStyle);
+  });
 }
+
 
 /*
 Accessing parents and children:
@@ -37,7 +46,7 @@ If children are accessed in connectedCallback they might not be complete yet at 
  */
 export default function getDBUIWebComponentCore(win) {
   return ensureSingleRegistration(win, registrationName, () => {
-    defineCommonCSSVars(win);
+    defineCommonCSS(win);
 
     const { document, HTMLElement, customElements } = win;
 

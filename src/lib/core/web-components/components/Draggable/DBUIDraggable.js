@@ -12,6 +12,12 @@ const events = {
     },
     mouseup() {
       return (evt) => unregisterDocumentEvents(evt);
+    },
+    mouseout() {
+      return (evt) => {
+        const nodeName = ((evt.relatedTarget || {}).nodeName || 'HTML').toString();
+        nodeName === 'HTML' && unregisterDocumentEvents(evt);
+      };
     }
   },
   touch: {
@@ -168,20 +174,25 @@ function extractSingleEvent(evt) {
 /**
  *
  * @param evt MouseEvent || TouchEvent always coming from Draggable
- * @return { startX, startY, translateX, translateY }
+ * @return { startX, startY, translateX, translateY, width, height }
  */
 function getMeasurements(evt) {
   const self = evt.currentTarget;
   const win = self.ownerDocument.defaultView;
-  const nodeComputedStyle = win.getComputedStyle(self, null);
-  const extractedEvent = extractSingleEvent(evt);
-  const { clientX: startX, clientY: startY } = extractedEvent;
+  const targetToDrag = self._targetToDrag;
+
+  const nodeComputedStyle = win.getComputedStyle(targetToDrag, null);
   const matrix = nodeComputedStyle.transform.match(/-?\d*\.?\d+/g).map(Number);
+  const boundingRect = targetToDrag.getBoundingClientRect();
+  const extractedEvent = extractSingleEvent(evt);
+
+  const { width, height } = boundingRect;
+  const { clientX: startX, clientY: startY } = extractedEvent;
   const [translateX, translateY] = [matrix[4], matrix[5]];
-  const ret = {
-    startX, startY, translateX, translateY
+
+  return {
+    startX, startY, translateX, translateY, width, height
   };
-  return ret;
 }
 
 /**
@@ -189,6 +200,7 @@ function getMeasurements(evt) {
  * @param evt MouseEvent always coming from Draggable
  */
 function handleMouseDown(evt) {
+  if (evt.which === 3) return;
   onPointerDown(evt);
 }
 
@@ -244,16 +256,25 @@ function doMove(_evt) {
     }
 
     const {
-      startX, startY, translateX, translateY
+      startX, startY, translateX, translateY, width, height
     } = self._measurements;
     const [distanceX, distanceY] = [evt.clientX - startX, evt.clientY - startY];
 
     const nextTranslateX = translateX + distanceX;
     const nextTranslateY = translateY + distanceY;
 
-    self._translateX = nextTranslateX;
-    self._translateY = nextTranslateY;
-    self.style.transform = `translate(${self._translateX}px,${self._translateY}px)`;
+    const { translateX: revisedTranslateX, translateY: revisedTranslateY } =
+      self.applyCorrection({ translateX: nextTranslateX, translateY: nextTranslateY, width, height });
+
+    const targetToDrag = self._targetToDrag;
+    targetToDrag.style.transform = `translate(${revisedTranslateX}px,${revisedTranslateY}px)`;
+
+    self.dispatchEvent(new win.CustomEvent('translate', {
+      detail: {
+        translateX: revisedTranslateX,
+        translateY: revisedTranslateY
+      }
+    }));
     self._dragRunning = false;
   });
 }
@@ -266,7 +287,7 @@ export default function getDBUIDraggable(win) {
       Registerable
     } = getDBUIWebComponentCore(win);
 
-    onScreenConsole();
+    // onScreenConsole();
 
     class DBUIDraggable extends DBUIWebComponentBase {
 
@@ -281,44 +302,130 @@ export default function getDBUIDraggable(win) {
             all: initial;
             cursor: pointer;
             touch-action: none;
-            position: absolute;
             display: inline-block;
-            border: 1px solid blue;
+          }
+          
+          :host([dbui-dir=ltr]) {
+            
+          }
+          
+          :host([dbui-dir=rtl]) {
+            
           }
           </style>
           <slot></slot>
         `;
       }
 
+      static get propertiesToUpgrade() {
+        return [...super.propertiesToUpgrade, 'applyCorrection', 'translateX', 'translateY', 'dragTarget'];
+      }
+
       static get observedAttributes() {
-        return [...super.observedAttributes, 'translate', 'rotate', 'transformOrigin'];
+        return [...super.observedAttributes, 'translate-x', 'translate-y', 'drag-target'];
       }
 
       constructor() {
         super();
+        this._cachedTargetToDrag = null;
+        this._targetToDragInitialStyle = null;
         this._dbuiDraggable = true;
-        this._translateX = 0;
-        this._translateY = 0;
-        this._originX = 0;
-        this._originY = 0;
-        this._rotate = 0;
+      }
+
+      get translateX() {
+        return Number(this.getAttribute('translate-x')) || 0;
+      }
+
+      set translateX(value) {
+        const newValue = (Number(value) || 0).toString();
+        this.setAttribute('translate-x', newValue);
+      }
+
+      get translateY() {
+        return Number(this.getAttribute('translate-y')) || 0;
+      }
+
+      set translateY(value) {
+        const newValue = (Number(value) || 0).toString();
+        this.setAttribute('translate-y', newValue);
+      }
+
+      get dragTarget() {
+        return this.getAttribute('drag-target');
+      }
+
+      set dragTarget(value) {
+        this.setAttribute('drag-target', value.toString());
+      }
+
+      get _targetToDrag() {
+        if (this._cachedTargetToDrag) return this._cachedTargetToDrag;
+        const targetToDrag =
+          this.getRootNode().querySelector(this.getAttribute('drag-target')) || this;
+        this._cachedTargetToDrag = targetToDrag;
+        return this._cachedTargetToDrag;
+      }
+
+      _initializeTargetToDrag() {
+        this._cachedTargetToDrag = null; // needed when drag-target attribute changes
+        const targetToDrag = this._targetToDrag;
+        this._targetToDragInitialStyle = targetToDrag.style;
+        targetToDrag.setAttribute('dbui-draggable-target', '');
+        targetToDrag.style.transform = `translate(${0}px,${0}px)`;
+        targetToDrag.style.transformOrigin = 'center';
+      }
+
+      _resetTargetToDrag() {
+        const targetToDrag = this._targetToDrag;
+        targetToDrag.removeAttribute('dbui-draggable-target');
+        this._targetToDragInitialStyle &&
+          (targetToDrag.style = this._targetToDragInitialStyle);
+        this._cachedTargetToDrag = null;
+        this._targetToDragInitialStyle = null;
       }
 
       onConnectedCallback() {
         this.setAttribute('unselectable', '');
         this.addEventListener('mousedown', handleMouseDown, eventOptions);
         this.addEventListener('touchstart', handleTouchStart, eventOptions);
-        this.style.transform = `translate(${0}px, ${0}px) rotate(${0}deg)`;
-        this.style.transformOrigin = 'center';
+        this._initializeTargetToDrag();
       }
 
       onDisconnectedCallback() {
         this.removeAttribute('unselectable');
         this.removeEventListener('mousedown', handleMouseDown, eventOptions);
         this.removeEventListener('touchstart', handleTouchStart, eventOptions);
+        this._resetTargetToDrag();
       }
 
-      onAttributeChangedCallback() {
+      onAttributeChangedCallback(name, oldValue, newValue) {
+        let valueToSet = null;
+        switch (name) {
+          case 'translate-x':
+            valueToSet = (Number(newValue) || 0).toString();
+            this.style.transform = `translate(${valueToSet}px,${this.translateY}px)`;
+            break;
+          case 'translate-y':
+            valueToSet = (Number(newValue) || 0).toString();
+            this.style.transform = `translate(${this.translateX}px,${valueToSet}px)`;
+            break;
+          case 'drag-target':
+            this._resetTargetToDrag();
+            this._initializeTargetToDrag();
+            break;
+          default:
+            // pass
+        }
+      }
+
+      /**
+       * Can be overridden
+       * @param translateX Number
+       * @param translateY Number
+       * @return Object { translateX: Number, translateY: Number }
+       */
+      applyCorrection({ translateX, translateY }) {
+        return { translateX, translateY };
       }
 
     }
