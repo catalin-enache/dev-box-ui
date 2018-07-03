@@ -266,8 +266,8 @@ function doMove(_evt) {
     const { translateX: revisedTranslateX, translateY: revisedTranslateY } =
       self.applyCorrection({ translateX: nextTranslateX, translateY: nextTranslateY, width, height });
 
-    const targetToDrag = self._targetToDrag;
-    targetToDrag.style.transform = `translate(${revisedTranslateX}px,${revisedTranslateY}px)`;
+    self.translateX = revisedTranslateX;
+    self.translateY = revisedTranslateY;
 
     self.dispatchEvent(new win.CustomEvent('translate', {
       detail: {
@@ -281,18 +281,10 @@ function doMove(_evt) {
 
 /*
 TODO:
-1.
-dir rtl ?
-2.
-attributeChanged
 3.
 predefined constraints
 4.
 steps ?
-5.
-write from the outside
-6.
-work with react
 */
 
 export default function getDBUIDraggable(win) {

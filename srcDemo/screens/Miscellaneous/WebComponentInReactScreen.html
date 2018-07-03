@@ -19,7 +19,8 @@
       const {
         dbuiWebComponentsSetUp,
         getDBUIDummy,
-        getDBUIDummyParent
+        getDBUIDummyParent,
+        getDBUIDraggable
       } = require('dev-box-ui-core');
 
       dbuiWebComponentsSetUp(window)([
@@ -37,10 +38,12 @@
       ]);
       const DBUIDummy = getDBUIDummy(window);
       const DBUIDummyParent = getDBUIDummyParent(window);
+      const DBUIDraggable = getDBUIDraggable(window);
 
       setTimeout(() => {
         DBUIDummy.registerSelf();
         DBUIDummyParent.registerSelf();
+        DBUIDraggable.registerSelf();
       }, 2000);
     });
 
@@ -136,6 +139,21 @@ class Car extends SuperClass {
                 <dbui-dummy-parent>
                   hello 3
                 </dbui-dummy-parent>
+
+                <dbui-draggable
+                  ref={(self) => {
+                    console.log('self', self);
+                    if (!self) return;
+                    self.addEventListener('translate', (evt) => {
+                      console.log('ref.onTranslate', evt)
+                    });
+                  }}
+                  onMouseDown={(evt) => console.log('onMouseDown', evt)}
+                  translate-x="80"
+                  translate-y="-10"
+                >
+                  <p>drag me</p>
+                </dbui-draggable>
 
               </div>
             );

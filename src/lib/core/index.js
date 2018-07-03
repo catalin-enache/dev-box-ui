@@ -27,6 +27,7 @@ import getDBUIDummyParent from './web-components/components/DBUIDummyParent/DBUI
 import getDBUIFormInputText from './web-components/components/DBUIFormInputText/DBUIFormInputText';
 import getDBUIIcon from './web-components/components/DBUIIcon/DBUIIcon';
 import getDBUITranslated from './web-components/components/DBUITranslated/DBUITranslated';
+import getDBUIDraggable from './web-components/components/DBUIDraggable/DBUIDraggable';
 
 const registrations = {
   [getDBUIDummy.registrationName]:
@@ -38,7 +39,9 @@ const registrations = {
   [getDBUIIcon.registrationName]:
     getDBUIIcon,
   [getDBUITranslated.registrationName]:
-    getDBUITranslated
+    getDBUITranslated,
+  [getDBUIDraggable.registrationName]:
+    getDBUIDraggable
 };
 
 /*
@@ -100,7 +103,8 @@ export {
   getDBUIDummyParent,
   getDBUIFormInputText,
   getDBUIIcon,
-  getDBUITranslated
+  getDBUITranslated,
+  getDBUIDraggable
 };
 
 /* eslint no-console: 0 */
