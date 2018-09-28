@@ -21,19 +21,29 @@ describe('DBUIDraggable', () => {
         height: 180px;
       }
       
-      #wrapper-draggable-one { top: 0px; }
+      #wrapper-draggable-one {
+        width: 450px;
+        height: 160px;
+      }
       
-      #wrapper-draggable-two { top: 200px; }
+      #wrapper-draggable-one { top: 0px;}
+      
+      #wrapper-draggable-two { top: 200px;}
       
       #wrapper-draggable-three { top: 400px; }
       
       
       #wrapper-draggable-one, #wrapper-draggable-two, #wrapper-draggable-three {
-        border: 1px solid green;
+        border: 5px solid green;
       }
       
       dbui-draggable {
-        border: 1px solid #ddd;
+        border: 5px solid #ddd;
+      }
+      
+      #draggable-two {
+        position: absolute;
+        left: 5px;
       }
       `,
       bodyHTML: `
@@ -41,7 +51,7 @@ describe('DBUIDraggable', () => {
       <div id="container">
 
         <div id="wrapper-draggable-one" dir="rtl">
-          <dbui-draggable id="draggable-one" drag-target="#wrapper-draggable-one" translate-x="10" translate-y="10">
+          <dbui-draggable id="draggable-one" drag-target="#wrapper-draggable-one" target-translate-x="10" target-translate-y="10">
             <p id="draggable-two-content">draggable content 1</p>
           </dbui-draggable>
         </div>
@@ -74,41 +84,54 @@ describe('DBUIDraggable', () => {
         const draggableTwo = contentWindow.document.querySelector('#draggable-two');
         const draggableThree = contentWindow.document.querySelector('#draggable-three');
 
+        // draggableOne.constraint = 'boundingClientRect(550, 250)';
         draggableOne.addEventListener('translate', (evt) => {
           const {
-            translateX,
-            translateY
+            targetTranslateX,
+            targetTranslateY
           } = evt.detail;
-          // wrapperDraggableTwo.style.transform = `translate(${translateX}px,${translateY}px)`;
+          // wrapperDraggableTwo.style.transform = `translate(${targetTranslateX}px,${targetTranslateY}px)`;
         });
+        // const computedStyle = contentWindow.getComputedStyle(wrapperDraggableTwo, null);
+        // var { left: rectX, top: rectY, width: rectWidth, height: rectHeight } = computedStyle;
+        // console.log('computedStyle', { rectX, rectY, rectWidth, rectHeight });
 
-        draggableTwo.applyCorrection = ({ translateX, translateY, width, height }) => {
-          const maxX = parseInt(contentWindow.getComputedStyle(wrapperDraggableTwo, null).width, 10) - width;
-          const maxY = parseInt(contentWindow.getComputedStyle(wrapperDraggableTwo, null).height, 10) - height;
-          const revisedTranslateX = Math.max(0, Math.min(translateX, maxX));
-          const revisedTranslateY = Math.max(0, Math.min(translateY, maxY));
-          return { translateX: revisedTranslateX, translateY: revisedTranslateY };
-        };
+        // const boundingClientRect = wrapperDraggableTwo.getBoundingClientRect();
+        // var { width: rectWidth, height: rectHeight } = boundingClientRect;
+        // console.log('boundingClientRect', { rectX, rectY, rectWidth, rectHeight });
+
+        // draggableTwo.constraint = `boundingClientRect(${rectWidth}, ${rectHeight})`;
+
+        draggableTwo.constraint = 'boundingClientRectOf("#wrapper-draggable-one")';
+
+        // draggableTwo.applyCorrection = ({ targetTranslateX, targetTranslateY, targetWidthOnStart, targetHeightOnStart }) => {
+        //   const computedStyle = contentWindow.getComputedStyle(wrapperDraggableTwo, null);
+        //   const maxX = parseInt(computedStyle.width, 10) - targetWidthOnStart;
+        //   const maxY = parseInt(computedStyle.height, 10) - targetHeightOnStart;
+        //   const revisedTranslateX = Math.max(0, Math.min(targetTranslateX, maxX));
+        //   const revisedTranslateY = Math.max(0, Math.min(targetTranslateY, maxY));
+        //   return { targetTranslateX: revisedTranslateX, targetTranslateY: revisedTranslateY };
+        // };
 
         draggableTwo.addEventListener('translate', (evt) => {
           const {
-            translateX,
-            translateY
+            targetTranslateX,
+            targetTranslateY
           } = evt.detail;
-          // draggableThree.style.transform = `translate(${translateX}px,${translateY}px)`;
-          // draggableThree.setAttribute('translate-x', translateX);
-          // draggableThree.translateY = translateY;
-          // draggableTwo._targetToDrag.style.transform = `translate(${translateX}px,${translateY}px)`;
+          // draggableThree.style.transform = `translate(${targetTranslateX}px,${targetTranslateY}px)`;
+          // draggableThree.setAttribute('target-translate-x', targetTranslateX);
+          // draggableThree.targetTranslateY = targetTranslateY;
+          // draggableTwo._targetToDrag.style.transform = `translate(${-targetTranslateX}px,${-targetTranslateY}px)`;
         });
 
         draggableThree.addEventListener('translate', (evt) => {
           const {
-            translateX,
-            translateY
+            targetTranslateX,
+            targetTranslateY
           } = evt.detail;
-          // draggableThree.style.transform = `translate(${translateX}px,${translateY}px)`;
-          // draggableThree.setAttribute('translate-x', translateX);
-          // draggableThree.translateY = translateY;
+          // draggableThree.style.transform = `translate(${targetTranslateX}px,${targetTranslateY}px)`;
+          // draggableThree.setAttribute('target-translate-x', targetTranslateX);
+          // draggableThree.targetTranslateY = targetTranslateY;
         });
 
         Promise.all([

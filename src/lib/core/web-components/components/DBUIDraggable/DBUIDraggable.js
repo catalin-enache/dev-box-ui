@@ -1,9 +1,7 @@
 
 import getDBUIWebComponentCore from '../DBUIWebComponentCore/DBUIWebComponentCore';
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
-import onScreenConsole from '../../../utils/onScreenConsole';
-
-const registrationName = 'dbui-draggable';
+// import onScreenConsole from '../../../utils/onScreenConsole';
 
 const events = {
   mouse: {
@@ -98,6 +96,7 @@ function unregisterDocumentEvents(evt) {
     }, 0);
 
     if (touchesNum > 0) {
+      // do not unregister if there are still pointers on the target
       return;
     }
   }
@@ -144,6 +143,10 @@ function getElementBeingDragged(evt) {
     return win._dbuiCurrentElementBeingDragged;
   }
 
+  // target is defined on all
+  // Touch,
+  // TouchEvent (inherited from Event interface),
+  // MouseEvent (inherited from Event interface)
   const element = evt.target;
 
   if (element._dbuiDraggable) {
@@ -174,24 +177,30 @@ function extractSingleEvent(evt) {
 /**
  *
  * @param evt MouseEvent || TouchEvent always coming from Draggable
- * @return { startX, startY, translateX, translateY, width, height }
+ * @return {
+ * pointerXOnStart: Number, pointerYOnStart: Number,
+ * targetTranslatedXOnStart: Number, targetTranslatedYOnStart: Number,
+ * targetWidthOnStart: Number, targetHeightOnStart: Number
+ * }
  */
 function getMeasurements(evt) {
   const self = evt.currentTarget;
   const win = self.ownerDocument.defaultView;
   const targetToDrag = self._targetToDrag;
 
-  const nodeComputedStyle = win.getComputedStyle(targetToDrag, null);
-  const matrix = nodeComputedStyle.transform.match(/-?\d*\.?\d+/g).map(Number);
-  const boundingRect = targetToDrag.getBoundingClientRect();
+  const targetStyle = win.getComputedStyle(targetToDrag, null);
+  const matrix = targetStyle.transform.match(/-?\d*\.?\d+/g).map(Number);
+  const targetBoundingRect = targetToDrag.getBoundingClientRect();
   const extractedEvent = extractSingleEvent(evt);
 
-  const { width, height } = boundingRect;
-  const { clientX: startX, clientY: startY } = extractedEvent;
-  const [translateX, translateY] = [matrix[4], matrix[5]];
+  const { width: targetWidthOnStart, height: targetHeightOnStart } = targetBoundingRect;
+  const { clientX: pointerXOnStart, clientY: pointerYOnStart } = extractedEvent;
+  const [targetTranslatedXOnStart, targetTranslatedYOnStart] = [matrix[4], matrix[5]];
 
   return {
-    startX, startY, translateX, translateY, width, height
+    pointerXOnStart, pointerYOnStart,
+    targetTranslatedXOnStart, targetTranslatedYOnStart,
+    targetWidthOnStart, targetHeightOnStart
   };
 }
 
@@ -219,6 +228,7 @@ function handleTouchStart(evt) {
 function onPointerDown(evt) {
   evt.preventDefault(); // prevents TouchEvent to trigger MouseEvent
   const self = evt.currentTarget;
+  self._constraintPresetCached = null;
   self._measurements = getMeasurements(evt);
   registerDocumentEvents(evt);
 }
@@ -256,36 +266,87 @@ function doMove(_evt) {
     }
 
     const {
-      startX, startY, translateX, translateY, width, height
+      pointerXOnStart, pointerYOnStart,
+      targetTranslatedXOnStart, targetTranslatedYOnStart,
+      targetWidthOnStart, targetHeightOnStart
     } = self._measurements;
-    const [distanceX, distanceY] = [evt.clientX - startX, evt.clientY - startY];
+    const [pointerDistanceX, pointerDistanceY] =
+      [evt.clientX - pointerXOnStart, evt.clientY - pointerYOnStart];
 
-    const nextTranslateX = translateX + distanceX;
-    const nextTranslateY = translateY + distanceY;
+    const nextTargetTranslateX = targetTranslatedXOnStart + pointerDistanceX;
+    const nextTargetTranslateY = targetTranslatedYOnStart + pointerDistanceY;
 
-    const { translateX: revisedTranslateX, translateY: revisedTranslateY } =
-      self.applyCorrection({ translateX: nextTranslateX, translateY: nextTranslateY, width, height });
+    const { targetTranslateX: revisedTranslateX, targetTranslateY: revisedTranslateY } =
+      self.applyCorrection({
+        targetTranslateX: nextTargetTranslateX,
+        targetTranslateY: nextTargetTranslateY,
+        targetWidthOnStart, targetHeightOnStart
+      });
 
-    self.translateX = revisedTranslateX;
-    self.translateY = revisedTranslateY;
+    self.targetTranslateX = revisedTranslateX;
+    self.targetTranslateY = revisedTranslateY;
 
     self.dispatchEvent(new win.CustomEvent('translate', {
       detail: {
-        translateX: revisedTranslateX,
-        translateY: revisedTranslateY
+        targetTranslateX: revisedTranslateX,
+        targetTranslateY: revisedTranslateY
       }
     }));
     self._dragRunning = false;
   });
 }
 
+const presetBoundingClientRect =
+({ rectWidth, rectHeight, offsetX, offsetY }) =>
+  ({ targetTranslateX, targetTranslateY, targetWidthOnStart, targetHeightOnStart }) => {
+    const maxX = rectWidth - targetWidthOnStart;
+    const maxY = rectHeight - targetHeightOnStart;
+    const _offsetX = offsetX; // 5
+    const _offsetY = offsetY; // -190
+    const revisedTranslateX = Math.max(_offsetX, Math.min(targetTranslateX, maxX + _offsetX));
+    const revisedTranslateY = Math.max(_offsetY, Math.min(targetTranslateY, maxY + _offsetY));
+
+    return { targetTranslateX: revisedTranslateX, targetTranslateY: revisedTranslateY };
+  };
+
+const getConstraintsForBoundingClientRect = (targetNode, constraintNode) => {
+  const win = targetNode.ownerDocument.defaultView;
+  const targetStyle = win.getComputedStyle(targetNode, null);
+  const targetBoundingClientRect = targetNode.getBoundingClientRect();
+  const constraintBoundingRect = constraintNode.getBoundingClientRect();
+
+  const matrix = targetStyle.transform.match(/-?\d*\.?\d+/g).map(Number);
+  const [targetTranslatedX, targetTranslatedY] = [matrix[4], matrix[5]];
+
+  const { x: aX, y: aY } = targetBoundingClientRect;
+  const { x: bX, y: bY } = constraintBoundingRect;
+  const offsetX = (bX - aX) + targetTranslatedX;
+  const offsetY = (bY - aY) + targetTranslatedY;
+
+  const rectWidth = parseInt(constraintBoundingRect.width, 10);
+  const rectHeight = parseInt(constraintBoundingRect.height, 10);
+
+  return { offsetX, offsetY, rectWidth, rectHeight };
+};
+
+const presetCircle =
+({ cx, cy, radius }) =>
+  ({ targetTranslateX, targetTranslateY, targetWidthOnStart, targetHeightOnStart }) => {
+
+};
+
+const presetNoConstraint =
+({ targetTranslateX, targetTranslateY }) => {
+  return { targetTranslateX, targetTranslateY };
+};
+
 /*
 TODO:
-3.
-predefined constraints
 4.
 steps ?
 */
+
+const registrationName = 'dbui-draggable';
 
 export default function getDBUIDraggable(win) {
   return ensureSingleRegistration(win, registrationName, () => {
@@ -314,9 +375,11 @@ export default function getDBUIDraggable(win) {
           }
           
           :host([dbui-dir=ltr]) {
+            /* pass */
           }
           
           :host([dbui-dir=rtl]) {
+            /* pass */
           }
           </style>
           <slot></slot>
@@ -324,11 +387,11 @@ export default function getDBUIDraggable(win) {
       }
 
       static get propertiesToUpgrade() {
-        return [...super.propertiesToUpgrade, 'applyCorrection', 'translateX', 'translateY', 'dragTarget'];
+        return [...super.propertiesToUpgrade, 'applyCorrection', 'targetTranslateX', 'targetTranslateY', 'dragTarget', 'constraint'];
       }
 
       static get observedAttributes() {
-        return [...super.observedAttributes, 'translate-x', 'translate-y', 'drag-target'];
+        return [...super.observedAttributes, 'target-translate-x', 'target-translate-y', 'drag-target', 'constraint'];
       }
 
       constructor() {
@@ -337,36 +400,100 @@ export default function getDBUIDraggable(win) {
         this._dbuiDraggable = true;
       }
 
-      get translateX() {
-        return Number(this.getAttribute('translate-x')) || 0;
+      /**
+       * x translation of target
+       * @return Number
+       */
+      get targetTranslateX() {
+        return Number(this.getAttribute('target-translate-x')) || 0;
       }
 
-      set translateX(value) {
+      /**
+       * x translation of target
+       * @param value Number | String
+       */
+      set targetTranslateX(value) {
         const newValue = (Number(value) || 0).toString();
-        this.setAttribute('translate-x', newValue);
+        this.setAttribute('target-translate-x', newValue);
       }
 
-      get translateY() {
-        return Number(this.getAttribute('translate-y')) || 0;
+      /**
+       * y translation of target
+       * @return Number
+       */
+      get targetTranslateY() {
+        return Number(this.getAttribute('target-translate-y')) || 0;
       }
 
-      set translateY(value) {
+      /**
+       * y translation of target
+       * @param value Number | String
+       */
+      set targetTranslateY(value) {
         const newValue = (Number(value) || 0).toString();
-        this.setAttribute('translate-y', newValue);
+        this.setAttribute('target-translate-y', newValue);
       }
 
+      /**
+       * Selector of target to drag
+       * @return String
+       */
       get dragTarget() {
         return this.getAttribute('drag-target');
       }
 
+      /**
+       * Selector of target to drag
+       * @param value String
+       */
       set dragTarget(value) {
         this.setAttribute('drag-target', value.toString());
+      }
+
+      /**
+       * Constraint preset to apply on dragging
+       * @return String
+       */
+      get constraint() {
+        return this.getAttribute('constraint');
+      }
+
+      /**
+       * Constraint preset to apply on dragging
+       * ex: boundingClientRectOf("selector")
+       * circle(5, 7, 20)
+       * @param value String
+       */
+      set constraint(value) {
+        return this.setAttribute('constraint', value.toString());
+      }
+
+      get _constraintPreset() {
+        if (this._constraintPresetCached) {
+          return this._constraintPresetCached;
+        }
+        const constraint = this.constraint || '';
+        switch (true) {
+          case constraint.startsWith('boundingClientRectOf'): {
+            const selector = constraint.match(/("|')(.+)(\1)/)[2];
+            const constraintNode =
+              selector === 'parent' ? this.parentElement : this.ownerDocument.querySelector(selector);
+            const constraintsForBoundingClientRect =
+              getConstraintsForBoundingClientRect(this, constraintNode);
+            this._constraintPresetCached =
+              presetBoundingClientRect({ ...constraintsForBoundingClientRect });
+            break;
+          }
+          default:
+            this._constraintPresetCached = presetNoConstraint;
+        }
+        return this._constraintPresetCached;
       }
 
       get _targetToDrag() {
         if (this._cachedTargetToDrag) return this._cachedTargetToDrag;
         const targetToDrag =
-          this.getRootNode().querySelector(this.getAttribute('drag-target')) || this;
+          this.getRootNode().querySelector(this.dragTarget) || this;
         this._cachedTargetToDrag = targetToDrag;
         return this._cachedTargetToDrag;
       }
@@ -375,7 +502,7 @@ export default function getDBUIDraggable(win) {
         this._cachedTargetToDrag = null; // needed when drag-target attribute changes
         const targetToDrag = this._targetToDrag;
         targetToDrag.setAttribute('dbui-draggable-target', '');
-        targetToDrag.style.transform = `translate(${this.translateX}px,${this.translateY}px)`;
+        targetToDrag.style.transform = `translate(${this.targetTranslateX}px,${this.targetTranslateY}px)`;
         targetToDrag.style.transformOrigin = 'center';
       }
 
@@ -402,13 +529,13 @@ export default function getDBUIDraggable(win) {
       onAttributeChangedCallback(name, oldValue, newValue) {
         let valueToSet = null;
         switch (name) {
-          case 'translate-x':
+          case 'target-translate-x':
             valueToSet = (Number(newValue) || 0).toString();
-            this._targetToDrag.style.transform = `translate(${valueToSet}px,${this.translateY}px)`;
+            this._targetToDrag.style.transform = `translate(${valueToSet}px,${this.targetTranslateY}px)`;
             break;
-          case 'translate-y':
+          case 'target-translate-y':
             valueToSet = (Number(newValue) || 0).toString();
-            this._targetToDrag.style.transform = `translate(${this.translateX}px,${valueToSet}px)`;
+            this._targetToDrag.style.transform = `translate(${this.targetTranslateX}px,${valueToSet}px)`;
             break;
           case 'drag-target':
             this._resetTargetToDrag();
@@ -421,12 +548,21 @@ export default function getDBUIDraggable(win) {
 
       /**
        * Can be overridden
-       * @param translateX Number
-       * @param translateY Number
-       * @return Object { translateX: Number, translateY: Number }
+       * @param targetTranslateX Number
+       * @param targetTranslateY Number
+       * @param targetWidthOnStart Number
+       * @param targetHeightOnStart Number
+       * @return Object {
+       *  targetTranslateX: Number, targetTranslateY: Number
+       * }
        */
-      applyCorrection({ translateX, translateY }) {
-        return { translateX, translateY };
+      applyCorrection({ targetTranslateX, targetTranslateY, targetWidthOnStart, targetHeightOnStart }) {
+        // different algorithms for different constraints/presets
+        // if overridden by consumer the constraints/presets are ignored
+        return this._constraintPreset({
+          targetTranslateX, targetTranslateY,
+          targetWidthOnStart, targetHeightOnStart
+        });
       }
 
     }
