@@ -5,6 +5,7 @@ export default function inIframe({
   const iframe = document.createElement('iframe');
   iframe.style.width = '100%';
   iframe.style.height = '100%';
+  iframe.scrolling = 'yes';
   iframe.src = ''; // !!! important for being able to tap on input elements
   iframe.addEventListener('load', (evt) => {
     const target = evt.target;

@@ -20,6 +20,17 @@ before(() => {
   testingContainer.style.width = '100%';
   testingContainer.style.height = '500px';
   document.body.insertBefore(testingContainer, document.querySelector('#mocha'));
+
+  const testStyle = document.createElement('style');
+  testStyle.innerHTML = `
+  #testing {
+    /* background-color: gray; */
+    /* https://davidwalsh.name/scroll-iframes-ios */
+    /* -webkit-overflow-scrolling: touch; */
+    /* overflow-y: scroll; */
+  }
+  `;
+  document.querySelector('head').appendChild(testStyle);
 });
 
 after(() => {

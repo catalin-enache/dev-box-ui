@@ -6,16 +6,12 @@ import ensureSingleRegistration from '../../../internals/ensureSingleRegistratio
 const events = {
   mouse: {
     mousemove() {
-      return (evt) => doMove(evt);
+      return (evt) => {
+        evt.which === 1 ? doMove(evt) : unregisterDocumentEvents(evt);
+      };
     },
     mouseup() {
       return (evt) => unregisterDocumentEvents(evt);
-    },
-    mouseout() {
-      return (evt) => {
-        const nodeName = ((evt.relatedTarget || {}).nodeName || 'HTML').toString();
-        nodeName === 'HTML' && unregisterDocumentEvents(evt);
-      };
     }
   },
   touch: {
@@ -75,7 +71,6 @@ function unregisterDocumentEvents(evt) {
   const { doc, win } = getDocAndWin(evt);
 
   const self = getElementBeingDragged(evt);
-
   if (!self) {
     // may occur when
     // 1. touchstart inside draggable
@@ -178,9 +173,10 @@ function extractSingleEvent(evt) {
  *
  * @param evt MouseEvent || TouchEvent always coming from Draggable
  * @return {
- * pointerXOnStart: Number, pointerYOnStart: Number,
  * targetTranslatedXOnStart: Number, targetTranslatedYOnStart: Number,
- * targetWidthOnStart: Number, targetHeightOnStart: Number
+ * targetWidthOnStart: Number, targetHeightOnStart: Number,
+ * targetXOnStart: Number, targetYOnStart: Number,
+ * pointerXOnStart: Number, pointerYOnStart: Number,
  * }
  */
 function getMeasurements(evt) {
@@ -192,15 +188,25 @@ function getMeasurements(evt) {
   const matrix = targetStyle.transform.match(/-?\d*\.?\d+/g).map(Number);
   const targetBoundingRect = targetToDrag.getBoundingClientRect();
   const extractedEvent = extractSingleEvent(evt);
+  const winScrollX = win.scrollX;
+  const winScrollY = win.scrollY;
 
-  const { width: targetWidthOnStart, height: targetHeightOnStart } = targetBoundingRect;
-  const { clientX: pointerXOnStart, clientY: pointerYOnStart } = extractedEvent;
+  const {
+    width: targetWidthOnStart, height: targetHeightOnStart,
+    x: _targetXOnStart, y: _targetYOnStart
+  } = targetBoundingRect;
+  const { clientX: _pointerXOnStart, clientY: _pointerYOnStart } = extractedEvent;
   const [targetTranslatedXOnStart, targetTranslatedYOnStart] = [matrix[4], matrix[5]];
+  const targetXOnStart = _targetXOnStart + winScrollX;
+  const targetYOnStart = _targetYOnStart + winScrollY;
+  const pointerXOnStart = _pointerXOnStart + winScrollX;
+  const pointerYOnStart = _pointerYOnStart + winScrollY;
 
   return {
-    pointerXOnStart, pointerYOnStart,
     targetTranslatedXOnStart, targetTranslatedYOnStart,
-    targetWidthOnStart, targetHeightOnStart
+    targetWidthOnStart, targetHeightOnStart,
+    targetXOnStart, targetYOnStart,
+    pointerXOnStart, pointerYOnStart
   };
 }
 
@@ -266,21 +272,35 @@ function doMove(_evt) {
     }
 
     const {
-      pointerXOnStart, pointerYOnStart,
       targetTranslatedXOnStart, targetTranslatedYOnStart,
-      targetWidthOnStart, targetHeightOnStart
+      targetWidthOnStart, targetHeightOnStart,
+      targetXOnStart, targetYOnStart,
+      pointerXOnStart, pointerYOnStart,
     } = self._measurements;
+    const winScrollX = win.scrollX;
+    const winScrollY = win.scrollY;
+    const pointerX = evt.clientX + winScrollX;
+    const pointerY = evt.clientY + winScrollY;
     const [pointerDistanceX, pointerDistanceY] =
-      [evt.clientX - pointerXOnStart, evt.clientY - pointerYOnStart];
+      [pointerX - pointerXOnStart, pointerY - pointerYOnStart];
 
     const nextTargetTranslateX = targetTranslatedXOnStart + pointerDistanceX;
     const nextTargetTranslateY = targetTranslatedYOnStart + pointerDistanceY;
+    const targetX = targetXOnStart + pointerDistanceX;
+    const targetY = targetYOnStart + pointerDistanceY;
+    const targetOriginalX = targetX - nextTargetTranslateX;
+    const targetOriginalY = targetY - nextTargetTranslateY;
 
     const { targetTranslateX: revisedTranslateX, targetTranslateY: revisedTranslateY } =
       self.applyCorrection({
-        targetTranslateX: nextTargetTranslateX,
-        targetTranslateY: nextTargetTranslateY,
-        targetWidthOnStart, targetHeightOnStart
+        targetWidthOnStart, targetHeightOnStart,
+        targetXOnStart, targetYOnStart,
+        targetTranslatedXOnStart, targetTranslatedYOnStart,
+        targetTranslateX: nextTargetTranslateX, targetTranslateY: nextTargetTranslateY,
+        targetX, targetY,
+        targetOriginalX, targetOriginalY,
+        pointerXOnStart, pointerYOnStart,
+        pointerX, pointerY
       });
 
     self.targetTranslateX = revisedTranslateX;
@@ -288,26 +308,20 @@ function doMove(_evt) {
 
     self.dispatchEvent(new win.CustomEvent('translate', {
       detail: {
-        targetTranslateX: revisedTranslateX,
-        targetTranslateY: revisedTranslateY
+        targetWidthOnStart, targetHeightOnStart,
+        targetXOnStart, targetYOnStart,
+        targetTranslatedXOnStart, targetTranslatedYOnStart,
+        targetTranslateX: revisedTranslateX, targetTranslateY: revisedTranslateY,
+        targetX: targetX - (nextTargetTranslateX - revisedTranslateX),
+        targetY: targetY - (nextTargetTranslateY - revisedTranslateY),
+        targetOriginalX, targetOriginalY,
+        pointerXOnStart, pointerYOnStart,
+        pointerX, pointerY
       }
     }));
     self._dragRunning = false;
   });
 }
-
-const presetBoundingClientRect =
-({ rectWidth, rectHeight, offsetX, offsetY }) =>
-  ({ targetTranslateX, targetTranslateY, targetWidthOnStart, targetHeightOnStart }) => {
-    const maxX = rectWidth - targetWidthOnStart;
-    const maxY = rectHeight - targetHeightOnStart;
-    const _offsetX = offsetX; // 5
-    const _offsetY = offsetY; // -190
-    const revisedTranslateX = Math.max(_offsetX, Math.min(targetTranslateX, maxX + _offsetX));
-    const revisedTranslateY = Math.max(_offsetY, Math.min(targetTranslateY, maxY + _offsetY));
-
-    return { targetTranslateX: revisedTranslateX, targetTranslateY: revisedTranslateY };
-  };
 
 const getConstraintsForBoundingClientRect = (targetNode, constraintNode) => {
   const win = targetNode.ownerDocument.defaultView;
@@ -329,11 +343,43 @@ const getConstraintsForBoundingClientRect = (targetNode, constraintNode) => {
   return { offsetX, offsetY, rectWidth, rectHeight };
 };
 
+const presetBoundingClientRect =
+({ rectWidth, rectHeight, offsetX, offsetY }) =>
+  ({
+    targetTranslateX, targetTranslateY, targetWidthOnStart, targetHeightOnStart
+  }) => {
+    const maxX = rectWidth - targetWidthOnStart;
+    const maxY = rectHeight - targetHeightOnStart;
+    const _offsetX = offsetX;
+    const _offsetY = offsetY;
+    const revisedTranslateX = Math.max(_offsetX, Math.min(targetTranslateX, maxX + _offsetX));
+    const revisedTranslateY = Math.max(_offsetY, Math.min(targetTranslateY, maxY + _offsetY));
+
+    return { targetTranslateX: revisedTranslateX, targetTranslateY: revisedTranslateY };
+  };
+
 const presetCircle =
 ({ cx, cy, radius }) =>
-  ({ targetTranslateX, targetTranslateY, targetWidthOnStart, targetHeightOnStart }) => {
+  ({
+    targetWidthOnStart, targetHeightOnStart,
+    targetOriginalX, targetOriginalY,
+    pointerX, pointerY
+  }) => {
+    const xDistance = (pointerX) - cx;
+    const yDistance = (pointerY) - cy;
+    const distanceFromCenter = Math.sqrt((xDistance ** 2) + (yDistance ** 2));
+    const cos = xDistance / distanceFromCenter;
+    const sin = yDistance / distanceFromCenter;
+    const newAbsX = (radius * cos) + cx;
+    const newAbsY = (radius * sin) + cy;
+    const targetHalfWidth = targetWidthOnStart / 2;
+    const targetHalfHeight = targetHeightOnStart / 2;
 
-};
+    return {
+      targetTranslateX: newAbsX - targetOriginalX - targetHalfWidth,
+      targetTranslateY: newAbsY - targetOriginalY - targetHalfHeight
+    };
+  };
 
 const presetNoConstraint =
 ({ targetTranslateX, targetTranslateY }) => {
@@ -342,8 +388,7 @@ const presetNoConstraint =
 
 /*
 TODO:
-4.
-steps ?
+4. steps ?
 */
 
 const registrationName = 'dbui-draggable';
@@ -387,11 +432,22 @@ export default function getDBUIDraggable(win) {
       }
 
       static get propertiesToUpgrade() {
-        return [...super.propertiesToUpgrade, 'applyCorrection', 'targetTranslateX', 'targetTranslateY', 'dragTarget', 'constraint'];
+        return [...super.propertiesToUpgrade,
+          'applyCorrection',
+          'targetTranslateX',
+          'targetTranslateY',
+          'dragTarget',
+          'constraint'
+        ];
       }
 
       static get observedAttributes() {
-        return [...super.observedAttributes, 'target-translate-x', 'target-translate-y', 'drag-target', 'constraint'];
+        return [...super.observedAttributes,
+          'target-translate-x',
+          'target-translate-y',
+          'drag-target',
+          'constraint'
+        ];
       }
 
       constructor() {
@@ -484,6 +540,11 @@ export default function getDBUIDraggable(win) {
               presetBoundingClientRect({ ...constraintsForBoundingClientRect });
             break;
           }
+          case constraint.startsWith('circle'): {
+            const [cx, cy, radius] = constraint.match(/\d+/g).map(Number);
+            this._constraintPresetCached = presetCircle({ cx, cy, radius });
+            break;
+          }
           default:
             this._constraintPresetCached = presetNoConstraint;
         }
@@ -548,20 +609,47 @@ export default function getDBUIDraggable(win) {
 
       /**
        * Can be overridden
-       * @param targetTranslateX Number
-       * @param targetTranslateY Number
        * @param targetWidthOnStart Number
        * @param targetHeightOnStart Number
+       * @param targetXOnStart Number
+       * @param targetYOnStart Number
+       * @param targetTranslatedXOnStart Number
+       * @param targetTranslatedYOnStart Number
+       * @param targetTranslateX Number
+       * @param targetTranslateY Number
+       * @param targetX Number
+       * @param targetY Number
+       * @param targetOriginalX Number
+       * @param targetOriginalY Number
+       * @param pointerXOnStart Number
+       * @param pointerYOnStart Number
+       * @param pointerX Number
+       * @param pointerY Number
        * @return Object {
        *  targetTranslateX: Number, targetTranslateY: Number
        * }
        */
-      applyCorrection({ targetTranslateX, targetTranslateY, targetWidthOnStart, targetHeightOnStart }) {
+      applyCorrection({
+        targetWidthOnStart, targetHeightOnStart,
+        targetXOnStart, targetYOnStart,
+        targetTranslatedXOnStart, targetTranslatedYOnStart,
+        targetTranslateX, targetTranslateY,
+        targetX, targetY,
+        targetOriginalX, targetOriginalY,
+        pointerXOnStart, pointerYOnStart,
+        pointerX, pointerY
+      }) {
         // different algorithms for different constraints/presets
         // if overridden by consumer the constraints/presets are ignored
         return this._constraintPreset({
+          targetWidthOnStart, targetHeightOnStart,
+          targetXOnStart, targetYOnStart,
+          targetTranslatedXOnStart, targetTranslatedYOnStart,
           targetTranslateX, targetTranslateY,
-          targetWidthOnStart, targetHeightOnStart
+          targetX, targetY,
+          targetOriginalX, targetOriginalY,
+          pointerXOnStart, pointerYOnStart,
+          pointerX, pointerY
         });
       }
 
