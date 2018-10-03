@@ -344,7 +344,7 @@ const getConstraintsForBoundingClientRect = (targetNode, constraintNode) => {
 };
 
 const presetBoundingClientRect =
-({ rectWidth, rectHeight, offsetX, offsetY }) =>
+({ rectWidth, rectHeight, offsetX, offsetY, stepsX=0, stepsY=0 }) =>
   ({
     targetTranslateX, targetTranslateY, targetWidthOnStart, targetHeightOnStart
   }) => {
@@ -359,7 +359,7 @@ const presetBoundingClientRect =
   };
 
 const presetCircle =
-({ cx, cy, radius }) =>
+({ cx, cy, radius, steps=0 }) =>
   ({
     targetWidthOnStart, targetHeightOnStart,
     targetOriginalX, targetOriginalY,
@@ -535,25 +535,40 @@ export default function getDBUIDraggable(win) {
           return this._cachedConstraintPreset;
         }
         const constraint = this.constraint || '';
-        switch (true) {
-          case constraint.startsWith('boundingClientRectOf'): {
-            const selector = constraint.match(/("|')(.+)(\1)/)[2];
-            const constraintNode =
-              selector === 'parent' ? this.parentElement : this.ownerDocument.querySelector(selector);
-            const constraintsForBoundingClientRect =
-              getConstraintsForBoundingClientRect(this, constraintNode);
-            this._cachedConstraintPreset =
-              presetBoundingClientRect({ ...constraintsForBoundingClientRect });
-            break;
-          }
-          case constraint.startsWith('circle'): {
-            const [cx, cy, radius] = constraint.match(/\d+/g).map(Number);
-            this._cachedConstraintPreset = presetCircle({ cx, cy, radius });
-            break;
-          }
-          default:
-            this._cachedConstraintPreset = presetNoConstraint;
+
+        if (!constraint) {
+          this._cachedConstraintPreset = presetNoConstraint;
+          return this._cachedConstraintPreset;
         }
+
+        try {
+          const jsonString = constraint.match(/\((.+)\)/)[1];
+          const data = JSON.parse(jsonString);
+          switch (true) {
+            case constraint.startsWith('boundingClientRectOf'): {
+              const { selector, stepsX, stepsY } = data;
+              const constraintNode =
+              selector === 'parent' ?
+                this.parentElement :
+                this.ownerDocument.querySelector(selector);
+              const constraintsForBoundingClientRect =
+                getConstraintsForBoundingClientRect(this, constraintNode);
+              this._cachedConstraintPreset =
+                presetBoundingClientRect({ ...constraintsForBoundingClientRect, stepsX, stepsY });
+              break;
+            }
+            case constraint.startsWith('circle'): {
+              const { cx, cy, radius, steps } = data;
+              this._cachedConstraintPreset = presetCircle({ cx, cy, radius, steps });
+              break;
+            }
+            default:
+              // pass
+          }
+        } catch (_) {
+          throw new Error(`Invalid constraint ${constraint}`);
+        }
+
         return this._cachedConstraintPreset;
       }
 
