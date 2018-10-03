@@ -234,7 +234,7 @@ function handleTouchStart(evt) {
 function onPointerDown(evt) {
   evt.preventDefault(); // prevents TouchEvent to trigger MouseEvent
   const self = evt.currentTarget;
-  self._constraintPresetCached = null;
+  self._cachedConstraintPreset = null;
   self._measurements = getMeasurements(evt);
   registerDocumentEvents(evt);
 }
@@ -453,11 +453,12 @@ export default function getDBUIDraggable(win) {
       constructor() {
         super();
         this._cachedTargetToDrag = null;
+        this._cachedConstraintPreset = null;
         this._dbuiDraggable = true;
       }
 
       /**
-       * x translation of target
+       * Get X translation of target.
        * @return Number
        */
       get targetTranslateX() {
@@ -465,7 +466,7 @@ export default function getDBUIDraggable(win) {
       }
 
       /**
-       * x translation of target
+       * Set X translation of target.
        * @param value Number | String
        */
       set targetTranslateX(value) {
@@ -474,7 +475,7 @@ export default function getDBUIDraggable(win) {
       }
 
       /**
-       * y translation of target
+       * Get Y translation of target.
        * @return Number
        */
       get targetTranslateY() {
@@ -482,7 +483,7 @@ export default function getDBUIDraggable(win) {
       }
 
       /**
-       * y translation of target
+       * Set Y translation of target.
        * @param value Number | String
        */
       set targetTranslateY(value) {
@@ -491,7 +492,7 @@ export default function getDBUIDraggable(win) {
       }
 
       /**
-       * Selector of target to drag
+       * Get Selector of target to drag.
        * @return String
        */
       get dragTarget() {
@@ -499,7 +500,7 @@ export default function getDBUIDraggable(win) {
       }
 
       /**
-       * Selector of target to drag
+       * Set Selector of target to drag.
        * @param value String
        */
       set dragTarget(value) {
@@ -507,7 +508,7 @@ export default function getDBUIDraggable(win) {
       }
 
       /**
-       * Constraint preset to apply on dragging
+       * Get constraint preset to apply on dragging.
        * @return String
        */
       get constraint() {
@@ -515,7 +516,7 @@ export default function getDBUIDraggable(win) {
       }
 
       /**
-       * Constraint preset to apply on dragging
+       * Set constraint preset to apply on dragging
        * ex: boundingClientRectOf("selector")
        * circle(5, 7, 20)
        * @param value String
@@ -524,9 +525,14 @@ export default function getDBUIDraggable(win) {
         return this.setAttribute('constraint', value.toString());
       }
 
+      /**
+       * Evaluated on drag start, cached while dragging.
+       * @return Function to apply correction.
+       * @private
+       */
       get _constraintPreset() {
-        if (this._constraintPresetCached) {
-          return this._constraintPresetCached;
+        if (this._cachedConstraintPreset) {
+          return this._cachedConstraintPreset;
         }
         const constraint = this.constraint || '';
         switch (true) {
@@ -536,19 +542,19 @@ export default function getDBUIDraggable(win) {
               selector === 'parent' ? this.parentElement : this.ownerDocument.querySelector(selector);
             const constraintsForBoundingClientRect =
               getConstraintsForBoundingClientRect(this, constraintNode);
-            this._constraintPresetCached =
+            this._cachedConstraintPreset =
               presetBoundingClientRect({ ...constraintsForBoundingClientRect });
             break;
           }
           case constraint.startsWith('circle'): {
             const [cx, cy, radius] = constraint.match(/\d+/g).map(Number);
-            this._constraintPresetCached = presetCircle({ cx, cy, radius });
+            this._cachedConstraintPreset = presetCircle({ cx, cy, radius });
             break;
           }
           default:
-            this._constraintPresetCached = presetNoConstraint;
+            this._cachedConstraintPreset = presetNoConstraint;
         }
-        return this._constraintPresetCached;
+        return this._cachedConstraintPreset;
       }
 
       get _targetToDrag() {
@@ -602,21 +608,27 @@ export default function getDBUIDraggable(win) {
             this._resetTargetToDrag();
             this._initializeTargetToDrag();
             break;
+          case 'constraint':
+            // pass
+            // _constraintPreset is evaluated on drag start.
+            break;
           default:
             // pass
         }
       }
 
       /**
-       * Can be overridden
+       * Applies correction on suggested translated coordinates.
+       * Can be overridden.
+       * If overridden by consumer the constraint presets are ignored.
        * @param targetWidthOnStart Number
        * @param targetHeightOnStart Number
        * @param targetXOnStart Number
        * @param targetYOnStart Number
        * @param targetTranslatedXOnStart Number
        * @param targetTranslatedYOnStart Number
-       * @param targetTranslateX Number
-       * @param targetTranslateY Number
+       * @param targetTranslateX Number (Suggested translation).
+       * @param targetTranslateY Number (Suggested translation).
        * @param targetX Number
        * @param targetY Number
        * @param targetOriginalX Number
@@ -639,8 +651,7 @@ export default function getDBUIDraggable(win) {
         pointerXOnStart, pointerYOnStart,
         pointerX, pointerY
       }) {
-        // different algorithms for different constraints/presets
-        // if overridden by consumer the constraints/presets are ignored
+        // Different algorithms for different constraint presets.
         return this._constraintPreset({
           targetWidthOnStart, targetHeightOnStart,
           targetXOnStart, targetYOnStart,
