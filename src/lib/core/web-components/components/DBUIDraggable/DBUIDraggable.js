@@ -416,16 +416,17 @@ const presetCircle =
 
     const fullRotation = 2 * Math.PI;
     const radians = quadrant < 3 ? _rad : fullRotation - _rad;
-    // for circle first step (0) === last step (2 * Math.PI)
-    const { value: radiansStep, index: stepIndex } =
-      getStep(0, fullRotation, radians, steps ? steps + 1 : 0);
     const degrees = (radians * 180) / Math.PI;
+    // for circle first step (0) === last step (2 * Math.PI or 360deg)
+    const { value: degreeStep, index: stepIndex } =
+      getStep(0, 360, degrees, steps ? steps + 1 : 0);
+    const radiansStep = (degreeStep * Math.PI) / 180;
 
-    const cos = Math.cos(radiansStep);
-    const sin = Math.sin(radiansStep);
+    const cos = +Math.cos(radiansStep).toFixed(15);
+    const sin = +Math.sin(radiansStep).toFixed(15);
 
     const newAbsX = (radius * cos) + cx;
-    const newAbsY = ((radius * sin) * -1) + cy;
+    const newAbsY = ((radius * sin) * -1) + cy; // TODO: document why!
 
     const revisedTargetTranslateX = newAbsX - targetOriginalX - targetHalfWidth;
     const revisedTargetTranslateY = newAbsY - targetOriginalY - targetHalfHeight;
@@ -439,6 +440,7 @@ const presetCircle =
       degrees,
       percent,
       radiansStep,
+      degreeStep,
       stepIndex,
       cos, sin,
       _cos, _sin

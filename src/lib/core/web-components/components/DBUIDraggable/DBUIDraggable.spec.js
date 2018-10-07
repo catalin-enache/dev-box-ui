@@ -177,10 +177,10 @@ describe('DBUIDraggable', () => {
             targetTranslateX,
             targetTranslateY,
             radians, degrees,
-            percent, radiansStep, stepIndex,
+            percent, radiansStep, stepIndex, degreeStep,
             cos, sin, _cos, _sin
           } = evt.detail;
-          console.log('draggableFour', { _sin, sin });
+          console.log('draggableFour', { percent });
         });
 
         Promise.all([
