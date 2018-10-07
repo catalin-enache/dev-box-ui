@@ -291,7 +291,11 @@ function doMove(_evt) {
     const targetOriginalX = targetX - nextTargetTranslateX;
     const targetOriginalY = targetY - nextTargetTranslateY;
 
-    const { targetTranslateX: revisedTranslateX, targetTranslateY: revisedTranslateY } =
+    const {
+      targetTranslateX: revisedTranslateX,
+      targetTranslateY: revisedTranslateY,
+      ...rest
+    } =
       self.applyCorrection({
         targetWidthOnStart, targetHeightOnStart,
         targetXOnStart, targetYOnStart,
@@ -316,12 +320,39 @@ function doMove(_evt) {
         targetY: targetY - (nextTargetTranslateY - revisedTranslateY),
         targetOriginalX, targetOriginalY,
         pointerXOnStart, pointerYOnStart,
-        pointerX, pointerY
+        pointerX, pointerY,
+        ...rest
       }
     }));
     self._dragRunning = false;
   });
 }
+
+const getStep = (minX, maxX, x, steps) => {
+  const _steps = Number(steps);
+  if (!_steps || _steps < 2) {
+    return { value: x, index: undefined };
+  }
+  const interval = maxX - minX;
+  const stepSize = interval / (_steps - 1);
+  const allSteps = [];
+  let minDist = Infinity;
+  let idx = null;
+  for (let i = 1; i <= _steps; i += 1) {
+    if (i === 1) {
+      allSteps.push(minX);
+    } else if (i === _steps) {
+      allSteps.push(maxX);
+    } else {
+      allSteps.push(minX + ((i - 1) * stepSize));
+    }
+    if (Math.abs(allSteps[i - 1] - x) < minDist) {
+      minDist = Math.abs(allSteps[i - 1] - x);
+      idx = i - 1;
+    }
+  }
+  return { value: allSteps[idx], index: idx };
+};
 
 const getConstraintsForBoundingClientRect = (targetNode, constraintNode) => {
   const win = targetNode.ownerDocument.defaultView;
@@ -344,7 +375,7 @@ const getConstraintsForBoundingClientRect = (targetNode, constraintNode) => {
 };
 
 const presetBoundingClientRect =
-({ rectWidth, rectHeight, offsetX, offsetY, stepsX=0, stepsY=0 }) =>
+({ rectWidth, rectHeight, offsetX, offsetY, stepsX = 0, stepsY = 0 }) =>
   ({
     targetTranslateX, targetTranslateY, targetWidthOnStart, targetHeightOnStart
   }) => {
@@ -355,29 +386,62 @@ const presetBoundingClientRect =
     const revisedTranslateX = Math.max(_offsetX, Math.min(targetTranslateX, maxX + _offsetX));
     const revisedTranslateY = Math.max(_offsetY, Math.min(targetTranslateY, maxY + _offsetY));
 
-    return { targetTranslateX: revisedTranslateX, targetTranslateY: revisedTranslateY };
+
+    const { value: stepX } = getStep(_offsetX, maxX + _offsetX, revisedTranslateX, stepsX);
+    const { value: stepY } = getStep(_offsetY, maxY + _offsetY, revisedTranslateY, stepsY);
+    return { targetTranslateX: stepX, targetTranslateY: stepY };
   };
 
 const presetCircle =
-({ cx, cy, radius, steps=0 }) =>
+({ cx, cy, radius, steps = 0 }) =>
   ({
     targetWidthOnStart, targetHeightOnStart,
     targetOriginalX, targetOriginalY,
     pointerX, pointerY
   }) => {
+    const targetHalfWidth = targetWidthOnStart / 2;
+    const targetHalfHeight = targetHeightOnStart / 2;
     const xDistance = (pointerX) - cx;
     const yDistance = (pointerY) - cy;
     const distanceFromCenter = Math.sqrt((xDistance ** 2) + (yDistance ** 2));
-    const cos = xDistance / distanceFromCenter;
-    const sin = yDistance / distanceFromCenter;
+    const _cos = xDistance / distanceFromCenter;
+    const _sin = yDistance / distanceFromCenter;
+
+    const quadrant =
+      _sin <= 0 && _cos >= 0 ? 1 :
+        _sin <= 0 && _cos <= 0 ? 2 :
+          _sin >= 0 && _cos <= 0 ? 3 :
+            4; // _sin >= 0 && _cos >= 0
+    const _rad = Math.acos(_cos);
+
+    const fullRotation = 2 * Math.PI;
+    const radians = quadrant < 3 ? _rad : fullRotation - _rad;
+    // for circle first step (0) === last step (2 * Math.PI)
+    const { value: radiansStep, index: stepIndex } =
+      getStep(0, fullRotation, radians, steps ? steps + 1 : 0);
+    const degrees = (radians * 180) / Math.PI;
+
+    const cos = Math.cos(radiansStep);
+    const sin = Math.sin(radiansStep);
+
     const newAbsX = (radius * cos) + cx;
-    const newAbsY = (radius * sin) + cy;
-    const targetHalfWidth = targetWidthOnStart / 2;
-    const targetHalfHeight = targetHeightOnStart / 2;
+    const newAbsY = ((radius * sin) * -1) + cy;
+
+    const revisedTargetTranslateX = newAbsX - targetOriginalX - targetHalfWidth;
+    const revisedTargetTranslateY = newAbsY - targetOriginalY - targetHalfHeight;
+
+    const percent = radiansStep / fullRotation;
 
     return {
-      targetTranslateX: newAbsX - targetOriginalX - targetHalfWidth,
-      targetTranslateY: newAbsY - targetOriginalY - targetHalfHeight
+      targetTranslateX: revisedTargetTranslateX,
+      targetTranslateY: revisedTargetTranslateY,
+      radians,
+      degrees,
+      percent,
+      radiansStep,
+      stepIndex,
+      cos, sin,
+      _cos, _sin
     };
   };
 
@@ -388,7 +452,8 @@ const presetNoConstraint =
 
 /*
 TODO:
-4. steps ?
+4. improve presets algorithms
+5. improve code where possible
 */
 
 const registrationName = 'dbui-draggable';

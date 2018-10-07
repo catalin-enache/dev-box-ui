@@ -135,7 +135,7 @@ describe('DBUIDraggable', () => {
         // draggableTwo.constraint = `boundingClientRect(${rectWidth}, ${rectHeight})`;
 
         draggableTwo.constraint =
-          'boundingClientRectOf({ "selector": "#wrapper-draggable-one", "stepsX": 10, "stepsY": 2})';
+          'boundingClientRectOf({ "selector": "#wrapper-draggable-one", "stepsX": 2, "stepsY": 0})';
 
         // draggableTwo.applyCorrection = ({ targetTranslateX, targetTranslateY, targetWidthOnStart, targetHeightOnStart }) => {
         //   const computedStyle = contentWindow.getComputedStyle(wrapperDraggableTwo, null);
@@ -171,6 +171,17 @@ describe('DBUIDraggable', () => {
 
         draggableFour.constraint =
           'circle({ "cx": 190, "cy":790, "radius":175, "steps": 12 })';
+
+        draggableFour.addEventListener('translate', (evt) => {
+          const {
+            targetTranslateX,
+            targetTranslateY,
+            radians, degrees,
+            percent, radiansStep, stepIndex,
+            cos, sin, _cos, _sin
+          } = evt.detail;
+          console.log('draggableFour', { _sin, sin });
+        });
 
         Promise.all([
           DBUIDraggable.registrationName,
