@@ -2,9 +2,54 @@ import { expect } from 'chai';
 import inIframe from '../../../../../../testUtils/inIframe';
 import getDBUIDraggable from './DBUIDraggable';
 import { sendTapEvent } from '../../../../../../testUtils/simulateEvents';
+import getDBUIWebComponentCore from '../DBUIWebComponentCore/DBUIWebComponentCore';
+import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
+
+const dummyCompRegistrationName = 'dummy-comp';
+function getDummyComp(win) {
+  return ensureSingleRegistration(win, dummyCompRegistrationName, () => {
+    const {
+      DBUIWebComponentBase,
+      defineCommonStaticMethods,
+      Registerable
+    } = getDBUIWebComponentCore(win);
+
+    const DBUIDraggable = getDBUIDraggable(win);
+
+    class DummyComp extends DBUIWebComponentBase {
+
+      static get registrationName() {
+        return dummyCompRegistrationName;
+      }
+
+      static get dependencies() {
+        return [...super.dependencies, DBUIDraggable];
+      }
+
+      static get templateInnerHTML() {
+        return `
+          <style></style>
+          <div>
+            <div id="one">draggable</div>
+            <dbui-draggable drag-target="#one">
+              <p>dragger</p>
+            </dbui-draggable>
+          </div>
+        `;
+      }
+    }
+
+    return Registerable(
+      defineCommonStaticMethods(
+        DummyComp
+      )
+    );
+  });
+}
+getDummyComp.registrationName = dummyCompRegistrationName;
 
 describe('DBUIDraggable', () => {
-  it.only('behaves as expected', (done) => {
+  xit('behaves as expected', (done) => {
     inIframe({
       headStyle: `
       body, html { padding: 0px; margin: 0px; }
@@ -205,7 +250,7 @@ describe('DBUIDraggable', () => {
     });
   });
 
-  xit('is dragged on pointer move', (done) => {
+  it('is dragged on pointer move', (done) => {
     inIframe({
       headStyle: `
       body, html { padding: 0px; margin: 0px; }
@@ -292,4 +337,235 @@ describe('DBUIDraggable', () => {
       }
     });
   });
+
+  it('is unselectable', (done) => {
+    inIframe({
+      headStyle: `
+      `,
+      bodyHTML: `
+      <dbui-draggable id="draggable-one">
+        <div id="draggable-one-content">content</div>
+      </dbui-draggable>
+      `,
+      onLoad: ({ contentWindow, iframe }) => {
+        const DBUIDraggable = getDBUIDraggable(contentWindow);
+        const draggableOne = contentWindow.document.querySelector('#draggable-one');
+        Promise.all([
+          DBUIDraggable.registrationName,
+        ].map((localName) => contentWindow.customElements.whenDefined(localName)
+        )).then(() => {
+
+          expect(draggableOne.getAttribute('unselectable')).to.equal('');
+          draggableOne.remove();
+          expect(draggableOne.getAttribute('unselectable')).to.equal(null);
+
+          setTimeout(() => {
+            iframe.remove();
+            done();
+          }, 0);
+        });
+        expect(draggableOne.getAttribute('unselectable')).to.equal(null);
+        DBUIDraggable.registerSelf();
+      }
+    });
+  });
+
+  describe('propertiesToUpgrade', () => {
+    it('are upgraded', (done) => {
+      inIframe({
+        headStyle: `
+        `,
+        bodyHTML: `
+        <dbui-draggable id="draggable-one">
+          <div id="draggable-one-content">content</div>
+        </dbui-draggable>
+        `,
+        onLoad: ({ contentWindow, iframe }) => {
+          const DBUIDraggable = getDBUIDraggable(contentWindow);
+          const draggableOne = contentWindow.document.querySelector('#draggable-one');
+
+          const applyCorrection = function () { return this; };
+          const targetTranslateX = 5;
+          const targetTranslateY = 6;
+          const dragTarget = '#draggable-one';
+          const constraint = 'boundingClientRectOf({ "selector": "body"})';
+
+          draggableOne.applyCorrection = applyCorrection;
+          draggableOne.targetTranslateX = targetTranslateX;
+          draggableOne.targetTranslateY = targetTranslateY;
+          draggableOne.dragTarget = dragTarget;
+          draggableOne.constraint = constraint;
+
+          Promise.all([
+            DBUIDraggable.registrationName,
+          ].map((localName) => contentWindow.customElements.whenDefined(localName)
+          )).then(() => {
+
+            expect(draggableOne.getAttribute('target-translate-x')).to.equal(`${targetTranslateX}`);
+            expect(draggableOne.getAttribute('target-translate-y')).to.equal(`${targetTranslateY}`);
+            expect(draggableOne.getAttribute('drag-target')).to.equal(dragTarget);
+            expect(draggableOne.getAttribute('constraint')).to.equal(constraint);
+            expect(draggableOne.applyCorrection.call(null)).to.equal(draggableOne);
+            expect(draggableOne._applyCorrection).to.equal(draggableOne.applyCorrection);
+
+            setTimeout(() => {
+              iframe.remove();
+              done();
+            }, 0);
+          });
+          DBUIDraggable.registerSelf();
+        }
+      });
+    });
+  });
+
+  describe('observedAttributes', () => {
+    it('are kept in sync with instance getters', (done) => {
+      inIframe({
+        headStyle: `
+        `,
+        bodyHTML: `
+        <div id="one"></div>
+        <dbui-draggable
+          id="draggable-one"
+          target-translate-x="1"
+          target-translate-y="2"
+          drag-target="#one"
+          constraint='boundingClientRectOf({ "selector": "body"})'
+        >
+          <div id="draggable-one-content">content</div>
+        </dbui-draggable>
+        `,
+        onLoad: ({ contentWindow, iframe }) => {
+          const DBUIDraggable = getDBUIDraggable(contentWindow);
+          const draggableOne = contentWindow.document.querySelector('#draggable-one');
+
+          expect(draggableOne.targetTranslateX).to.equal(undefined);
+          expect(draggableOne.targetTranslateY).to.equal(undefined);
+          expect(draggableOne.dragTarget).to.equal(undefined);
+          expect(draggableOne.constraint).to.equal(undefined);
+
+          Promise.all([
+            DBUIDraggable.registrationName,
+          ].map((localName) => contentWindow.customElements.whenDefined(localName)
+          )).then(() => {
+
+            expect(draggableOne.targetTranslateX).to.equal(1);
+            expect(draggableOne.targetTranslateY).to.equal(2);
+            expect(draggableOne.dragTarget).to.equal('#one');
+            expect(draggableOne.constraint).to.equal('boundingClientRectOf({ "selector": "body"})');
+
+            setTimeout(() => {
+              iframe.remove();
+              done();
+            }, 0);
+          });
+          DBUIDraggable.registerSelf();
+        }
+      });
+    });
+  });
+
+  describe('_targetToDrag', () => {
+    describe('when dragTarget does not exist', () => {
+      it('returns self', (done) => {
+        inIframe({
+          headStyle: `
+          `,
+          bodyHTML: `
+          <dbui-draggable id="draggable-one">
+            <div id="draggable-one-content">content</div>
+          </dbui-draggable>
+          `,
+          onLoad: ({ contentWindow, iframe }) => {
+            const DBUIDraggable = getDBUIDraggable(contentWindow);
+            const draggableOne = contentWindow.document.querySelector('#draggable-one');
+
+            Promise.all([
+              DBUIDraggable.registrationName,
+            ].map((localName) => contentWindow.customElements.whenDefined(localName)
+            )).then(() => {
+
+              expect(draggableOne._targetToDrag).to.equal(draggableOne);
+
+              setTimeout(() => {
+                iframe.remove();
+                done();
+              }, 0);
+            });
+            DBUIDraggable.registerSelf();
+          }
+        });
+      });
+    });
+    describe('when DBUIDraggable is in light DOM', () => {
+      it('returns element in light DOM', (done) => {
+        inIframe({
+          headStyle: `
+          `,
+          bodyHTML: `
+          <div id="one"></div>
+          <dbui-draggable id="draggable-one" drag-target="#one">
+            <div id="draggable-one-content">content</div>
+          </dbui-draggable>
+          `,
+          onLoad: ({ contentWindow, iframe }) => {
+            const DBUIDraggable = getDBUIDraggable(contentWindow);
+            const one = contentWindow.document.querySelector('#one');
+            const draggableOne = contentWindow.document.querySelector('#draggable-one');
+
+            Promise.all([
+              DBUIDraggable.registrationName,
+            ].map((localName) => contentWindow.customElements.whenDefined(localName)
+            )).then(() => {
+
+              expect(draggableOne._targetToDrag).to.equal(one);
+
+              setTimeout(() => {
+                iframe.remove();
+                done();
+              }, 0);
+            });
+            DBUIDraggable.registerSelf();
+          }
+        });
+      });
+    });
+    describe('when DBUIDraggable is in shadow DOM', () => {
+      it('returns element in shadow DOM', (done) => {
+        inIframe({
+          headStyle: `
+          `,
+          bodyHTML: `
+          <dummy-comp></dummy-comp>
+          `,
+          onLoad: ({ contentWindow, iframe }) => {
+            const DummyComp = getDummyComp(contentWindow);
+            const dummyComp = contentWindow.document.querySelector('dummy-comp');
+
+            Promise.all([
+              DummyComp.registrationName,
+            ].map((localName) => contentWindow.customElements.whenDefined(localName)
+            )).then(() => {
+
+              const shadowDBUIDraggable =
+                dummyComp.shadowRoot.querySelector('dbui-draggable');
+              const shadowOne =
+                dummyComp.shadowRoot.querySelector('#one');
+              const _targetToDrag =
+                shadowDBUIDraggable._targetToDrag;
+              expect(_targetToDrag).to.equal(shadowOne);
+
+              setTimeout(() => {
+                iframe.remove();
+                done();
+              }, 0);
+            });
+            DummyComp.registerSelf();
+          }
+        });
+      });
+    });
+  });
+
 });

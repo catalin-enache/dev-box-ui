@@ -574,6 +574,14 @@ export default function getDBUIDraggable(win) {
         this.setAttribute('drag-target', value.toString());
       }
 
+      get applyCorrection() {
+        return this._applyCorrection;
+      }
+
+      set applyCorrection(funcValue) {
+        this._applyCorrection = funcValue.bind(this);
+      }
+
       /**
        * Get constraint preset to apply on dragging.
        * @return String
@@ -723,7 +731,7 @@ export default function getDBUIDraggable(win) {
        *  targetTranslateX: Number, targetTranslateY: Number
        * }
        */
-      applyCorrection({
+      _applyCorrection({
         targetWidthOnStart, targetHeightOnStart,
         targetXOnStart, targetYOnStart,
         targetTranslatedXOnStart, targetTranslatedYOnStart,
