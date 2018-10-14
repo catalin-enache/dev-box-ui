@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import inIframe from '../../../../../../testUtils/inIframe';
 import getDBUIDraggable from './DBUIDraggable';
+import { sendTapEvent } from '../../../../../../testUtils/simulateEvents';
 
 describe('DBUIDraggable', () => {
   it.only('behaves as expected', (done) => {
@@ -180,7 +181,7 @@ describe('DBUIDraggable', () => {
             percent, radiansStep, stepIndex, degreeStep,
             cos, sin, _cos, _sin
           } = evt.detail;
-          console.log('draggableFour', { percent });
+          console.log('draggableFour', { percent, stepIndex });
         });
 
         Promise.all([
@@ -197,6 +198,94 @@ describe('DBUIDraggable', () => {
             iframe.remove();
             done();
           }, 55000);
+        });
+
+        DBUIDraggable.registerSelf();
+      }
+    });
+  });
+
+  xit('is dragged on pointer move', (done) => {
+    inIframe({
+      headStyle: `
+      body, html { padding: 0px; margin: 0px; }
+      #container: { position: relative; }
+      #wrapper-draggable-one {
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        background: gray;
+      }
+      #draggable-one-content {
+        background: indianred;
+        width: 100px;
+        height: 100px;
+      }
+      `,
+      bodyHTML: `
+      <div id="container">
+        <div id="wrapper-draggable-one">
+          <dbui-draggable id="draggable-one">
+            <div id="draggable-one-content"></div>
+          </dbui-draggable>
+        </div>
+      </div>
+      `,
+      onLoad: ({ contentWindow, iframe }) => {
+        const DBUIDraggable = getDBUIDraggable(contentWindow);
+        const draggableOne = contentWindow.document.querySelector('#draggable-one');
+        Promise.all([
+          DBUIDraggable.registrationName,
+        ].map((localName) => contentWindow.customElements.whenDefined(localName)
+        )).then(() => {
+
+          const doTest = (evt) => {
+            expect(evt.detail).to.eql({
+              pointerX: 15,
+              pointerXOnStart: 5,
+              pointerY: 15,
+              pointerYOnStart: 5,
+              targetHeightOnStart: 100,
+              targetOriginalX: 5,
+              targetOriginalY: 5,
+              targetTranslateX: 10,
+              targetTranslateY: 10,
+              targetTranslatedXOnStart: 0,
+              targetTranslatedYOnStart: 0,
+              targetWidthOnStart: 100,
+              targetX: 15,
+              targetXOnStart: 5,
+              targetY: 15,
+              targetYOnStart: 5
+            });
+          };
+
+          let translateEvent = null;
+          draggableOne.addEventListener('translate', (evt) => {
+            translateEvent = evt;
+          });
+
+          contentWindow.requestAnimationFrame(() => {
+            setTimeout(() => {
+              sendTapEvent(draggableOne, 'start', {
+                clientX: 5, clientY: 5
+              });
+              contentWindow.requestAnimationFrame(() => {
+                setTimeout(() => {
+                  sendTapEvent(draggableOne, 'move', {
+                    clientX: 15, clientY: 15
+                  });
+                  contentWindow.requestAnimationFrame(() => {
+                    setTimeout(() => {
+                      doTest(translateEvent);
+                      iframe.remove();
+                      done();
+                    }, 0);
+                  });
+                }, 0);
+              });
+            }, 0);
+          });
         });
 
         DBUIDraggable.registerSelf();
