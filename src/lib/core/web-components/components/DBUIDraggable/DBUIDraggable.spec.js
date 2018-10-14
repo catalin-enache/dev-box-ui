@@ -467,6 +467,47 @@ describe('DBUIDraggable', () => {
   });
 
   describe('_targetToDrag', () => {
+    it('is cached', (done) => {
+      inIframe({
+        headStyle: `
+        `,
+        bodyHTML: `
+        <div id="container">
+          <div id="one"></div>
+        </div>
+        `,
+        onLoad: ({ contentWindow, iframe }) => {
+          const DBUIDraggable = getDBUIDraggable(contentWindow);
+          const one = contentWindow.document.querySelector('#one');
+          const container = contentWindow.document.querySelector('#container');
+          const draggableOne = contentWindow.document.createElement('dbui-draggable');
+          draggableOne.id = 'draggable-one';
+          draggableOne.dragTarget = '#one';
+          draggableOne.innerHTML = `
+          <div id="draggable-one-content">content</div>
+          `;
+
+          Promise.all([
+            DBUIDraggable.registrationName,
+          ].map((localName) => contentWindow.customElements.whenDefined(localName)
+          )).then(() => {
+
+            expect(draggableOne._cachedTargetToDrag).to.equal(undefined);
+            container.appendChild(draggableOne);
+            expect(draggableOne._cachedTargetToDrag).to.equal(one);
+            draggableOne.remove();
+            expect(draggableOne._cachedTargetToDrag).to.equal(null);
+
+            setTimeout(() => {
+              iframe.remove();
+              done();
+            }, 0);
+          });
+          DBUIDraggable.registerSelf();
+        }
+      });
+    });
+
     describe('when dragTarget does not exist', () => {
       it('returns self', (done) => {
         inIframe({
@@ -498,6 +539,7 @@ describe('DBUIDraggable', () => {
         });
       });
     });
+
     describe('when DBUIDraggable is in light DOM', () => {
       it('returns element in light DOM', (done) => {
         inIframe({
@@ -531,6 +573,7 @@ describe('DBUIDraggable', () => {
         });
       });
     });
+
     describe('when DBUIDraggable is in shadow DOM', () => {
       it('returns element in shadow DOM', (done) => {
         inIframe({
@@ -564,6 +607,57 @@ describe('DBUIDraggable', () => {
             DummyComp.registerSelf();
           }
         });
+      });
+    });
+  });
+
+  describe('_initializeTargetToDrag and _resetTargetToDrag', () => {
+    it(`
+     _initializeTargetToDrag adds dbui-draggable-target attribute on target
+     and adjusts style.transform on target.
+     _resetTargetToDrag removes dbui-draggable-target attribute from target
+     and makes _cachedTargetToDrag null.
+    `, (done) => {
+      inIframe({
+        headStyle: `
+        `,
+        bodyHTML: `
+        <div id="container">
+          <div id="one"></div>
+        </div>
+        `,
+        onLoad: ({ contentWindow, iframe }) => {
+          const DBUIDraggable = getDBUIDraggable(contentWindow);
+          const one = contentWindow.document.querySelector('#one');
+          const container = contentWindow.document.querySelector('#container');
+          const draggableOne = contentWindow.document.createElement('dbui-draggable');
+          draggableOne.id = 'draggable-one';
+          draggableOne.dragTarget = '#one';
+          draggableOne.innerHTML = `
+          <div id="draggable-one-content">content</div>
+          `;
+          draggableOne.targetTranslateX = 1;
+
+          Promise.all([
+            DBUIDraggable.registrationName,
+          ].map((localName) => contentWindow.customElements.whenDefined(localName)
+          )).then(() => {
+
+            expect(one.getAttribute('dbui-draggable-target')).to.equal(null);
+            expect(one.style.transform).to.equal('');
+            container.appendChild(draggableOne);
+            expect(one.getAttribute('dbui-draggable-target')).to.equal('');
+            expect(one.style.transform).to.equal('translate(1px, 0px)');
+            draggableOne.remove();
+            expect(one.getAttribute('dbui-draggable-target')).to.equal(null);
+
+            setTimeout(() => {
+              iframe.remove();
+              done();
+            }, 0);
+          });
+          DBUIDraggable.registerSelf();
+        }
       });
     });
   });
