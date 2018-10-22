@@ -662,4 +662,113 @@ describe('DBUIDraggable', () => {
     });
   });
 
+  describe('targetTranslateX/Y getter/setter/attributes', () => {
+    it(`
+     adjusts style.transform on _targetToDrag.
+     getters are kept in sync with attributes.
+    `, (done) => {
+      inIframe({
+        headStyle: `
+        `,
+        bodyHTML: `
+        <div id="container">
+          <div id="one"></div>
+        </div>
+        `,
+        onLoad: ({ contentWindow, iframe }) => {
+          const DBUIDraggable = getDBUIDraggable(contentWindow);
+          const one = contentWindow.document.querySelector('#one');
+          const container = contentWindow.document.querySelector('#container');
+          const draggableOne = contentWindow.document.createElement('dbui-draggable');
+          draggableOne.id = 'draggable-one';
+          draggableOne.dragTarget = '#one';
+          draggableOne.innerHTML = `
+          <div id="draggable-one-content">content</div>
+          `;
+          draggableOne.targetTranslateX = 1;
+          draggableOne.setAttribute('target-translate-y', 1);
+
+          Promise.all([
+            DBUIDraggable.registrationName,
+          ].map((localName) => contentWindow.customElements.whenDefined(localName)
+          )).then(() => {
+
+            container.appendChild(draggableOne);
+            expect(one.getAttribute('dbui-draggable-target')).to.equal('');
+            expect(one.style.transform).to.equal('translate(1px, 1px)');
+            expect(draggableOne.getAttribute('target-translate-x')).to.equal('1');
+            expect(draggableOne.targetTranslateY).to.equal(1);
+
+            setTimeout(() => {
+              iframe.remove();
+              done();
+            }, 0);
+          });
+          DBUIDraggable.registerSelf();
+        }
+      });
+    });
+  });
+
+  describe('drag-target dragTarget', () => {
+    it(`
+    on change it removes dbui-draggable-target from old target
+    and initializes the new target
+    `, (done) => {
+      inIframe({
+        headStyle: `
+        `,
+        bodyHTML: `
+        <div id="one" style="transform: translate(-1px, -2px)"></div>
+        <div id="two" style="transform: translate(-2px, -1px)"></div>
+        <dbui-draggable id="draggable-one" drag-target="#one" target-translate-x="2">
+          <div id="draggable-one-content">content</div>
+        </dbui-draggable>
+        `,
+        onLoad: ({ contentWindow, iframe }) => {
+          const DBUIDraggable = getDBUIDraggable(contentWindow);
+          const one = contentWindow.document.querySelector('#one');
+          const two = contentWindow.document.querySelector('#two');
+          const draggableOne = contentWindow.document.querySelector('#draggable-one');
+
+          Promise.all([
+            DBUIDraggable.registrationName,
+          ].map((localName) => contentWindow.customElements.whenDefined(localName)
+          )).then(() => {
+
+            expect(draggableOne._targetToDrag).to.equal(one);
+            expect(one.getAttribute('dbui-draggable-target')).to.equal('');
+            expect(two.getAttribute('dbui-draggable-target')).to.equal(null);
+            expect(one.style.transform).to.equal('translate(2px, 0px)');
+            expect(one.style.transformOrigin).to.have.string('center center');
+            expect(two.style.transform).to.equal('translate(-2px, -1px)');
+            expect(two.style.transformOrigin).to.equal('');
+
+            draggableOne.dragTarget = '#two';
+            expect(one.getAttribute('dbui-draggable-target')).to.equal(null);
+            expect(two.getAttribute('dbui-draggable-target')).to.equal('');
+            expect(one.style.transform).to.equal('translate(-1px, -2px)');
+            expect(one.style.transformOrigin).to.equal('');
+            expect(two.style.transform).to.equal('translate(2px, 0px)');
+            expect(two.style.transformOrigin).to.have.string('center center');
+
+            draggableOne.dragTarget = '#one';
+            expect(one.getAttribute('dbui-draggable-target')).to.equal('');
+            expect(two.getAttribute('dbui-draggable-target')).to.equal(null);
+            expect(one.style.transform).to.equal('translate(2px, 0px)');
+            expect(one.style.transformOrigin).to.have.string('center center');
+            expect(two.style.transform).to.equal('translate(-2px, -1px)');
+            expect(two.style.transformOrigin).to.equal('');
+
+            setTimeout(() => {
+              iframe.remove();
+              done();
+            }, 0);
+          });
+          DBUIDraggable.registerSelf();
+        }
+      });
+    });
+  });
+
 });

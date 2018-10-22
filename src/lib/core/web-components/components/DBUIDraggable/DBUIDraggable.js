@@ -522,6 +522,8 @@ export default function getDBUIDraggable(win) {
         this._cachedTargetToDrag = null;
         this._cachedConstraintPreset = null;
         this._dbuiDraggable = true;
+        this._targetToDragOldTransform = '';
+        this._targetToDragOldTransformOrigin = '';
       }
 
       /**
@@ -659,6 +661,8 @@ export default function getDBUIDraggable(win) {
         this._cachedTargetToDrag = null; // needed when drag-target attribute changes
         const targetToDrag = this._targetToDrag;
         targetToDrag.setAttribute('dbui-draggable-target', '');
+        this._targetToDragOldTransform = targetToDrag.style.transform;
+        this._targetToDragOldTransformOrigin = targetToDrag.style.transformOrigin;
         targetToDrag.style.transform = `translate(${this.targetTranslateX}px,${this.targetTranslateY}px)`;
         targetToDrag.style.transformOrigin = 'center';
       }
@@ -666,6 +670,10 @@ export default function getDBUIDraggable(win) {
       _resetTargetToDrag() {
         const targetToDrag = this._targetToDrag;
         targetToDrag.removeAttribute('dbui-draggable-target');
+        targetToDrag.style.transform = this._targetToDragOldTransform;
+        targetToDrag.style.transformOrigin = this._targetToDragOldTransformOrigin;
+        this._targetToDragOldTransform = '';
+        this._targetToDragOldTransformOrigin = '';
         this._cachedTargetToDrag = null;
       }
 
@@ -687,14 +695,17 @@ export default function getDBUIDraggable(win) {
         let valueToSet = null;
         switch (name) {
           case 'target-translate-x':
+            if (!this.isMounted) break;
             valueToSet = (Number(newValue) || 0).toString();
             this._targetToDrag.style.transform = `translate(${valueToSet}px,${this.targetTranslateY}px)`;
             break;
           case 'target-translate-y':
+            if (!this.isMounted) break;
             valueToSet = (Number(newValue) || 0).toString();
             this._targetToDrag.style.transform = `translate(${this.targetTranslateX}px,${valueToSet}px)`;
             break;
           case 'drag-target':
+            if (!this.isMounted) break;
             this._resetTargetToDrag();
             this._initializeTargetToDrag();
             break;
