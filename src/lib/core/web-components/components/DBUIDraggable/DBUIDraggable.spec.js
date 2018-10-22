@@ -712,8 +712,8 @@ describe('DBUIDraggable', () => {
 
   describe('drag-target dragTarget', () => {
     it(`
-    on change it removes dbui-draggable-target from old target
-    and initializes the new target
+    on change it resets old target
+    and initializes new target
     `, (done) => {
       inIframe({
         headStyle: `
