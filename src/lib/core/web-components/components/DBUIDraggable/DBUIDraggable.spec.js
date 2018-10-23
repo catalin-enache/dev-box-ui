@@ -771,4 +771,160 @@ describe('DBUIDraggable', () => {
     });
   });
 
+  describe('constraint', () => {
+    describe('boundingClientRectOf no steps', () => {
+      it('applies moving constraints in the limits of boundingClientRectOf', (done) => {
+        inIframe({
+          headStyle: `
+          body, html { padding: 0px; margin: 0px; }
+          #one {
+            width: 150px;
+            height: 150px;
+            background-color: orange;
+          }
+          #draggable-one {
+            width: 50px;
+            height: 50px;
+            background-color: black;
+          }
+          `,
+          bodyHTML: `
+          <div id="one"></div>
+          <dbui-draggable id="draggable-one" constraint='boundingClientRectOf({ "selector": "#one" })'>
+          </dbui-draggable>
+          `,
+          onLoad: ({ contentWindow, iframe }) => {
+            const DBUIDraggable = getDBUIDraggable(contentWindow);
+            const draggableOne = contentWindow.document.querySelector('#draggable-one');
+
+            Promise.all([
+              DBUIDraggable.registrationName,
+            ].map((localName) => contentWindow.customElements.whenDefined(localName)
+            )).then(() => {
+              let evtDetail = null;
+              const doTest = () => {
+                expect(evtDetail.targetTranslateX).to.equal(100);
+                expect(evtDetail.targetTranslateY).to.equal(-50);
+                expect(evtDetail.targetX).to.equal(100);
+                expect(evtDetail.targetY).to.equal(100);
+              };
+
+              draggableOne.addEventListener('translate', (evt) => {
+                evtDetail = evt.detail;
+              });
+
+              contentWindow.requestAnimationFrame(() => {
+                setTimeout(() => {
+                  sendTapEvent(draggableOne, 'start', {
+                    clientX: 0, clientY: 150
+                  });
+                  contentWindow.requestAnimationFrame(() => {
+                    setTimeout(() => {
+                      sendTapEvent(draggableOne, 'move', {
+                        clientX: 200, clientY: 200
+                      });
+                      contentWindow.requestAnimationFrame(() => {
+                        setTimeout(() => {
+                          doTest();
+                          iframe.remove();
+                          done();
+                        }, 0);
+                      });
+                    }, 0);
+                  });
+                }, 0);
+              });
+            });
+            DBUIDraggable.registerSelf();
+          }
+        });
+      });
+    });
+
+    describe('boundingClientRectOf with steps', () => {
+      it('applies moving constraints in the limits of boundingClientRectOf with steps', (done) => {
+        inIframe({
+          headStyle: `
+          body, html { padding: 0px; margin: 0px; }
+          #one {
+            width: 150px;
+            height: 150px;
+            background-color: orange;
+          }
+          #draggable-one {
+            width: 50px;
+            height: 50px;
+            background-color: black;
+          }
+          `,
+          bodyHTML: `
+          <div id="one"></div>
+          <dbui-draggable id="draggable-one" constraint='boundingClientRectOf({ "selector": "#one", "stepsX": 3, "stepsY": 3 })'>
+          </dbui-draggable>
+          `,
+          onLoad: ({ contentWindow, iframe }) => {
+            const DBUIDraggable = getDBUIDraggable(contentWindow);
+            const draggableOne = contentWindow.document.querySelector('#draggable-one');
+
+            Promise.all([
+              DBUIDraggable.registrationName,
+            ].map((localName) => contentWindow.customElements.whenDefined(localName)
+            )).then(() => {
+              const evtDetails = [];
+              const doTest = () => {
+                expect(evtDetails[0].targetX).to.equal(0);
+                expect(evtDetails[0].targetY).to.equal(0);
+                expect(evtDetails[1].targetX).to.equal(50);
+                expect(evtDetails[1].targetY).to.equal(50);
+                expect(evtDetails[2].targetX).to.equal(100);
+                expect(evtDetails[2].targetY).to.equal(100);
+              };
+
+              draggableOne.addEventListener('translate', (evt) => {
+                evtDetails.push(evt.detail);
+              });
+
+              contentWindow.requestAnimationFrame(() => {
+                setTimeout(() => {
+                  sendTapEvent(draggableOne, 'start', {
+                    clientX: 0, clientY: 150
+                  });
+                  contentWindow.requestAnimationFrame(() => {
+                    setTimeout(() => {
+                      sendTapEvent(draggableOne, 'move', {
+                        clientX: 10, clientY: 10
+                      });
+                      contentWindow.requestAnimationFrame(() => {
+                        setTimeout(() => {
+                          sendTapEvent(draggableOne, 'move', {
+                            clientX: 60, clientY: 60
+                          });
+                          contentWindow.requestAnimationFrame(() => {
+                            setTimeout(() => {
+                              sendTapEvent(draggableOne, 'move', {
+                                clientX: 110, clientY: 110
+                              });
+                              contentWindow.requestAnimationFrame(() => {
+                                setTimeout(() => {
+                                  doTest();
+                                  iframe.remove();
+                                  done();
+                                }, 0);
+                              });
+                            }, 0);
+                          });
+                        }, 0);
+                      });
+                    }, 0);
+                  });
+                }, 0);
+              });
+            });
+            DBUIDraggable.registerSelf();
+          }
+        });
+      });
+    });
+  });
+
 });
