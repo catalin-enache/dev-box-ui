@@ -925,6 +925,322 @@ describe('DBUIDraggable', () => {
         });
       });
     });
+
+    describe('circle no steps', () => {
+      it('applies moving constraints on circle perimeter', (done) => {
+        inIframe({
+          headStyle: `
+          body, html { padding: 0px; margin: 0px; }
+          #one {
+            width: 200px;
+            height: 200px;
+            border: 1px solid orange;
+            position: absolute;
+            left: 100px;
+            top: 100px;
+            border-radius: 1000px;
+          }
+          #draggable-one {
+            width: 50px;
+            height: 50px;
+            background-color: black;
+          }
+          `,
+          bodyHTML: `
+          <div id="one"></div>
+          <dbui-draggable id="draggable-one" constraint='circle({ "cx": 200, "cy": 200, "radius": 100 })'>
+          </dbui-draggable>
+          `,
+          onLoad: ({ contentWindow, iframe }) => {
+            const DBUIDraggable = getDBUIDraggable(contentWindow);
+            const draggableOne = contentWindow.document.querySelector('#draggable-one');
+
+            Promise.all([
+              DBUIDraggable.registrationName,
+            ].map((localName) => contentWindow.customElements.whenDefined(localName)
+            )).then(() => {
+              let evtDetail = null;
+              const doTest = () => {
+                expect(evtDetail.sin).to.equal(1);
+                expect(evtDetail.cos).to.equal(0);
+                expect(evtDetail.targetX).to.equal(175);
+                expect(evtDetail.targetY).to.equal(75);
+              };
+
+              draggableOne.addEventListener('translate', (evt) => {
+                evtDetail = evt.detail;
+              });
+
+              contentWindow.requestAnimationFrame(() => {
+                setTimeout(() => {
+                  sendTapEvent(draggableOne, 'start', {
+                    clientX: 0, clientY: 0
+                  });
+                  contentWindow.requestAnimationFrame(() => {
+                    setTimeout(() => {
+                      sendTapEvent(draggableOne, 'move', {
+                        clientX: 200, clientY: 1
+                      });
+                      contentWindow.requestAnimationFrame(() => {
+                        setTimeout(() => {
+                          doTest();
+                          iframe.remove();
+                          done();
+                        }, 0);
+                      });
+                    }, 0);
+                  });
+                }, 0);
+              });
+            });
+            DBUIDraggable.registerSelf();
+          }
+        });
+      });
+    });
+
+    describe('circle with steps', () => {
+      it('applies moving constraints on circle perimeter with steps', (done) => {
+        inIframe({
+          headStyle: `
+          body, html { padding: 0px; margin: 0px; }
+          #one {
+            width: 200px;
+            height: 200px;
+            border: 1px solid orange;
+            position: absolute;
+            left: 100px;
+            top: 100px;
+            border-radius: 1000px;
+          }
+          #draggable-one {
+            width: 50px;
+            height: 50px;
+            background-color: black;
+          }
+          `,
+          bodyHTML: `
+          <div id="one"></div>
+          <dbui-draggable id="draggable-one" constraint='circle({ "cx": 200, "cy": 200, "radius": 100, "steps": 4 })'>
+          </dbui-draggable>
+          `,
+          onLoad: ({ contentWindow, iframe }) => {
+            const DBUIDraggable = getDBUIDraggable(contentWindow);
+            const draggableOne = contentWindow.document.querySelector('#draggable-one');
+
+            Promise.all([
+              DBUIDraggable.registrationName,
+            ].map((localName) => contentWindow.customElements.whenDefined(localName)
+            )).then(() => {
+              const evtDetails = [];
+              const doTest = () => {
+                expect(evtDetails[0].sin).to.equal(1);
+                expect(evtDetails[0].cos).to.equal(0);
+                expect(evtDetails[0].targetX).to.equal(175);
+                expect(evtDetails[0].targetY).to.equal(75);
+                expect(evtDetails[0].stepIndex).to.equal(1);
+                expect(evtDetails[0].degreeStep).to.equal(90);
+                expect(evtDetails[0].degrees.toFixed(2)).to.equal('89.42');
+                expect(evtDetails[0].percent).to.equal(0.25);
+
+                expect(evtDetails[1].sin).to.equal(0);
+                expect(evtDetails[1].cos).to.equal(-1);
+                expect(evtDetails[1].targetX).to.equal(75);
+                expect(evtDetails[1].targetY).to.equal(175);
+                expect(evtDetails[1].stepIndex).to.equal(2);
+                expect(evtDetails[1].degreeStep).to.equal(180);
+                expect(evtDetails[1].degrees.toFixed(2)).to.equal('180.58');
+                expect(evtDetails[1].percent).to.equal(0.5);
+
+                expect(evtDetails[2].sin).to.equal(-1);
+                expect(evtDetails[2].cos).to.equal(-0);
+                expect(evtDetails[2].targetX).to.equal(175);
+                expect(evtDetails[2].targetY).to.equal(275);
+                expect(evtDetails[2].stepIndex).to.equal(3);
+                expect(evtDetails[2].degreeStep).to.equal(270);
+                expect(evtDetails[2].degrees.toFixed(2)).to.equal('270.57');
+                expect(evtDetails[2].percent).to.equal(0.75);
+              };
+
+              draggableOne.addEventListener('translate', (evt) => {
+                evtDetails.push(evt.detail);
+              });
+
+              contentWindow.requestAnimationFrame(() => {
+                setTimeout(() => {
+                  sendTapEvent(draggableOne, 'start', {
+                    clientX: 0, clientY: 0
+                  });
+                  contentWindow.requestAnimationFrame(() => {
+                    setTimeout(() => {
+                      sendTapEvent(draggableOne, 'move', {
+                        clientX: 200 + 2, clientY: 1
+                      });
+                      contentWindow.requestAnimationFrame(() => {
+                        setTimeout(() => {
+                          sendTapEvent(draggableOne, 'move', {
+                            clientX: 1, clientY: 200 + 2
+                          });
+                          contentWindow.requestAnimationFrame(() => {
+                            setTimeout(() => {
+                              sendTapEvent(draggableOne, 'move', {
+                                clientX: 200 + 2, clientY: 400
+                              });
+                              contentWindow.requestAnimationFrame(() => {
+                                setTimeout(() => {
+                                  doTest();
+                                  iframe.remove();
+                                  done();
+                                }, 0);
+                              });
+                            }, 0);
+                          });
+                        }, 0);
+                      });
+                    }, 0);
+                  });
+                }, 0);
+              });
+            });
+            DBUIDraggable.registerSelf();
+          }
+        });
+      });
+    });
+
+    describe('when invalid constraint', () => {
+      it('logs error', (done) => {
+        inIframe({
+          headStyle: `
+          body, html { padding: 0px; margin: 0px; }
+          #one {
+            width: 200px;
+            height: 200px;
+            border: 1px solid orange;
+            position: absolute;
+            left: 100px;
+            top: 100px;
+            border-radius: 1000px;
+          }
+          #draggable-one {
+            width: 50px;
+            height: 50px;
+            background-color: black;
+          }
+          `,
+          bodyHTML: `
+          <div id="one"></div>
+          <dbui-draggable id="draggable-one" constraint='circle({ cx: 200, "cy": 200, "radius": 100, "steps": 4 })'>
+          </dbui-draggable>
+          `,
+          onLoad: ({ contentWindow, iframe }) => {
+            const DBUIDraggable = getDBUIDraggable(contentWindow);
+            const draggableOne = contentWindow.document.querySelector('#draggable-one');
+            const consoleError = contentWindow.console.error;
+            let errMsg = null;
+
+            Promise.all([
+              DBUIDraggable.registrationName,
+            ].map((localName) => contentWindow.customElements.whenDefined(localName)
+            )).then(() => {
+              contentWindow.requestAnimationFrame(() => {
+                setTimeout(() => {
+                  sendTapEvent(draggableOne, 'start', {
+                    clientX: 0, clientY: 0
+                  });
+                  contentWindow.requestAnimationFrame(() => {
+                    setTimeout(() => {
+                      contentWindow.console.error = (msg) => {
+                        errMsg = msg;
+                      };
+
+                      sendTapEvent(draggableOne, 'move', {
+                        clientX: 200, clientY: 1
+                      });
+
+                      contentWindow.requestAnimationFrame(() => {
+                        setTimeout(() => {
+                          contentWindow.console.error = consoleError;
+                          expect(errMsg.startsWith('Invalid constraint')).to.equal(true);
+                          iframe.remove();
+                          done();
+                        }, 0);
+                      });
+                    }, 0);
+                  });
+                }, 0);
+              });
+            });
+            DBUIDraggable.registerSelf();
+          }
+        });
+      });
+    });
+
+    describe('when removed during animation', () => {
+      it('sets self._dragRunning to false', (done) => {
+        inIframe({
+          headStyle: `
+          body, html { padding: 0px; margin: 0px; }
+          #one {
+            width: 200px;
+            height: 200px;
+            border: 1px solid orange;
+            position: absolute;
+            left: 100px;
+            top: 100px;
+            border-radius: 1000px;
+          }
+          #draggable-one {
+            width: 50px;
+            height: 50px;
+            background-color: black;
+          }
+          `,
+          bodyHTML: `
+          <div id="one"></div>
+          <dbui-draggable id="draggable-one" constraint='circle({ cx: 200, "cy": 200, "radius": 100, "steps": 4 })'>
+          </dbui-draggable>
+          `,
+          onLoad: ({ contentWindow, iframe }) => {
+            const DBUIDraggable = getDBUIDraggable(contentWindow);
+            const draggableOne = contentWindow.document.querySelector('#draggable-one');
+
+            Promise.all([
+              DBUIDraggable.registrationName,
+            ].map((localName) => contentWindow.customElements.whenDefined(localName)
+            )).then(() => {
+              contentWindow.requestAnimationFrame(() => {
+                setTimeout(() => {
+                  sendTapEvent(draggableOne, 'start', {
+                    clientX: 0, clientY: 0
+                  });
+                  contentWindow.requestAnimationFrame(() => {
+                    setTimeout(() => {
+                      expect(draggableOne._dragRunning).to.equal(undefined);
+                      sendTapEvent(draggableOne, 'move', {
+                        clientX: 200, clientY: 1
+                      });
+                      expect(draggableOne._dragRunning).to.equal(true);
+                      draggableOne.remove();
+
+                      contentWindow.requestAnimationFrame(() => {
+                        setTimeout(() => {
+                          expect(draggableOne._dragRunning).to.equal(false);
+                          iframe.remove();
+                          done();
+                        }, 0);
+                      });
+                    }, 0);
+                  });
+                }, 0);
+              });
+            });
+            DBUIDraggable.registerSelf();
+          }
+        });
+      });
+    });
   });
 
 });

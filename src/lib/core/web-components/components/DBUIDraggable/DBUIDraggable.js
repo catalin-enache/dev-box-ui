@@ -426,7 +426,8 @@ const presetCircle =
     const sin = +Math.sin(radiansStep).toFixed(15);
 
     const newAbsX = (radius * cos) + cx;
-    const newAbsY = ((radius * sin) * -1) + cy; // TODO: document why!
+    // * -1 as math coords are different than display coords
+    const newAbsY = ((radius * sin) * -1) + cy;
 
     const revisedTargetTranslateX = newAbsX - targetOriginalX - targetHalfWidth;
     const revisedTargetTranslateY = newAbsY - targetOriginalY - targetHalfHeight;
@@ -442,8 +443,7 @@ const presetCircle =
       radiansStep,
       degreeStep,
       stepIndex,
-      cos, sin,
-      _cos, _sin
+      cos, sin
     };
   };
 
@@ -643,7 +643,8 @@ export default function getDBUIDraggable(win) {
               // pass
           }
         } catch (_) {
-          throw new Error(`Invalid constraint ${constraint}`);
+          this.ownerDocument.defaultView.console.error(`Invalid constraint ${constraint}`);
+          this._cachedConstraintPreset = presetNoConstraint;
         }
 
         return this._cachedConstraintPreset;
