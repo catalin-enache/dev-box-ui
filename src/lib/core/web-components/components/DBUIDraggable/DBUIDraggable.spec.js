@@ -1199,7 +1199,7 @@ describe('DBUIDraggable', () => {
           `,
           bodyHTML: `
           <div id="one"></div>
-          <dbui-draggable id="draggable-one" constraint='circle({ cx: 200, "cy": 200, "radius": 100, "steps": 4 })'>
+          <dbui-draggable id="draggable-one" constraint='circle({ "cx": 200, "cy": 200, "radius": 100, "steps": 4 })'>
           </dbui-draggable>
           `,
           onLoad: ({ contentWindow, iframe }) => {
