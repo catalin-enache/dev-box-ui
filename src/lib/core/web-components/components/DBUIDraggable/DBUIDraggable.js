@@ -71,6 +71,7 @@ function unregisterDocumentEvents(evt) {
   const { doc, win } = getDocAndWin(evt);
 
   const self = getElementBeingDragged(evt);
+  /* istanbul ignore next */
   if (!self) {
     // may occur when
     // 1. touchstart inside draggable
@@ -130,7 +131,7 @@ function isTouchEvent(evt) {
  * @param evt Touch || TouchEvent || MouseEvent coming from either Draggable or Document
  * @return HTMLElement || null
  */
-function getElementBeingDragged(evt) {
+export function getElementBeingDragged(evt) {
   const type = isTouchEvent(evt) ? 'touch' : 'mouse';
   const { win } = getDocAndWin(evt);
 
@@ -161,7 +162,7 @@ function getElementBeingDragged(evt) {
  * @param evt Event coming from either Draggable or Document
  * @return Event || null
  */
-function extractSingleEvent(evt) {
+export function extractSingleEvent(evt) {
   return isTouchEvent(evt) ?
     Array.from(evt.touches).find(
       (e) => getElementBeingDragged(e) === getElementBeingDragged(evt)
@@ -214,6 +215,7 @@ function getMeasurements(evt) {
  *
  * @param evt MouseEvent always coming from Draggable
  */
+/* istanbul ignore next */
 function handleMouseDown(evt) {
   if (evt.which === 3) return;
   onPointerDown(evt);
@@ -223,6 +225,8 @@ function handleMouseDown(evt) {
  *
  * @param evt TouchEvent always coming from Draggable
  */
+// https://github.com/gotwarlost/istanbul/blob/master/ignoring-code-for-coverage.md
+/* istanbul ignore next */
 function handleTouchStart(evt) {
   onPointerDown(evt);
 }
@@ -247,12 +251,14 @@ function doMove(_evt) {
   _evt.preventDefault(); // prevent selection and scrolling
   const evt = extractSingleEvent(_evt);
 
+  /* istanbul ignore next */
   if (!evt) {
     return;
   }
 
   const self = getElementBeingDragged(evt);
 
+  /* istanbul ignore next */
   if (!self) {
     // may occur when
     // 1. touchstart inside draggable

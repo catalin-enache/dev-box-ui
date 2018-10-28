@@ -26,6 +26,7 @@ export function sendTouchEvent(element, eventType, {
   detail,
   target,
   ctrlKey, shiftKey, altKey, metaKey,
+  touches
 } = {}) {
   const touchObj = new view.Touch({
     identifier,
@@ -36,7 +37,7 @@ export function sendTouchEvent(element, eventType, {
 
   const touchEvent = new view.TouchEvent(eventType, {
     cancelable, bubbles, composed,
-    touches: [touchObj],
+    touches: touches || [touchObj],
     targetTouches: [],
     changedTouches: [touchObj],
     view, detail,
@@ -53,7 +54,7 @@ export function sendMouseEvent(element, eventType, {
   cancelable = true, bubbles = true, composed = true,
   clientX = 0, clientY = 0, screenX, screenY,
   ctrlKey, shiftKey, altKey, metaKey,
-  button, buttons,
+  button = 0, buttons = 0,
   relatedTarget, region,
   target,
   // if !element.ownerDocument then element is document
@@ -77,7 +78,11 @@ export function sendTapEvent(element, eventType, {
   clientX, clientY, screenX, screenY,
   ctrlKey, shiftKey, altKey, metaKey,
   view = (element.ownerDocument || element).defaultView,
-  detail, target, relatedTarget
+  detail, target,
+  // MouseEvent specifics
+  relatedTarget, button = 0, buttons = 0,
+  // TouchEvent specifics
+  touches
 } = {}) {
   // target is not an init param, it is determined by the caller of dispatchEvent
   // currentTarget is the listener of the event (who called addEventListener with a listener that received the event)
@@ -102,6 +107,9 @@ export function sendTapEvent(element, eventType, {
 
   func(element, _eventType, {
     ...commonProps,
-    ...(view.MouseEvent ? { button: 0, buttons: 0, relatedTarget } : {})
+    ...(view.MouseEvent ?
+      { button, buttons, relatedTarget } :
+      { touches }
+    )
   });
 }

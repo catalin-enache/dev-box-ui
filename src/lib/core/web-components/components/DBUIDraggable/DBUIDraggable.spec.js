@@ -1,7 +1,13 @@
 import { expect } from 'chai';
 import inIframe from '../../../../../../testUtils/inIframe';
-import getDBUIDraggable from './DBUIDraggable';
-import { sendTapEvent } from '../../../../../../testUtils/simulateEvents';
+import getDBUIDraggable, {
+  extractSingleEvent, getElementBeingDragged
+} from './DBUIDraggable';
+import {
+  sendTapEvent,
+  sendTouchEvent,
+  sendMouseEvent
+} from '../../../../../../testUtils/simulateEvents';
 import getDBUIWebComponentCore from '../DBUIWebComponentCore/DBUIWebComponentCore';
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
 
@@ -49,7 +55,7 @@ function getDummyComp(win) {
 getDummyComp.registrationName = dummyCompRegistrationName;
 
 describe('DBUIDraggable', () => {
-  xit('behaves as expected', (done) => {
+  xit('behaves as expected - live testing', (done) => {
     inIframe({
       headStyle: `
       body, html { padding: 0px; margin: 0px; }
@@ -148,100 +154,48 @@ describe('DBUIDraggable', () => {
       onLoad: ({ contentWindow, iframe }) => {
         const DBUIDraggable = getDBUIDraggable(contentWindow);
 
-        const container = contentWindow.document.querySelector('#container');
+        // const container = contentWindow.document.querySelector('#container');
+        // const wrapperDraggableOne = contentWindow.document.querySelector('#wrapper-draggable-one');
+        // const wrapperDraggableTwo = contentWindow.document.querySelector('#wrapper-draggable-two');
+        // const wrapperDraggableThree = contentWindow.document.querySelector('#wrapper-draggable-three');
+        // const wrapperDraggableFour = contentWindow.document.querySelector('#wrapper-draggable-four');
 
-        const wrapperDraggableOne = contentWindow.document.querySelector('#wrapper-draggable-one');
-        const wrapperDraggableTwo = contentWindow.document.querySelector('#wrapper-draggable-two');
-        const wrapperDraggableThree = contentWindow.document.querySelector('#wrapper-draggable-three');
-        const wrapperDraggableFour = contentWindow.document.querySelector('#wrapper-draggable-four');
-
-        const draggableOne = contentWindow.document.querySelector('#draggable-one');
+        // const draggableOne = contentWindow.document.querySelector('#draggable-one');
         const draggableTwo = contentWindow.document.querySelector('#draggable-two');
-        const draggableThree = contentWindow.document.querySelector('#draggable-three');
+        // const draggableThree = contentWindow.document.querySelector('#draggable-three');
         const draggableFour = contentWindow.document.querySelector('#draggable-four');
-
-        // draggableOne.constraint = 'boundingClientRect(550, 250)';
-        draggableOne.addEventListener('translate', (evt) => {
-          const {
-            targetTranslateX,
-            targetTranslateY,
-            targetX, targetY
-          } = evt.detail;
-
-          // wrapperDraggableTwo.style.transform = `translate(${targetTranslateX}px,${targetTranslateY}px)`;
-        });
-        // const computedStyle = contentWindow.getComputedStyle(wrapperDraggableTwo, null);
-        // var { left: rectX, top: rectY, width: rectWidth, height: rectHeight } = computedStyle;
-
-
-        // const boundingClientRect = wrapperDraggableTwo.getBoundingClientRect();
-        // var { width: rectWidth, height: rectHeight } = boundingClientRect;
-        // console.log('boundingClientRect', { rectX, rectY, rectWidth, rectHeight });
-
-        // draggableTwo.constraint = `boundingClientRect(${rectWidth}, ${rectHeight})`;
 
         draggableTwo.constraint =
           'boundingClientRectOf({ "selector": "#wrapper-draggable-one", "stepsX": 2, "stepsY": 0})';
 
-        // draggableTwo.applyCorrection = ({ targetTranslateX, targetTranslateY, targetWidthOnStart, targetHeightOnStart }) => {
-        //   const computedStyle = contentWindow.getComputedStyle(wrapperDraggableTwo, null);
-        //   const maxX = parseInt(computedStyle.width, 10) - targetWidthOnStart;
-        //   const maxY = parseInt(computedStyle.height, 10) - targetHeightOnStart;
-        //   const revisedTranslateX = Math.max(0, Math.min(targetTranslateX, maxX));
-        //   const revisedTranslateY = Math.max(0, Math.min(targetTranslateY, maxY));
-        //   return { targetTranslateX: revisedTranslateX, targetTranslateY: revisedTranslateY };
-        // };
-
-        draggableTwo.addEventListener('translate', (evt) => {
-          const {
-            targetTranslateX,
-            targetTranslateY,
-            targetX, targetY
-          } = evt.detail;
-          // console.log('draggableTwo', { targetX, targetY });
-          // draggableThree.style.transform = `translate(${targetTranslateX}px,${targetTranslateY}px)`;
-          // draggableThree.setAttribute('target-translate-x', targetTranslateX);
-          // draggableThree.targetTranslateY = targetTranslateY;
-          // draggableTwo._targetToDrag.style.transform = `translate(${-targetTranslateX}px,${-targetTranslateY}px)`;
-        });
-
-        draggableThree.addEventListener('translate', (evt) => {
-          const {
-            targetTranslateX,
-            targetTranslateY
-          } = evt.detail;
-          // draggableThree.style.transform = `translate(${targetTranslateX}px,${targetTranslateY}px)`;
-          // draggableThree.setAttribute('target-translate-x', targetTranslateX);
-          // draggableThree.targetTranslateY = targetTranslateY;
-        });
-
         draggableFour.constraint =
           'circle({ "cx": 190, "cy":790, "radius":175, "steps": 12 })';
 
-        draggableFour.addEventListener('translate', (evt) => {
-          const {
-            targetTranslateX,
-            targetTranslateY,
-            radians, degrees,
-            percent, radiansStep, stepIndex, degreeStep,
-            cos, sin, _cos, _sin
-          } = evt.detail;
-          console.log('draggableFour', { percent, stepIndex });
-        });
+        // draggableOne.addEventListener('translate', (evt) => {
+        //   console.log(evt.detail);
+        // });
+        //
+        // draggableTwo.addEventListener('translate', (evt) => {
+        //   console.log(evt.detail);
+        // });
+        //
+        // draggableThree.addEventListener('translate', (evt) => {
+        //   console.log(evt.detail);
+        // });
+        //
+        // draggableFour.addEventListener('translate', (evt) => {
+        //   console.log(evt.detail);
+        // });
 
         Promise.all([
           DBUIDraggable.registrationName,
         ].map((localName) => contentWindow.customElements.whenDefined(localName)
         )).then(() => {
-
           setTimeout(() => {
-            // draggableOne.remove();
-            // draggableOne.dragTarget = '#wrapper-draggable-three';
-          }, 2000);
-
-          setTimeout(() => {
-            iframe.remove();
-            done();
+            setTimeout(() => {
+              iframe.remove();
+              done();
+            }, 2000);
           }, 55000);
         });
 
@@ -250,7 +204,7 @@ describe('DBUIDraggable', () => {
     });
   });
 
-  it('is dragged on pointer move', (done) => {
+  it('is dragged on pointer move (touch first)', (done) => {
     inIframe({
       headStyle: `
       body, html { padding: 0px; margin: 0px; }
@@ -312,19 +266,493 @@ describe('DBUIDraggable', () => {
 
           contentWindow.requestAnimationFrame(() => {
             setTimeout(() => {
-              sendTapEvent(draggableOne, 'start', {
-                clientX: 5, clientY: 5
-              });
+              contentWindow.TouchEvent ?
+                sendTouchEvent(draggableOne, 'touchstart', {
+                  clientX: 5, clientY: 5
+                }) : sendMouseEvent(draggableOne, 'mousedown', {
+                  clientX: 5, clientY: 5
+                });
               contentWindow.requestAnimationFrame(() => {
                 setTimeout(() => {
-                  sendTapEvent(draggableOne.ownerDocument, 'move', {
-                    clientX: 15, clientY: 15, target: draggableOne
+                  contentWindow.TouchEvent ?
+                    sendTouchEvent(draggableOne.ownerDocument, 'touchmove', {
+                      clientX: 15, clientY: 15, target: draggableOne
+                    }) : sendMouseEvent(draggableOne, 'mousemove', {
+                      clientX: 15, clientY: 15
+                    });
+                  contentWindow.requestAnimationFrame(() => {
+                    setTimeout(() => {
+                      contentWindow.TouchEvent ?
+                        sendTouchEvent(draggableOne.ownerDocument, 'touchend', {
+                          target: draggableOne
+                        }) : sendMouseEvent(draggableOne, 'mouseup', {
+                          target: draggableOne
+                        });
+                      contentWindow.requestAnimationFrame(() => {
+                        setTimeout(() => {
+                          doTest(translateEvent);
+                          iframe.remove();
+                          done();
+                        }, 0);
+                      });
+                    }, 0);
+                  });
+                }, 0);
+              });
+            }, 0);
+          });
+        });
+
+        DBUIDraggable.registerSelf();
+      }
+    });
+  });
+
+  it('is dragged on pointer move (mouse first)', (done) => {
+    inIframe({
+      headStyle: `
+      body, html { padding: 0px; margin: 0px; }
+      #container: { position: relative; }
+      #wrapper-draggable-one {
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        background: gray;
+      }
+      #draggable-one-content {
+        background: indianred;
+        width: 100px;
+        height: 100px;
+      }
+      `,
+      bodyHTML: `
+      <div id="container">
+        <div id="wrapper-draggable-one">
+          <dbui-draggable id="draggable-one">
+            <div id="draggable-one-content"></div>
+          </dbui-draggable>
+        </div>
+      </div>
+      `,
+      onLoad: ({ contentWindow, iframe }) => {
+        const DBUIDraggable = getDBUIDraggable(contentWindow);
+        const draggableOne = contentWindow.document.querySelector('#draggable-one');
+        Promise.all([
+          DBUIDraggable.registrationName,
+        ].map((localName) => contentWindow.customElements.whenDefined(localName)
+        )).then(() => {
+
+          const doTest = (evt) => {
+            expect(evt.detail).to.eql({
+              pointerX: 15,
+              pointerXOnStart: 5,
+              pointerY: 15,
+              pointerYOnStart: 5,
+              targetHeightOnStart: 100,
+              targetOriginalX: 5,
+              targetOriginalY: 5,
+              targetTranslateX: 10,
+              targetTranslateY: 10,
+              targetTranslatedXOnStart: 0,
+              targetTranslatedYOnStart: 0,
+              targetWidthOnStart: 100,
+              targetX: 15,
+              targetXOnStart: 5,
+              targetY: 15,
+              targetYOnStart: 5
+            });
+          };
+
+          let translateEvent = null;
+          draggableOne.addEventListener('translate', (evt) => {
+            translateEvent = evt;
+          });
+
+          contentWindow.requestAnimationFrame(() => {
+            setTimeout(() => {
+              contentWindow.MouseEvent ?
+                sendMouseEvent(draggableOne, 'mousedown', {
+                  clientX: 5, clientY: 5
+                }) : sendTouchEvent(draggableOne, 'touchstart', {
+                  clientX: 5, clientY: 5
+                });
+              contentWindow.requestAnimationFrame(() => {
+                setTimeout(() => {
+                  contentWindow.MouseEvent ?
+                    sendMouseEvent(draggableOne.ownerDocument, 'mousemove', {
+                      clientX: 15, clientY: 15, target: draggableOne
+                    }) : sendTouchEvent(draggableOne, 'touchmove', {
+                      clientX: 15, clientY: 15, target: draggableOne
+                    });
+                  contentWindow.requestAnimationFrame(() => {
+                    setTimeout(() => {
+                      contentWindow.MouseEvent ?
+                        sendMouseEvent(draggableOne, 'mouseup', {
+                          target: draggableOne
+                        }) : sendTouchEvent(draggableOne.ownerDocument, 'touchend', {
+                          target: draggableOne
+                        });
+                      contentWindow.requestAnimationFrame(() => {
+                        setTimeout(() => {
+                          doTest(translateEvent);
+                          iframe.remove();
+                          done();
+                        }, 0);
+                      });
+                    }, 0);
+                  });
+                }, 0);
+              });
+            }, 0);
+          });
+        });
+
+        DBUIDraggable.registerSelf();
+      }
+    });
+  });
+
+  it('is dragged on pointer move even move event comes from an inner child (touch first)', (done) => {
+    inIframe({
+      headStyle: `
+      body, html { padding: 0px; margin: 0px; }
+      #container: { position: relative; }
+      #wrapper-draggable-one {
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        background: gray;
+      }
+      #draggable-one-content {
+        background: indianred;
+        width: 100px;
+        height: 100px;
+      }
+      `,
+      bodyHTML: `
+      <div id="container">
+        <div id="wrapper-draggable-one">
+          <dbui-draggable id="draggable-one">
+            <div id="draggable-one-content">
+              <span id="draggable-one-content-inner">
+                content
+              </span>
+            </div>
+          </dbui-draggable>
+        </div>
+      </div>
+      `,
+      onLoad: ({ contentWindow, iframe }) => {
+        const DBUIDraggable = getDBUIDraggable(contentWindow);
+        const draggableOne = contentWindow.document.querySelector('#draggable-one');
+        const draggableOneContentInner = contentWindow.document.querySelector('#draggable-one-content-inner');
+        Promise.all([
+          DBUIDraggable.registrationName,
+        ].map((localName) => contentWindow.customElements.whenDefined(localName)
+        )).then(() => {
+
+          const doTest = (evt) => {
+            expect(evt.detail).to.eql({
+              pointerX: 15,
+              pointerXOnStart: 5,
+              pointerY: 15,
+              pointerYOnStart: 5,
+              targetHeightOnStart: 100,
+              targetOriginalX: 5,
+              targetOriginalY: 5,
+              targetTranslateX: 10,
+              targetTranslateY: 10,
+              targetTranslatedXOnStart: 0,
+              targetTranslatedYOnStart: 0,
+              targetWidthOnStart: 100,
+              targetX: 15,
+              targetXOnStart: 5,
+              targetY: 15,
+              targetYOnStart: 5
+            });
+          };
+
+          let translateEvent = null;
+          draggableOne.addEventListener('translate', (evt) => {
+            translateEvent = evt;
+          });
+
+          contentWindow.requestAnimationFrame(() => {
+            setTimeout(() => {
+              contentWindow.TouchEvent ?
+                sendTouchEvent(draggableOneContentInner, 'touchstart', {
+                  clientX: 5, clientY: 5
+                }) : sendMouseEvent(draggableOneContentInner, 'mousedown', {
+                  clientX: 5, clientY: 5
+                });
+              contentWindow.requestAnimationFrame(() => {
+                setTimeout(() => {
+                  contentWindow.TouchEvent ?
+                    sendTouchEvent(draggableOneContentInner.ownerDocument, 'touchmove', {
+                      clientX: 15, clientY: 15, target: draggableOneContentInner
+                    }) : sendMouseEvent(draggableOneContentInner.ownerDocument, 'mousemove', {
+                      clientX: 15, clientY: 15, target: draggableOneContentInner
+                    });
+                  contentWindow.requestAnimationFrame(() => {
+                    setTimeout(() => {
+                      contentWindow.TouchEvent ?
+                        sendTouchEvent(draggableOneContentInner.ownerDocument, 'touchend', {
+                          target: draggableOneContentInner
+                        }) : sendMouseEvent(draggableOneContentInner.ownerDocument, 'mouseup', {
+                          target: draggableOneContentInner
+                        });
+                      contentWindow.requestAnimationFrame(() => {
+                        setTimeout(() => {
+                          doTest(translateEvent);
+                          iframe.remove();
+                          done();
+                        }, 0);
+                      });
+                    }, 0);
+                  });
+                }, 0);
+              });
+            }, 0);
+          });
+        });
+
+        DBUIDraggable.registerSelf();
+      }
+    });
+  });
+
+  it('is dragged on pointer move even move event comes from an inner child (mouse first)', (done) => {
+    inIframe({
+      headStyle: `
+      body, html { padding: 0px; margin: 0px; }
+      #container: { position: relative; }
+      #wrapper-draggable-one {
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        background: gray;
+      }
+      #draggable-one-content {
+        background: indianred;
+        width: 100px;
+        height: 100px;
+      }
+      `,
+      bodyHTML: `
+      <div id="container">
+        <div id="wrapper-draggable-one">
+          <dbui-draggable id="draggable-one">
+            <div id="draggable-one-content">
+              <span id="draggable-one-content-inner">
+                content
+              </span>
+            </div>
+          </dbui-draggable>
+        </div>
+      </div>
+      `,
+      onLoad: ({ contentWindow, iframe }) => {
+        const DBUIDraggable = getDBUIDraggable(contentWindow);
+        const draggableOne = contentWindow.document.querySelector('#draggable-one');
+        const draggableOneContentInner = contentWindow.document.querySelector('#draggable-one-content-inner');
+        Promise.all([
+          DBUIDraggable.registrationName,
+        ].map((localName) => contentWindow.customElements.whenDefined(localName)
+        )).then(() => {
+
+          const doTest = (evt) => {
+            expect(evt.detail).to.eql({
+              pointerX: 15,
+              pointerXOnStart: 5,
+              pointerY: 15,
+              pointerYOnStart: 5,
+              targetHeightOnStart: 100,
+              targetOriginalX: 5,
+              targetOriginalY: 5,
+              targetTranslateX: 10,
+              targetTranslateY: 10,
+              targetTranslatedXOnStart: 0,
+              targetTranslatedYOnStart: 0,
+              targetWidthOnStart: 100,
+              targetX: 15,
+              targetXOnStart: 5,
+              targetY: 15,
+              targetYOnStart: 5
+            });
+          };
+
+          let translateEvent = null;
+          draggableOne.addEventListener('translate', (evt) => {
+            translateEvent = evt;
+          });
+
+          contentWindow.requestAnimationFrame(() => {
+            setTimeout(() => {
+              contentWindow.MouseEvent ?
+                sendMouseEvent(draggableOneContentInner, 'mousedown', {
+                  clientX: 5, clientY: 5
+                }) : sendTouchEvent(draggableOneContentInner, 'touchstart', {
+                  clientX: 5, clientY: 5
+                });
+              contentWindow.requestAnimationFrame(() => {
+                setTimeout(() => {
+                  contentWindow.MouseEvent ?
+                    sendMouseEvent(draggableOneContentInner.ownerDocument, 'mousemove', {
+                      clientX: 15, clientY: 15, target: draggableOneContentInner
+                    }) : sendTouchEvent(draggableOneContentInner.ownerDocument, 'touchmove', {
+                      clientX: 15, clientY: 15, target: draggableOneContentInner
+                    });
+                  contentWindow.requestAnimationFrame(() => {
+                    setTimeout(() => {
+                      contentWindow.MouseEvent ?
+                        sendMouseEvent(draggableOneContentInner.ownerDocument, 'mouseup', {
+                          target: draggableOneContentInner
+                        }) : sendTouchEvent(draggableOneContentInner.ownerDocument, 'touchend', {
+                          target: draggableOneContentInner
+                        });
+                      contentWindow.requestAnimationFrame(() => {
+                        setTimeout(() => {
+                          doTest(translateEvent);
+                          iframe.remove();
+                          done();
+                        }, 0);
+                      });
+                    }, 0);
+                  });
+                }, 0);
+              });
+            }, 0);
+          });
+        });
+
+        DBUIDraggable.registerSelf();
+      }
+    });
+  });
+
+  it('handles multi touches on target and window', (done) => {
+    inIframe({
+      headStyle: `
+      body, html { padding: 0px; margin: 0px; }
+      #container: { position: relative; }
+      #wrapper-draggable-one {
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        background: gray;
+      }
+      #draggable-one-content {
+        background: indianred;
+        width: 100px;
+        height: 100px;
+      }
+      `,
+      bodyHTML: `
+      <div id="container">
+        <div id="other-target"></div>
+        <div id="wrapper-draggable-one">
+          <dbui-draggable id="draggable-one">
+            <div id="draggable-one-content">
+              <span id="draggable-one-content-inner">
+                content
+              </span>
+            </div>
+          </dbui-draggable>
+        </div>
+      </div>
+      `,
+      onLoad: ({ contentWindow, iframe }) => {
+
+        if (!contentWindow.TouchEvent) {
+          iframe.remove();
+          done();
+          return;
+        }
+
+        const doc = contentWindow.document;
+        let removedEvent = null;
+        let eventHandlers = null;
+        const docRemoveEventListener = doc.removeEventListener;
+        doc.removeEventListener = (event, callback, options) => {
+          docRemoveEventListener.call(doc, event, callback, options);
+          if (eventHandlers.touchmove === callback) {
+            removedEvent = event;
+          }
+        };
+
+        const DBUIDraggable = getDBUIDraggable(contentWindow);
+        const otherTarget = contentWindow.document.querySelector('#other-target');
+        const draggableOne = contentWindow.document.querySelector('#draggable-one');
+        const draggableOneContentInner = contentWindow.document.querySelector('#draggable-one-content-inner');
+        Promise.all([
+          DBUIDraggable.registrationName,
+        ].map((localName) => contentWindow.customElements.whenDefined(localName)
+        )).then(() => {
+
+          const doTest = (evt) => {
+            expect(evt.detail).to.eql({
+              pointerX: 15,
+              pointerXOnStart: 5,
+              pointerY: 15,
+              pointerYOnStart: 5,
+              targetHeightOnStart: 100,
+              targetOriginalX: 5,
+              targetOriginalY: 5,
+              targetTranslateX: 10,
+              targetTranslateY: 10,
+              targetTranslatedXOnStart: 0,
+              targetTranslatedYOnStart: 0,
+              targetWidthOnStart: 100,
+              targetX: 15,
+              targetXOnStart: 5,
+              targetY: 15,
+              targetYOnStart: 5
+            });
+          };
+
+          let translateEvent = null;
+          draggableOne.addEventListener('translate', (evt) => {
+            translateEvent = evt;
+          });
+
+          contentWindow.requestAnimationFrame(() => {
+            setTimeout(() => {
+              sendTouchEvent(draggableOneContentInner, 'touchstart', {
+                clientX: 5, clientY: 5
+              });
+              eventHandlers = contentWindow._dbuiDraggableRegisteredEvents.get(draggableOne);
+              contentWindow.requestAnimationFrame(() => {
+                setTimeout(() => {
+                  sendTouchEvent(draggableOneContentInner.ownerDocument, 'touchmove', {
+                    clientX: 15, clientY: 15, target: draggableOneContentInner
                   });
                   contentWindow.requestAnimationFrame(() => {
                     setTimeout(() => {
-                      doTest(translateEvent);
-                      iframe.remove();
-                      done();
+                      const touchObj1 = new contentWindow.Touch({
+                        identifier: new Date(),
+                        target: draggableOneContentInner,
+                      });
+                      const touchObj2 = new contentWindow.Touch({
+                        identifier: new Date(),
+                        target: otherTarget,
+                      });
+                      sendTouchEvent(draggableOneContentInner.ownerDocument, 'touchend', {
+                        target: draggableOneContentInner, touches: [touchObj1, touchObj2]
+                      });
+                      // not unregistering listeners from doc since still one touch for draggable on screen
+                      expect(removedEvent).to.equal(null);
+                      sendTouchEvent(draggableOneContentInner.ownerDocument, 'touchend', {
+                        target: draggableOneContentInner, touches: [touchObj2]
+                      });
+                      // unregistering listeners from doc since no touch for draggable on screen
+                      expect(removedEvent).to.equal('touchmove');
+                      contentWindow.requestAnimationFrame(() => {
+                        setTimeout(() => {
+                          doTest(translateEvent);
+                          iframe.remove();
+                          done();
+                        }, 0);
+                      });
                     }, 0);
                   });
                 }, 0);
@@ -1243,4 +1671,356 @@ describe('DBUIDraggable', () => {
     });
   });
 
+  describe('extractSingleEvent', () => {
+    describe('when TouchEvent and one Touch object has draggable as target', () => {
+      it('returns the Touch object (having as target the draggable) from event.touches array', (done) => {
+        inIframe({
+          headStyle: `
+          `,
+          bodyHTML: `
+          <div id="other"></div>
+          <dbui-draggable id="draggable-one"></dbui-draggable>
+          `,
+          onLoad: ({ contentWindow, iframe }) => {
+            if (!contentWindow.TouchEvent) {
+              iframe.remove();
+              done();
+              return;
+            }
+
+            const DBUIDraggable = getDBUIDraggable(contentWindow);
+            const other = contentWindow.document.querySelector('#other');
+            const draggableOne = contentWindow.document.querySelector('#draggable-one');
+            const touchObj1 = new contentWindow.Touch({
+              identifier: new Date(),
+              target: other,
+            });
+            const touchObj2 = new contentWindow.Touch({
+              identifier: new Date(),
+              target: draggableOne,
+            });
+            const event = new contentWindow.TouchEvent('touchmove', {
+              touches: [touchObj1, touchObj2],
+              targetTouches: [],
+              changedTouches: [],
+            });
+            let dispatchedEvent = null;
+
+            draggableOne.addEventListener('touchmove', (evt) => {
+              dispatchedEvent = evt;
+            });
+
+            Promise.all([
+              DBUIDraggable.registrationName,
+            ].map((localName) => contentWindow.customElements.whenDefined(localName)
+            )).then(() => {
+              draggableOne.dispatchEvent(event);
+              const extracted = extractSingleEvent(dispatchedEvent);
+              expect(extracted.target).to.equal(touchObj2.target);
+              expect(extracted).to.be.an.instanceOf(contentWindow.Touch);
+              iframe.remove();
+              done();
+            });
+            DBUIDraggable.registerSelf();
+          }
+        });
+      });
+    });
+
+    describe('when TouchEvent and NO Touch object has draggable as target', () => {
+      it('returns null', (done) => {
+        inIframe({
+          headStyle: `
+          `,
+          bodyHTML: `
+          <div id="other"></div>
+          <dbui-draggable id="draggable-one"></dbui-draggable>
+          `,
+          onLoad: ({ contentWindow, iframe }) => {
+            if (!contentWindow.TouchEvent) {
+              iframe.remove();
+              done();
+              return;
+            }
+
+            const DBUIDraggable = getDBUIDraggable(contentWindow);
+            const other = contentWindow.document.querySelector('#other');
+            const draggableOne = contentWindow.document.querySelector('#draggable-one');
+            const touchObj1 = new contentWindow.Touch({
+              identifier: new Date(),
+              target: other,
+            });
+            const event = new contentWindow.TouchEvent('touchmove', {
+              touches: [touchObj1],
+              targetTouches: [],
+              changedTouches: [],
+            });
+            let dispatchedEvent = null;
+
+            draggableOne.addEventListener('touchmove', (evt) => {
+              dispatchedEvent = evt;
+            });
+
+            Promise.all([
+              DBUIDraggable.registrationName,
+            ].map((localName) => contentWindow.customElements.whenDefined(localName)
+            )).then(() => {
+              draggableOne.dispatchEvent(event);
+              const extracted = extractSingleEvent(dispatchedEvent);
+              expect(extracted).to.equal(undefined);
+              iframe.remove();
+              done();
+            });
+            DBUIDraggable.registerSelf();
+          }
+        });
+      });
+    });
+
+    describe('when MouseEvent', () => {
+      it('returns the event itself', (done) => {
+        inIframe({
+          headStyle: `
+          `,
+          bodyHTML: `
+          <div id="other"></div>
+          <dbui-draggable id="draggable-one"></dbui-draggable>
+          `,
+          onLoad: ({ contentWindow, iframe }) => {
+            if (!contentWindow.MouseEvent) {
+              iframe.remove();
+              done();
+              return;
+            }
+
+            const DBUIDraggable = getDBUIDraggable(contentWindow);
+            const draggableOne = contentWindow.document.querySelector('#draggable-one');
+            const event = new contentWindow.MouseEvent('mousemove', {});
+            let dispatchedEvent = null;
+
+            draggableOne.addEventListener('mousemove', (evt) => {
+              dispatchedEvent = evt;
+            });
+
+            Promise.all([
+              DBUIDraggable.registrationName,
+            ].map((localName) => contentWindow.customElements.whenDefined(localName)
+            )).then(() => {
+              draggableOne.dispatchEvent(event);
+              const extracted = extractSingleEvent(dispatchedEvent);
+              expect(extracted).to.equal(dispatchedEvent);
+              expect(extracted).to.be.an.instanceOf(contentWindow.MouseEvent);
+              iframe.remove();
+              done();
+            });
+            DBUIDraggable.registerSelf();
+          }
+        });
+      });
+    });
+  });
+
+  describe('getElementBeingDragged', () => {
+    describe('when MouseEvent', () => {
+      it('returns win._dbuiCurrentElementBeingDragged', (done) => {
+        inIframe({
+          headStyle: `
+          `,
+          bodyHTML: `
+          <div id="other"></div>
+          <dbui-draggable id="draggable-one"></dbui-draggable>
+          `,
+          onLoad: ({ contentWindow, iframe }) => {
+            if (!contentWindow.MouseEvent) {
+              iframe.remove();
+              done();
+              return;
+            }
+
+            const DBUIDraggable = getDBUIDraggable(contentWindow);
+            const draggableOne = contentWindow.document.querySelector('#draggable-one');
+            const event = new contentWindow.MouseEvent('mousemove', {});
+            const doc = contentWindow.document;
+            let dispatchedEvent = null;
+            contentWindow._dbuiCurrentElementBeingDragged = draggableOne;
+
+            doc.addEventListener('mousemove', (evt) => {
+              dispatchedEvent = evt;
+            });
+
+            Promise.all([
+              DBUIDraggable.registrationName,
+            ].map((localName) => contentWindow.customElements.whenDefined(localName)
+            )).then(() => {
+              doc.dispatchEvent(event);
+              const elemBeingDragged = getElementBeingDragged(dispatchedEvent);
+              expect(elemBeingDragged).to.equal(draggableOne);
+              iframe.remove();
+              done();
+            });
+            DBUIDraggable.registerSelf();
+          }
+        });
+      });
+    });
+
+    describe('when TouchEvent and one Touch object has draggable as target', () => {
+      it('returns draggable element', (done) => {
+        inIframe({
+          headStyle: `
+          `,
+          bodyHTML: `
+          <div id="other"></div>
+          <dbui-draggable id="draggable-one"></dbui-draggable>
+          `,
+          onLoad: ({ contentWindow, iframe }) => {
+            if (!contentWindow.TouchEvent) {
+              iframe.remove();
+              done();
+              return;
+            }
+
+            const DBUIDraggable = getDBUIDraggable(contentWindow);
+            const draggableOne = contentWindow.document.querySelector('#draggable-one');
+            const touchObj1 = new contentWindow.Touch({
+              identifier: new Date(),
+              target: draggableOne,
+            });
+            const event = new contentWindow.TouchEvent('touchmove', {
+              touches: [touchObj1],
+              targetTouches: [],
+              changedTouches: [],
+            });
+            let dispatchedEvent = null;
+
+            draggableOne.addEventListener('touchmove', (evt) => {
+              dispatchedEvent = evt;
+            });
+
+            Promise.all([
+              DBUIDraggable.registrationName,
+            ].map((localName) => contentWindow.customElements.whenDefined(localName)
+            )).then(() => {
+              draggableOne.dispatchEvent(event);
+              const extractedEvent = extractSingleEvent(dispatchedEvent);
+              const elemBeingDragged = getElementBeingDragged(extractedEvent);
+              expect(elemBeingDragged).to.equal(draggableOne);
+              iframe.remove();
+              done();
+            });
+            DBUIDraggable.registerSelf();
+          }
+        });
+      });
+    });
+
+    describe('when TouchEvent and one Touch object has draggable descendant as target', () => {
+      it('returns draggable element', (done) => {
+        inIframe({
+          headStyle: `
+          `,
+          bodyHTML: `
+          <div id="other"></div>
+          <dbui-draggable id="draggable-one">
+            <div>
+              <span id="draggable-ancestor"></span>
+            </div>
+          </dbui-draggable>
+          `,
+          onLoad: ({ contentWindow, iframe }) => {
+            if (!contentWindow.TouchEvent) {
+              iframe.remove();
+              done();
+              return;
+            }
+
+            const DBUIDraggable = getDBUIDraggable(contentWindow);
+            const draggableAncestor = contentWindow.document.querySelector('#draggable-ancestor');
+            const draggableOne = contentWindow.document.querySelector('#draggable-one');
+            const touchObj1 = new contentWindow.Touch({
+              identifier: new Date(),
+              target: draggableAncestor,
+            });
+            const event = new contentWindow.TouchEvent('touchmove', {
+              touches: [touchObj1],
+              targetTouches: [],
+              changedTouches: [],
+            });
+            let dispatchedEvent = null;
+
+            draggableAncestor.addEventListener('touchmove', (evt) => {
+              dispatchedEvent = evt;
+            });
+
+            Promise.all([
+              DBUIDraggable.registrationName,
+            ].map((localName) => contentWindow.customElements.whenDefined(localName)
+            )).then(() => {
+              draggableAncestor.dispatchEvent(event);
+              const extractedEvent = extractSingleEvent(dispatchedEvent);
+              const elemBeingDragged = getElementBeingDragged(extractedEvent);
+              expect(elemBeingDragged).to.equal(draggableOne);
+              iframe.remove();
+              done();
+            });
+            DBUIDraggable.registerSelf();
+          }
+        });
+      });
+    });
+
+    describe('when TouchEvent and NO Touch object has draggable or draggable descendant as target', () => {
+      it('returns null', (done) => {
+        inIframe({
+          headStyle: `
+          `,
+          bodyHTML: `
+          <div id="other"></div>
+          <dbui-draggable id="draggable-one">
+            <div>
+              <span id="draggable-ancestor"></span>
+            </div>
+          </dbui-draggable>
+          `,
+          onLoad: ({ contentWindow, iframe }) => {
+            if (!contentWindow.TouchEvent) {
+              iframe.remove();
+              done();
+              return;
+            }
+
+            const DBUIDraggable = getDBUIDraggable(contentWindow);
+            const other = contentWindow.document.querySelector('#other');
+            const draggableOne = contentWindow.document.querySelector('#draggable-one');
+            const touchObj1 = new contentWindow.Touch({
+              identifier: new Date(),
+              target: other,
+            });
+            const event = new contentWindow.TouchEvent('touchmove', {
+              touches: [touchObj1],
+              targetTouches: [],
+              changedTouches: [],
+            });
+            let dispatchedEvent = null;
+
+            draggableOne.addEventListener('touchmove', (evt) => {
+              dispatchedEvent = evt;
+            });
+
+            Promise.all([
+              DBUIDraggable.registrationName,
+            ].map((localName) => contentWindow.customElements.whenDefined(localName)
+            )).then(() => {
+              draggableOne.dispatchEvent(event);
+              const elemBeingDragged = getElementBeingDragged(dispatchedEvent.touches[0]);
+              expect(elemBeingDragged).to.equal(null);
+              iframe.remove();
+              done();
+            });
+            DBUIDraggable.registerSelf();
+          }
+        });
+      });
+    });
+  });
 });
