@@ -317,8 +317,8 @@ describe('DBUIDraggable', () => {
               });
               contentWindow.requestAnimationFrame(() => {
                 setTimeout(() => {
-                  sendTapEvent(draggableOne, 'move', {
-                    clientX: 15, clientY: 15
+                  sendTapEvent(draggableOne.ownerDocument, 'move', {
+                    clientX: 15, clientY: 15, target: draggableOne
                   });
                   contentWindow.requestAnimationFrame(() => {
                     setTimeout(() => {
