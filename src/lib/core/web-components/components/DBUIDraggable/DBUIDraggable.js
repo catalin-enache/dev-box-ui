@@ -334,30 +334,38 @@ function doMove(_evt) {
   });
 }
 
-const getStep = (minX, maxX, x, steps) => {
+const STEP_PRECISION = 4;
+const getStep = (min, max, current, steps) => {
   const _steps = Number(steps);
+  const interval = max - min;
+
+  let percent = null;
+
   if (!_steps || _steps < 2) {
-    return { value: x, index: undefined };
+    percent = +(((current - min) / interval) || 0).toFixed(STEP_PRECISION);
+    return { value: current, index: undefined, percent };
   }
-  const interval = maxX - minX;
+
   const stepSize = interval / (_steps - 1);
   const allSteps = [];
   let minDist = Infinity;
   let idx = null;
   for (let i = 1; i <= _steps; i += 1) {
     if (i === 1) {
-      allSteps.push(minX);
+      allSteps.push(min);
     } else if (i === _steps) {
-      allSteps.push(maxX);
+      allSteps.push(max);
     } else {
-      allSteps.push(minX + ((i - 1) * stepSize));
+      allSteps.push(min + ((i - 1) * stepSize));
     }
-    if (Math.abs(allSteps[i - 1] - x) < minDist) {
-      minDist = Math.abs(allSteps[i - 1] - x);
+    if (Math.abs(allSteps[i - 1] - current) < minDist) {
+      minDist = Math.abs(allSteps[i - 1] - current);
       idx = i - 1;
     }
   }
-  return { value: allSteps[idx], index: idx };
+  const stepValue = +allSteps[idx].toFixed(STEP_PRECISION);
+  percent = +(((stepValue - min) / interval) || 0).toFixed(STEP_PRECISION);
+  return { value: allSteps[idx], index: idx, percent };
 };
 
 const getConstraintsForBoundingClientRect = (targetNode, constraintNode) => {
@@ -392,10 +400,12 @@ const presetBoundingClientRect =
     const revisedTranslateX = Math.max(_offsetX, Math.min(targetTranslateX, maxX + _offsetX));
     const revisedTranslateY = Math.max(_offsetY, Math.min(targetTranslateY, maxY + _offsetY));
 
+    const { value: stepX, percent: percentX, index: stepIndexX } =
+      getStep(_offsetX, maxX + _offsetX, revisedTranslateX, stepsX);
+    const { value: stepY, percent: percentY, index: stepIndexY } =
+      getStep(_offsetY, maxY + _offsetY, revisedTranslateY, stepsY);
 
-    const { value: stepX } = getStep(_offsetX, maxX + _offsetX, revisedTranslateX, stepsX);
-    const { value: stepY } = getStep(_offsetY, maxY + _offsetY, revisedTranslateY, stepsY);
-    return { targetTranslateX: stepX, targetTranslateY: stepY };
+    return { targetTranslateX: stepX, targetTranslateY: stepY, percentX, percentY, stepIndexX, stepIndexY };
   };
 
 const presetCircle =
@@ -424,7 +434,7 @@ const presetCircle =
     const radians = quadrant < 3 ? _rad : fullRotation - _rad;
     const degrees = (radians * 180) / Math.PI;
     // for circle first step (0) === last step (2 * Math.PI or 360deg)
-    const { value: degreeStep, index: stepIndex } =
+    const { value: degreeStep, index: stepIndex, percent } =
       getStep(0, 360, degrees, steps ? steps + 1 : 0);
     const radiansStep = (degreeStep * Math.PI) / 180;
 
@@ -437,8 +447,6 @@ const presetCircle =
 
     const revisedTargetTranslateX = newAbsX - targetOriginalX - targetHalfWidth;
     const revisedTargetTranslateY = newAbsY - targetOriginalY - targetHalfHeight;
-
-    const percent = radiansStep / fullRotation;
 
     return {
       targetTranslateX: revisedTargetTranslateX,
@@ -460,8 +468,11 @@ const presetNoConstraint =
 
 /*
 TODO:
-4. improve presets algorithms
-5. improve code where possible
+ - unittests for getSteps
+ - unittest for constraint parent
+ - unittest for constraint selector in light and shadow DOM
+ - improve presets algorithms
+ - improve code where possible
 */
 
 const registrationName = 'dbui-draggable';
@@ -633,7 +644,7 @@ export default function getDBUIDraggable(win) {
               const constraintNode =
               selector === 'parent' ?
                 this.parentElement :
-                this.ownerDocument.querySelector(selector);
+                this.getRootNode().querySelector(selector);
               const constraintsForBoundingClientRect =
                 getConstraintsForBoundingClientRect(this, constraintNode);
               this._cachedConstraintPreset =
