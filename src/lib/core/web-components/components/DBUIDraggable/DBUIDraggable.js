@@ -7,11 +7,11 @@ const events = {
   mouse: {
     mousemove() {
       return (evt) => {
-        evt.which === 1 ? doMove(evt) : unregisterDocumentEvents(evt);
+        evt.which === 1 ? doMove(evt) : unregisterRootEvents(evt);
       };
     },
     mouseup() {
-      return (evt) => unregisterDocumentEvents(evt);
+      return (evt) => unregisterRootEvents(evt);
     }
   },
   touch: {
@@ -19,24 +19,27 @@ const events = {
       return (evt) => doMove(evt);
     },
     touchend() {
-      return (evt) => unregisterDocumentEvents(evt);
+      return (evt) => unregisterRootEvents(evt);
     },
     touchcancel() {
-      return (evt) => unregisterDocumentEvents(evt);
+      return (evt) => unregisterRootEvents(evt);
     }
   }
 };
 
-const eventOptions = { capture: true, passive: false };
+const eventOptions = {
+  mouse: { capture: true, passive: false },
+  touch: { capture: false, passive: false },
+};
 
 /**
  *
  * @param evt TouchEvent || MouseEvent always coming from Draggable
  */
-function registerDocumentEvents(evt) {
+function registerRootEvents(evt) {
   const type = isTouchEvent(evt) ? 'touch' : 'mouse';
   const self = evt.currentTarget;
-  const { doc, win } = getDocAndWin(evt);
+  const { win, root } = getRootDocAndWin(evt);
 
   if (type === 'mouse') {
     win._dbuiCurrentElementBeingDragged = self;
@@ -57,7 +60,7 @@ function registerDocumentEvents(evt) {
   if (!win._dbuiDraggableRegisteredEvents.has(self)) {
     win._dbuiDraggableRegisteredEvents.set(self, newEventHandlers);
     Object.keys(newEventHandlers).forEach((event) => {
-      doc.addEventListener(event, newEventHandlers[event], eventOptions);
+      root.addEventListener(event, newEventHandlers[event], eventOptions[type]);
     });
   }
 }
@@ -66,9 +69,9 @@ function registerDocumentEvents(evt) {
  *
  * @param evt TouchEvent || MouseEvent always coming from Document
  */
-function unregisterDocumentEvents(evt) {
+function unregisterRootEvents(evt) {
   const type = isTouchEvent(evt) ? 'touch' : 'mouse';
-  const { doc, win } = getDocAndWin(evt);
+  const { win, root } = getRootDocAndWin(evt);
 
   const self = getElementBeingDragged(evt);
   /* istanbul ignore next */
@@ -98,7 +101,7 @@ function unregisterDocumentEvents(evt) {
   }
 
   Object.keys(eventHandlers).forEach((event) => {
-    doc.removeEventListener(event, eventHandlers[event], eventOptions);
+    root.removeEventListener(event, eventHandlers[event], eventOptions[type]);
   });
   win._dbuiCurrentElementBeingDragged = null;
   win._dbuiDraggableRegisteredEvents.delete(self);
@@ -109,11 +112,14 @@ function unregisterDocumentEvents(evt) {
  * @param evt Touch || TouchEvent || MouseEvent
  * @return Object { doc, win }
  */
-function getDocAndWin(evt) {
+function getRootDocAndWin(evt) {
   // if target.ownerDocument is null then target is document
   const doc = evt.target.ownerDocument || evt.target;
+  // In light DOM rootNode === ownerDocument
+  // In shadow DOM rootNode !== ownerDocument but is a document-fragment
+  const root = evt.target.getRootNode();
   const win = doc.defaultView;
-  return { doc, win };
+  return { doc, win, root };
 }
 
 /**
@@ -122,7 +128,7 @@ function getDocAndWin(evt) {
  * @return Boolean
  */
 function isTouchEvent(evt) {
-  const { win } = getDocAndWin(evt);
+  const { win } = getRootDocAndWin(evt);
   return win.Touch && ((evt instanceof win.Touch) || (evt instanceof win.TouchEvent));
 }
 
@@ -133,7 +139,7 @@ function isTouchEvent(evt) {
  */
 export function getElementBeingDragged(evt) {
   const type = isTouchEvent(evt) ? 'touch' : 'mouse';
-  const { win } = getDocAndWin(evt);
+  const { win } = getRootDocAndWin(evt);
 
   if (type === 'mouse') {
     return win._dbuiCurrentElementBeingDragged;
@@ -240,7 +246,7 @@ function onPointerDown(evt) {
   const self = evt.currentTarget;
   self._cachedConstraintPreset = null;
   self._measurements = getMeasurements(evt);
-  registerDocumentEvents(evt);
+  registerRootEvents(evt);
 }
 
 /**
@@ -249,6 +255,7 @@ function onPointerDown(evt) {
  */
 function doMove(_evt) {
   _evt.preventDefault(); // prevent selection and scrolling
+  _evt.stopPropagation();
   const evt = extractSingleEvent(_evt);
 
   /* istanbul ignore next */
@@ -267,7 +274,7 @@ function doMove(_evt) {
     return;
   }
 
-  const { win } = getDocAndWin(evt);
+  const { win } = getRootDocAndWin(evt);
 
   if (self._dragRunning) { return; }
   self._dragRunning = true;
@@ -335,7 +342,15 @@ function doMove(_evt) {
 }
 
 const STEP_PRECISION = 4;
-const getStep = (min, max, current, steps) => {
+
+/**
+ * @param min Number
+ * @param max Number
+ * @param current Number
+ * @param steps Number (optional)
+ * @return { value: Number, index: Number (if steps >= 2), percent: Number }
+ */
+export const getStep = (min, max, current, steps) => {
   const _steps = Number(steps);
   const interval = max - min;
 
@@ -343,7 +358,7 @@ const getStep = (min, max, current, steps) => {
 
   if (!_steps || _steps < 2) {
     percent = +(((current - min) / interval) || 0).toFixed(STEP_PRECISION);
-    return { value: current, index: undefined, percent };
+    return { value: current, percent };
   }
 
   const stepSize = interval / (_steps - 1);
@@ -468,11 +483,11 @@ const presetNoConstraint =
 
 /*
 TODO:
- - unittests for getSteps
- - unittest for constraint parent
- - unittest for constraint selector in light and shadow DOM
+ - unittests for register/unregisterRootEvents
+ - unittest for applyCorrection
  - improve presets algorithms
  - improve code where possible
+ - add circleAround({ selector, steps }) preset ?
 */
 
 const registrationName = 'dbui-draggable';
@@ -646,7 +661,7 @@ export default function getDBUIDraggable(win) {
                 this.parentElement :
                 this.getRootNode().querySelector(selector);
               const constraintsForBoundingClientRect =
-                getConstraintsForBoundingClientRect(this, constraintNode);
+                getConstraintsForBoundingClientRect(this._targetToDrag, constraintNode);
               this._cachedConstraintPreset =
                 presetBoundingClientRect({ ...constraintsForBoundingClientRect, stepsX, stepsY });
               break;
@@ -669,8 +684,9 @@ export default function getDBUIDraggable(win) {
 
       get _targetToDrag() {
         if (this._cachedTargetToDrag) return this._cachedTargetToDrag;
-        const targetToDrag =
-          this.getRootNode().querySelector(this.dragTarget) || this;
+        const dragTarget = this.dragTarget;
+        const targetToDrag = dragTarget === 'parent' ? this.parentElement :
+          (this.getRootNode().querySelector(dragTarget) || this);
         this._cachedTargetToDrag = targetToDrag;
         return this._cachedTargetToDrag;
       }
@@ -697,15 +713,15 @@ export default function getDBUIDraggable(win) {
 
       onConnectedCallback() {
         this.setAttribute('unselectable', '');
-        this.addEventListener('mousedown', handleMouseDown, eventOptions);
-        this.addEventListener('touchstart', handleTouchStart, eventOptions);
+        this.addEventListener('mousedown', handleMouseDown, eventOptions.mouse);
+        this.addEventListener('touchstart', handleTouchStart, eventOptions.touch);
         this._initializeTargetToDrag();
       }
 
       onDisconnectedCallback() {
         this.removeAttribute('unselectable');
-        this.removeEventListener('mousedown', handleMouseDown, eventOptions);
-        this.removeEventListener('touchstart', handleTouchStart, eventOptions);
+        this.removeEventListener('mousedown', handleMouseDown, eventOptions.mouse);
+        this.removeEventListener('touchstart', handleTouchStart, eventOptions.touch);
         this._resetTargetToDrag();
       }
 
@@ -723,7 +739,7 @@ export default function getDBUIDraggable(win) {
             this._targetToDrag.style.transform = `translate(${this.targetTranslateX}px,${valueToSet}px)`;
             break;
           case 'drag-target':
-            if (!this.isMounted) break;
+            if (!this.isMounted) break; // will call _initializeTargetToDrag onConnectedCallback
             this._resetTargetToDrag();
             this._initializeTargetToDrag();
             break;

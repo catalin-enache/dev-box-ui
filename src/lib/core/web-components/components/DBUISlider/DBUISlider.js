@@ -2,10 +2,15 @@
 import getDBUIWebComponentCore from '../DBUIWebComponentCore/DBUIWebComponentCore';
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
 import getDBUIDraggable from '../DBUIDraggable/DBUIDraggable';
-// import onScreenConsole from '../../../utils/onScreenConsole';
+import onScreenConsole from '../../../utils/onScreenConsole';
 
+const DRAGGABLE_ID = 'draggable';
 
 const registrationName = 'dbui-slider';
+
+/*
+TODO:
+*/
 
 export default function getDBUISlider(win) {
   return ensureSingleRegistration(win, registrationName, () => {
@@ -73,7 +78,7 @@ export default function getDBUISlider(win) {
             background-color: rgba(0, 0, 255, 0.2);
           }
           
-          dbui-draggable {
+          #${DRAGGABLE_ID} {
             width: 30px;
             height: 30px;
             border-radius: 0px;
@@ -85,6 +90,7 @@ export default function getDBUISlider(win) {
             <div id="wrapper-middle">
               <div id="inner"></div>
               <dbui-draggable
+                id="${DRAGGABLE_ID}"
                 constraint='boundingClientRectOf({ "selector": "parent", "stepsX": 0, "stepsY": 0 })'
               ></dbui-draggable>
             </div>
@@ -115,12 +121,14 @@ export default function getDBUISlider(win) {
 
       _registerChild(child) {
         super._registerChild(child);
-        console.log('registered', child);
-        child.addEventListener('translate', this._onDraggableMove);
+        // console.log('DBUISlider child registered', this.shadowRoot.querySelector(`#${DRAGGABLE_ID}`));
+        if (child.id === DRAGGABLE_ID) {
+          child.addEventListener('translate', this._onDraggableMove);
+        }
       }
 
       onConnectedCallback() {
-        console.log('onConnectedCallback DBUISlider');
+        console.log('DBUISlider onConnectedCallback', 'this.shadowRoot.querySelector(`#${DRAGGABLE_ID}`)');
         // this.querySelector('dbui-draggable').addEventListener('translate', this._onDraggableMove);
       }
 

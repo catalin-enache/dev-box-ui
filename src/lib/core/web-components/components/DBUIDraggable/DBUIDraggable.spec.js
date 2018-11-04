@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import inIframe from '../../../../../../testUtils/inIframe';
 import getDBUIDraggable, {
-  extractSingleEvent, getElementBeingDragged
+  extractSingleEvent, getElementBeingDragged, getStep
 } from './DBUIDraggable';
 import {
   sendTapEvent,
@@ -11,9 +11,9 @@ import {
 import getDBUIWebComponentCore from '../DBUIWebComponentCore/DBUIWebComponentCore';
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
 
-const dummyCompRegistrationName = 'dummy-comp';
-function getDummyComp(win) {
-  return ensureSingleRegistration(win, dummyCompRegistrationName, () => {
+const dummyDraggableCompRegistrationName = 'dummy-draggable-comp';
+function getDummyDraggableComp(win) {
+  return ensureSingleRegistration(win, dummyDraggableCompRegistrationName, () => {
     const {
       DBUIWebComponentBase,
       defineCommonStaticMethods,
@@ -22,10 +22,10 @@ function getDummyComp(win) {
 
     const DBUIDraggable = getDBUIDraggable(win);
 
-    class DummyComp extends DBUIWebComponentBase {
+    class DummyDraggableComp extends DBUIWebComponentBase {
 
       static get registrationName() {
-        return dummyCompRegistrationName;
+        return dummyDraggableCompRegistrationName;
       }
 
       static get dependencies() {
@@ -35,9 +35,10 @@ function getDummyComp(win) {
       static get templateInnerHTML() {
         return `
           <style></style>
-          <div>
+          <div id="container">
             <div id="one">draggable</div>
-            <dbui-draggable drag-target="#one">
+            <div id="two"></div>
+            <dbui-draggable id="dbui-draggable" drag-target="#one">
               <p>dragger</p>
             </dbui-draggable>
           </div>
@@ -47,15 +48,199 @@ function getDummyComp(win) {
 
     return Registerable(
       defineCommonStaticMethods(
-        DummyComp
+        DummyDraggableComp
       )
     );
   });
 }
-getDummyComp.registrationName = dummyCompRegistrationName;
+getDummyDraggableComp.registrationName = dummyDraggableCompRegistrationName;
+
+const dummyDraggableInnerRegistrationName = 'dummy-draggable-inner';
+function getDummyDraggableInner(win) {
+  return ensureSingleRegistration(win, dummyDraggableInnerRegistrationName, () => {
+    const {
+      DBUIWebComponentBase,
+      defineCommonStaticMethods,
+      Registerable
+    } = getDBUIWebComponentCore(win);
+
+    const DBUIDraggable = getDBUIDraggable(win);
+
+    class DummyDraggableInner extends DBUIWebComponentBase {
+
+      static get registrationName() {
+        return dummyDraggableInnerRegistrationName;
+      }
+
+      static get dependencies() {
+        return [...super.dependencies, DBUIDraggable];
+      }
+
+      static get templateInnerHTML() {
+        return `
+          <style>
+            #container {
+              width: 200px;
+              height: 100px;
+            }
+            #draggable-inner-1 {
+              width: 100px;
+              height: 50px;
+              background-color: rgba(255, 0, 0, 0.2);
+            }
+            #draggable-inner-2 {
+              width: 100px;
+              height: 50px;
+              background-color: rgba(0, 255, 0, 0.2);
+            }
+          </style>
+          <div id="container">
+            <dbui-draggable id="draggable-inner-1" constraint='boundingClientRectOf({ "selector": "parent" })'>
+              <p>draggable-inner-1</p>
+            </dbui-draggable>
+            <dbui-draggable id="draggable-inner-2" constraint='boundingClientRectOf({ "selector": "parent" })'>
+              <p>draggable-inner-2</p>
+            </dbui-draggable>
+          </div>
+        `;
+      }
+    }
+
+    return Registerable(
+      defineCommonStaticMethods(
+        DummyDraggableInner
+      )
+    );
+  });
+}
+getDummyDraggableInner.registrationName = dummyDraggableInnerRegistrationName;
+
+const dummyDraggableMiddleRegistrationName = 'dummy-draggable-middle';
+function getDummyDraggableMiddle(win) {
+  return ensureSingleRegistration(win, dummyDraggableMiddleRegistrationName, () => {
+    const {
+      DBUIWebComponentBase,
+      defineCommonStaticMethods,
+      Registerable
+    } = getDBUIWebComponentCore(win);
+
+    const DummyDraggableInner = getDummyDraggableInner(win);
+
+    class DummyDraggableMiddle extends DBUIWebComponentBase {
+
+      static get registrationName() {
+        return dummyDraggableMiddleRegistrationName;
+      }
+
+      static get dependencies() {
+        return [...super.dependencies, DummyDraggableInner];
+      }
+
+      static get templateInnerHTML() {
+        return `
+          <style>
+            #container {
+              width: 400px;
+              height: 150px;
+              background-color: rgba(0, 0, 255, 0.2);
+            }
+            #draggable-middle-1 {
+              display: inline-block;
+              width: 200px;
+              height: 100px;
+              background-color: rgba(255, 0, 0, 0.2);
+            }
+            #draggable-middle-2 {
+              display: inline-block;
+              width: 200px;
+              height: 100px;
+              background-color: rgba(0, 255, 0, 0.2);
+            }
+          </style>
+          <div id="container">
+            <dbui-draggable id="draggable-middle-1" constraint='boundingClientRectOf({ "selector": "parent" })'>
+              <dummy-draggable-inner id="dummy-draggable-inner-1"></dummy-draggable-inner>
+            </dbui-draggable><dbui-draggable id="draggable-middle-2" constraint='boundingClientRectOf({ "selector": "parent" })'>
+              <dummy-draggable-inner id="dummy-draggable-inner-2"></dummy-draggable-inner>
+            </dbui-draggable>
+          </div>
+        `;
+      }
+    }
+
+    return Registerable(
+      defineCommonStaticMethods(
+        DummyDraggableMiddle
+      )
+    );
+  });
+}
+getDummyDraggableMiddle.registrationName = dummyDraggableMiddleRegistrationName;
+
+const dummyDraggableOuterRegistrationName = 'dummy-draggable-outer';
+function getDummyDraggableOuter(win) {
+  return ensureSingleRegistration(win, dummyDraggableOuterRegistrationName, () => {
+    const {
+      DBUIWebComponentBase,
+      defineCommonStaticMethods,
+      Registerable
+    } = getDBUIWebComponentCore(win);
+
+    const DummyDraggableMiddle = getDummyDraggableMiddle(win);
+
+    class DummyDraggableOuter extends DBUIWebComponentBase {
+
+      static get registrationName() {
+        return dummyDraggableOuterRegistrationName;
+      }
+
+      static get dependencies() {
+        return [...super.dependencies, DummyDraggableMiddle];
+      }
+
+      static get templateInnerHTML() {
+        return `
+          <style>
+            #container {
+              width: 400px;
+              height: 350px;
+              background-color: rgba(0, 0, 255, 0.2);
+            }
+            #draggable-outer-1 {
+              width: 400px;
+              height: 150px;
+              background-color: rgba(255, 0, 0, 0.2);
+            }
+            #draggable-outer-2 {
+              width: 400px;
+              height: 150px;
+              background-color: rgba(0, 255, 0, 0.2);
+            }
+          </style>
+          <div id="container">
+            <dbui-draggable id="draggable-outer-1" constraint='boundingClientRectOf({ "selector": "parent" })'>
+              <dummy-draggable-middle id="dummy-draggable-middle-1"></dummy-draggable-middle>
+            </dbui-draggable>
+            <dbui-draggable id="draggable-outer-2" constraint='boundingClientRectOf({ "selector": "parent" })'>
+              <dummy-draggable-middle id="dummy-draggable-middle-2"></dummy-draggable-middle>
+            </dbui-draggable>
+          </div>
+        `;
+      }
+    }
+
+    return Registerable(
+      defineCommonStaticMethods(
+        DummyDraggableOuter
+      )
+    );
+  });
+}
+getDummyDraggableOuter.registrationName = dummyDraggableOuterRegistrationName;
+
 
 describe('DBUIDraggable', () => {
-  xit('behaves as expected - live testing', (done) => {
+  xit('behaves as expected - light DOM - live testing', (done) => {
     inIframe({
       headStyle: `
       body, html { padding: 0px; margin: 0px; }
@@ -200,6 +385,37 @@ describe('DBUIDraggable', () => {
         });
 
         DBUIDraggable.registerSelf();
+      }
+    });
+  });
+
+  xit('behaves as expected - nested shadow DOMs - live testing', (done) => {
+    inIframe({
+      headStyle: `
+      body, html { padding: 0px; margin: 0px; }
+      `,
+      bodyHTML: `
+      <div id="container">
+        <dummy-draggable-outer></dummy-draggable-outer>
+      </div>
+      
+      `,
+      onLoad: ({ contentWindow, iframe }) => {
+        const DummyDraggableOuter = getDummyDraggableOuter(contentWindow);
+
+        Promise.all([
+          DummyDraggableOuter.registrationName,
+        ].map((localName) => contentWindow.customElements.whenDefined(localName)
+        )).then(() => {
+          setTimeout(() => {
+            setTimeout(() => {
+              iframe.remove();
+              done();
+            }, 2000);
+          }, 55000);
+        });
+
+        DummyDraggableOuter.registerSelf();
       }
     });
   });
@@ -974,7 +1190,11 @@ describe('DBUIDraggable', () => {
           headStyle: `
           `,
           bodyHTML: `
-          <div id="one"></div>
+          <div id="one">
+            <dbui-draggable id="draggable-zero" drag-target="parent">
+              <div id="draggable-zero-content">content</div>
+            </dbui-draggable>
+          </div>
           <dbui-draggable id="draggable-one" drag-target="#one">
             <div id="draggable-one-content">content</div>
           </dbui-draggable>
@@ -982,6 +1202,7 @@ describe('DBUIDraggable', () => {
           onLoad: ({ contentWindow, iframe }) => {
             const DBUIDraggable = getDBUIDraggable(contentWindow);
             const one = contentWindow.document.querySelector('#one');
+            const draggableZero = contentWindow.document.querySelector('#draggable-zero');
             const draggableOne = contentWindow.document.querySelector('#draggable-one');
 
             Promise.all([
@@ -990,6 +1211,7 @@ describe('DBUIDraggable', () => {
             )).then(() => {
 
               expect(draggableOne._targetToDrag).to.equal(one);
+              expect(draggableZero._targetToDrag).to.equal(one);
 
               setTimeout(() => {
                 iframe.remove();
@@ -1008,31 +1230,33 @@ describe('DBUIDraggable', () => {
           headStyle: `
           `,
           bodyHTML: `
-          <dummy-comp></dummy-comp>
+          <dummy-draggable-comp></dummy-draggable-comp>
           `,
           onLoad: ({ contentWindow, iframe }) => {
-            const DummyComp = getDummyComp(contentWindow);
-            const dummyComp = contentWindow.document.querySelector('dummy-comp');
+            const DummyDraggableComp = getDummyDraggableComp(contentWindow);
+            const dummyComp = contentWindow.document.querySelector('dummy-draggable-comp');
 
             Promise.all([
-              DummyComp.registrationName,
+              DummyDraggableComp.registrationName,
             ].map((localName) => contentWindow.customElements.whenDefined(localName)
             )).then(() => {
 
               const shadowDBUIDraggable =
                 dummyComp.shadowRoot.querySelector('dbui-draggable');
+              const shadowContainer =
+                dummyComp.shadowRoot.querySelector('#container');
               const shadowOne =
                 dummyComp.shadowRoot.querySelector('#one');
-              const _targetToDrag =
-                shadowDBUIDraggable._targetToDrag;
-              expect(_targetToDrag).to.equal(shadowOne);
+              expect(shadowDBUIDraggable._targetToDrag).to.equal(shadowOne);
+              shadowDBUIDraggable.dragTarget = 'parent';
+              expect(shadowDBUIDraggable._targetToDrag).to.equal(shadowContainer);
 
               setTimeout(() => {
                 iframe.remove();
                 done();
               }, 0);
             });
-            DummyComp.registerSelf();
+            DummyDraggableComp.registerSelf();
           }
         });
       });
@@ -1200,6 +1424,201 @@ describe('DBUIDraggable', () => {
   });
 
   describe('constraint', () => {
+    describe('boundingClientRectOf selector', () => {
+      describe('when selector in light DOM', () => {
+        it('returns element in light DOM', (done) => {
+          inIframe({
+            bodyHTML: `
+            <div id="one"></div>
+            <div id="two">
+              <div id="three"></div>
+              <dbui-draggable id="draggable-one" drag-target="#three">
+              </dbui-draggable>
+            </div>
+            `,
+            onLoad: ({ contentWindow, iframe }) => {
+              const DBUIDraggable = getDBUIDraggable(contentWindow);
+              const one = contentWindow.document.querySelector('#one');
+              const two = contentWindow.document.querySelector('#two');
+              const draggableOne = contentWindow.document.querySelector('#draggable-one');
+
+              const oneGetBoundingClientRect = one.getBoundingClientRect.bind(one);
+              let oneGetBoundingClientRectHasBeenCalled = false;
+              one.getBoundingClientRect = () => {
+                oneGetBoundingClientRectHasBeenCalled = true;
+                return oneGetBoundingClientRect();
+              };
+
+              const twoGetBoundingClientRect = two.getBoundingClientRect.bind(two);
+              let twoGetBoundingClientRectHasBeenCalled = false;
+              two.getBoundingClientRect = () => {
+                twoGetBoundingClientRectHasBeenCalled = true;
+                return twoGetBoundingClientRect();
+              };
+
+              Promise.all([
+                DBUIDraggable.registrationName,
+              ].map((localName) => contentWindow.customElements.whenDefined(localName)
+              )).then(() => {
+                draggableOne.constraint = 'boundingClientRectOf({ "selector": "#one" })';
+
+                contentWindow.requestAnimationFrame(() => {
+                  setTimeout(() => {
+                    sendTapEvent(draggableOne, 'start', {
+                      clientX: 0, clientY: 150
+                    });
+                    contentWindow.requestAnimationFrame(() => {
+                      setTimeout(() => {
+                        sendTapEvent(draggableOne, 'move', {
+                          clientX: 200, clientY: 200
+                        });
+                        sendTapEvent(draggableOne, 'end', {
+                        });
+                        contentWindow.requestAnimationFrame(() => {
+                          // test selector was return by query
+                          expect(oneGetBoundingClientRectHasBeenCalled).to.equal(true);
+                          expect(twoGetBoundingClientRectHasBeenCalled).to.equal(false);
+
+                          draggableOne.constraint = 'boundingClientRectOf({ "selector": "parent" })';
+
+                          setTimeout(() => {
+
+                            contentWindow.requestAnimationFrame(() => {
+                              setTimeout(() => {
+                                sendTapEvent(draggableOne, 'start', {
+                                  clientX: 0, clientY: 150
+                                });
+
+                                contentWindow.requestAnimationFrame(() => {
+                                  setTimeout(() => {
+                                    sendTapEvent(draggableOne, 'move', {
+                                      clientX: 200, clientY: 200
+                                    });
+                                    sendTapEvent(draggableOne, 'end', {
+                                    });
+
+                                    contentWindow.requestAnimationFrame(() => {
+                                      setTimeout(() => {
+                                        expect(oneGetBoundingClientRectHasBeenCalled).to.equal(true);
+                                        // test selector was parentElement
+                                        expect(twoGetBoundingClientRectHasBeenCalled).to.equal(true);
+                                        iframe.remove();
+                                        done();
+                                      }, 0);
+                                    });
+                                  }, 0);
+                                });
+                              }, 0);
+                            });
+                          }, 0);
+                        });
+                      }, 0);
+                    });
+                  }, 0);
+                });
+              });
+              DBUIDraggable.registerSelf();
+            }
+          });
+        });
+      });
+
+      describe('when selector in shadow DOM', () => {
+        it('returns element in shadow DOM', (done) => {
+          inIframe({
+            bodyHTML: `
+              <dummy-draggable-comp></dummy-draggable-comp>
+            `,
+            onLoad: ({ contentWindow, iframe }) => {
+              const DummyDraggableComp = getDummyDraggableComp(contentWindow);
+
+              Promise.all([
+                DummyDraggableComp.registrationName,
+              ].map((localName) => contentWindow.customElements.whenDefined(localName)
+              )).then(() => {
+                const dummyDraggable = contentWindow.document.querySelector('dummy-draggable-comp');
+                const dummyDraggableShadowDraggable = dummyDraggable.shadowRoot.querySelector('dbui-draggable');
+                const dummyDraggableShadowContainer = dummyDraggable.shadowRoot.querySelector('#container');
+                const dummyDraggableShadowTwo = dummyDraggable.shadowRoot.querySelector('#two');
+
+                const twoGetBoundingClientRect = dummyDraggableShadowTwo.getBoundingClientRect.bind(dummyDraggableShadowTwo);
+                let twoGetBoundingClientRectHasBeenCalled = false;
+                dummyDraggableShadowTwo.getBoundingClientRect = () => {
+                  twoGetBoundingClientRectHasBeenCalled = true;
+                  return twoGetBoundingClientRect();
+                };
+
+                const containerGetBoundingClientRect = dummyDraggableShadowContainer.getBoundingClientRect.bind(dummyDraggableShadowContainer);
+                let containerGetBoundingClientRectHasBeenCalled = false;
+                dummyDraggableShadowContainer.getBoundingClientRect = () => {
+                  containerGetBoundingClientRectHasBeenCalled = true;
+                  return containerGetBoundingClientRect();
+                };
+
+                dummyDraggableShadowDraggable.constraint = 'boundingClientRectOf({ "selector": "#two" })';
+
+                contentWindow.requestAnimationFrame(() => {
+                  setTimeout(() => {
+                    sendTapEvent(dummyDraggableShadowDraggable, 'start', {
+                      clientX: 0, clientY: 150
+                    });
+                    contentWindow.requestAnimationFrame(() => {
+                      setTimeout(() => {
+                        sendTapEvent(dummyDraggableShadowDraggable, 'move', {
+                          clientX: 200, clientY: 200
+                        });
+                        sendTapEvent(dummyDraggableShadowDraggable, 'end', {
+                        });
+                        contentWindow.requestAnimationFrame(() => {
+                          // test selector was return by query
+                          expect(twoGetBoundingClientRectHasBeenCalled).to.equal(true);
+                          expect(containerGetBoundingClientRectHasBeenCalled).to.equal(false);
+
+                          dummyDraggableShadowDraggable.constraint = 'boundingClientRectOf({ "selector": "parent" })';
+
+                          setTimeout(() => {
+
+                            contentWindow.requestAnimationFrame(() => {
+                              setTimeout(() => {
+                                sendTapEvent(dummyDraggableShadowDraggable, 'start', {
+                                  clientX: 0, clientY: 150
+                                });
+
+                                contentWindow.requestAnimationFrame(() => {
+                                  setTimeout(() => {
+                                    sendTapEvent(dummyDraggableShadowDraggable, 'move', {
+                                      clientX: 200, clientY: 200
+                                    });
+                                    sendTapEvent(dummyDraggableShadowDraggable, 'end', {
+                                    });
+
+                                    contentWindow.requestAnimationFrame(() => {
+                                      setTimeout(() => {
+                                        expect(twoGetBoundingClientRectHasBeenCalled).to.equal(true);
+                                        // test selector was parentElement
+                                        expect(containerGetBoundingClientRectHasBeenCalled).to.equal(true);
+                                        iframe.remove();
+                                        done();
+                                      }, 0);
+                                    });
+                                  }, 0);
+                                });
+                              }, 0);
+                            });
+                          }, 0);
+                        });
+                      }, 0);
+                    });
+                  }, 0);
+                });
+              });
+              DummyDraggableComp.registerSelf();
+            }
+          });
+        });
+      });
+    });
+
     describe('boundingClientRectOf no steps', () => {
       it('applies moving constraints in the limits of boundingClientRectOf', (done) => {
         inIframe({
@@ -2020,6 +2439,21 @@ describe('DBUIDraggable', () => {
             DBUIDraggable.registerSelf();
           }
         });
+      });
+    });
+  });
+
+  describe('getStep', () => {
+    describe('when steps is undefined or less than 2', () => {
+      it('returns { value, percent }', () => {
+        const res = getStep(-10, 90, 40);
+        expect(res).to.eql({ value: 40, percent: 0.5 });
+      });
+    });
+    describe('when steps >= 2', () => {
+      it('returns { value, index, percent }', () => {
+        const res = getStep(-10, 90, 40, 3);
+        expect(res).to.eql({ value: 40, percent: 0.5, index: 1 });
       });
     });
   });

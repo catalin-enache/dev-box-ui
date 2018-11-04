@@ -17,6 +17,7 @@ describe('DBUISlider', () => {
       
       #wrapper-slider-one {
         position: absolute;
+        top: 100px;
         width: 500px;
         height: 180px;
         border: 5px solid green;
