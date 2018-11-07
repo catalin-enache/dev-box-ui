@@ -28,7 +28,7 @@ const events = {
 };
 
 const eventOptions = {
-  mouse: { capture: true, passive: false },
+  mouse: { capture: false, passive: false },
   touch: { capture: false, passive: false },
 };
 
@@ -39,11 +39,15 @@ const eventOptions = {
 function registerRootEvents(evt) {
   const type = isTouchEvent(evt) ? 'touch' : 'mouse';
   const self = evt.currentTarget;
-  const { win, root } = getRootDocAndWin(evt);
+  const { win, root, doc } = getRootDocAndWin(evt);
 
-  if (type === 'mouse') {
+  if (type === 'mouse' && !win._dbuiCurrentElementBeingDragged) {
     win._dbuiCurrentElementBeingDragged = self;
   }
+
+  // If nested draggables then only one MouseEvent allowed (the inner most) to be registered.
+  // However, multiple TouchEvents are allowed to be registered.
+  const _self = win._dbuiCurrentElementBeingDragged || self;
 
   if (!win._dbuiDraggableRegisteredEvents) {
     win._dbuiDraggableRegisteredEvents = new Map();
@@ -57,10 +61,10 @@ function registerRootEvents(evt) {
       };
     }, {});
 
-  if (!win._dbuiDraggableRegisteredEvents.has(self)) {
-    win._dbuiDraggableRegisteredEvents.set(self, newEventHandlers);
+  if (!win._dbuiDraggableRegisteredEvents.has(_self)) {
+    win._dbuiDraggableRegisteredEvents.set(_self, newEventHandlers);
     Object.keys(newEventHandlers).forEach((event) => {
-      root.addEventListener(event, newEventHandlers[event], eventOptions[type]);
+      (type === 'touch' ? root : doc).addEventListener(event, newEventHandlers[event], eventOptions[type]);
     });
   }
 }
@@ -71,7 +75,7 @@ function registerRootEvents(evt) {
  */
 function unregisterRootEvents(evt) {
   const type = isTouchEvent(evt) ? 'touch' : 'mouse';
-  const { win, root } = getRootDocAndWin(evt);
+  const { win, root, doc } = getRootDocAndWin(evt);
 
   const self = getElementBeingDragged(evt);
   /* istanbul ignore next */
@@ -101,7 +105,7 @@ function unregisterRootEvents(evt) {
   }
 
   Object.keys(eventHandlers).forEach((event) => {
-    root.removeEventListener(event, eventHandlers[event], eventOptions[type]);
+    (type === 'touch' ? root : doc).removeEventListener(event, eventHandlers[event], eventOptions[type]);
   });
   win._dbuiCurrentElementBeingDragged = null;
   win._dbuiDraggableRegisteredEvents.delete(self);
@@ -243,6 +247,7 @@ function handleTouchStart(evt) {
  */
 function onPointerDown(evt) {
   evt.preventDefault(); // prevents TouchEvent to trigger MouseEvent
+  evt.stopPropagation();
   const self = evt.currentTarget;
   self._cachedConstraintPreset = null;
   self._measurements = getMeasurements(evt);
@@ -255,7 +260,7 @@ function onPointerDown(evt) {
  */
 function doMove(_evt) {
   _evt.preventDefault(); // prevent selection and scrolling
-  _evt.stopPropagation();
+  _evt.stopPropagation(); // for nested draggables (allow dragging of inner most one)
   const evt = extractSingleEvent(_evt);
 
   /* istanbul ignore next */
@@ -483,10 +488,11 @@ const presetNoConstraint =
 
 /*
 TODO:
- - unittests for register/unregisterRootEvents
+ - unittests for register/unregisterRootEvents !!! check no mem leak
  - unittest for applyCorrection
  - improve presets algorithms
  - improve code where possible
+ - presetBoundingClientRect try not to require offset but constraint absolute x and y ?
  - add circleAround({ selector, steps }) preset ?
 */
 

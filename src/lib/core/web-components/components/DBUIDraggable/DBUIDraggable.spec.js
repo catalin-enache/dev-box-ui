@@ -79,7 +79,7 @@ function getDummyDraggableInner(win) {
       static get templateInnerHTML() {
         return `
           <style>
-            #container {
+            #container-inner {
               width: 200px;
               height: 100px;
             }
@@ -94,7 +94,7 @@ function getDummyDraggableInner(win) {
               background-color: rgba(0, 255, 0, 0.2);
             }
           </style>
-          <div id="container">
+          <div id="container-inner">
             <dbui-draggable id="draggable-inner-1" constraint='boundingClientRectOf({ "selector": "parent" })'>
               <p>draggable-inner-1</p>
             </dbui-draggable>
@@ -139,7 +139,7 @@ function getDummyDraggableMiddle(win) {
       static get templateInnerHTML() {
         return `
           <style>
-            #container {
+            #container-middle {
               width: 400px;
               height: 150px;
               background-color: rgba(0, 0, 255, 0.2);
@@ -157,7 +157,7 @@ function getDummyDraggableMiddle(win) {
               background-color: rgba(0, 255, 0, 0.2);
             }
           </style>
-          <div id="container">
+          <div id="container-middle">
             <dbui-draggable id="draggable-middle-1" constraint='boundingClientRectOf({ "selector": "parent" })'>
               <dummy-draggable-inner id="dummy-draggable-inner-1"></dummy-draggable-inner>
             </dbui-draggable><dbui-draggable id="draggable-middle-2" constraint='boundingClientRectOf({ "selector": "parent" })'>
@@ -201,7 +201,7 @@ function getDummyDraggableOuter(win) {
       static get templateInnerHTML() {
         return `
           <style>
-            #container {
+            #container-outer {
               width: 400px;
               height: 350px;
               background-color: rgba(0, 0, 255, 0.2);
@@ -217,7 +217,7 @@ function getDummyDraggableOuter(win) {
               background-color: rgba(0, 255, 0, 0.2);
             }
           </style>
-          <div id="container">
+          <div id="container-outer">
             <dbui-draggable id="draggable-outer-1" constraint='boundingClientRectOf({ "selector": "parent" })'>
               <dummy-draggable-middle id="dummy-draggable-middle-1"></dummy-draggable-middle>
             </dbui-draggable>
@@ -238,116 +238,176 @@ function getDummyDraggableOuter(win) {
 }
 getDummyDraggableOuter.registrationName = dummyDraggableOuterRegistrationName;
 
+/* eslint camelcase: 0 */
+
+const style_1 = `
+body, html { padding: 0px; margin: 0px; }
+p {
+  width: 300px;
+  height: 100px;
+}
+
+#container {
+  position: relative;
+}
+
+#wrapper-draggable-one, #wrapper-draggable-two, #wrapper-draggable-three, #wrapper-draggable-four {
+  position: absolute;
+  width: 500px;
+  height: 180px;
+  border: 5px solid green;
+}
+
+#wrapper-draggable-one {
+  width: 450px;
+  height: 160px;
+}
+
+#wrapper-draggable-one { top: 0px;}
+
+#wrapper-draggable-two { top: 200px;}
+
+#wrapper-draggable-three { top: 400px; }
+
+dbui-draggable {
+  border: 5px solid #ddd;
+}
+
+#draggable-two {
+  position: absolute;
+  left: 5px;
+}
+
+#wrapper-draggable-four {
+  position: relative;
+  width: 350px;
+  height: 350px;
+  top: 600px;
+  border-radius: 1000px;
+}
+#wrapper-draggable-four .center {
+  border: 1px solid red;
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  left: 174px;
+  top: 174px;
+}
+
+#draggable-four {
+  width: 100px;
+  height: 100px;
+  /* border-radius: 1000px; */
+}
+`;
+
+const html_1 = `
+<span id="locale-provider" dir="rtl"></span>
+<div id="container">
+
+  <div id="wrapper-draggable-one" dir="rtl">
+    <dbui-draggable id="draggable-one" drag-target="#wrapper-draggable-one" target-translate-x="10" target-translate-y="10">
+      <p id="draggable-two-content">draggable content 1</p>
+    </dbui-draggable>
+  </div>
+  
+  <div id="wrapper-draggable-two">
+    <dbui-draggable id="draggable-two" sync-locale-with="#locale-provider">
+      <p id="draggable-two-content">draggable content 2</p>
+    </dbui-draggable>
+  </div>
+  
+  <div id="wrapper-draggable-three">
+    <dbui-draggable id="draggable-three" dir="rtl">
+      <p id="draggable-three-content">draggable content 3</p>
+    </dbui-draggable>
+  </div>
+  
+  <div id="wrapper-draggable-four">
+    <dbui-draggable id="draggable-four">
+      <p>4</p>
+    </dbui-draggable>
+    <div class="center"></div>
+  </div>
+  
+  <div style="height: 300px; position: absolute; top: 700px; border: 1px solid black;"></div>
+
+</div>
+`;
+
+const style_2 = `
+body, html { padding: 0px; margin: 0px; }
+.draggable-inner {
+  width: 100px;
+  height: 50px;
+  background-color: rgba(255, 0, 0, 0.2);
+}
+.draggable-middle {
+  width: 200px;
+  height: 100px;
+  background-color: rgba(0, 0, 255, 0.2);
+  display: inline-block;
+}
+.draggable-outer {
+  width: 400px;
+  height: 150px;
+  background-color: rgba(0, 0, 255, 0.2);
+}
+.container {
+  width: 400px;
+  height: 350px;
+  background-color: rgba(0, 255, 255, 0.2);
+}
+`;
+
+const html_2 = `
+<div class="container">
+  <dbui-draggable class="draggable-outer" id="draggable-outer-1" constraint='boundingClientRectOf({ "selector": "parent" })'>
+    <dbui-draggable class="draggable-middle" id="draggable-middle-1" constraint='boundingClientRectOf({ "selector": "parent" })'>
+      <dbui-draggable class="draggable-inner" id="draggable-inner-1" constraint='boundingClientRectOf({ "selector": "parent" })'>
+        <p class="content" id="content-1">content 1</p>
+      </dbui-draggable>
+      <dbui-draggable class="draggable-inner" constraint='boundingClientRectOf({ "selector": "parent" })'>
+        <p class="content">content 2</p>
+      </dbui-draggable>
+    </dbui-draggable><dbui-draggable class="draggable-middle" constraint='boundingClientRectOf({ "selector": "parent" })'>
+      <dbui-draggable class="draggable-inner" constraint='boundingClientRectOf({ "selector": "parent" })'>
+        <p class="content">content 1</p>
+      </dbui-draggable>
+      <dbui-draggable class="draggable-inner" constraint='boundingClientRectOf({ "selector": "parent" })'>
+        <p class="content">content 2</p>
+      </dbui-draggable>
+    </dbui-draggable>
+  </dbui-draggable>  
+  <dbui-draggable class="draggable-outer" constraint='boundingClientRectOf({ "selector": "parent" })'>
+    <dbui-draggable class="draggable-middle" constraint='boundingClientRectOf({ "selector": "parent" })'>
+      <dbui-draggable class="draggable-inner" constraint='boundingClientRectOf({ "selector": "parent" })'>
+        <p class="content">content 1</p>
+      </dbui-draggable>
+      <dbui-draggable class="draggable-inner" constraint='boundingClientRectOf({ "selector": "parent" })'>
+        <p class="content">content 2</p>
+      </dbui-draggable>
+    </dbui-draggable><dbui-draggable class="draggable-middle" constraint='boundingClientRectOf({ "selector": "parent" })'>
+      <dbui-draggable class="draggable-inner" constraint='boundingClientRectOf({ "selector": "parent" })'>
+        <p class="content">content 1</p>
+      </dbui-draggable>
+      <dbui-draggable class="draggable-inner" constraint='boundingClientRectOf({ "selector": "parent" })'>
+        <p class="content">content 2</p>
+      </dbui-draggable>
+    </dbui-draggable>
+  </dbui-draggable>  
+</div>
+`;
 
 describe('DBUIDraggable', () => {
   xit('behaves as expected - light DOM - live testing', (done) => {
     inIframe({
-      headStyle: `
-      body, html { padding: 0px; margin: 0px; }
-      p {
-        width: 300px;
-        height: 100px;
-      }
-      
-      #container {
-        position: relative;
-      }
-      
-      #wrapper-draggable-one, #wrapper-draggable-two, #wrapper-draggable-three, #wrapper-draggable-four {
-        position: absolute;
-        width: 500px;
-        height: 180px;
-        border: 5px solid green;
-      }
-      
-      #wrapper-draggable-one {
-        width: 450px;
-        height: 160px;
-      }
-      
-      #wrapper-draggable-one { top: 0px;}
-      
-      #wrapper-draggable-two { top: 200px;}
-      
-      #wrapper-draggable-three { top: 400px; }
-      
-      dbui-draggable {
-        border: 5px solid #ddd;
-      }
-      
-      #draggable-two {
-        position: absolute;
-        left: 5px;
-      }
-      
-      #wrapper-draggable-four {
-        position: relative;
-        width: 350px;
-        height: 350px;
-        top: 600px;
-        border-radius: 1000px;
-      }
-      #wrapper-draggable-four .center {
-        border: 1px solid red;
-        position: absolute;
-        width: 2px;
-        height: 2px;
-        left: 174px;
-        top: 174px;
-      }
-      
-      #draggable-four {
-        width: 100px;
-        height: 100px;
-        /* border-radius: 1000px; */
-      }
-      `,
-      bodyHTML: `
-      <span id="locale-provider" dir="rtl"></span>
-      <div id="container">
-
-        <div id="wrapper-draggable-one" dir="rtl">
-          <dbui-draggable id="draggable-one" drag-target="#wrapper-draggable-one" target-translate-x="10" target-translate-y="10">
-            <p id="draggable-two-content">draggable content 1</p>
-          </dbui-draggable>
-        </div>
-        
-        <div id="wrapper-draggable-two">
-          <dbui-draggable id="draggable-two" sync-locale-with="#locale-provider">
-            <p id="draggable-two-content">draggable content 2</p>
-          </dbui-draggable>
-        </div>
-        
-        <div id="wrapper-draggable-three">
-          <dbui-draggable id="draggable-three" dir="rtl">
-            <p id="draggable-three-content">draggable content 3</p>
-          </dbui-draggable>
-        </div>
-        
-        <div id="wrapper-draggable-four">
-          <dbui-draggable id="draggable-four">
-            <p>4</p>
-          </dbui-draggable>
-          <div class="center"></div>
-        </div>
-        
-        <div style="height: 300px; position: absolute; top: 700px; border: 1px solid black;"></div>
-
-      </div>
-      
-      `,
+      headStyle: style_1,
+      bodyHTML: html_1,
       onLoad: ({ contentWindow, iframe }) => {
         const DBUIDraggable = getDBUIDraggable(contentWindow);
 
-        // const container = contentWindow.document.querySelector('#container');
-        // const wrapperDraggableOne = contentWindow.document.querySelector('#wrapper-draggable-one');
-        // const wrapperDraggableTwo = contentWindow.document.querySelector('#wrapper-draggable-two');
-        // const wrapperDraggableThree = contentWindow.document.querySelector('#wrapper-draggable-three');
-        // const wrapperDraggableFour = contentWindow.document.querySelector('#wrapper-draggable-four');
-
-        // const draggableOne = contentWindow.document.querySelector('#draggable-one');
         const draggableTwo = contentWindow.document.querySelector('#draggable-two');
-        // const draggableThree = contentWindow.document.querySelector('#draggable-three');
         const draggableFour = contentWindow.document.querySelector('#draggable-four');
 
         draggableTwo.constraint =
@@ -356,21 +416,29 @@ describe('DBUIDraggable', () => {
         draggableFour.constraint =
           'circle({ "cx": 190, "cy":790, "radius":175, "steps": 12 })';
 
-        // draggableOne.addEventListener('translate', (evt) => {
-        //   console.log(evt.detail);
-        // });
-        //
-        // draggableTwo.addEventListener('translate', (evt) => {
-        //   console.log(evt.detail);
-        // });
-        //
-        // draggableThree.addEventListener('translate', (evt) => {
-        //   console.log(evt.detail);
-        // });
-        //
-        // draggableFour.addEventListener('translate', (evt) => {
-        //   console.log(evt.detail);
-        // });
+        Promise.all([
+          DBUIDraggable.registrationName,
+        ].map((localName) => contentWindow.customElements.whenDefined(localName)
+        )).then(() => {
+          setTimeout(() => {
+            setTimeout(() => {
+              iframe.remove();
+              done();
+            }, 2000);
+          }, 55000);
+        });
+
+        DBUIDraggable.registerSelf();
+      }
+    });
+  });
+
+  xit('behaves as expected - nested light DOM - live testing', (done) => {
+    inIframe({
+      headStyle: style_2,
+      bodyHTML: html_2,
+      onLoad: ({ contentWindow, iframe }) => {
+        const DBUIDraggable = getDBUIDraggable(contentWindow);
 
         Promise.all([
           DBUIDraggable.registrationName,
@@ -2454,6 +2522,85 @@ describe('DBUIDraggable', () => {
       it('returns { value, index, percent }', () => {
         const res = getStep(-10, 90, 40, 3);
         expect(res).to.eql({ value: 40, percent: 0.5, index: 1 });
+      });
+    });
+  });
+
+  describe('registering, unregistering events', () => {
+    describe('when mouse events', () => {
+      describe('when light DOM', () => {
+        it(`
+        stores self on window on _dbuiCurrentElementBeingDragged,
+        creates and handles win._dbuiDraggableRegisteredEvents
+        `, (done) => {
+          inIframe({
+            headStyle: style_2,
+            bodyHTML: html_2,
+            onLoad: ({ contentWindow, iframe }) => {
+              const DBUIDraggable = getDBUIDraggable(contentWindow);
+
+              Promise.all([
+                DBUIDraggable.registrationName,
+              ].map((localName) => contentWindow.customElements.whenDefined(localName)
+              )).then(() => {
+
+                if (!contentWindow.MouseEvent) {
+                  iframe.remove();
+                  done();
+                  return;
+                }
+
+                const doc = contentWindow.document;
+                const draggableInner1Content1 = doc.querySelector('#content-1');
+                const draggableInner1 = doc.querySelector('#draggable-inner-1');
+
+                contentWindow.requestAnimationFrame(() => {
+                  setTimeout(() => {
+                    expect(contentWindow._dbuiCurrentElementBeingDragged).to.equal(undefined);
+                    expect(contentWindow._dbuiDraggableRegisteredEvents).to.equal(undefined);
+
+                    sendMouseEvent(draggableInner1Content1, 'mousedown', {
+                      clientX: 0, clientY: 0
+                    });
+
+                    expect(contentWindow._dbuiCurrentElementBeingDragged).to.equal(draggableInner1);
+                    expect(contentWindow._dbuiDraggableRegisteredEvents.size).to.equal(1);
+                    expect(contentWindow._dbuiDraggableRegisteredEvents.get(draggableInner1).mousemove)
+                      .to.be.an.instanceOf(Function);
+
+
+                    contentWindow.requestAnimationFrame(() => {
+                      setTimeout(() => {
+                        sendMouseEvent(draggableInner1Content1, 'mousemove', {
+                          clientX: 10, clientY: 10
+                        });
+
+                        contentWindow.requestAnimationFrame(() => {
+                          setTimeout(() => {
+                            sendMouseEvent(draggableInner1Content1, 'mouseup', {
+                            });
+
+                            expect(contentWindow._dbuiCurrentElementBeingDragged).to.equal(null);
+                            expect(contentWindow._dbuiDraggableRegisteredEvents.size).to.equal(0);
+
+                            contentWindow.requestAnimationFrame(() => {
+                              setTimeout(() => {
+                                iframe.remove();
+                                done();
+                              }, 0);
+                            });
+                          }, 0);
+                        });
+                      }, 0);
+                    });
+                  }, 0);
+                });
+              });
+
+              DBUIDraggable.registerSelf();
+            }
+          });
+        });
       });
     });
   });
