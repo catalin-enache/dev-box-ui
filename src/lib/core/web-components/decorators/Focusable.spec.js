@@ -238,7 +238,7 @@ describe('Focusable', () => {
             const dummyOneFirstInnerFocusable = dummyOne._firstInnerFocusable;
             const dummyTwoFirstInnerFocusable = dummyTwo._firstInnerFocusable;
 
-            // const release = onScreenConsole();
+            // const release = onScreenConsole({ win: contentWindow });
 
             // if (!(navigator.vendor === 'Apple Computer, Inc.' && navigator.platform === 'MacIntel')) {
             expect(contentWindow.getComputedStyle(dummyOneFirstInnerFocusable).backgroundColor).to.equal('rgba(0, 0, 0, 0.2)');

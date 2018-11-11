@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import onScreenConsole from '../../../utils/onScreenConsole';
 import inIframe from '../../../../../../testUtils/inIframe';
 import getDBUIDraggable, {
   extractSingleEvent, getElementBeingDragged, getStep
@@ -80,26 +81,26 @@ function getDummyDraggableInner(win) {
         return `
           <style>
             #container-inner {
-              width: 200px;
+              width: 400px;
               height: 100px;
             }
             #draggable-inner-1 {
-              width: 100px;
+              width: 200px;
               height: 50px;
               background-color: rgba(255, 0, 0, 0.2);
             }
             #draggable-inner-2 {
-              width: 100px;
+              width: 200px;
               height: 50px;
               background-color: rgba(0, 255, 0, 0.2);
             }
           </style>
           <div id="container-inner">
             <dbui-draggable id="draggable-inner-1" constraint='boundingClientRectOf({ "selector": "parent" })'>
-              <p>draggable-inner-1</p>
+              <p id="content-1">draggable-inner-1</p>
             </dbui-draggable>
             <dbui-draggable id="draggable-inner-2" constraint='boundingClientRectOf({ "selector": "parent" })'>
-              <p>draggable-inner-2</p>
+              <p id="content-2">draggable-inner-2</p>
             </dbui-draggable>
           </div>
         `;
@@ -140,19 +141,19 @@ function getDummyDraggableMiddle(win) {
         return `
           <style>
             #container-middle {
-              width: 400px;
+              width: 800px;
               height: 150px;
               background-color: rgba(0, 0, 255, 0.2);
             }
             #draggable-middle-1 {
               display: inline-block;
-              width: 200px;
+              width: 400px;
               height: 100px;
               background-color: rgba(255, 0, 0, 0.2);
             }
             #draggable-middle-2 {
               display: inline-block;
-              width: 200px;
+              width: 400px;
               height: 100px;
               background-color: rgba(0, 255, 0, 0.2);
             }
@@ -202,17 +203,17 @@ function getDummyDraggableOuter(win) {
         return `
           <style>
             #container-outer {
-              width: 400px;
+              width: 800px;
               height: 350px;
               background-color: rgba(0, 0, 255, 0.2);
             }
             #draggable-outer-1 {
-              width: 400px;
+              width: 800px;
               height: 150px;
               background-color: rgba(255, 0, 0, 0.2);
             }
             #draggable-outer-2 {
-              width: 400px;
+              width: 800px;
               height: 150px;
               background-color: rgba(0, 255, 0, 0.2);
             }
@@ -338,23 +339,23 @@ const html_1 = `
 const style_2 = `
 body, html { padding: 0px; margin: 0px; }
 .draggable-inner {
-  width: 100px;
+  width: 200px;
   height: 50px;
   background-color: rgba(255, 0, 0, 0.2);
 }
 .draggable-middle {
-  width: 200px;
+  width: 400px;
   height: 100px;
   background-color: rgba(0, 0, 255, 0.2);
   display: inline-block;
 }
 .draggable-outer {
-  width: 400px;
+  width: 800px;
   height: 150px;
   background-color: rgba(0, 0, 255, 0.2);
 }
 .container {
-  width: 400px;
+  width: 800px;
   height: 350px;
   background-color: rgba(0, 255, 255, 0.2);
 }
@@ -367,8 +368,8 @@ const html_2 = `
       <dbui-draggable class="draggable-inner" id="draggable-inner-1" constraint='boundingClientRectOf({ "selector": "parent" })'>
         <p class="content" id="content-1">content 1</p>
       </dbui-draggable>
-      <dbui-draggable class="draggable-inner" constraint='boundingClientRectOf({ "selector": "parent" })'>
-        <p class="content">content 2</p>
+      <dbui-draggable class="draggable-inner" id="draggable-inner-2" constraint='boundingClientRectOf({ "selector": "parent" })'>
+        <p class="content" id="content-2">content 2</p>
       </dbui-draggable>
     </dbui-draggable><dbui-draggable class="draggable-middle" constraint='boundingClientRectOf({ "selector": "parent" })'>
       <dbui-draggable class="draggable-inner" constraint='boundingClientRectOf({ "selector": "parent" })'>
@@ -439,7 +440,7 @@ describe('DBUIDraggable', () => {
       bodyHTML: html_2,
       onLoad: ({ contentWindow, iframe }) => {
         const DBUIDraggable = getDBUIDraggable(contentWindow);
-
+        // onScreenConsole({ win: contentWindow });
         Promise.all([
           DBUIDraggable.registrationName,
         ].map((localName) => contentWindow.customElements.whenDefined(localName)
@@ -469,6 +470,7 @@ describe('DBUIDraggable', () => {
       
       `,
       onLoad: ({ contentWindow, iframe }) => {
+        // onScreenConsole({ win: contentWindow });
         const DummyDraggableOuter = getDummyDraggableOuter(contentWindow);
 
         Promise.all([
@@ -2598,6 +2600,330 @@ describe('DBUIDraggable', () => {
               });
 
               DBUIDraggable.registerSelf();
+            }
+          });
+        });
+      });
+
+      describe('when shadow DOM', () => {
+        it(`
+        stores self on window on _dbuiCurrentElementBeingDragged,
+        creates and handles win._dbuiDraggableRegisteredEvents
+        `, (done) => {
+          inIframe({
+            headStyle: `
+            body, html { padding: 0px; margin: 0px; }
+            `,
+            bodyHTML: `
+            <div id="container">
+              <dummy-draggable-outer></dummy-draggable-outer>
+            </div>
+            `,
+            onLoad: ({ contentWindow, iframe }) => {
+              const DummyDraggableOuter = getDummyDraggableOuter(contentWindow);
+
+              Promise.all([
+                DummyDraggableOuter.registrationName,
+              ].map((localName) => contentWindow.customElements.whenDefined(localName)
+              )).then(() => {
+
+                if (!contentWindow.MouseEvent) {
+                  iframe.remove();
+                  done();
+                  return;
+                }
+
+                const doc = contentWindow.document;
+                const dummyDraggableOuter = doc.querySelector('dummy-draggable-outer');
+                const dummyDraggableMiddle = dummyDraggableOuter.shadowRoot.querySelector('dummy-draggable-middle');
+                const dummyDraggableInner = dummyDraggableMiddle.shadowRoot.querySelector('dummy-draggable-inner');
+                const dummyDraggableInnerDbuiDraggable = dummyDraggableInner.shadowRoot.querySelector('dbui-draggable');
+                const dummyDraggableInnerDbuiDraggablePContent = dummyDraggableInner.shadowRoot.querySelector('p');
+
+                contentWindow.requestAnimationFrame(() => {
+                  setTimeout(() => {
+                    expect(contentWindow._dbuiCurrentElementBeingDragged).to.equal(undefined);
+                    expect(contentWindow._dbuiDraggableRegisteredEvents).to.equal(undefined);
+
+                    sendMouseEvent(dummyDraggableInnerDbuiDraggablePContent, 'mousedown', {
+                      clientX: 0, clientY: 0
+                    });
+
+                    expect(contentWindow._dbuiCurrentElementBeingDragged).to.equal(dummyDraggableInnerDbuiDraggable);
+                    expect(contentWindow._dbuiDraggableRegisteredEvents.size).to.equal(1);
+                    expect(contentWindow._dbuiDraggableRegisteredEvents.get(dummyDraggableInnerDbuiDraggable).mousemove)
+                      .to.be.an.instanceOf(Function);
+
+
+                    contentWindow.requestAnimationFrame(() => {
+                      setTimeout(() => {
+                        sendMouseEvent(dummyDraggableInnerDbuiDraggablePContent, 'mousemove', {
+                          clientX: 10, clientY: 10
+                        });
+
+                        contentWindow.requestAnimationFrame(() => {
+                          setTimeout(() => {
+                            sendMouseEvent(dummyDraggableInnerDbuiDraggablePContent, 'mouseup', {
+                            });
+
+                            expect(contentWindow._dbuiCurrentElementBeingDragged).to.equal(null);
+                            expect(contentWindow._dbuiDraggableRegisteredEvents.size).to.equal(0);
+
+                            contentWindow.requestAnimationFrame(() => {
+                              setTimeout(() => {
+                                iframe.remove();
+                                done();
+                              }, 0);
+                            });
+                          }, 0);
+                        });
+                      }, 0);
+                    });
+                  }, 0);
+                });
+              });
+
+              DummyDraggableOuter.registerSelf();
+            }
+          });
+        });
+      });
+    });
+
+    describe('when touch events', () => {
+      describe('when light DOM', () => {
+        it(`
+        does NOT store self on window on _dbuiCurrentElementBeingDragged,
+        creates and handles win._dbuiDraggableRegisteredEvents
+        `, (done) => {
+          inIframe({
+            headStyle: style_2,
+            bodyHTML: html_2,
+            onLoad: ({ contentWindow, iframe }) => {
+              // onScreenConsole({ win: contentWindow });
+              const DBUIDraggable = getDBUIDraggable(contentWindow);
+
+              Promise.all([
+                DBUIDraggable.registrationName,
+              ].map((localName) => contentWindow.customElements.whenDefined(localName)
+              )).then(() => {
+
+                if (!contentWindow.TouchEvent) {
+                  iframe.remove();
+                  done();
+                  return;
+                }
+
+                const doc = contentWindow.document;
+                const draggableInner1 = doc.querySelector('#draggable-inner-1');
+                const draggableInner2 = doc.querySelector('#draggable-inner-2');
+                const draggableInner1Content1 = doc.querySelector('#content-1');
+                const draggableInner2Content2 = doc.querySelector('#content-2');
+
+                const touchObj1 = new contentWindow.Touch({
+                  identifier: new Date(),
+                  target: draggableInner1,
+                });
+                const touchObj2 = new contentWindow.Touch({
+                  identifier: new Date(),
+                  target: draggableInner2,
+                });
+
+                contentWindow.requestAnimationFrame(() => {
+                  setTimeout(() => {
+                    expect(contentWindow._dbuiCurrentElementBeingDragged).to.equal(undefined);
+                    expect(contentWindow._dbuiDraggableRegisteredEvents).to.equal(undefined);
+
+                    sendTouchEvent(draggableInner1Content1, 'touchstart', {
+                      clientX: 0, clientY: 0
+                    });
+                    sendTouchEvent(draggableInner1Content1, 'touchstart', {
+                      clientX: 1, clientY: 1
+                    });
+                    sendTouchEvent(draggableInner2Content2, 'touchstart', {
+                      clientX: 0, clientY: 0
+                    });
+
+                    expect(contentWindow._dbuiCurrentElementBeingDragged).to.equal(undefined);
+                    expect(contentWindow._dbuiDraggableRegisteredEvents.size).to.equal(2);
+                    expect(contentWindow._dbuiDraggableRegisteredEvents.get(draggableInner1).touchmove)
+                      .to.be.an.instanceOf(Function);
+                    expect(contentWindow._dbuiDraggableRegisteredEvents.get(draggableInner2).touchmove)
+                      .to.be.an.instanceOf(Function);
+
+                    contentWindow.requestAnimationFrame(() => {
+                      setTimeout(() => {
+                        sendTouchEvent(draggableInner1Content1, 'touchmove', {
+                          clientX: 10, clientY: 10
+                        });
+
+                        contentWindow.requestAnimationFrame(() => {
+                          setTimeout(() => {
+                            sendTouchEvent(draggableInner1, 'touchend', {
+                              touches: [touchObj1, touchObj2]
+                            });
+                            expect(contentWindow._dbuiDraggableRegisteredEvents.size).to.equal(2);
+                            expect(contentWindow._dbuiDraggableRegisteredEvents.get(draggableInner1).touchmove)
+                              .to.be.an.instanceOf(Function);
+                            expect(contentWindow._dbuiDraggableRegisteredEvents.get(draggableInner2).touchmove)
+                              .to.be.an.instanceOf(Function);
+
+                            sendTouchEvent(draggableInner1, 'touchend', {
+                              touches: [touchObj2]
+                            });
+                            expect(contentWindow._dbuiDraggableRegisteredEvents.size).to.equal(1);
+                            expect(contentWindow._dbuiDraggableRegisteredEvents.get(draggableInner1))
+                              .to.equal(undefined);
+                            expect(contentWindow._dbuiDraggableRegisteredEvents.get(draggableInner2).touchmove)
+                              .to.be.an.instanceOf(Function);
+
+                            sendTouchEvent(draggableInner2, 'touchend', {
+                              touches: []
+                            });
+                            expect(contentWindow._dbuiDraggableRegisteredEvents.size).to.equal(0);
+                            expect(contentWindow._dbuiDraggableRegisteredEvents.get(draggableInner1))
+                              .to.equal(undefined);
+                            expect(contentWindow._dbuiDraggableRegisteredEvents.get(draggableInner2))
+                              .to.equal(undefined);
+
+                            contentWindow.requestAnimationFrame(() => {
+                              setTimeout(() => {
+                                iframe.remove();
+                                done();
+                              }, 0);
+                            });
+                          }, 0);
+                        });
+                      }, 0);
+                    });
+                  }, 0);
+                });
+              });
+
+              DBUIDraggable.registerSelf();
+            }
+          });
+        });
+      });
+
+      describe('when shadow DOM', () => {
+        it(`
+        does NOT store self on window on _dbuiCurrentElementBeingDragged,
+        creates and handles win._dbuiDraggableRegisteredEvents
+        `, (done) => {
+          inIframe({
+            headStyle: `
+            body, html { padding: 0px; margin: 0px; }
+            `,
+            bodyHTML: `
+            <div id="container">
+              <dummy-draggable-outer></dummy-draggable-outer>
+            </div>
+            `,
+            onLoad: ({ contentWindow, iframe }) => {
+              const DummyDraggableOuter = getDummyDraggableOuter(contentWindow);
+
+              Promise.all([
+                DummyDraggableOuter.registrationName,
+              ].map((localName) => contentWindow.customElements.whenDefined(localName)
+              )).then(() => {
+
+                if (!contentWindow.TouchEvent) {
+                  iframe.remove();
+                  done();
+                  return;
+                }
+
+                const doc = contentWindow.document;
+                const dummyDraggableOuter = doc.querySelector('dummy-draggable-outer');
+                const dummyDraggableMiddle = dummyDraggableOuter.shadowRoot.querySelector('dummy-draggable-middle');
+                const dummyDraggableInner = dummyDraggableMiddle.shadowRoot.querySelector('dummy-draggable-inner');
+                const dbuiDraggable1 = dummyDraggableInner.shadowRoot.querySelector('#draggable-inner-1');
+                const dbuiDraggable2 = dummyDraggableInner.shadowRoot.querySelector('#draggable-inner-2');
+                const dbuiDraggable1Content = dummyDraggableInner.shadowRoot.querySelector('#content-1');
+                const dbuiDraggable2Content = dummyDraggableInner.shadowRoot.querySelector('#content-2');
+
+                const touchObj1 = new contentWindow.Touch({
+                  identifier: new Date(),
+                  target: dbuiDraggable1,
+                });
+                const touchObj2 = new contentWindow.Touch({
+                  identifier: new Date(),
+                  target: dbuiDraggable2,
+                });
+
+                contentWindow.requestAnimationFrame(() => {
+                  setTimeout(() => {
+                    expect(contentWindow._dbuiCurrentElementBeingDragged).to.equal(undefined);
+                    expect(contentWindow._dbuiDraggableRegisteredEvents).to.equal(undefined);
+
+                    sendTouchEvent(dbuiDraggable1Content, 'touchstart', {
+                      clientX: 0, clientY: 0
+                    });
+                    sendTouchEvent(dbuiDraggable1Content, 'touchstart', {
+                      clientX: 1, clientY: 1
+                    });
+                    sendTouchEvent(dbuiDraggable2Content, 'touchstart', {
+                      clientX: 0, clientY: 0
+                    });
+
+                    expect(contentWindow._dbuiCurrentElementBeingDragged).to.equal(undefined);
+                    expect(contentWindow._dbuiDraggableRegisteredEvents.size).to.equal(2);
+                    expect(contentWindow._dbuiDraggableRegisteredEvents.get(dbuiDraggable1).touchmove)
+                      .to.be.an.instanceOf(Function);
+                    expect(contentWindow._dbuiDraggableRegisteredEvents.get(dbuiDraggable2).touchmove)
+                      .to.be.an.instanceOf(Function);
+
+                    contentWindow.requestAnimationFrame(() => {
+                      setTimeout(() => {
+                        sendTouchEvent(dbuiDraggable2Content, 'touchmove', {
+                          clientX: 10, clientY: 10
+                        });
+
+                        contentWindow.requestAnimationFrame(() => {
+                          setTimeout(() => {
+                            sendTouchEvent(dbuiDraggable1, 'touchend', {
+                              touches: [touchObj1, touchObj2]
+                            });
+                            expect(contentWindow._dbuiDraggableRegisteredEvents.size).to.equal(2);
+                            expect(contentWindow._dbuiDraggableRegisteredEvents.get(dbuiDraggable1).touchmove)
+                              .to.be.an.instanceOf(Function);
+                            expect(contentWindow._dbuiDraggableRegisteredEvents.get(dbuiDraggable2).touchmove)
+                              .to.be.an.instanceOf(Function);
+
+                            sendTouchEvent(dbuiDraggable1, 'touchend', {
+                              touches: [touchObj2]
+                            });
+                            expect(contentWindow._dbuiDraggableRegisteredEvents.size).to.equal(1);
+                            expect(contentWindow._dbuiDraggableRegisteredEvents.get(dbuiDraggable1))
+                              .to.equal(undefined);
+                            expect(contentWindow._dbuiDraggableRegisteredEvents.get(dbuiDraggable2).touchmove)
+                              .to.be.an.instanceOf(Function);
+
+                            sendTouchEvent(dbuiDraggable2, 'touchend', {
+                              touches: []
+                            });
+                            expect(contentWindow._dbuiDraggableRegisteredEvents.size).to.equal(0);
+                            expect(contentWindow._dbuiDraggableRegisteredEvents.get(dbuiDraggable1))
+                              .to.equal(undefined);
+                            expect(contentWindow._dbuiDraggableRegisteredEvents.get(dbuiDraggable2))
+                              .to.equal(undefined);
+
+                            contentWindow.requestAnimationFrame(() => {
+                              setTimeout(() => {
+                                iframe.remove();
+                                done();
+                              }, 0);
+                            });
+                          }, 0);
+                        });
+                      }, 0);
+                    });
+                  }, 0);
+                });
+              });
+
+              DummyDraggableOuter.registerSelf();
             }
           });
         });

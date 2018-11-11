@@ -83,7 +83,7 @@ const _handleTapStart = (e) => {
 };
 
 const disableSelection = (node) => {
-  // onScreenConsole();
+  // onScreenConsole({ win: node.ownerDocument.defaultView });
   _cssDisableSelection(node);
   node.addEventListener('touchstart', _handleTapStart);
   node.addEventListener('mousedown', _handleTapStart);

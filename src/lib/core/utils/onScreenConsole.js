@@ -8,8 +8,13 @@ let consoleMessages = [];
 const consoleLog = console.log.bind(console);
 const consoleOriginal = {};
 
-function captureConsole(consoleElm, options) {
+function captureConsole(win, consoleElm, options) {
   const { indent = 2, showLastOnly = false } = options;
+  const errorHandler = (evt) => {
+    console.error(`"${evt.message}" from ${evt.filename}:${evt.lineno}`);
+    console.error(evt, evt.error.stack);
+    // evt.preventDefault();
+  };
   const handler = function handler(action, ...args) {
     if (showLastOnly) {
       consoleMessages = [{ [action]: args }];
@@ -20,27 +25,40 @@ function captureConsole(consoleElm, options) {
     consoleElm.innerHTML = consoleMessages.map((entry) => {
       const action = Object.keys(entry)[0];
       const values = entry[action];
-      const message = values.map((item) => {
-        return (
-          [undefined, null].includes(item) ||
-          ['number', 'string', 'function'].includes(typeof item)
-        ) ?
-          item :
-          ['Map', 'Set'].includes(item.constructor.name) ?
-            `${item.constructor.name} (${JSON.stringify([...item])})` :
-            JSON.stringify(item, (key, value) => {
-              if ((typeof value) === 'function') {
-                return value.toString();
-              }
-              return value;
-            }, indent);
-      }).join(', ');
-
-      const color = {
+      const stringify = (item, replacer, indent) => {
+        try {
+          return JSON.stringify(item, replacer, indent);
+        } catch (_) {
+          return item.toString();
+        }
+      };
+      const colors = {
         log: '#000',
         warn: 'orange',
         error: 'darkred'
-      }[action];
+      };
+      let color = colors[action];
+      let message = '';
+      try {
+        message = values.map((item) => {
+          return (
+            [undefined, null].includes(item) ||
+            ['number', 'string', 'function'].includes(typeof item)
+          ) ?
+            item :
+            ['Map', 'Set'].includes(item.constructor.name) ?
+              `${item.constructor.name} (${stringify([...item])})` :
+              stringify(item, (key, value) => {
+                if ((typeof value) === 'function') {
+                  return value.toString();
+                }
+                return value;
+              }, indent);
+        }).join(', ');
+      } catch (err) {
+        message = `Error caught while capturing console: ${err.message}`;
+        color = colors.error;
+      }
 
       return `<pre style="color: ${color}">${message}</pre>`;
     }).join('\n');
@@ -49,16 +67,28 @@ function captureConsole(consoleElm, options) {
     consoleOriginal[action] = console[action];
     console[action] = handler.bind(console, action);
   });
-  window.addEventListener('error', (evt) => {
-    // eslint no-console: 0
-    console.error(`"${evt.message}" from ${evt.filename}:${evt.lineno}`);
-    console.error(evt, evt.error.stack);
-    // evt.preventDefault();
+  ['error', 'unhandledrejection'].forEach((evtType) => {
+    const windows = [window];
+    if (win !== window) {
+      windows.push(win);
+    }
+    windows.forEach((_win) => {
+      _win.addEventListener(evtType, errorHandler);
+    });
   });
   consoleLog('console captured');
   return function releaseConsole() {
     ['log', 'warn', 'error'].forEach((action) => {
       console[action] = consoleOriginal[action];
+    });
+    ['error', 'unhandledrejection'].forEach((evtType) => {
+      const windows = [window];
+      if (win !== window) {
+        windows.push(win);
+      }
+      windows.forEach((_win) => {
+        _win.removeEventListener(evtType, errorHandler);
+      });
     });
     consoleLog('console released');
   };
@@ -123,6 +153,7 @@ onScreenConsole({
 })
 */
 export default function onScreenConsole({
+  win = window,
   buttonStyle = {},
   consoleStyle = {},
   options = {}
@@ -155,7 +186,7 @@ export default function onScreenConsole({
   });
 
   document.body.appendChild(button);
-  const releaseConsole = captureConsole(console, options);
+  const releaseConsole = captureConsole(win, console, options);
 
   return function release() {
     document.body.removeChild(button);

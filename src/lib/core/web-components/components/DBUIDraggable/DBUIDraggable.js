@@ -1,7 +1,6 @@
 
 import getDBUIWebComponentCore from '../DBUIWebComponentCore/DBUIWebComponentCore';
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
-// import onScreenConsole from '../../../utils/onScreenConsole';
 
 const events = {
   mouse: {
@@ -88,6 +87,11 @@ function unregisterRootEvents(evt) {
   }
 
   const eventHandlers = win._dbuiDraggableRegisteredEvents.get(self);
+  if (!eventHandlers) {
+    // Might happen when unregisterRootEvents is called twice for the same self.
+    // The reason for being called twice not clear for the moment.
+    return;
+  }
 
   if (type === 'touch') {
     const touchesNum = Array.from(evt.touches).reduce((acc, touchEvt) => {
@@ -505,8 +509,6 @@ export default function getDBUIDraggable(win) {
       defineCommonStaticMethods,
       Registerable
     } = getDBUIWebComponentCore(win);
-
-    // onScreenConsole();
 
     class DBUIDraggable extends DBUIWebComponentBase {
 

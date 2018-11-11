@@ -2,7 +2,6 @@
 import getDBUIWebComponentCore from '../DBUIWebComponentCore/DBUIWebComponentCore';
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
 import getDBUIDraggable from '../DBUIDraggable/DBUIDraggable';
-import onScreenConsole from '../../../utils/onScreenConsole';
 
 const DRAGGABLE_ID = 'draggable';
 
@@ -21,8 +20,6 @@ export default function getDBUISlider(win) {
     } = getDBUIWebComponentCore(win);
 
     const DBUIDraggable = getDBUIDraggable(win);
-
-    // onScreenConsole();
 
     class DBUISlider extends DBUIWebComponentBase {
 
