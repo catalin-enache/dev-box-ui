@@ -421,6 +421,7 @@ describe('DBUIDraggable', () => {
           DBUIDraggable.registrationName,
         ].map((localName) => contentWindow.customElements.whenDefined(localName)
         )).then(() => {
+          // onScreenConsole({ win: contentWindow });
           setTimeout(() => {
             setTimeout(() => {
               iframe.remove();

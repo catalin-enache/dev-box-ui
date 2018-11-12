@@ -89,7 +89,10 @@ function unregisterRootEvents(evt) {
   const eventHandlers = win._dbuiDraggableRegisteredEvents.get(self);
   if (!eventHandlers) {
     // Might happen when unregisterRootEvents is called twice for the same self.
-    // The reason for being called twice not clear for the moment.
+    // It happens because listeners are called in the order of their registration, in sequence.
+    // When touchstart A touchstart B then
+    // touchend A (fires A(A), listener for A are removed then fires B(A) - listeners for A already removed)
+    // touchend B (fires B(B) listeners for B are removed)
     return;
   }
 
@@ -492,11 +495,10 @@ const presetNoConstraint =
 
 /*
 TODO:
- - unittests for register/unregisterRootEvents !!! check no mem leak
  - unittest for applyCorrection
  - improve presets algorithms
- - improve code where possible
  - presetBoundingClientRect try not to require offset but constraint absolute x and y ?
+ - improve code where possible
  - add circleAround({ selector, steps }) preset ?
 */
 
@@ -634,8 +636,8 @@ export default function getDBUIDraggable(win) {
 
       /**
        * Set constraint preset to apply on dragging
-       * ex: boundingClientRectOf("selector")
-       * circle(5, 7, 20)
+       * ex: boundingClientRectOf({ selector, stepsX, stepsY })
+       * circle({ cx, cy, radius, steps })
        * @param value String
        */
       set constraint(value) {
