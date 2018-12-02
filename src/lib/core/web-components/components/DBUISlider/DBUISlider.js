@@ -36,6 +36,7 @@ const DBUISliderCssVars = `
     --dbui-slider-draggable-size: 30px;
     --dbui-slider-draggable-color: rgba(0, 0, 0, 0.2);
     --dbui-slider-draggable-border-radius: 0px;
+    --dbui-slider-draggable-font-size: 8px;
   }
   `;
 
@@ -60,6 +61,20 @@ const getWrapperMiddle = (self) => {
   }
   self._wrapperMiddle = self.shadowRoot.querySelector('#wrapper-middle');
   return self._wrapperMiddle;
+};
+
+const getValueDisplayNode = (self) => {
+  if (self._valueDisplayNode) {
+    return self._valueDisplayNode;
+  }
+  // self._valueDisplayNode = getDraggable(self).shadowRoot.querySelector('slot').assignedNodes()[0];
+  // self._valueDisplayNode = getDraggable(self).querySelector('#value-display');
+  self._valueDisplayNode = self.shadowRoot.querySelector('#value-display');
+  return self._valueDisplayNode;
+};
+
+const updateDisplayedValue = (self, value) => {
+  self.showValue && (getValueDisplayNode(self).innerText = value);
 };
 
 const getAvailableLength = (self) => {
@@ -89,6 +104,18 @@ const percentToTranslate = (self, percent) => {
   const draggableLength = getDraggableLength(self);
   const localePercent = getLocalePercent(self, percent);
   return (availableLength - draggableLength) * localePercent;
+};
+
+
+const adjustPosition = (self) => {
+  if (self.isSliding) return;
+  const draggable = getDraggable(self);
+  const percent = self.percent;
+  const targetTranslate = self.vertical ? 'targetTranslateY' : 'targetTranslateX';
+  const targetTranslateOther = self.vertical ? 'targetTranslateX' : 'targetTranslateY';
+  draggable[targetTranslate] = percentToTranslate(self, percent);
+  draggable[targetTranslateOther] = 0;
+  updateDisplayedValue(self, percent);
 };
 
 export default function getDBUISlider(win) {
@@ -188,6 +215,18 @@ export default function getDBUISlider(win) {
             height: var(--dbui-slider-draggable-size);
           }
           
+          #value-display-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+          }
+          
+          #value-display {
+            display: inline;
+            font-size: var(--dbui-slider-draggable-font-size);
+          }
+          
           </style>
           <div id="wrapper-outer">
             <div id="wrapper-middle">
@@ -195,7 +234,7 @@ export default function getDBUISlider(win) {
               <dbui-draggable
                 id="${DRAGGABLE_ID}"
                 constraint='boundingClientRectOf({ "selector": "parent", "stepsX": 0, "stepsY": 0 })'
-              ></dbui-draggable>
+              ><div id="value-display-wrapper"><div id="value-display"></div></div></dbui-draggable>
             </div>
           </div>
         `;
@@ -217,7 +256,25 @@ export default function getDBUISlider(win) {
         super();
         this._wrapperMiddle = null;
         this._draggable = null;
+        this._valueDisplayNode = null;
+        this._isSliding = false;
         this._onDraggableMove = this._onDraggableMove.bind(this);
+        this._onDraggableDragStart = this._onDraggableDragStart.bind(this);
+        this._onDraggableDragEnd = this._onDraggableDragEnd.bind(this);
+      }
+
+      get isSliding() {
+        return this._isSliding;
+      }
+
+      get showValue() {
+        return this.getAttribute('show-value') !== null;
+      }
+
+      set showValue(value) {
+        const newValue = !!value;
+        newValue && this.setAttribute('show-value', '');
+        !newValue && this.removeAttribute('show-value');
       }
 
       get steps() {
@@ -257,19 +314,9 @@ export default function getDBUISlider(win) {
         !newValue && this.removeAttribute('vertical');
       }
 
-      _adjustPosition() {
-        const draggable = getDraggable(this);
-        const percent = this.percent;
-        const targetTranslate = this.vertical ? 'targetTranslateY' : 'targetTranslateX';
-        const targetTranslateOther = this.vertical ? 'targetTranslateX' : 'targetTranslateY';
-        draggable[targetTranslate] = percentToTranslate(this, percent);
-        draggable[targetTranslateOther] = 0;
-        draggable.innerHTML = `<div>${percent}</div>`;
-      }
-
       onLocaleDirChanged(newDir, oldDir) {
         super.onLocaleDirChanged(newDir, oldDir);
-        this._adjustPosition();
+        adjustPosition(this);
       }
 
       _onDraggableMove(evt) {
@@ -278,18 +325,30 @@ export default function getDBUISlider(win) {
         } = evt.detail;
         const percent = this.vertical ? percentY : percentX;
         const localePercent = getLocalePercent(this, percent);
-        evt.target.innerHTML = `<div>${localePercent}</div>`;
+        updateDisplayedValue(this, localePercent);
         this.percent = localePercent;
+      }
+
+      _onDraggableDragStart() {
+        this._isSliding = true;
+      }
+
+      _onDraggableDragEnd() {
+        this._isSliding = false;
       }
 
       onConnectedCallback() {
         super.onConnectedCallback();
-        getDraggable(this).addEventListener('translate', this._onDraggableMove);
+        getDraggable(this).addEventListener('dragmove', this._onDraggableMove);
+        getDraggable(this).addEventListener('dragstart', this._onDraggableDragStart);
+        getDraggable(this).addEventListener('dragend', this._onDraggableDragEnd);
       }
 
       onDisconnectedCallback() {
         super.onDisconnectedCallback();
-        getDraggable(this).removeEventListener('translate', this._onDraggableMove);
+        getDraggable(this).removeEventListener('dragmove', this._onDraggableMove);
+        getDraggable(this).removeEventListener('dragstart', this._onDraggableDragStart);
+        getDraggable(this).removeEventListener('dragend', this._onDraggableDragEnd);
         this._wrapperMiddle = null;
         this._draggable = null;
       }
@@ -299,12 +358,12 @@ export default function getDBUISlider(win) {
         switch (name) {
           case 'percent': {
             if (!this.isMounted) break;
-            this._adjustPosition();
+            adjustPosition(this);
             break;
           }
           case 'vertical': {
             if (!this.isMounted) break;
-            this._adjustPosition();
+            adjustPosition(this);
             break;
           }
           default:

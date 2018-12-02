@@ -116,6 +116,9 @@ function unregisterRootEvents(evt) {
   });
   win._dbuiCurrentElementBeingDragged = null;
   win._dbuiDraggableRegisteredEvents.delete(self);
+  self.dispatchEvent(new win.CustomEvent('dragend', {
+    detail: {}
+  }));
 }
 
 /**
@@ -259,6 +262,10 @@ function onPointerDown(evt) {
   self._cachedConstraintPreset = null;
   self._measurements = getMeasurements(evt);
   registerRootEvents(evt);
+  const { win } = getRootDocAndWin(evt);
+  self.dispatchEvent(new win.CustomEvent('dragstart', {
+    detail: {}
+  }));
 }
 
 /**
@@ -335,7 +342,7 @@ function doMove(_evt) {
     self.targetTranslateX = revisedTranslateX;
     self.targetTranslateY = revisedTranslateY;
 
-    self.dispatchEvent(new win.CustomEvent('translate', {
+    self.dispatchEvent(new win.CustomEvent('dragmove', {
       detail: {
         targetWidthOnStart, targetHeightOnStart,
         targetXOnStart, targetYOnStart,
@@ -581,7 +588,7 @@ export default function getDBUIDraggable(win) {
        * @param value Number | String
        */
       set targetTranslateX(value) {
-        const newValue = (Number(value) || 0).toString();
+        const newValue = (Math.round(+value) || 0).toString();
         this.setAttribute('target-translate-x', newValue);
       }
 
@@ -598,7 +605,7 @@ export default function getDBUIDraggable(win) {
        * @param value Number | String
        */
       set targetTranslateY(value) {
-        const newValue = (Number(value) || 0).toString();
+        const newValue = (Math.round(+value) || 0).toString();
         this.setAttribute('target-translate-y', newValue);
       }
 

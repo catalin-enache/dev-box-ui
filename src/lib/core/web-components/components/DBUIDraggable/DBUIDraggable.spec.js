@@ -547,7 +547,7 @@ describe('DBUIDraggable', () => {
           };
 
           let translateEvent = null;
-          draggableOne.addEventListener('translate', (evt) => {
+          draggableOne.addEventListener('dragmove', (evt) => {
             translateEvent = evt;
           });
 
@@ -651,7 +651,7 @@ describe('DBUIDraggable', () => {
           };
 
           let translateEvent = null;
-          draggableOne.addEventListener('translate', (evt) => {
+          draggableOne.addEventListener('dragmove', (evt) => {
             translateEvent = evt;
           });
 
@@ -760,7 +760,7 @@ describe('DBUIDraggable', () => {
           };
 
           let translateEvent = null;
-          draggableOne.addEventListener('translate', (evt) => {
+          draggableOne.addEventListener('dragmove', (evt) => {
             translateEvent = evt;
           });
 
@@ -869,7 +869,7 @@ describe('DBUIDraggable', () => {
           };
 
           let translateEvent = null;
-          draggableOne.addEventListener('translate', (evt) => {
+          draggableOne.addEventListener('dragmove', (evt) => {
             translateEvent = evt;
           });
 
@@ -998,7 +998,7 @@ describe('DBUIDraggable', () => {
           };
 
           let translateEvent = null;
-          draggableOne.addEventListener('translate', (evt) => {
+          draggableOne.addEventListener('dragmove', (evt) => {
             translateEvent = evt;
           });
 
@@ -1727,7 +1727,7 @@ describe('DBUIDraggable', () => {
                 expect(evtDetail.targetY).to.equal(100);
               };
 
-              draggableOne.addEventListener('translate', (evt) => {
+              draggableOne.addEventListener('dragmove', (evt) => {
                 evtDetail = evt.detail;
               });
 
@@ -1798,7 +1798,7 @@ describe('DBUIDraggable', () => {
                 expect(evtDetails[2].targetY).to.equal(100);
               };
 
-              draggableOne.addEventListener('translate', (evt) => {
+              draggableOne.addEventListener('dragmove', (evt) => {
                 evtDetails.push(evt.detail);
               });
 
@@ -1885,7 +1885,7 @@ describe('DBUIDraggable', () => {
                 expect(evtDetail.targetY).to.equal(75);
               };
 
-              draggableOne.addEventListener('translate', (evt) => {
+              draggableOne.addEventListener('dragmove', (evt) => {
                 evtDetail = evt.detail;
               });
 
@@ -1980,7 +1980,7 @@ describe('DBUIDraggable', () => {
                 expect(evtDetails[2].percent).to.equal(0.75);
               };
 
-              draggableOne.addEventListener('translate', (evt) => {
+              draggableOne.addEventListener('dragmove', (evt) => {
                 evtDetails.push(evt.detail);
               });
 

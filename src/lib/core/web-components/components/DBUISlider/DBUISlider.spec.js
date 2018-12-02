@@ -11,7 +11,7 @@ import getDBUIWebComponentCore from '../DBUIWebComponentCore/DBUIWebComponentCor
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
 
 describe('DBUISlider', () => {
-  xit('behaves as expected - live testing', (done) => {
+  it.only('behaves as expected - live testing', (done) => {
     inIframe({
       headStyle: `
       body, html { padding: 0px; margin: 0px; }
@@ -27,7 +27,7 @@ describe('DBUISlider', () => {
       #slider-one {
         width: 100px;
         height: 90%;
-        font-weight: bold;
+        
         /*
         --dbui-slider-inner-size: 30px;
         --dbui-slider-outer-padding: 3px;
@@ -44,7 +44,7 @@ describe('DBUISlider', () => {
       <div id="container">
         <div id="locale-provider" dir="rtl"></div>
         <div id="wrapper-slider-one">
-          <dbui-slider id="slider-one" sync-locale-with="#locale-provider" percent="0.8" steps="3" dir__="rtl" vertical></dbui-slider>
+          <dbui-slider id="slider-one" sync-locale-with="#locale-provider" percent="0.8" steps="3" dir="rtl" verticalL show-value></dbui-slider>
         </div>
       </div>
       
