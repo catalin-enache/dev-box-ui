@@ -156,6 +156,8 @@ export default function getDBUIWebComponentCore(win) {
         this._localeObserver = null;
         this._dynamicAttributesObserver = null;
         this._previouslyObservedDynamicAttributes = {};
+        this._prevDir = null;
+        this._prevLang = null;
         this._insertTemplate();
 
         this.connectedCallback = this.connectedCallback.bind(this);
@@ -214,6 +216,29 @@ export default function getDBUIWebComponentCore(win) {
 
       // ============================ [Locale] >> =============================================
 
+      // eslint-disable-next-line
+      onLocaleDirChanged(newDir, prevDir) {
+        // pass
+      }
+
+      // eslint-disable-next-line
+      onLocaleLangChanged(newLang, prevLang) {
+        // pass
+      }
+
+      // eslint-disable-next-line
+      _onLocaleDirChanged(newDir) {
+        if (newDir === this._prevDir) return;
+        this.onLocaleDirChanged(newDir, this._prevDir);
+        this._prevDir = newDir;
+      }
+
+      _onLocaleLangChanged(newLang) {
+        if (newLang === this._prevLang) return;
+        this.onLocaleLangChanged(newLang, this._prevLang);
+        this._prevLang = newLang;
+      }
+
       /**
        *
        * @return HTMLElement
@@ -257,11 +282,13 @@ export default function getDBUIWebComponentCore(win) {
           // and we can reset locale from _providingContext.
           delete this._providingContext.dbuiDir; // affects context providers / no effect on context receivers
           this.removeAttribute('dbui-dir'); // affects providers and receivers
+          this._onLocaleDirChanged(null);
         }
 
         if (!this.getAttribute('lang')) {
           delete this._providingContext.dbuiLang;
           this.removeAttribute('dbui-lang');
+          this._onLocaleLangChanged(null);
         }
 
         if (this._localeObserver) {
@@ -283,9 +310,26 @@ export default function getDBUIWebComponentCore(win) {
         const {
           dbuiDir, dbuiLang
         } = newContext;
+
         // changes done by attributeChangedCallback(dir/lang) takes precedence over onContextChanged
-        !this.getAttribute('dir') && this.setAttribute('dbui-dir', dbuiDir);
-        !this.getAttribute('lang') && this.setAttribute('dbui-lang', dbuiLang);
+
+        if (!this.getAttribute('dir')) {
+          if (dbuiDir) {
+            this.setAttribute('dbui-dir', dbuiDir);
+          } else {
+            this.removeAttribute('dbui-dir');
+          }
+          this._onLocaleDirChanged(dbuiDir || null);
+        }
+
+        if (!this.getAttribute('lang')) {
+          if (dbuiLang) {
+            this.setAttribute('dbui-lang', dbuiLang);
+          } else {
+            this.removeAttribute('dbui-lang');
+          }
+          this._onLocaleLangChanged(dbuiLang || null);
+        }
       }
 
       /**
@@ -321,9 +365,11 @@ export default function getDBUIWebComponentCore(win) {
           this.setContext({
             [contextKey]: valueToSet
           });
+          contextKey === 'dbuiDir' ?
+            this._onLocaleDirChanged(valueToSet) :
+            this._onLocaleLangChanged(valueToSet);
           targetedLocale && this._watchLocaleChanges();
         } else {
-          this._resetProvidedLocale();
           this._unsetAndRelinkContext(contextKey);
         }
       }
@@ -341,6 +387,7 @@ export default function getDBUIWebComponentCore(win) {
         const { dir: targetedDir, lang: targetedLang } = this._targetedLocale;
         const selfDir = this.getAttribute('dir');
         const selfLang = this.getAttribute('lang');
+        // dir/lang (when truthy) take priority over _targetedLocale which takes priority over context
         const newDir = selfDir || targetedDir;
         const newLang = selfLang || targetedLang;
 
@@ -351,6 +398,9 @@ export default function getDBUIWebComponentCore(win) {
           dbuiDir: newDir,
           dbuiLang: newLang
         });
+
+        this._onLocaleDirChanged(newDir);
+        this._onLocaleLangChanged(newLang);
 
         this._watchLocaleChanges();
       }
@@ -374,6 +424,9 @@ export default function getDBUIWebComponentCore(win) {
             this.setContext({
               [contextKey]: value
             });
+            contextKey === 'dbuiDir' ?
+              this._onLocaleDirChanged(value) :
+              this._onLocaleLangChanged(value);
           });
         });
 
@@ -520,7 +573,6 @@ export default function getDBUIWebComponentCore(win) {
         const contextKeys = Array.isArray(contextKey) ? contextKey : [contextKey];
 
         contextKeys.forEach((key) => {
-          delete this._lastReceivedContext[key];
           delete this._providingContext[key];
         });
 
@@ -578,6 +630,13 @@ export default function getDBUIWebComponentCore(win) {
         // The next ones can be the result of middle ancestors firing attributeChangeCallback
         // which might set their context and propagate it down.
         const lastReceivedContext = this._lastReceivedContext;
+        // Because locale is ignoring context if node has dir/lang or sync-locale-with,
+        // when _unsetAndRelinkContext _lastReceivedContext will equal newContext
+        // and _onLocaleContextChanged will not be fired due to !newContextFilteredKeys.length.
+        // That's why we trigger _onLocaleContextChanged early here.
+        this._onLocaleContextChanged(
+          { ...lastReceivedContext, ...newContext }, { ...lastReceivedContext }
+        );
         const newContextFilteredKeys = Object.keys(newContext || {}).filter((key) => {
           return newContext[key] !== lastReceivedContext[key];
         });
@@ -590,10 +649,8 @@ export default function getDBUIWebComponentCore(win) {
           return acc;
         }, {});
         const contextToSet = reset ? {} : { ...lastReceivedContext, ...newContextFiltered };
-        this._lastReceivedContext = contextToSet;
-        const [_newContext, _prevContext] = [this._lastReceivedContext, lastReceivedContext];
-        this._onLocaleContextChanged(_newContext, _prevContext);
-        this.onContextChanged(_newContext, _prevContext);
+        this._lastReceivedContext = { ...contextToSet };
+        this.onContextChanged({ ...contextToSet }, { ...lastReceivedContext });
       }
 
 
@@ -898,6 +955,15 @@ export default function getDBUIWebComponentCore(win) {
       }
 
       /*
+      * https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements#Using_the_lifecycle_callbacks
+      * connectedCallback:
+      * Invoked each time the custom element is appended into a document-connected element.
+      * This will happen each time the node is moved,
+      * and !!! may happen before the element's contents have been fully parsed !!!
+      *
+      * connectedCallback may be called once your element is no longer connected,
+      * use Node.isConnected to make sure.
+      *
       * web components standard API
       * connectedCallback is fired from children to parent in shadow DOM
       * but the order is less predictable in light DOM.
@@ -1011,6 +1077,12 @@ export default function getDBUIWebComponentCore(win) {
         // Things changed as a result of attributeChangedCallback should be preserved
         // when disconnectedCallback because these attribute changes will not be fired again
         // when node is removed then re-inserted back in the DOM tree.
+        // Chrome behavior: if observed attribute is changed when disconnectedCallback
+        // and the component is replaced with another node using replaceChild
+        // then attributeChangedCallback will be fired after (re)connectedCallback
+        // and not after disconnectedCallback as expected. (Note: Safari behaves as expected here)
+        // Though if component is explicitly removed then
+        // attributeChangedCallback will be fired after disconnectedCallback as expected.
         if (this.getAttribute(name) === oldValue) return;
         this._onAttributeChangedCallback(name, oldValue, newValue);
       }

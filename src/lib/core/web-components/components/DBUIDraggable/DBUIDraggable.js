@@ -495,9 +495,9 @@ const presetNoConstraint =
 
 /*
 TODO:
+ - presetBoundingClientRect try not to require offset but constraint absolute x and y ?
  - unittest for applyCorrection
  - improve presets algorithms
- - presetBoundingClientRect try not to require offset but constraint absolute x and y ?
  - improve code where possible
  - add circleAround({ selector, steps }) preset ?
 */
@@ -522,7 +522,7 @@ export default function getDBUIDraggable(win) {
         return `
           <style>
           :host {
-            all: initial;
+            /*all: initial;*/
             cursor: pointer;
             touch-action: none;
             display: inline-block;

@@ -497,6 +497,7 @@ describe('DBUIWebComponentBase context passing', () => {
             const dbuiNodes = treeOneGetDbuiNodes(contentWindow);
             Object.keys(dbuiNodes).forEach((key) => {
               expect(dbuiNodes[key].__newContext.color1).to.equal('cadetblue');
+              expect(dbuiNodes[key].__prevContext).to.deep.equal({});
             });
 
             setTimeout(() => {
@@ -830,6 +831,7 @@ describe('DBUIWebComponentBase context passing', () => {
             Object.keys(dbuiNodes).forEach((key) => {
               if (dbuiNodes[key] === lightDummyDOneRoot) return;
               expect(dbuiNodes[key].__newContext.color4).to.equal('forestgreen');
+              expect(dbuiNodes[key].__prevContext.color4).to.equal('bisque');
               expect(dbuiNodes[key].getAttribute('context-color4')).to.equal('forestgreen');
               expect(dbuiNodes[key]._providingContext.color4).to.equal('forestgreen');
               expect(dbuiNodes[key]._lastReceivedContext.color4).to.equal('forestgreen');
@@ -853,6 +855,7 @@ describe('DBUIWebComponentBase context passing', () => {
             Object.keys(dbuiNodes).forEach((key) => {
               if (dbuiNodes[key] === lightDummyDOneRoot) return;
               expect(dbuiNodes[key].__newContext.color4).to.equal('goldenrod');
+              expect(dbuiNodes[key].__prevContext.color4).to.equal('forestgreen');
               expect(dbuiNodes[key].getAttribute('context-color4')).to.equal('goldenrod');
               expect(dbuiNodes[key]._providingContext.color4).to.equal('goldenrod');
               expect(dbuiNodes[key]._lastReceivedContext.color4).to.equal('goldenrod');
@@ -894,6 +897,7 @@ describe('DBUIWebComponentBase context passing', () => {
             Object.keys(dbuiNodes).forEach((key) => {
               if (dbuiNodes[key] === lightDummyDOneRoot) return;
               expect(dbuiNodes[key].__newContext.color4).to.equal('lightcoral');
+              expect(dbuiNodes[key].__prevContext.color4).to.equal('goldenrod');
               // not changed
               expect(dbuiNodes[key].getAttribute('context-color4')).to.equal('goldenrod');
               expect(dbuiNodes[key]._providingContext.color4).to.equal('lightcoral');
@@ -1317,25 +1321,38 @@ describe('DBUIWebComponentBase context passing', () => {
                 lightDummyDOneRoot
               } = dbuiNodes;
 
+              lightDummyDOneRoot.dir = 'rtl';
               lightDummyDOneRoot.setContext({ color4: 'goldenrod' });
+
 
               Object.keys(dbuiNodes).forEach((key) => {
                 const node = dbuiNodes[key];
                 if (node === lightDummyDOneRoot) {
                   expect(node.__newContext).to.equal(undefined);
+                  expect(node.__newDir).to.equal('rtl');
+                  expect(node.__prevDir).to.equal('ltr');
                 } else {
-                  expect(node.__newContext).to.deep.equal({ color4: 'goldenrod', ...localeContext });
+                  expect(node.__newContext).to.deep.equal({ color4: 'goldenrod', ...localeContext, dbuiDir: 'rtl' });
+                  expect(node.__prevContext).to.deep.equal({ dbuiDir: 'rtl', dbuiLang: 'en' });
+                  expect(node.__newDir).to.equal('rtl');
+                  expect(node.__prevDir).to.equal('ltr');
                 }
               });
 
+              lightDummyDOneRoot.dir = '';
               lightDummyDOneRoot._unsetAndRelinkContext('color4');
 
               Object.keys(dbuiNodes).forEach((key) => {
                 const node = dbuiNodes[key];
                 if (node === lightDummyDOneRoot) {
                   expect(node.__newContext).to.equal(undefined);
+                  expect(node.__newDir).to.equal('ltr');
+                  expect(node.__prevDir).to.equal('rtl');
                 } else {
-                  expect(node.__newContext).to.deep.equal({ color4: undefined, ...localeContext });
+                  expect(node.__newContext).to.deep.equal({ color4: undefined, ...localeContext, dbuiDir: 'ltr' });
+                  expect(node.__prevContext).to.deep.equal({ color4: 'goldenrod', dbuiDir: 'ltr', dbuiLang: 'en' });
+                  expect(node.__newDir).to.equal('ltr');
+                  expect(node.__prevDir).to.equal('rtl');
                 }
               });
 
@@ -1393,7 +1410,10 @@ describe('DBUIWebComponentBase context passing', () => {
 
               const test = ({
                 firstHalfColor,
-                secondHalfColor
+                secondHalfColor,
+                firstHalfColorPrev,
+                secondHalfColorPrev,
+                exceptNodes = []
               }) => {
                 const dbuiNodes = treeOneGetDbuiNodes(contentWindow);
 
@@ -1443,9 +1463,12 @@ describe('DBUIWebComponentBase context passing', () => {
                   lightDummyDTwoInDefaultSlot_ShadowDummyB_ShadowDummyA,
 
                   lightDummyDThreeInDefaultSlot,
-                ].forEach((node) => {
-                  expect(node.__newContext.color4).to.equal(firstHalfColor);
-                });
+                ]
+                  .filter((node) => !exceptNodes.includes(node))
+                  .forEach((node) => {
+                    expect(node.__newContext.color4).to.equal(firstHalfColor);
+                    expect(node.__prevContext.color4).to.equal(firstHalfColorPrev);
+                  });
 
                 [
                   lightDummyDThreeInDefaultSlot_ShadowDummyB,
@@ -1458,9 +1481,12 @@ describe('DBUIWebComponentBase context passing', () => {
                   lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot,
                   lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB,
                   lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA
-                ].forEach((node) => {
-                  expect(node.__newContext.color4).to.equal(secondHalfColor);
-                });
+                ]
+                  .filter((node) => !exceptNodes.includes(node))
+                  .forEach((node) => {
+                    expect(node.__newContext.color4).to.equal(secondHalfColor);
+                    expect(node.__prevContext.color4).to.equal(secondHalfColorPrev);
+                  });
               };
 
               const dbuiNodes = treeOneGetDbuiNodes(contentWindow);
@@ -1469,14 +1495,34 @@ describe('DBUIWebComponentBase context passing', () => {
                 lightDummyDThreeInDefaultSlot
               } = dbuiNodes;
 
+              // lightDummyDThreeInDefaultSlot is in the first half
               lightDummyDThreeInDefaultSlot.setContext({ color4: 'cadetblue' });
+
+              test({
+                firstHalfColor: undefined, secondHalfColor: 'cadetblue',
+                firstHalfColorPrev: undefined, secondHalfColorPrev: undefined
+              });
+
               lightDummyDOneRoot.setContext({ color4: 'goldenrod' });
 
-              test({ firstHalfColor: 'goldenrod', secondHalfColor: 'cadetblue' });
+              test({
+                firstHalfColor: 'goldenrod', secondHalfColor: 'cadetblue',
+                firstHalfColorPrev: undefined, secondHalfColorPrev: undefined
+              });
 
               lightDummyDThreeInDefaultSlot._unsetAndRelinkContext('color4');
 
-              test({ firstHalfColor: 'goldenrod', secondHalfColor: 'goldenrod' });
+              test({
+                firstHalfColor: 'goldenrod', secondHalfColor: 'goldenrod',
+                firstHalfColorPrev: undefined, secondHalfColorPrev: 'cadetblue',
+              });
+
+              lightDummyDOneRoot.setContext({ color4: undefined });
+
+              test({
+                firstHalfColor: undefined, secondHalfColor: undefined,
+                firstHalfColorPrev: 'goldenrod', secondHalfColorPrev: 'goldenrod'
+              });
 
               setTimeout(() => {
                 iframe.remove();

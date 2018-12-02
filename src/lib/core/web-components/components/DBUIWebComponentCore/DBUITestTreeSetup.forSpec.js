@@ -175,6 +175,18 @@ function getBase(win) {
         this.shadowRoot.querySelector('#id-holder').innerText = getId(this);
       }
 
+      onLocaleDirChanged(newDir, prevDir) {
+        super.onLocaleDirChanged(newDir, prevDir);
+        this.__newDir = newDir;
+        this.__prevDir = prevDir;
+      }
+
+      onLocaleLangChanged(newLang, prevLang) {
+        super.onLocaleDirChanged(newLang, prevLang);
+        this.__newLang = newLang;
+        this.__prevLang = prevLang;
+      }
+
       onContextChanged(newContext, prevContext) {
         super.onContextChanged(newContext, prevContext);
         this.__newContext = newContext;
