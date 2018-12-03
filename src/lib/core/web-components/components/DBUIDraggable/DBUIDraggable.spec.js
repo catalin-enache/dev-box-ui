@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import onScreenConsole from '../../../utils/onScreenConsole';
+// import onScreenConsole from '../../../utils/onScreenConsole';
 import inIframe from '../../../../../../testUtils/inIframe';
 import getDBUIDraggable, {
   extractSingleEvent, getElementBeingDragged, getStep
@@ -1178,12 +1178,6 @@ describe('DBUIDraggable', () => {
           const applyCorrection = function () { return this; };
           const targetTranslateX = 5;
           const targetTranslateY = 6;
-          const targetStepX = 1;
-          const targetStepY = 1;
-          const targetStep = 1;
-          const targetPercentX = '0.50';
-          const targetPercentY = '0.50';
-          const targetPercent = '0.50';
           const dragTarget = '#draggable-one';
           const constraintType = 'boundingClientRectOf';
           const constraintSelector = 'parent';
@@ -1197,12 +1191,6 @@ describe('DBUIDraggable', () => {
           draggableOne.applyCorrection = applyCorrection;
           draggableOne.targetTranslateX = targetTranslateX;
           draggableOne.targetTranslateY = targetTranslateY;
-          draggableOne.targetStepX = targetStepX;
-          draggableOne.targetStepY = targetStepY;
-          draggableOne.targetStep = targetStep;
-          draggableOne.targetPercentX = targetPercentX;
-          draggableOne.targetPercentY = targetPercentY;
-          draggableOne.targetPercent = targetPercent;
           draggableOne.dragTarget = dragTarget;
           draggableOne.constraintType = constraintType;
           draggableOne.constraintSelector = constraintSelector;
@@ -1220,12 +1208,6 @@ describe('DBUIDraggable', () => {
 
             expect(draggableOne.getAttribute('target-translate-x')).to.equal(`${targetTranslateX}`);
             expect(draggableOne.getAttribute('target-translate-y')).to.equal(`${targetTranslateY}`);
-            expect(draggableOne.getAttribute('target-step-x')).to.equal(`${targetStepX}`);
-            expect(draggableOne.getAttribute('target-step-y')).to.equal(`${targetStepY}`);
-            expect(draggableOne.getAttribute('target-step')).to.equal(`${targetStep}`);
-            expect(draggableOne.getAttribute('target-percent-x')).to.equal(`${targetPercentX}`);
-            expect(draggableOne.getAttribute('target-percent-y')).to.equal(`${targetPercentY}`);
-            expect(draggableOne.getAttribute('target-percent')).to.equal(`${targetPercent}`);
             expect(draggableOne.getAttribute('drag-target')).to.equal(`${dragTarget}`);
             expect(draggableOne.getAttribute('constraint-type')).to.equal(constraintType);
             expect(draggableOne.getAttribute('constraint-selector')).to.equal(constraintSelector);
@@ -1260,12 +1242,6 @@ describe('DBUIDraggable', () => {
           id="draggable-one"
           target-translate-x="1"
           target-translate-y="2"
-          target-step-x="1"
-          target-step-y="1"
-          target-step="1"
-          target-percent-x="0.5"
-          target-percent-y="0.5"
-          target-percent="0.5"
           drag-target="#one"
           constraint-type="boundingClientRectOf"
           constraint-selector="parent"
@@ -1285,12 +1261,6 @@ describe('DBUIDraggable', () => {
 
           expect(draggableOne.targetTranslateX).to.equal(undefined);
           expect(draggableOne.targetTranslateY).to.equal(undefined);
-          expect(draggableOne.targetStepX).to.equal(undefined);
-          expect(draggableOne.targetStepY).to.equal(undefined);
-          expect(draggableOne.targetStep).to.equal(undefined);
-          expect(draggableOne.targetPercentX).to.equal(undefined);
-          expect(draggableOne.targetPercentY).to.equal(undefined);
-          expect(draggableOne.targetPercent).to.equal(undefined);
           expect(draggableOne.dragTarget).to.equal(undefined);
           expect(draggableOne.constraintType).to.equal(undefined);
           expect(draggableOne.constraintSelector).to.equal(undefined);
@@ -1308,12 +1278,6 @@ describe('DBUIDraggable', () => {
 
             expect(draggableOne.targetTranslateX).to.equal(1);
             expect(draggableOne.targetTranslateY).to.equal(2);
-            expect(draggableOne.targetStepX).to.equal(1);
-            expect(draggableOne.targetStepY).to.equal(1);
-            expect(draggableOne.targetStep).to.equal(1);
-            expect(draggableOne.targetPercentX).to.equal(0.5);
-            expect(draggableOne.targetPercentY).to.equal(0.5);
-            expect(draggableOne.targetPercent).to.equal(0.5);
             expect(draggableOne.dragTarget).to.equal('#one');
             expect(draggableOne.constraintType).to.equal('boundingClientRectOf');
             expect(draggableOne.constraintSelector).to.equal('parent');

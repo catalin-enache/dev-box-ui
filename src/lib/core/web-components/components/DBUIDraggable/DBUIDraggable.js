@@ -347,13 +347,6 @@ function doMove(_evt) {
     self.targetTranslateY = newTargetTranslateY;
 
     if (newTargetTranslateX !== prevTargetTranslateX || newTargetTranslateY !== prevTargetTranslateY) {
-      ['targetPercentX', 'targetPercentY', 'targetPercent',
-        'targetStepX', 'targetStepY', 'targetStep'
-      ].forEach((prop) => {
-        if (rest[prop] !== undefined) {
-          self[prop] = +(rest[prop].toFixed(2));
-        }
-      });
       self.dispatchEvent(new win.CustomEvent('dragmove', {
         detail: {
           targetWidthOnStart, targetHeightOnStart,
@@ -570,8 +563,6 @@ export default function getDBUIDraggable(win) {
           'applyCorrection',
           'targetTranslateX',
           'targetTranslateY',
-          'targetPercentX', 'targetPercentY', 'targetPercent',
-          'targetStepX', 'targetStepY', 'targetStep',
           'dragTarget',
           'constraintType', 'constraintSelector',
           'constraintCX', 'constraintCY', 'constraintRadius',
@@ -583,8 +574,6 @@ export default function getDBUIDraggable(win) {
         return [...super.observedAttributes,
           'target-translate-x',
           'target-translate-y',
-          'target-percent-x', 'target-percent-y', 'target-percent',
-          'target-step-x', 'target-step-y', 'target-step',
           'drag-target',
           'constraint-type', 'constraint-selector',
           'constraint-cx', 'constraint-cy', 'constraint-radius',
@@ -596,6 +585,7 @@ export default function getDBUIDraggable(win) {
         super();
         this._cachedTargetToDrag = null;
         this._cachedConstraintPreset = null;
+        this._cachedConstraintNode = null;
         this._dbuiDraggable = true;
         this._targetToDragOldTransform = '';
         this._targetToDragOldTransformOrigin = '';
@@ -633,120 +623,6 @@ export default function getDBUIDraggable(win) {
       set targetTranslateY(value) {
         const newValue = (Math.round(+value) || 0).toString();
         this.setAttribute('target-translate-y', newValue);
-      }
-
-      /**
-       * Get X target position as percent relative to bounding rect of targeted constraint.
-       * Works in conjunction with boundingClientRectOf constraint.
-       * @return Number
-       */
-      get targetPercentX() {
-        return +this.getAttribute('target-percent-x') || 0;
-      }
-
-      /**
-       * Set X target position as percent relative to bounding rect of targeted constraint.
-       * Works in conjunction with boundingClientRectOf constraint.
-       * @param value Number | String
-       */
-      set targetPercentX(value) {
-        const newValue = (+value || 0).toFixed(2);
-        this.setAttribute('target-percent-x', newValue);
-      }
-
-      /**
-       * Get Y target position as percent relative to bounding rect of targeted constraint.
-       * Works in conjunction with boundingClientRectOf constraint.
-       * @return Number
-       */
-      get targetPercentY() {
-        return +this.getAttribute('target-percent-y') || 0;
-      }
-
-      /**
-       * Set Y target position as percent relative to bounding rect of targeted constraint.
-       * Works in conjunction with boundingClientRectOf constraint.
-       * @param value Number | String
-       */
-      set targetPercentY(value) {
-        const newValue = (+value || 0).toFixed(2);
-        this.setAttribute('target-percent-y', newValue);
-      }
-
-      /**
-       * Get target position as percent relative to circle perimeter.
-       * Works in conjunction with circle constraint.
-       * @return Number
-       */
-      get targetPercent() {
-        return +this.getAttribute('target-percent') || 0;
-      }
-
-      /**
-       * Set target position as percent relative to circle perimeter.
-       * Works in conjunction with circle constraint.
-       * @param value Number | String
-       */
-      set targetPercent(value) {
-        const newValue = (+value || 0).toFixed(2);
-        this.setAttribute('target-percent', newValue);
-      }
-
-      /**
-       * Get target step X.
-       * Works in conjunction with boundingClientRectOf constraint (with steps).
-       * @return Number
-       */
-      get targetStepX() {
-        return +this.getAttribute('target-step-x') || 0;
-      }
-
-      /**
-       * Set target step X.
-       * Works in conjunction with boundingClientRectOf constraint (with steps).
-       * @param value Number | String
-       */
-      set targetStepX(value) {
-        const newValue = (Math.round(+value) || 0).toString();
-        this.setAttribute('target-step-x', newValue);
-      }
-
-      /**
-       * Get target step Y.
-       * Works in conjunction with boundingClientRectOf constraint (with steps).
-       * @return Number
-       */
-      get targetStepY() {
-        return +this.getAttribute('target-step-y') || 0;
-      }
-
-      /**
-       * Set target step Y.
-       * Works in conjunction with boundingClientRectOf constraint (with steps).
-       * @param value Number | String
-       */
-      set targetStepY(value) {
-        const newValue = (Math.round(+value) || 0).toString();
-        this.setAttribute('target-step-y', newValue);
-      }
-
-      /**
-       * Get target step.
-       * Works in conjunction with circle constraint (with steps).
-       * @return Number
-       */
-      get targetStep() {
-        return +this.getAttribute('target-step') || 0;
-      }
-
-      /**
-       * Set target step.
-       * Works in conjunction with circle constraint (with steps).
-       * @param value Number | String
-       */
-      set targetStep(value) {
-        const newValue = (Math.round(+value) || 0).toString();
-        this.setAttribute('target-step', newValue);
       }
 
       /**
@@ -926,13 +802,8 @@ export default function getDBUIDraggable(win) {
         try {
           switch (true) {
             case constraintType === 'boundingClientRectOf': {
-              const [selector, stepsX, stepsY] = [
-                this.constraintSelector, this.constraintStepsX, this.constraintStepsY
-              ];
-              const constraintNode =
-                selector === 'parent' ?
-                  this._targetToDrag.parentElement :
-                  this.getRootNode().querySelector(selector);
+              const [stepsX, stepsY] = [this.constraintStepsX, this.constraintStepsY];
+              const constraintNode = this._constraintNode;
               const constraintsForBoundingClientRect =
                 getConstraintsForBoundingClientRect(this._targetToDrag, constraintNode);
               this._cachedConstraintPreset =
@@ -984,6 +855,19 @@ export default function getDBUIDraggable(win) {
         return this._cachedTargetToDrag;
       }
 
+      get _constraintNode() {
+        if (this._cachedConstraintNode) {
+          return this._cachedConstraintNode;
+        }
+        const selector = this.constraintSelector;
+        const constraintNode =
+          selector === 'parent' ?
+            this._targetToDrag.parentElement :
+            this.getRootNode().querySelector(selector);
+        this._cachedConstraintNode = constraintNode;
+        return this._cachedConstraintNode;
+      }
+
       _initializeTargetToDrag() {
         this._cachedTargetToDrag = null; // needed when drag-target attribute changes
         const targetToDrag = this._targetToDrag;
@@ -1027,12 +911,6 @@ export default function getDBUIDraggable(win) {
           // position adjusters attributes
           case 'target-translate-x':
           case 'target-translate-y':
-          case 'target-step-x':
-          case 'target-step-y':
-          case 'target-step':
-          case 'target-percent-x':
-          case 'target-percent-y':
-          case 'target-percent':
             this._adjustPosition(name);
             break;
           case 'drag-target':
@@ -1040,8 +918,10 @@ export default function getDBUIDraggable(win) {
             this._initializeTargetToDrag();
             break;
           // constraint attributes
-          case 'constraint-type':
           case 'constraint-selector':
+            this._cachedConstraintNode = null;
+            break;
+          case 'constraint-type':
           case 'constraint-cx':
           case 'constraint-cy':
           case 'constraint-radius':

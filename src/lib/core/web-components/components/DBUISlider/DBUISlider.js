@@ -2,6 +2,7 @@
 import getDBUIWebComponentCore from '../DBUIWebComponentCore/DBUIWebComponentCore';
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
 import getDBUIDraggable from '../DBUIDraggable/DBUIDraggable';
+import { trunc } from '../../../utils/math';
 
 const DRAGGABLE_ID = 'draggable';
 const registrationName = 'dbui-slider';
@@ -106,7 +107,6 @@ const percentToTranslate = (self, percent) => {
   return (availableLength - draggableLength) * localePercent;
 };
 
-
 const adjustPosition = (self) => {
   if (self.isSliding) return;
   const draggable = getDraggable(self);
@@ -116,6 +116,12 @@ const adjustPosition = (self) => {
   draggable[targetTranslate] = percentToTranslate(self, percent);
   draggable[targetTranslateOther] = 0;
   updateDisplayedValue(self, percent);
+};
+
+const adjustPercent = (self) => {
+  const { steps, step, percent: currentPercent } = self;
+  const percent = !steps ? currentPercent : step / (steps - 1);
+  self.percent = percent;
 };
 
 export default function getDBUISlider(win) {
@@ -281,29 +287,29 @@ export default function getDBUISlider(win) {
       }
 
       get steps() {
-        return Number(this.getAttribute('steps')) || 0;
+        return +this.getAttribute('steps') || 0;
       }
 
       set steps(value) {
-        const newValue = (Number(value) || 0).toString();
+        const newValue = (Math.round(+value) || 0).toString();
         this.setAttribute('steps', newValue);
       }
 
       get step() {
-        return Number(this.getAttribute('step')) || 0;
+        return +this.getAttribute('step') || 0;
       }
 
       set step(value) {
-        const newValue = (Number(value) || 0).toString();
+        const newValue = (Math.round(+value) || 0).toString();
         this.setAttribute('step', newValue);
       }
 
       get percent() {
-        return Number(this.getAttribute('percent')) || 0;
+        return +this.getAttribute('percent') || 0;
       }
 
       set percent(value) {
-        const newValue = (Number(value) || 0).toString();
+        const newValue = trunc(2)(+value);
         this.setAttribute('percent', newValue);
       }
 
@@ -319,6 +325,9 @@ export default function getDBUISlider(win) {
 
       onLocaleDirChanged(newDir, oldDir) {
         super.onLocaleDirChanged(newDir, oldDir);
+        if (this.steps) {
+          adjustPercent(this);
+        }
         adjustPosition(this);
       }
 
@@ -358,15 +367,18 @@ export default function getDBUISlider(win) {
 
       onAttributeChangedCallback(name, oldValue, newValue) {
         super.onAttributeChangedCallback(name, oldValue, newValue);
+        if (!this.isMounted) return;
         switch (name) {
-          case 'percent': {
-            if (!this.isMounted) break;
+          case 'percent':
+          case 'vertical': {
+            // forward steps
             adjustPosition(this);
             break;
           }
-          case 'vertical': {
-            if (!this.isMounted) break;
-            adjustPosition(this);
+          case 'steps':
+          case 'step': {
+            // forward steps
+            adjustPercent(this);
             break;
           }
           default:

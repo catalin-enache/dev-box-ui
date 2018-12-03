@@ -25,7 +25,7 @@ describe('DBUISlider', () => {
       }
       
       #slider-one {
-        width: 100px;
+        width: 300px;
         height: 90%;
         
         /*
@@ -44,7 +44,7 @@ describe('DBUISlider', () => {
       <div id="container">
         <div id="locale-provider" dir="rtl"></div>
         <div id="wrapper-slider-one">
-          <dbui-slider id="slider-one" sync-locale-with="#locale-provider" percent="0.8" steps="3" dir="rtl" verticalL show-value></dbui-slider>
+          <dbui-slider id="slider-one" sync-locale-with="#locale-provider" percent="0.5" steps="3" step="1" dir="rtl" verticalL show-value></dbui-slider>
         </div>
       </div>
       
