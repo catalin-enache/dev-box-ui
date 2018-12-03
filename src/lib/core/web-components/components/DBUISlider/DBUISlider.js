@@ -15,7 +15,6 @@ TODO:
  - should be suitable for scrolling too (auto-adjusts inner scroll dimension)
  - should be used by next component scrollable
  - should be focusable somehow when used as a scroll either
- - should receive a ratio attribute
  - should receive a range and on slide should emit an event reporting the value
 */
 
@@ -133,6 +132,21 @@ const adjustPercentFromPointerCoords = (self, pointerCoords) => {
   const safePercent = Math.max(0, Math.min(1, percent));// getStep
   const { value: finalPercent } = getStep(0, 1, safePercent, self.steps);
   self.percent = finalPercent;
+};
+
+const adjustRatio = (self) => {
+  const draggable = getDraggable(self);
+  if (!self.hasAttribute('ratio')) {
+    draggable.style.width = null;
+    draggable.style.height = null;
+    return;
+  }
+  const ratio = self.ratio;
+  const availableLength = getAvailableLength(self);
+  const dimension = self.vertical ? 'height' : 'width';
+  const otherDimension = self.vertical ? 'width' : 'height';
+  draggable.style[dimension] = ratio * availableLength;
+  draggable.style[otherDimension] = '100%';
 };
 
 const forwardSteps = (self) => {
@@ -270,11 +284,11 @@ export default function getDBUISlider(win) {
       }
 
       static get propertiesToUpgrade() {
-        return [...super.propertiesToUpgrade, 'steps', 'step', 'percent', 'vertical'];
+        return [...super.propertiesToUpgrade, 'steps', 'step', 'percent', 'vertical', 'ratio'];
       }
 
       static get observedAttributes() {
-        return [...super.observedAttributes, 'steps', 'step', 'percent', 'vertical'];
+        return [...super.observedAttributes, 'steps', 'step', 'percent', 'vertical', 'ratio'];
       }
 
       constructor() {
@@ -334,6 +348,15 @@ export default function getDBUISlider(win) {
         this.setAttribute('percent', newValue);
       }
 
+      get ratio() {
+        return +this.getAttribute('ratio') || 0;
+      }
+
+      set ratio(value) {
+        const newValue = trunc(2)(+value);
+        this.setAttribute('ratio', newValue);
+      }
+
       get vertical() {
         return this.getAttribute('vertical') !== null;
       }
@@ -345,7 +368,9 @@ export default function getDBUISlider(win) {
       }
 
       onLocaleDirChanged(newDir, oldDir) {
+        // acts like an init
         super.onLocaleDirChanged(newDir, oldDir);
+        adjustRatio(this);
         if (this.steps) {
           adjustPercent(this);
         }
@@ -394,6 +419,7 @@ export default function getDBUISlider(win) {
       }
 
       _onSliderMouseDown(evt) {
+        if (evt.which === 3) return;
         evt.preventDefault();
         evt.stopPropagation();
         const { clientX, clientY } = evt;
@@ -444,12 +470,18 @@ export default function getDBUISlider(win) {
         super.onAttributeChangedCallback(name, oldValue, newValue);
         if (!this.isMounted) return;
         switch (name) {
+          case 'ratio': {
+            adjustRatio(this);
+            adjustPosition(this);
+            break;
+          }
           case 'percent': {
             adjustPosition(this);
             break;
           }
           case 'vertical': {
             forwardSteps(this);
+            adjustRatio(this);
             adjustPosition(this);
             break;
           }
