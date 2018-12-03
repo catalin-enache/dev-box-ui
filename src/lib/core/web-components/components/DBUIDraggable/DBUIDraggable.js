@@ -1,6 +1,7 @@
 
 import getDBUIWebComponentCore from '../DBUIWebComponentCore/DBUIWebComponentCore';
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
+import { getStep } from '../../../utils/math';
 
 const events = {
   mouse: {
@@ -263,8 +264,14 @@ function onPointerDown(evt) {
   self._measurements = getMeasurements(evt);
   registerRootEvents(evt);
   const { win } = getRootDocAndWin(evt);
+  const extractedEvent = extractSingleEvent(evt);
+  const {
+    clientX, clientY
+  } = extractedEvent;
   self.dispatchEvent(new win.CustomEvent('dragstart', {
-    detail: {}
+    detail: {
+      clientX, clientY
+    }
   }));
 }
 
@@ -366,48 +373,6 @@ function doMove(_evt) {
     self._dragRunning = false;
   });
 }
-
-const STEP_PRECISION = 4;
-
-/**
- * @param min Number
- * @param max Number
- * @param current Number
- * @param steps Number (optional)
- * @return { value: Number, index: Number (if steps >= 2), percent: Number }
- */
-export const getStep = (min, max, current, steps) => {
-  const _steps = Number(steps);
-  const interval = max - min;
-
-  let percent = null;
-
-  if (!_steps || _steps < 2) {
-    percent = +(((current - min) / interval) || 0).toFixed(STEP_PRECISION);
-    return { value: current, percent };
-  }
-
-  const stepSize = interval / (_steps - 1);
-  const allSteps = [];
-  let minDist = Infinity;
-  let idx = null;
-  for (let i = 1; i <= _steps; i += 1) {
-    if (i === 1) {
-      allSteps.push(min);
-    } else if (i === _steps) {
-      allSteps.push(max);
-    } else {
-      allSteps.push(min + ((i - 1) * stepSize));
-    }
-    if (Math.abs(allSteps[i - 1] - current) < minDist) {
-      minDist = Math.abs(allSteps[i - 1] - current);
-      idx = i - 1;
-    }
-  }
-  const stepValue = +allSteps[idx].toFixed(STEP_PRECISION);
-  percent = +(((stepValue - min) / interval) || 0).toFixed(STEP_PRECISION);
-  return { value: allSteps[idx], index: idx, percent };
-};
 
 const getConstraintsForBoundingClientRect = (targetNode, constraintNode) => {
   const win = targetNode.ownerDocument.defaultView;

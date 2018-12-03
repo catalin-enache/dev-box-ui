@@ -2,7 +2,7 @@
 import getDBUIWebComponentCore from '../DBUIWebComponentCore/DBUIWebComponentCore';
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
 import getDBUIDraggable from '../DBUIDraggable/DBUIDraggable';
-import { trunc } from '../../../utils/math';
+import { trunc, getStep } from '../../../utils/math';
 import { getWheelDelta } from '../../../utils/mouse';
 
 const PERCENT_AMOUNT_INCREASE = 0.01;
@@ -16,7 +16,6 @@ TODO:
  - should be used by next component scrollable
  - should be focusable somehow when used as a scroll either
  - should receive a ratio attribute
- - should slide on clicking the bar
  - should receive a range and on slide should emit an event reporting the value
 */
 
@@ -120,6 +119,20 @@ const adjustPercent = (self) => {
   const { steps, step, percent: currentPercent } = self;
   const percent = !steps ? currentPercent : step / (steps - 1);
   self.percent = percent;
+};
+
+const adjustPercentFromPointerCoords = (self, pointerCoords) => {
+  const { clientX, clientY } = pointerCoords;
+  const totalLength = getAvailableLength(self);
+  const wrapperMiddle = getWrapperMiddle(self);
+  const dimension = self.vertical ? 'y' : 'x';
+  const wrapperMiddlePosition = wrapperMiddle.getBoundingClientRect()[dimension];
+  const pointerPosition = self.vertical ? clientY : clientX;
+  const distance = pointerPosition - wrapperMiddlePosition;
+  const percent = trunc(2)(distance / totalLength);
+  const safePercent = Math.max(0, Math.min(1, percent));// getStep
+  const { value: finalPercent } = getStep(0, 1, safePercent, self.steps);
+  self.percent = finalPercent;
 };
 
 const forwardSteps = (self) => {
@@ -276,6 +289,8 @@ export default function getDBUISlider(win) {
         this._onMouseEnter = this._onMouseEnter.bind(this);
         this._onMouseLeave = this._onMouseLeave.bind(this);
         this._onWheel = this._onWheel.bind(this);
+        this._onSliderMouseDown = this._onSliderMouseDown.bind(this);
+        this._onSliderTouchStart = this._onSliderTouchStart.bind(this);
       }
 
       get isSliding() {
@@ -378,11 +393,35 @@ export default function getDBUISlider(win) {
         this.percent = newPercent;
       }
 
+      _onSliderMouseDown(evt) {
+        evt.preventDefault();
+        evt.stopPropagation();
+        const { clientX, clientY } = evt;
+        adjustPercentFromPointerCoords(this, {
+          clientX: Math.round(clientX),
+          clientY: Math.round(clientY),
+        });
+      }
+
+      _onSliderTouchStart(evt) {
+        evt.preventDefault();
+        evt.stopPropagation();
+        const wrapperMiddle = getWrapperMiddle(this);
+        const touch = [...evt.touches].find((t) => t.target === wrapperMiddle);
+        const { clientX, clientY } = touch;
+        adjustPercentFromPointerCoords(this, {
+          clientX: Math.round(clientX),
+          clientY: Math.round(clientY),
+        });
+      }
+
       onConnectedCallback() {
         super.onConnectedCallback();
         getDraggable(this).addEventListener('dragmove', this._onDraggableMove);
         getDraggable(this).addEventListener('dragstart', this._onDraggableDragStart);
         getDraggable(this).addEventListener('dragend', this._onDraggableDragEnd);
+        getWrapperMiddle(this).addEventListener('mousedown', this._onSliderMouseDown);
+        getWrapperMiddle(this).addEventListener('touchstart', this._onSliderTouchStart);
         this.addEventListener('mouseenter', this._onMouseEnter);
         this.addEventListener('mouseleave', this._onMouseLeave);
       }
@@ -392,6 +431,8 @@ export default function getDBUISlider(win) {
         getDraggable(this).removeEventListener('dragmove', this._onDraggableMove);
         getDraggable(this).removeEventListener('dragstart', this._onDraggableDragStart);
         getDraggable(this).removeEventListener('dragend', this._onDraggableDragEnd);
+        getWrapperMiddle(this).removeEventListener('mousedown', this._onSliderMouseDown);
+        getWrapperMiddle(this).removeEventListener('touchstart', this._onSliderTouchStart);
         this.removeEventListener('mouseenter', this._onMouseEnter);
         this.removeEventListener('mouseleave', this._onMouseLeave);
         this.removeEventListener('wheel', this._onWheel);

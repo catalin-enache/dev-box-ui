@@ -2,7 +2,7 @@ import { expect } from 'chai';
 // import onScreenConsole from '../../../utils/onScreenConsole';
 import inIframe from '../../../../../../testUtils/inIframe';
 import getDBUIDraggable, {
-  extractSingleEvent, getElementBeingDragged, getStep
+  extractSingleEvent, getElementBeingDragged
 } from './DBUIDraggable';
 import {
   sendTapEvent,
@@ -2654,21 +2654,6 @@ describe('DBUIDraggable', () => {
             DBUIDraggable.registerSelf();
           }
         });
-      });
-    });
-  });
-
-  describe('getStep', () => {
-    describe('when steps is undefined or less than 2', () => {
-      it('returns { value, percent }', () => {
-        const res = getStep(-10, 90, 40);
-        expect(res).to.eql({ value: 40, percent: 0.5 });
-      });
-    });
-    describe('when steps >= 2', () => {
-      it('returns { value, index, percent }', () => {
-        const res = getStep(-10, 90, 40, 3);
-        expect(res).to.eql({ value: 40, percent: 0.5, index: 1 });
       });
     });
   });
