@@ -679,7 +679,7 @@ export default function getDBUIDraggable(win) {
           const data = JSON.parse(jsonString);
           switch (true) {
             case constraint.startsWith('boundingClientRectOf'): {
-              const { selector, stepsX, stepsY, percentX = 0, percentY = 0 } = data;
+              const { selector, stepsX, stepsY } = data;
               const constraintNode =
                 selector === 'parent' ?
                   this.parentElement :

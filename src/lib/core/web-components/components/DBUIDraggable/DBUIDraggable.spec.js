@@ -412,7 +412,7 @@ describe('DBUIDraggable', () => {
         const draggableFour = contentWindow.document.querySelector('#draggable-four');
 
         draggableTwo.constraint =
-          'boundingClientRectOf({ "selector": "#wrapper-draggable-one", "stepsX": 3, "stepsY": 3, "percentX": 0.5})';
+          'boundingClientRectOf({ "selector": "#wrapper-draggable-one", "stepsX": 3, "stepsY": 3 })';
 
         draggableFour.constraint =
           'circle({ "cx": 190, "cy":790, "radius":175, "steps": 12 })';
