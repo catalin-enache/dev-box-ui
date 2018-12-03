@@ -339,23 +339,30 @@ function doMove(_evt) {
         pointerX, pointerY
       });
 
-    self.targetTranslateX = revisedTranslateX;
-    self.targetTranslateY = revisedTranslateY;
+    const prevTargetTranslateX = self.targetTranslateX;
+    const prevTargetTranslateY = self.targetTranslateY;
+    const newTargetTranslateX = Math.round(revisedTranslateX);
+    const newTargetTranslateY = Math.round(revisedTranslateY);
+    self.targetTranslateX = newTargetTranslateX;
+    self.targetTranslateY = newTargetTranslateY;
 
-    self.dispatchEvent(new win.CustomEvent('dragmove', {
-      detail: {
-        targetWidthOnStart, targetHeightOnStart,
-        targetXOnStart, targetYOnStart,
-        targetTranslatedXOnStart, targetTranslatedYOnStart,
-        targetTranslateX: revisedTranslateX, targetTranslateY: revisedTranslateY,
-        targetX: targetX - (nextTargetTranslateX - revisedTranslateX),
-        targetY: targetY - (nextTargetTranslateY - revisedTranslateY),
-        targetOriginalX, targetOriginalY,
-        pointerXOnStart, pointerYOnStart,
-        pointerX, pointerY,
-        ...rest
-      }
-    }));
+    if (newTargetTranslateX !== prevTargetTranslateX || newTargetTranslateY !== prevTargetTranslateY) {
+      self.dispatchEvent(new win.CustomEvent('dragmove', {
+        detail: {
+          targetWidthOnStart, targetHeightOnStart,
+          targetXOnStart, targetYOnStart,
+          targetTranslatedXOnStart, targetTranslatedYOnStart,
+          targetTranslateX: revisedTranslateX, targetTranslateY: revisedTranslateY,
+          targetX: targetX - (nextTargetTranslateX - revisedTranslateX),
+          targetY: targetY - (nextTargetTranslateY - revisedTranslateY),
+          targetOriginalX, targetOriginalY,
+          pointerXOnStart, pointerYOnStart,
+          pointerX, pointerY,
+          ...rest
+        }
+      }));
+    }
+
     self._dragRunning = false;
   });
 }
@@ -672,11 +679,11 @@ export default function getDBUIDraggable(win) {
           const data = JSON.parse(jsonString);
           switch (true) {
             case constraint.startsWith('boundingClientRectOf'): {
-              const { selector, stepsX, stepsY } = data;
+              const { selector, stepsX, stepsY, percentX = 0, percentY = 0 } = data;
               const constraintNode =
-              selector === 'parent' ?
-                this.parentElement :
-                this.getRootNode().querySelector(selector);
+                selector === 'parent' ?
+                  this.parentElement :
+                  this.getRootNode().querySelector(selector);
               const constraintsForBoundingClientRect =
                 getConstraintsForBoundingClientRect(this._targetToDrag, constraintNode);
               this._cachedConstraintPreset =

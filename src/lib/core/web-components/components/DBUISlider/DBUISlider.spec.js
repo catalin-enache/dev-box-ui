@@ -11,7 +11,7 @@ import getDBUIWebComponentCore from '../DBUIWebComponentCore/DBUIWebComponentCor
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
 
 describe('DBUISlider', () => {
-  it.only('behaves as expected - live testing', (done) => {
+  xit('behaves as expected - live testing', (done) => {
     inIframe({
       headStyle: `
       body, html { padding: 0px; margin: 0px; }
