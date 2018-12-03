@@ -233,7 +233,10 @@ export default function getDBUISlider(win) {
               <div id="inner"></div>
               <dbui-draggable
                 id="${DRAGGABLE_ID}"
-                constraint='boundingClientRectOf({ "selector": "parent", "stepsX": 0, "stepsY": 0 })'
+                constraint-type="boundingClientRectOf"
+                constraint-selector="parent"
+                constraint-steps-x="0"
+                constraint-steps-y="0"
               ><div id="value-display-wrapper"><div id="value-display"></div></div></dbui-draggable>
             </div>
           </div>
@@ -321,9 +324,9 @@ export default function getDBUISlider(win) {
 
       _onDraggableMove(evt) {
         const {
-          percentX, percentY
+          targetPercentX, targetPercentY
         } = evt.detail;
-        const percent = this.vertical ? percentY : percentX;
+        const percent = this.vertical ? targetPercentY : targetPercentX;
         const localePercent = getLocalePercent(this, percent);
         updateDisplayedValue(this, localePercent);
         this.percent = localePercent;

@@ -96,10 +96,16 @@ function getDummyDraggableInner(win) {
             }
           </style>
           <div id="container-inner">
-            <dbui-draggable id="draggable-inner-1" constraint='boundingClientRectOf({ "selector": "parent" })'>
+            <dbui-draggable id="draggable-inner-1"
+            constraint-type="boundingClientRectOf"
+            constraint-selector="parent"
+            >
               <p id="content-1">draggable-inner-1</p>
             </dbui-draggable>
-            <dbui-draggable id="draggable-inner-2" constraint='boundingClientRectOf({ "selector": "parent" })'>
+            <dbui-draggable id="draggable-inner-2"
+            constraint-type="boundingClientRectOf"
+            constraint-selector="parent"
+            >
               <p id="content-2">draggable-inner-2</p>
             </dbui-draggable>
           </div>
@@ -159,9 +165,15 @@ function getDummyDraggableMiddle(win) {
             }
           </style>
           <div id="container-middle">
-            <dbui-draggable id="draggable-middle-1" constraint='boundingClientRectOf({ "selector": "parent" })'>
+            <dbui-draggable id="draggable-middle-1"
+            constraint-type="boundingClientRectOf"
+            constraint-selector="parent"
+            >
               <dummy-draggable-inner id="dummy-draggable-inner-1"></dummy-draggable-inner>
-            </dbui-draggable><dbui-draggable id="draggable-middle-2" constraint='boundingClientRectOf({ "selector": "parent" })'>
+            </dbui-draggable><dbui-draggable id="draggable-middle-2"
+            constraint-type="boundingClientRectOf"
+            constraint-selector="parent"
+            >
               <dummy-draggable-inner id="dummy-draggable-inner-2"></dummy-draggable-inner>
             </dbui-draggable>
           </div>
@@ -219,10 +231,16 @@ function getDummyDraggableOuter(win) {
             }
           </style>
           <div id="container-outer">
-            <dbui-draggable id="draggable-outer-1" constraint='boundingClientRectOf({ "selector": "parent" })'>
+            <dbui-draggable id="draggable-outer-1"
+            constraint-type="boundingClientRectOf"
+            constraint-selector="parent"
+            >
               <dummy-draggable-middle id="dummy-draggable-middle-1"></dummy-draggable-middle>
             </dbui-draggable>
-            <dbui-draggable id="draggable-outer-2" constraint='boundingClientRectOf({ "selector": "parent" })'>
+            <dbui-draggable id="draggable-outer-2"
+            constraint-type="boundingClientRectOf"
+            constraint-selector="parent"
+            >
               <dummy-draggable-middle id="dummy-draggable-middle-2"></dummy-draggable-middle>
             </dbui-draggable>
           </div>
@@ -250,6 +268,9 @@ p {
 
 #container {
   position: relative;
+  border: 1px solid green;
+  width: 90%;
+  height: 300px;
 }
 
 #wrapper-draggable-one, #wrapper-draggable-two, #wrapper-draggable-three, #wrapper-draggable-four {
@@ -307,13 +328,26 @@ const html_1 = `
 <div id="container">
 
   <div id="wrapper-draggable-one" dir="rtl">
-    <dbui-draggable id="draggable-one" drag-target="#wrapper-draggable-one" target-translate-x="10" target-translate-y="10">
+    <dbui-draggable
+      id="draggable-one"
+      drag-target="parent"
+      constraint-type="boundingClientRectOf"
+      constraint-selector="parent"
+      target-translate-x="10"
+      target-translate-y="10"
+    >
       <p id="draggable-two-content">draggable content 1</p>
     </dbui-draggable>
   </div>
   
   <div id="wrapper-draggable-two">
-    <dbui-draggable id="draggable-two" sync-locale-with="#locale-provider">
+    <dbui-draggable
+    id="draggable-two"
+    sync-locale-with="#locale-provider"
+    constraint-type="boundingClientRectOf"
+    constraint-selector="#wrapper-draggable-one"
+    constraint-steps-x="3" target-step-x="1"
+    constraint-steps-y="3" target-step-y="1">
       <p id="draggable-two-content">draggable content 2</p>
     </dbui-draggable>
   </div>
@@ -325,7 +359,13 @@ const html_1 = `
   </div>
   
   <div id="wrapper-draggable-four">
-    <dbui-draggable id="draggable-four">
+    <dbui-draggable id="draggable-four"
+    constraint-type="circle"
+    constraint-cx="190"
+    constraint-cy="790"
+    constraint-radius="175"
+    constraint-steps="12"
+    >
       <p>4</p>
     </dbui-draggable>
     <div class="center"></div>
@@ -363,36 +403,78 @@ body, html { padding: 0px; margin: 0px; }
 
 const html_2 = `
 <div class="container">
-  <dbui-draggable class="draggable-outer" id="draggable-outer-1" constraint='boundingClientRectOf({ "selector": "parent" })'>
-    <dbui-draggable class="draggable-middle" id="draggable-middle-1" constraint='boundingClientRectOf({ "selector": "parent" })'>
-      <dbui-draggable class="draggable-inner" id="draggable-inner-1" constraint='boundingClientRectOf({ "selector": "parent" })'>
+  <dbui-draggable class="draggable-outer" id="draggable-outer-1"
+  constraint-type="boundingClientRectOf"
+  constraint-selector="parent"
+  >
+    <dbui-draggable class="draggable-middle" id="draggable-middle-1"
+    constraint-type="boundingClientRectOf"
+    constraint-selector="parent"
+    >
+      <dbui-draggable class="draggable-inner" id="draggable-inner-1"
+      constraint-type="boundingClientRectOf"
+      constraint-selector="parent"
+      >
         <p class="content" id="content-1">content 1</p>
       </dbui-draggable>
-      <dbui-draggable class="draggable-inner" id="draggable-inner-2" constraint='boundingClientRectOf({ "selector": "parent" })'>
+      <dbui-draggable class="draggable-inner" id="draggable-inner-2"
+      constraint-type="boundingClientRectOf"
+      constraint-selector="parent"
+      >
         <p class="content" id="content-2">content 2</p>
       </dbui-draggable>
-    </dbui-draggable><dbui-draggable class="draggable-middle" constraint='boundingClientRectOf({ "selector": "parent" })'>
-      <dbui-draggable class="draggable-inner" constraint='boundingClientRectOf({ "selector": "parent" })'>
+    </dbui-draggable><dbui-draggable class="draggable-middle"
+    constraint-type="boundingClientRectOf"
+    constraint-selector="parent"
+    >
+      <dbui-draggable class="draggable-inner"
+      constraint-type="boundingClientRectOf"
+      constraint-selector="parent"
+      >
         <p class="content">content 1</p>
       </dbui-draggable>
-      <dbui-draggable class="draggable-inner" constraint='boundingClientRectOf({ "selector": "parent" })'>
+      <dbui-draggable class="draggable-inner"
+      constraint-type="boundingClientRectOf"
+      constraint-selector="parent"
+      >
         <p class="content">content 2</p>
       </dbui-draggable>
     </dbui-draggable>
   </dbui-draggable>  
-  <dbui-draggable class="draggable-outer" constraint='boundingClientRectOf({ "selector": "parent" })'>
-    <dbui-draggable class="draggable-middle" constraint='boundingClientRectOf({ "selector": "parent" })'>
-      <dbui-draggable class="draggable-inner" constraint='boundingClientRectOf({ "selector": "parent" })'>
+  <dbui-draggable class="draggable-outer"
+  constraint-type="boundingClientRectOf"
+  constraint-selector="parent"
+  >
+    <dbui-draggable class="draggable-middle"
+    constraint-type="boundingClientRectOf"
+    constraint-selector="parent"
+    >
+      <dbui-draggable class="draggable-inner"
+      constraint-type="boundingClientRectOf"
+      constraint-selector="parent"
+      >
         <p class="content">content 1</p>
       </dbui-draggable>
-      <dbui-draggable class="draggable-inner" constraint='boundingClientRectOf({ "selector": "parent" })'>
+      <dbui-draggable class="draggable-inner"
+      constraint-type="boundingClientRectOf"
+      constraint-selector="parent"
+      >
         <p class="content">content 2</p>
       </dbui-draggable>
-    </dbui-draggable><dbui-draggable class="draggable-middle" constraint='boundingClientRectOf({ "selector": "parent" })'>
-      <dbui-draggable class="draggable-inner" constraint='boundingClientRectOf({ "selector": "parent" })'>
+    </dbui-draggable><dbui-draggable class="draggable-middle"
+    constraint-type="boundingClientRectOf"
+    constraint-selector="parent"
+    >
+      <dbui-draggable class="draggable-inner"
+      constraint-type="boundingClientRectOf"
+      constraint-selector="parent"
+      >
         <p class="content">content 1</p>
       </dbui-draggable>
-      <dbui-draggable class="draggable-inner" constraint='boundingClientRectOf({ "selector": "parent" })'>
+      <dbui-draggable class="draggable-inner"
+      constraint-type="boundingClientRectOf"
+      constraint-selector="parent"
+      >
         <p class="content">content 2</p>
       </dbui-draggable>
     </dbui-draggable>
@@ -408,14 +490,8 @@ describe('DBUIDraggable', () => {
       onLoad: ({ contentWindow, iframe }) => {
         const DBUIDraggable = getDBUIDraggable(contentWindow);
 
-        const draggableTwo = contentWindow.document.querySelector('#draggable-two');
-        const draggableFour = contentWindow.document.querySelector('#draggable-four');
-
-        draggableTwo.constraint =
-          'boundingClientRectOf({ "selector": "#wrapper-draggable-one", "stepsX": 3, "stepsY": 3 })';
-
-        draggableFour.constraint =
-          'circle({ "cx": 190, "cy":790, "radius":175, "steps": 12 })';
+        // const draggableTwo = contentWindow.document.querySelector('#draggable-two');
+        // const draggableFour = contentWindow.document.querySelector('#draggable-four');
 
         Promise.all([
           DBUIDraggable.registrationName,
@@ -1102,14 +1178,40 @@ describe('DBUIDraggable', () => {
           const applyCorrection = function () { return this; };
           const targetTranslateX = 5;
           const targetTranslateY = 6;
+          const targetStepX = 1;
+          const targetStepY = 1;
+          const targetStep = 1;
+          const targetPercentX = '0.50';
+          const targetPercentY = '0.50';
+          const targetPercent = '0.50';
           const dragTarget = '#draggable-one';
-          const constraint = 'boundingClientRectOf({ "selector": "body"})';
+          const constraintType = 'boundingClientRectOf';
+          const constraintSelector = 'parent';
+          const constraintStepsX = 2;
+          const constraintStepsY = 2;
+          const constraintSteps = 2;
+          const constraintCX = 5;
+          const constraintCY = 5;
+          const constraintRadius = 5;
 
           draggableOne.applyCorrection = applyCorrection;
           draggableOne.targetTranslateX = targetTranslateX;
           draggableOne.targetTranslateY = targetTranslateY;
+          draggableOne.targetStepX = targetStepX;
+          draggableOne.targetStepY = targetStepY;
+          draggableOne.targetStep = targetStep;
+          draggableOne.targetPercentX = targetPercentX;
+          draggableOne.targetPercentY = targetPercentY;
+          draggableOne.targetPercent = targetPercent;
           draggableOne.dragTarget = dragTarget;
-          draggableOne.constraint = constraint;
+          draggableOne.constraintType = constraintType;
+          draggableOne.constraintSelector = constraintSelector;
+          draggableOne.constraintStepsX = constraintStepsX;
+          draggableOne.constraintStepsY = constraintStepsY;
+          draggableOne.constraintSteps = constraintSteps;
+          draggableOne.constraintCX = constraintCX;
+          draggableOne.constraintCY = constraintCY;
+          draggableOne.constraintRadius = constraintRadius;
 
           Promise.all([
             DBUIDraggable.registrationName,
@@ -1118,8 +1220,21 @@ describe('DBUIDraggable', () => {
 
             expect(draggableOne.getAttribute('target-translate-x')).to.equal(`${targetTranslateX}`);
             expect(draggableOne.getAttribute('target-translate-y')).to.equal(`${targetTranslateY}`);
-            expect(draggableOne.getAttribute('drag-target')).to.equal(dragTarget);
-            expect(draggableOne.getAttribute('constraint')).to.equal(constraint);
+            expect(draggableOne.getAttribute('target-step-x')).to.equal(`${targetStepX}`);
+            expect(draggableOne.getAttribute('target-step-y')).to.equal(`${targetStepY}`);
+            expect(draggableOne.getAttribute('target-step')).to.equal(`${targetStep}`);
+            expect(draggableOne.getAttribute('target-percent-x')).to.equal(`${targetPercentX}`);
+            expect(draggableOne.getAttribute('target-percent-y')).to.equal(`${targetPercentY}`);
+            expect(draggableOne.getAttribute('target-percent')).to.equal(`${targetPercent}`);
+            expect(draggableOne.getAttribute('drag-target')).to.equal(`${dragTarget}`);
+            expect(draggableOne.getAttribute('constraint-type')).to.equal(constraintType);
+            expect(draggableOne.getAttribute('constraint-selector')).to.equal(constraintSelector);
+            expect(draggableOne.getAttribute('constraint-steps-x')).to.equal(`${constraintStepsX}`);
+            expect(draggableOne.getAttribute('constraint-steps-y')).to.equal(`${constraintStepsY}`);
+            expect(draggableOne.getAttribute('constraint-steps')).to.equal(`${constraintSteps}`);
+            expect(draggableOne.getAttribute('constraint-cx')).to.equal(`${constraintCX}`);
+            expect(draggableOne.getAttribute('constraint-cy')).to.equal(`${constraintCY}`);
+            expect(draggableOne.getAttribute('constraint-radius')).to.equal(`${constraintRadius}`);
             expect(draggableOne.applyCorrection.call(null)).to.equal(draggableOne);
             expect(draggableOne._applyCorrection).to.equal(draggableOne.applyCorrection);
 
@@ -1145,8 +1260,21 @@ describe('DBUIDraggable', () => {
           id="draggable-one"
           target-translate-x="1"
           target-translate-y="2"
+          target-step-x="1"
+          target-step-y="1"
+          target-step="1"
+          target-percent-x="0.5"
+          target-percent-y="0.5"
+          target-percent="0.5"
           drag-target="#one"
-          constraint='boundingClientRectOf({ "selector": "body"})'
+          constraint-type="boundingClientRectOf"
+          constraint-selector="parent"
+          constraint-steps-x="3"
+          constraint-steps-y="3"
+          constraint-steps="3"
+          constraint-cx="3"
+          constraint-cy="4"
+          constraint-radius="5"
         >
           <div id="draggable-one-content">content</div>
         </dbui-draggable>
@@ -1157,8 +1285,21 @@ describe('DBUIDraggable', () => {
 
           expect(draggableOne.targetTranslateX).to.equal(undefined);
           expect(draggableOne.targetTranslateY).to.equal(undefined);
+          expect(draggableOne.targetStepX).to.equal(undefined);
+          expect(draggableOne.targetStepY).to.equal(undefined);
+          expect(draggableOne.targetStep).to.equal(undefined);
+          expect(draggableOne.targetPercentX).to.equal(undefined);
+          expect(draggableOne.targetPercentY).to.equal(undefined);
+          expect(draggableOne.targetPercent).to.equal(undefined);
           expect(draggableOne.dragTarget).to.equal(undefined);
-          expect(draggableOne.constraint).to.equal(undefined);
+          expect(draggableOne.constraintType).to.equal(undefined);
+          expect(draggableOne.constraintSelector).to.equal(undefined);
+          expect(draggableOne.constraintStepsX).to.equal(undefined);
+          expect(draggableOne.constraintStepsY).to.equal(undefined);
+          expect(draggableOne.constraintSteps).to.equal(undefined);
+          expect(draggableOne.constraintCX).to.equal(undefined);
+          expect(draggableOne.constraintCY).to.equal(undefined);
+          expect(draggableOne.constraintRadius).to.equal(undefined);
 
           Promise.all([
             DBUIDraggable.registrationName,
@@ -1167,8 +1308,21 @@ describe('DBUIDraggable', () => {
 
             expect(draggableOne.targetTranslateX).to.equal(1);
             expect(draggableOne.targetTranslateY).to.equal(2);
+            expect(draggableOne.targetStepX).to.equal(1);
+            expect(draggableOne.targetStepY).to.equal(1);
+            expect(draggableOne.targetStep).to.equal(1);
+            expect(draggableOne.targetPercentX).to.equal(0.5);
+            expect(draggableOne.targetPercentY).to.equal(0.5);
+            expect(draggableOne.targetPercent).to.equal(0.5);
             expect(draggableOne.dragTarget).to.equal('#one');
-            expect(draggableOne.constraint).to.equal('boundingClientRectOf({ "selector": "body"})');
+            expect(draggableOne.constraintType).to.equal('boundingClientRectOf');
+            expect(draggableOne.constraintSelector).to.equal('parent');
+            expect(draggableOne.constraintStepsX).to.equal(3);
+            expect(draggableOne.constraintStepsY).to.equal(3);
+            expect(draggableOne.constraintSteps).to.equal(3);
+            expect(draggableOne.constraintCX).to.equal(3);
+            expect(draggableOne.constraintCY).to.equal(4);
+            expect(draggableOne.constraintRadius).to.equal(5);
 
             setTimeout(() => {
               iframe.remove();
@@ -1531,7 +1685,8 @@ describe('DBUIDraggable', () => {
                 DBUIDraggable.registrationName,
               ].map((localName) => contentWindow.customElements.whenDefined(localName)
               )).then(() => {
-                draggableOne.constraint = 'boundingClientRectOf({ "selector": "#one" })';
+                draggableOne.constraintType = 'boundingClientRectOf';
+                draggableOne.constraintSelector = '#one';
 
                 contentWindow.requestAnimationFrame(() => {
                   setTimeout(() => {
@@ -1550,7 +1705,8 @@ describe('DBUIDraggable', () => {
                           expect(oneGetBoundingClientRectHasBeenCalled).to.equal(true);
                           expect(twoGetBoundingClientRectHasBeenCalled).to.equal(false);
 
-                          draggableOne.constraint = 'boundingClientRectOf({ "selector": "parent" })';
+                          draggableOne.constraintType = 'boundingClientRectOf';
+                          draggableOne.constraintSelector = 'parent';
 
                           setTimeout(() => {
 
@@ -1626,7 +1782,8 @@ describe('DBUIDraggable', () => {
                   return containerGetBoundingClientRect();
                 };
 
-                dummyDraggableShadowDraggable.constraint = 'boundingClientRectOf({ "selector": "#two" })';
+                dummyDraggableShadowDraggable.constraintType = 'boundingClientRectOf';
+                dummyDraggableShadowDraggable.constraintSelector = '#two';
 
                 contentWindow.requestAnimationFrame(() => {
                   setTimeout(() => {
@@ -1645,7 +1802,8 @@ describe('DBUIDraggable', () => {
                           expect(twoGetBoundingClientRectHasBeenCalled).to.equal(true);
                           expect(containerGetBoundingClientRectHasBeenCalled).to.equal(false);
 
-                          dummyDraggableShadowDraggable.constraint = 'boundingClientRectOf({ "selector": "parent" })';
+                          dummyDraggableShadowDraggable.constraintType = 'boundingClientRectOf';
+                          dummyDraggableShadowDraggable.constraintSelector = 'parent';
 
                           setTimeout(() => {
 
@@ -1708,7 +1866,10 @@ describe('DBUIDraggable', () => {
           `,
           bodyHTML: `
           <div id="one"></div>
-          <dbui-draggable id="draggable-one" constraint='boundingClientRectOf({ "selector": "#one" })'>
+          <dbui-draggable id="draggable-one"
+          constraint-type="boundingClientRectOf"
+          constraint-selector="#one"
+          >
           </dbui-draggable>
           `,
           onLoad: ({ contentWindow, iframe }) => {
@@ -1777,7 +1938,12 @@ describe('DBUIDraggable', () => {
           `,
           bodyHTML: `
           <div id="one"></div>
-          <dbui-draggable id="draggable-one" constraint='boundingClientRectOf({ "selector": "#one", "stepsX": 3, "stepsY": 3 })'>
+          <dbui-draggable id="draggable-one"
+          constraint-type="boundingClientRectOf"
+          constraint-selector="#one"
+          constraint-steps-x="3"
+          constraint-steps-y="3"
+          >
           </dbui-draggable>
           `,
           onLoad: ({ contentWindow, iframe }) => {
@@ -1866,7 +2032,12 @@ describe('DBUIDraggable', () => {
           `,
           bodyHTML: `
           <div id="one"></div>
-          <dbui-draggable id="draggable-one" constraint='circle({ "cx": 200, "cy": 200, "radius": 100 })'>
+          <dbui-draggable id="draggable-one"
+          constraint-type="circle"
+          constraint-cx="200"
+          constraint-cy="200"
+          constraint-radius="100"
+          >
           </dbui-draggable>
           `,
           onLoad: ({ contentWindow, iframe }) => {
@@ -1939,7 +2110,13 @@ describe('DBUIDraggable', () => {
           `,
           bodyHTML: `
           <div id="one"></div>
-          <dbui-draggable id="draggable-one" constraint='circle({ "cx": 200, "cy": 200, "radius": 100, "steps": 4 })'>
+          <dbui-draggable id="draggable-one"
+          constraint-type="circle"
+          constraint-cx="200"
+          constraint-cy="200"
+          constraint-radius="100"
+          constraint-steps="4"
+          >
           </dbui-draggable>
           `,
           onLoad: ({ contentWindow, iframe }) => {
@@ -1956,28 +2133,28 @@ describe('DBUIDraggable', () => {
                 expect(evtDetails[0].cos).to.equal(0);
                 expect(evtDetails[0].targetX).to.equal(175);
                 expect(evtDetails[0].targetY).to.equal(75);
-                expect(evtDetails[0].stepIndex).to.equal(1);
+                expect(evtDetails[0].targetStep).to.equal(1);
                 expect(evtDetails[0].degreeStep).to.equal(90);
                 expect(evtDetails[0].degrees.toFixed(2)).to.equal('89.42');
-                expect(evtDetails[0].percent).to.equal(0.25);
+                expect(evtDetails[0].targetPercent).to.equal(0.25);
 
                 expect(evtDetails[1].sin).to.equal(0);
                 expect(evtDetails[1].cos).to.equal(-1);
                 expect(evtDetails[1].targetX).to.equal(75);
                 expect(evtDetails[1].targetY).to.equal(175);
-                expect(evtDetails[1].stepIndex).to.equal(2);
+                expect(evtDetails[1].targetStep).to.equal(2);
                 expect(evtDetails[1].degreeStep).to.equal(180);
                 expect(evtDetails[1].degrees.toFixed(2)).to.equal('180.58');
-                expect(evtDetails[1].percent).to.equal(0.5);
+                expect(evtDetails[1].targetPercent).to.equal(0.5);
 
                 expect(evtDetails[2].sin).to.equal(-1);
                 expect(evtDetails[2].cos).to.equal(-0);
                 expect(evtDetails[2].targetX).to.equal(175);
                 expect(evtDetails[2].targetY).to.equal(275);
-                expect(evtDetails[2].stepIndex).to.equal(3);
+                expect(evtDetails[2].targetStep).to.equal(3);
                 expect(evtDetails[2].degreeStep).to.equal(270);
                 expect(evtDetails[2].degrees.toFixed(2)).to.equal('270.57');
-                expect(evtDetails[2].percent).to.equal(0.75);
+                expect(evtDetails[2].targetPercent).to.equal(0.75);
               };
 
               draggableOne.addEventListener('dragmove', (evt) => {
@@ -2048,7 +2225,10 @@ describe('DBUIDraggable', () => {
           `,
           bodyHTML: `
           <div id="one"></div>
-          <dbui-draggable id="draggable-one" constraint='circle({ cx: 200, "cy": 200, "radius": 100, "steps": 4 })'>
+          <dbui-draggable id="draggable-one"
+          constraint-type="boundingClientRectOf"
+          constraint-selector="none"
+          >
           </dbui-draggable>
           `,
           onLoad: ({ contentWindow, iframe }) => {
@@ -2117,7 +2297,7 @@ describe('DBUIDraggable', () => {
           `,
           bodyHTML: `
           <div id="one"></div>
-          <dbui-draggable id="draggable-one" constraint='circle({ "cx": 200, "cy": 200, "radius": 100, "steps": 4 })'>
+          <dbui-draggable id="draggable-one">
           </dbui-draggable>
           `,
           onLoad: ({ contentWindow, iframe }) => {
