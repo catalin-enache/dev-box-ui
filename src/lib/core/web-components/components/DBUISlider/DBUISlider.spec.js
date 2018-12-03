@@ -44,7 +44,16 @@ describe('DBUISlider', () => {
       <div id="container">
         <div id="locale-provider" dir="rtl"></div>
         <div id="wrapper-slider-one">
-          <dbui-slider id="slider-one" sync-locale-with="#locale-provider" percent="0.5" steps="3" step="1" dir="rtl" verticalL show-value></dbui-slider>
+          <dbui-slider
+          id="slider-one"
+          sync-locale-with="#locale-provider"
+          percent="0.9"
+          steps="3"
+          step="1"
+          dir="ltr"
+          vertical
+          show-value
+          ></dbui-slider>
         </div>
       </div>
       

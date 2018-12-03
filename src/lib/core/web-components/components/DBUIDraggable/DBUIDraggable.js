@@ -901,6 +901,7 @@ export default function getDBUIDraggable(win) {
         this.removeAttribute('unselectable');
         this.removeEventListener('mousedown', handleMouseDown, eventOptions.mouse);
         this.removeEventListener('touchstart', handleTouchStart, eventOptions.touch);
+        // should also remove the rest of listeners here
         this._resetTargetToDrag();
       }
 

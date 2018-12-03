@@ -3,23 +3,21 @@ import getDBUIWebComponentCore from '../DBUIWebComponentCore/DBUIWebComponentCor
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
 import getDBUIDraggable from '../DBUIDraggable/DBUIDraggable';
 import { trunc } from '../../../utils/math';
+import { getWheelDelta } from '../../../utils/mouse';
 
+const PERCENT_AMOUNT_INCREASE = 0.01;
 const DRAGGABLE_ID = 'draggable';
 const registrationName = 'dbui-slider';
 
 /*
 TODO:
  - should move with arrow keys and scroll, needs some speed
- - should autodetect is is horizontal or vertical depending on width/height ratio
- - should use some global css dimensions and colors
  - should be suitable for scrolling too (auto-adjusts inner scroll dimension)
- - should be configurable from outside by steps or percentage
- - should be dir aware
  - should be used by next component scrollable
  - should be focusable somehow when used as a scroll either
  - should receive a ratio attribute
  - should slide on clicking the bar
- - percent value should fallback on steps if given
+ - should receive a range and on slide should emit an event reporting the value
 */
 
 const DBUISliderCssVars = `
@@ -122,6 +120,11 @@ const adjustPercent = (self) => {
   const { steps, step, percent: currentPercent } = self;
   const percent = !steps ? currentPercent : step / (steps - 1);
   self.percent = percent;
+};
+
+const forwardSteps = (self) => {
+  const steps = self.vertical ? 'constraintStepsY' : 'constraintStepsX';
+  getDraggable(self)[steps] = self.steps;
 };
 
 export default function getDBUISlider(win) {
@@ -270,6 +273,9 @@ export default function getDBUISlider(win) {
         this._onDraggableMove = this._onDraggableMove.bind(this);
         this._onDraggableDragStart = this._onDraggableDragStart.bind(this);
         this._onDraggableDragEnd = this._onDraggableDragEnd.bind(this);
+        this._onMouseEnter = this._onMouseEnter.bind(this);
+        this._onMouseLeave = this._onMouseLeave.bind(this);
+        this._onWheel = this._onWheel.bind(this);
       }
 
       get isSliding() {
@@ -328,6 +334,7 @@ export default function getDBUISlider(win) {
         if (this.steps) {
           adjustPercent(this);
         }
+        forwardSteps(this);
         adjustPosition(this);
       }
 
@@ -349,11 +356,35 @@ export default function getDBUISlider(win) {
         this._isSliding = false;
       }
 
+      _onMouseEnter() {
+        this.addEventListener('wheel', this._onWheel);
+      }
+
+      _onMouseLeave() {
+        this.removeEventListener('wheel', this._onWheel);
+      }
+
+      _onWheel(evt) {
+        evt.preventDefault();
+        const delta = getWheelDelta(evt, this.steps ? false : undefined);
+        if (this.steps) {
+          const nextStep = this.step + delta;
+          const newStep = Math.max(0, Math.min(this.steps - 1, nextStep));
+          this.step = newStep;
+          return;
+        }
+        const nextPercent = this.percent + (delta * PERCENT_AMOUNT_INCREASE);
+        const newPercent = Math.max(0, Math.min(1, nextPercent));
+        this.percent = newPercent;
+      }
+
       onConnectedCallback() {
         super.onConnectedCallback();
         getDraggable(this).addEventListener('dragmove', this._onDraggableMove);
         getDraggable(this).addEventListener('dragstart', this._onDraggableDragStart);
         getDraggable(this).addEventListener('dragend', this._onDraggableDragEnd);
+        this.addEventListener('mouseenter', this._onMouseEnter);
+        this.addEventListener('mouseleave', this._onMouseLeave);
       }
 
       onDisconnectedCallback() {
@@ -361,6 +392,9 @@ export default function getDBUISlider(win) {
         getDraggable(this).removeEventListener('dragmove', this._onDraggableMove);
         getDraggable(this).removeEventListener('dragstart', this._onDraggableDragStart);
         getDraggable(this).removeEventListener('dragend', this._onDraggableDragEnd);
+        this.removeEventListener('mouseenter', this._onMouseEnter);
+        this.removeEventListener('mouseleave', this._onMouseLeave);
+        this.removeEventListener('wheel', this._onWheel);
         this._wrapperMiddle = null;
         this._draggable = null;
       }
@@ -369,15 +403,19 @@ export default function getDBUISlider(win) {
         super.onAttributeChangedCallback(name, oldValue, newValue);
         if (!this.isMounted) return;
         switch (name) {
-          case 'percent':
+          case 'percent': {
+            adjustPosition(this);
+            break;
+          }
           case 'vertical': {
-            // forward steps
+            forwardSteps(this);
             adjustPosition(this);
             break;
           }
           case 'steps':
           case 'step': {
             // forward steps
+            forwardSteps(this);
             adjustPercent(this);
             break;
           }
