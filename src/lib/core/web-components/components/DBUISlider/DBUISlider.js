@@ -18,13 +18,6 @@ const KEYS_TO_DELTA_MAP = {
 };
 
 /*
-TODO:
- - should be used by next component scrollable
- - should be focusable somehow when used as a scroll either
- - should receive a range and on slide should emit an event reporting the value
-*/
-
-/*
 Behavior:
  - changing step will adjust percent but changing percent will NOT adjust step
  - repaints itself
