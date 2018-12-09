@@ -24,6 +24,20 @@ TODO:
  - should receive a range and on slide should emit an event reporting the value
 */
 
+/*
+Behavior:
+ - changing step will adjust percent but changing percent will NOT adjust step
+ - repaints itself
+    - when locale dir changes
+    - when any of step/steps/percent/ratio/vertical attributes change
+ - captures arrow keys if capture-arrow-keys attr is set directly or via captureArrowKeys property.
+   when arrow keys are captured it adjusts self percentage via an internal delta
+   which can be influenced by altKey and ctrlKey
+ - is mouse scroll aware with speed influenced by altKey and ctrlKey
+ - if no ratio is set then the thickness of the slider button is determined by --dbui-slider-draggable-size css var
+ - if debug-show-value is set the component will display current internal percentage on top of slider button
+*/
+
 const DBUISliderCssVars = `
   :root {
     --dbui-slider-outer-padding: 5px;
@@ -66,6 +80,14 @@ const getWrapperMiddle = (self) => {
   return self._wrapperMiddle;
 };
 
+const getInner = (self) => {
+  if (self._inner) {
+    return self._inner;
+  }
+  self._inner = self.shadowRoot.querySelector('#inner');
+  return self._inner;
+};
+
 const getValueDisplayNode = (self) => {
   if (self._valueDisplayNode) {
     return self._valueDisplayNode;
@@ -77,7 +99,7 @@ const getValueDisplayNode = (self) => {
 };
 
 const updateDisplayedValue = (self, value) => {
-  self.showValue && (getValueDisplayNode(self).innerText = value);
+  self.debugShowValue && (getValueDisplayNode(self).innerText = value);
 };
 
 const getAvailableLength = (self) => {
@@ -154,17 +176,35 @@ const adjustPercentOrStepFromDelta = (self, delta) => {
 
 const adjustRatio = (self) => {
   const draggable = getDraggable(self);
+  const inner = getInner(self);
   if (!self.hasAttribute('ratio')) {
     draggable.style.width = null;
     draggable.style.height = null;
+    inner.style.top = null;
+    inner.style.bottom = null;
+    inner.style.left = null;
+    inner.style.right = null;
     return;
   }
   const ratio = self.ratio;
   const availableLength = getAvailableLength(self);
   const dimension = self.vertical ? 'height' : 'width';
   const otherDimension = self.vertical ? 'width' : 'height';
-  draggable.style[dimension] = ratio * availableLength;
+  const newDraggableSize = ratio * availableLength;
+  draggable.style[dimension] = newDraggableSize;
   draggable.style[otherDimension] = '100%';
+  if (self.vertical) {
+    inner.style.top = `calc(0.5 * ${newDraggableSize}px)`;
+    inner.style.bottom = `calc(0.5 * ${newDraggableSize}px)`;
+    inner.style.left = null;
+    inner.style.right = null;
+  } else {
+    inner.style.left = `calc(0.5 * ${newDraggableSize}px)`;
+    inner.style.right = `calc(0.5 * ${newDraggableSize}px)`;
+    inner.style.top = null;
+    inner.style.bottom = null;
+  }
+
 };
 
 const forwardSteps = (self) => {
@@ -313,6 +353,7 @@ export default function getDBUISlider(win) {
         super();
         this._wrapperMiddle = null;
         this._draggable = null;
+        this._inner = null;
         this._valueDisplayNode = null;
         this._isSliding = false;
         this._onDraggableMove = this._onDraggableMove.bind(this);
@@ -330,14 +371,14 @@ export default function getDBUISlider(win) {
         return this._isSliding;
       }
 
-      get showValue() {
-        return this.getAttribute('show-value') !== null;
+      get debugShowValue() {
+        return this.getAttribute('debug-show-value') !== null;
       }
 
-      set showValue(value) {
+      set debugShowValue(value) {
         const newValue = !!value;
-        newValue && this.setAttribute('show-value', '');
-        !newValue && this.removeAttribute('show-value');
+        newValue && this.setAttribute('debug-show-value', '');
+        !newValue && this.removeAttribute('debug-show-value');
       }
 
       get captureArrowKeys() {
@@ -409,12 +450,18 @@ export default function getDBUISlider(win) {
 
       _onDraggableMove(evt) {
         const {
-          targetPercentX, targetPercentY
+          targetPercentX, targetPercentY, targetStepX, targetStepY
         } = evt.detail;
         const percent = this.vertical ? targetPercentY : targetPercentX;
+        const step = this.vertical ? targetStepY : targetStepX;
         const localePercent = getLocalePercent(this, percent);
-        updateDisplayedValue(this, localePercent);
-        this.percent = localePercent;
+        if (this.steps) {
+          this.step = step;
+          // will adjust percent too
+        } else {
+          this.percent = localePercent;
+        }
+        updateDisplayedValue(this, this.percent);
       }
 
       _onDraggableDragStart() {

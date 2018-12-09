@@ -60,11 +60,11 @@ describe('DBUISlider', () => {
           id="slider-one"
           sync-locale-with="#locale-provider"
           percent="0.9"
-          steps="0"
+          steps="3"
           step="1"
           dir="ltr"
           vertical
-          show-value
+          debug-show-value
           ratio="0.5"
           capture-arrow-keys
           ></dbui-slider>
