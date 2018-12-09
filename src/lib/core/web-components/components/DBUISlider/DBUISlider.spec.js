@@ -11,7 +11,7 @@ import getDBUIWebComponentCore from '../DBUIWebComponentCore/DBUIWebComponentCor
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
 
 describe('DBUISlider', () => {
-  xit('behaves as expected - live testing', (done) => {
+  it.only('behaves as expected - live testing', (done) => {
     inIframe({
       headStyle: `
       body, html { padding: 0px; margin: 0px; }
@@ -38,6 +38,18 @@ describe('DBUISlider', () => {
         --dbui-slider-draggable-color: rgba(0, 0, 255, 0.2);
         */
       }
+      
+      ::-webkit-scrollbar {
+          width: 30px;  /* remove scrollbar space */
+          height: 30px;  /* remove scrollbar space */
+          background: blue;  /* optional: just make scrollbar invisible */
+      }
+      /* optional: show position indicator in red */
+      /*
+      ::-webkit-scrollbar-thumb {
+          background: #FF0000;
+      }
+      */
 
       `,
       bodyHTML: `
@@ -54,11 +66,13 @@ describe('DBUISlider', () => {
           vertical
           show-value
           ratio="0.5"
+          capture-arrow-keys
           ></dbui-slider>
         </div>
       </div>
-      
+
       `,
+
       onLoad: ({ contentWindow, iframe }) => {
         const DBUISlider = getDBUISlider(contentWindow);
         dbuiWebComponentsSetUp(contentWindow)([{

@@ -8,11 +8,17 @@ import { getWheelDelta } from '../../../utils/mouse';
 const PERCENT_AMOUNT_INCREASE = 0.01;
 const DRAGGABLE_ID = 'draggable';
 const registrationName = 'dbui-slider';
+const DELTA_MULTIPLIER = {
+  ctrlAlt: 20,
+  ctrl: 5,
+  alt: 10
+};
+const KEYS_TO_DELTA_MAP = {
+  38: 1, 39: 1, 37: -1, 40: -1
+};
 
 /*
 TODO:
- - should move with arrow keys and scroll, needs some speed
- - should be suitable for scrolling too (auto-adjusts inner scroll dimension)
  - should be used by next component scrollable
  - should be focusable somehow when used as a scroll either
  - should receive a range and on slide should emit an event reporting the value
@@ -132,6 +138,18 @@ const adjustPercentFromPointerCoords = (self, pointerCoords) => {
   const safePercent = Math.max(0, Math.min(1, percent));// getStep
   const { value: finalPercent } = getStep(0, 1, safePercent, self.steps);
   self.percent = finalPercent;
+};
+
+const adjustPercentOrStepFromDelta = (self, delta) => {
+  if (self.steps) {
+    const nextStep = self.step + delta;
+    const newStep = Math.max(0, Math.min(self.steps - 1, nextStep));
+    self.step = newStep;
+    return;
+  }
+  const nextPercent = self.percent + (delta * PERCENT_AMOUNT_INCREASE);
+  const newPercent = Math.max(0, Math.min(1, nextPercent));
+  self.percent = newPercent;
 };
 
 const adjustRatio = (self) => {
@@ -284,11 +302,11 @@ export default function getDBUISlider(win) {
       }
 
       static get propertiesToUpgrade() {
-        return [...super.propertiesToUpgrade, 'steps', 'step', 'percent', 'vertical', 'ratio'];
+        return [...super.propertiesToUpgrade, 'steps', 'step', 'percent', 'vertical', 'ratio', 'captureArrowKeys'];
       }
 
       static get observedAttributes() {
-        return [...super.observedAttributes, 'steps', 'step', 'percent', 'vertical', 'ratio'];
+        return [...super.observedAttributes, 'steps', 'step', 'percent', 'vertical', 'ratio', 'capture-arrow-keys'];
       }
 
       constructor() {
@@ -305,6 +323,7 @@ export default function getDBUISlider(win) {
         this._onWheel = this._onWheel.bind(this);
         this._onSliderMouseDown = this._onSliderMouseDown.bind(this);
         this._onSliderTouchStart = this._onSliderTouchStart.bind(this);
+        this._onKeyDown = this._onKeyDown.bind(this);
       }
 
       get isSliding() {
@@ -319,6 +338,16 @@ export default function getDBUISlider(win) {
         const newValue = !!value;
         newValue && this.setAttribute('show-value', '');
         !newValue && this.removeAttribute('show-value');
+      }
+
+      get captureArrowKeys() {
+        return this.getAttribute('capture-arrow-keys') !== null;
+      }
+
+      set captureArrowKeys(value) {
+        const newValue = !!value;
+        newValue && this.setAttribute('capture-arrow-keys', '');
+        !newValue && this.removeAttribute('capture-arrow-keys');
       }
 
       get steps() {
@@ -406,16 +435,8 @@ export default function getDBUISlider(win) {
 
       _onWheel(evt) {
         evt.preventDefault();
-        const delta = getWheelDelta(evt, this.steps ? false : undefined);
-        if (this.steps) {
-          const nextStep = this.step + delta;
-          const newStep = Math.max(0, Math.min(this.steps - 1, nextStep));
-          this.step = newStep;
-          return;
-        }
-        const nextPercent = this.percent + (delta * PERCENT_AMOUNT_INCREASE);
-        const newPercent = Math.max(0, Math.min(1, nextPercent));
-        this.percent = newPercent;
+        const delta = getWheelDelta(evt, this.steps ? false : DELTA_MULTIPLIER);
+        adjustPercentOrStepFromDelta(this, delta);
       }
 
       _onSliderMouseDown(evt) {
@@ -441,6 +462,25 @@ export default function getDBUISlider(win) {
         });
       }
 
+      _onKeyDown(evt) {
+        evt.preventDefault();
+        const { keyCode, ctrlKey, altKey } = evt;
+        const _delta = KEYS_TO_DELTA_MAP[keyCode] || 0;
+        const delta = (ctrlKey && altKey) ? _delta * DELTA_MULTIPLIER.ctrlAlt :
+          ctrlKey ? _delta * DELTA_MULTIPLIER.ctrl :
+            altKey ? _delta * DELTA_MULTIPLIER.alt :
+              _delta;
+        adjustPercentOrStepFromDelta(this, delta);
+      }
+
+      _toggleCaptureArrowKeys() {
+        if (this.captureArrowKeys) {
+          win.document.addEventListener('keydown', this._onKeyDown);
+        } else {
+          win.document.removeEventListener('keydown', this._onKeyDown);
+        }
+      }
+
       onConnectedCallback() {
         super.onConnectedCallback();
         getDraggable(this).addEventListener('dragmove', this._onDraggableMove);
@@ -450,6 +490,7 @@ export default function getDBUISlider(win) {
         getWrapperMiddle(this).addEventListener('touchstart', this._onSliderTouchStart);
         this.addEventListener('mouseenter', this._onMouseEnter);
         this.addEventListener('mouseleave', this._onMouseLeave);
+        this._toggleCaptureArrowKeys();
       }
 
       onDisconnectedCallback() {
@@ -462,6 +503,7 @@ export default function getDBUISlider(win) {
         this.removeEventListener('mouseenter', this._onMouseEnter);
         this.removeEventListener('mouseleave', this._onMouseLeave);
         this.removeEventListener('wheel', this._onWheel);
+        win.document.removeEventListener('keypress', this._onKeyDown);
         this._wrapperMiddle = null;
         this._draggable = null;
       }
@@ -470,6 +512,10 @@ export default function getDBUISlider(win) {
         super.onAttributeChangedCallback(name, oldValue, newValue);
         if (!this.isMounted) return;
         switch (name) {
+          case 'capture-arrow-keys': {
+            this._toggleCaptureArrowKeys();
+            break;
+          }
           case 'ratio': {
             adjustRatio(this);
             adjustPosition(this);
