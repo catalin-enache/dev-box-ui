@@ -20,6 +20,10 @@ If you want to set focus programmatically call .focus() method on component.
 export default function Focusable(Klass) {
 
   Klass.componentStyle += `
+  :host {
+    /* -moz-user-focus: normal; */
+  }
+  
   :host([disabled]) {
     cursor: not-allowed;
     opacity: 0.5;
@@ -38,6 +42,7 @@ export default function Focusable(Klass) {
   `;
 
   // https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-within
+  // https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XUL/Tutorial/Focus_and_Selection
 
   class Focusable extends Klass {
 
@@ -112,6 +117,7 @@ export default function Focusable(Klass) {
       this.removeEventListener('blur', this._onBlur);
       this.ownerDocument.removeEventListener('mousedown', this._onDocumentTap);
       this.ownerDocument.removeEventListener('touchstart', this._onDocumentTap);
+      this.removeAttribute('focused');
 
       this._innerFocusables.forEach((focusable) => {
         focusable.removeEventListener('focus', this._onInnerFocusableFocused);
@@ -146,6 +152,13 @@ export default function Focusable(Klass) {
       } else {
         this.removeAttribute('disabled');
       }
+    }
+
+    blur() {
+      // overriding blur() for mozilla only
+      // to forward it to _currentInnerFocused or it is ignored
+      this._currentInnerFocused && this._currentInnerFocused.blur();
+      super.blur();
     }
 
     /**

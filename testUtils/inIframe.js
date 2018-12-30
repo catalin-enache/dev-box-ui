@@ -1,6 +1,6 @@
 
 export default function inIframe({
-  bodyHTML = '', headStyle = '', headScript = '', bodyScript = '', onLoad
+  bodyHTML = '', headStyle = '', headScript = '', bodyScript = '', onLoad, done
 }) {
   const iframe = document.createElement('iframe');
   iframe.style.width = '100%';
@@ -33,10 +33,20 @@ export default function inIframe({
       </script>
       </html>
     `);
+
+    // only Chrome supports unhandledrejection.
+    target.contentWindow.addEventListener('unhandledrejection', (event) => {
+      console.error('unhandledrejection', event.reason);
+      event.preventDefault();
+      iframe.remove();
+      done && done(event.reason);
+    });
+
     onLoad({
       contentWindow: target.contentWindow,
       iframe
     });
+
   });
   document.querySelector('#testing').appendChild(iframe);
 }

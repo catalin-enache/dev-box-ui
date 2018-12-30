@@ -106,7 +106,7 @@ describe('Focusable', () => {
     inIframe({
       headStyle: `
         dummy-one {
-          border: 1px solid transparent;
+          border: 1px solid rgba(0, 0, 0, 0);
         }
         #one:focus-within {
           border: 1px solid red;
@@ -140,37 +140,38 @@ describe('Focusable', () => {
         contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
 
           expect(activeElement).to.equal(null);
-          expect(contentWindow.getComputedStyle(dummyOne).border).to.equal('1px solid rgba(0, 0, 0, 0)');
-          expect(contentWindow.getComputedStyle(dummyTwo).border).to.equal('1px solid rgba(0, 0, 0, 0)');
-          expect(contentWindow.getComputedStyle(dummyThree).border).to.equal('1px solid rgb(0, 0, 0)');
+          expect(contentWindow.getComputedStyle(dummyOne).borderLeftColor).to.equal('rgba(0, 0, 0, 0)');
+          expect(contentWindow.getComputedStyle(dummyTwo).borderLeftColor).to.equal('rgba(0, 0, 0, 0)');
+          expect(contentWindow.getComputedStyle(dummyThree).borderLeftColor).to.equal('rgb(0, 0, 0)');
 
           dummyOne.focus();
 
           expect(activeElement).to.equal(dummyOne);
-          expect(contentWindow.getComputedStyle(dummyOne).border).to.equal('1px solid rgb(255, 0, 0)');
-          expect(contentWindow.getComputedStyle(dummyTwo).border).to.equal('1px solid rgba(0, 0, 0, 0)');
-          expect(contentWindow.getComputedStyle(dummyThree).border).to.equal('1px solid rgb(0, 0, 0)');
+          expect(contentWindow.getComputedStyle(dummyOne).borderLeftColor).to.equal('rgb(255, 0, 0)');
+          expect(contentWindow.getComputedStyle(dummyTwo).borderLeftColor).to.equal('rgba(0, 0, 0, 0)');
+          expect(contentWindow.getComputedStyle(dummyThree).borderLeftColor).to.equal('rgb(0, 0, 0)');
 
           dummyTwo.focus();
 
           expect(activeElement).to.equal(dummyTwo);
-          expect(contentWindow.getComputedStyle(dummyOne).border).to.equal('1px solid rgba(0, 0, 0, 0)');
-          expect(contentWindow.getComputedStyle(dummyTwo).border).to.equal('1px solid rgb(255, 0, 0)');
-          expect(contentWindow.getComputedStyle(dummyThree).border).to.equal('1px solid rgb(0, 0, 0)');
+          expect(contentWindow.getComputedStyle(dummyOne).borderLeftColor).to.equal('rgba(0, 0, 0, 0)');
+          expect(contentWindow.getComputedStyle(dummyTwo).borderLeftColor).to.equal('rgb(255, 0, 0)');
+          expect(contentWindow.getComputedStyle(dummyThree).borderLeftColor).to.equal('rgb(0, 0, 0)');
 
           dummyThree.focus();
 
           // no focus change as dummyThree is disabled
-          // expect(activeElement).to.equal(dummyTwo);
-          expect(contentWindow.getComputedStyle(dummyOne).border).to.equal('1px solid rgba(0, 0, 0, 0)');
-          expect(contentWindow.getComputedStyle(dummyTwo).border).to.equal('1px solid rgb(255, 0, 0)');
-          expect(contentWindow.getComputedStyle(dummyThree).border).to.equal('1px solid rgb(0, 0, 0)');
+          expect(activeElement).to.equal(dummyTwo);
+          expect(contentWindow.getComputedStyle(dummyOne).borderLeftColor).to.equal('rgba(0, 0, 0, 0)');
+          expect(contentWindow.getComputedStyle(dummyTwo).borderLeftColor).to.equal('rgb(255, 0, 0)');
+          expect(contentWindow.getComputedStyle(dummyThree).borderLeftColor).to.equal('rgb(0, 0, 0)');
 
           dummyTwo.blur();
+
           expect(activeElement).to.equal(null);
-          expect(contentWindow.getComputedStyle(dummyOne).border).to.equal('1px solid rgba(0, 0, 0, 0)');
-          expect(contentWindow.getComputedStyle(dummyTwo).border).to.equal('1px solid rgba(0, 0, 0, 0)');
-          expect(contentWindow.getComputedStyle(dummyThree).border).to.equal('1px solid rgb(0, 0, 0)');
+          expect(contentWindow.getComputedStyle(dummyOne).borderLeftColor).to.equal('rgba(0, 0, 0, 0)');
+          expect(contentWindow.getComputedStyle(dummyTwo).borderLeftColor).to.equal('rgba(0, 0, 0, 0)');
+          expect(contentWindow.getComputedStyle(dummyThree).borderLeftColor).to.equal('rgb(0, 0, 0)');
 
           setTimeout(() => {
             iframe.remove();
@@ -541,6 +542,7 @@ describe('Focusable', () => {
   describe('when user focuses directly some inner focusable (ex: by click)', () => {
     it('first inner focusable will not get focus - to preserve the focus on the node being focused', (done) => {
       inIframe({
+        done,
         headStyle: `
         `,
         bodyHTML: `

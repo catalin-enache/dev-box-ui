@@ -929,6 +929,12 @@ export default function getDBUIWebComponentCore(win) {
         // web components standard API
         // callbacks order:
         // disconnectedCallback => adoptedCallback => connectedCallback
+        // adoptedCallback does not work well in mozilla.
+        // The component is downgraded to HTMLElement.
+        // also see:
+        // https://github.com/w3c/webcomponents/issues/512
+        // https://github.com/w3c/webcomponents/issues/210
+        // https://github.com/w3c/webcomponents/issues/176
         this._onAdoptedCallback(oldDocument, newDocument);
       }
 

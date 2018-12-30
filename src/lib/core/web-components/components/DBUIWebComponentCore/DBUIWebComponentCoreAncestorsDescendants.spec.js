@@ -821,36 +821,81 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations', () => {
                     const dbuiNodes2 = treeOneGetDbuiNodes(contentWindow2);
                     const {
                       lightDummyDOneRoot: lightDummyDOneRoot2,
-                      // lightDummyDOneRoot_ShadowDummyB: lightDummyDOneRoot_ShadowDummyB2,
+                      lightDummyDOneRoot_ShadowDummyB: lightDummyDOneRoot_ShadowDummyB2,
                       lightDummyDTwoInDefaultSlot: lightDummyDTwoInDefaultSlot2,
                       lightDummyDTwoInDefaultSlot_ShadowDummyB: lightDummyDTwoInDefaultSlot_ShadowDummyB2,
                       lightDummyDThreeInDefaultSlot: lightDummyDThreeInDefaultSlot2,
                       lightDummyDThreeInDefaultSlot_ShadowDummyB: lightDummyDThreeInDefaultSlot_ShadowDummyB2,
-                      // lightDummyEInNamedSlot: lightDummyEInNamedSlot2,
+                      lightDummyEInNamedSlot: lightDummyEInNamedSlot2,
                       lightDummyEInDefaultSlot: lightDummyEInDefaultSlot2
                     } = dbuiNodes2;
 
+                    expect(lightDummyDOneRoot.closestDbuiChildren).to.have.members([lightDummyDOneRoot_ShadowDummyB, lightDummyEInNamedSlot, lightDummyDTwoInDefaultSlot]);
+                    expect(lightDummyDOneRoot2.closestDbuiChildren).to.have.members([lightDummyDOneRoot_ShadowDummyB2, lightDummyEInNamedSlot2, lightDummyDTwoInDefaultSlot2]);
+                    expect(lightDummyDTwoInDefaultSlot2.closestDbuiParent).to.equal(lightDummyDOneRoot2);
+                    expect(lightDummyDTwoInDefaultSlot2.closestDbuiChildren).to.have.members([lightDummyDTwoInDefaultSlot_ShadowDummyB2, lightDummyDThreeInDefaultSlot2]);
+                    expect(lightDummyDThreeInDefaultSlot2.closestDbuiParent).to.equal(lightDummyDTwoInDefaultSlot2);
+                    expect(lightDummyDThreeInDefaultSlot2.closestDbuiChildren).to.have.members([lightDummyDThreeInDefaultSlot_ShadowDummyB2, lightDummyEInDefaultSlot2]);
+                    expect(lightDummyDThreeInDefaultSlot2.ownerDocument).to.equal(contentWindow2.document);
+                    expect(lightDummyDThreeInDefaultSlot2.ownerDocument.defaultView).to.equal(contentWindow2);
+
                     setTimeout(() => {
 
-                      expect(lightDummyDOneRoot.closestDbuiChildren).to.have.members([lightDummyDOneRoot_ShadowDummyB, lightDummyEInNamedSlot, lightDummyDTwoInDefaultSlot]);
-                      expect(lightDummyDTwoInDefaultSlot2.closestDbuiParent).to.equal(lightDummyDOneRoot2);
-                      expect(lightDummyDTwoInDefaultSlot2.closestDbuiChildren).to.have.members([lightDummyDTwoInDefaultSlot_ShadowDummyB2, lightDummyDThreeInDefaultSlot2]);
-                      expect(lightDummyDThreeInDefaultSlot2.closestDbuiParent).to.equal(lightDummyDTwoInDefaultSlot2);
-                      expect(lightDummyDThreeInDefaultSlot2.closestDbuiChildren).to.have.members([lightDummyDThreeInDefaultSlot_ShadowDummyB2, lightDummyEInDefaultSlot2]);
-                      expect(lightDummyDThreeInDefaultSlot2.ownerDocument).to.equal(contentWindow2.document);
-                      expect(lightDummyDThreeInDefaultSlot2.ownerDocument.defaultView).to.equal(contentWindow2);
+                      if (!navigator.userAgent.includes('Firefox')) {
+                        // Chrome & Safari (expected behaviour)
+                        // nodes are adopted and parents/children are updated
+                        const subtree = contentWindow2.document.querySelector('#ul2-li1-ul1-li1');
+                        contentWindow.document.querySelector('#ul1').appendChild(
+                          subtree
+                        );
 
-                      contentWindow.document.querySelector('#ul1').appendChild(
-                        contentWindow2.document.querySelector('#ul2-li1-ul1-li1')
-                      );
+                        expect(lightDummyDOneRoot.closestDbuiChildren).to.have.members([lightDummyDOneRoot_ShadowDummyB, lightDummyEInNamedSlot, lightDummyDTwoInDefaultSlot, lightDummyDThreeInDefaultSlot2]); // 3 to 4
+                        expect(lightDummyDTwoInDefaultSlot2.closestDbuiChildren).to.have.members([lightDummyDTwoInDefaultSlot_ShadowDummyB2]); // 2 to 1
+                        expect(lightDummyDThreeInDefaultSlot2.closestDbuiParent).to.equal(lightDummyDOneRoot); // changed
+                        expect(lightDummyDThreeInDefaultSlot2.closestDbuiChildren).to.have.members([lightDummyDThreeInDefaultSlot_ShadowDummyB2, lightDummyEInDefaultSlot2]); // the same
+                        expect(lightDummyDThreeInDefaultSlot2.ownerDocument).to.equal(contentWindow.document); // changed
+                        expect(lightDummyDThreeInDefaultSlot2.ownerDocument.defaultView).to.equal(contentWindow); // changed
 
-                      expect(lightDummyDOneRoot.closestDbuiChildren).to.have.members([lightDummyDOneRoot_ShadowDummyB, lightDummyEInNamedSlot, lightDummyDTwoInDefaultSlot, lightDummyDThreeInDefaultSlot2]);
-                      expect(lightDummyDTwoInDefaultSlot2.closestDbuiParent).to.equal(lightDummyDOneRoot2);
-                      expect(lightDummyDTwoInDefaultSlot2.closestDbuiChildren).to.have.members([lightDummyDTwoInDefaultSlot_ShadowDummyB2]);
-                      expect(lightDummyDThreeInDefaultSlot2.closestDbuiParent).to.equal(lightDummyDOneRoot);
-                      expect(lightDummyDThreeInDefaultSlot2.closestDbuiChildren).to.have.members([lightDummyDThreeInDefaultSlot_ShadowDummyB2, lightDummyEInDefaultSlot2]);
-                      expect(lightDummyDThreeInDefaultSlot2.ownerDocument).to.equal(contentWindow.document);
-                      expect(lightDummyDThreeInDefaultSlot2.ownerDocument.defaultView).to.equal(contentWindow);
+                      } else {
+                        // Firefox adoptedCallback is un-useful
+                        // since the component is downgraded to HTMLElement inside the callback
+                        // We're doing a different kind of test by using cloning via importNode.
+                        contentWindow.document.querySelector('#ul2-li1-ul1-li1').remove();
+                        const subtree = contentWindow2.document.querySelector('#ul2-li1-ul1-li1');
+                        subtree.remove();
+                        const adoptedSubtree = contentWindow.document.importNode(subtree, true);
+
+                        contentWindow.document.querySelector('#ul1').appendChild(
+                          adoptedSubtree
+                        );
+
+                        const dbuiNodes3 = treeOneGetDbuiNodes(contentWindow);
+                        const {
+                          lightDummyDOneRoot: lightDummyDOneRoot3,
+                          lightDummyDOneRoot_ShadowDummyB: lightDummyDOneRoot_ShadowDummyB3,
+                          lightDummyDTwoInDefaultSlot: lightDummyDTwoInDefaultSlot3,
+                          lightDummyDTwoInDefaultSlot_ShadowDummyB: lightDummyDTwoInDefaultSlot_ShadowDummyB3,
+                          lightDummyDThreeInDefaultSlot: lightDummyDThreeInDefaultSlot3,
+                          lightDummyDThreeInDefaultSlot_ShadowDummyB: lightDummyDThreeInDefaultSlot_ShadowDummyB3,
+                          lightDummyEInNamedSlot: lightDummyEInNamedSlot3,
+                          lightDummyEInDefaultSlot: lightDummyEInDefaultSlot3
+                        } = dbuiNodes3;
+
+                        expect(lightDummyDOneRoot).to.equal(lightDummyDOneRoot3); // same
+                        expect(lightDummyDOneRoot_ShadowDummyB).to.equal(lightDummyDOneRoot_ShadowDummyB3); // same
+                        expect(lightDummyEInNamedSlot).to.equal(lightDummyEInNamedSlot3); // same
+                        expect(lightDummyDTwoInDefaultSlot).to.equal(lightDummyDTwoInDefaultSlot3); // same
+
+                        expect(lightDummyDOneRoot.closestDbuiChildren).to.have.members([lightDummyDOneRoot_ShadowDummyB, lightDummyEInNamedSlot, lightDummyDTwoInDefaultSlot, lightDummyDThreeInDefaultSlot3]);
+                        expect(lightDummyDTwoInDefaultSlot2.closestDbuiChildren).to.have.members([lightDummyDTwoInDefaultSlot_ShadowDummyB2]); // 2 to 1
+                        expect(lightDummyDTwoInDefaultSlot3.closestDbuiParent).to.equal(lightDummyDOneRoot);
+                        expect(lightDummyDTwoInDefaultSlot3.closestDbuiChildren).to.have.members([lightDummyDTwoInDefaultSlot_ShadowDummyB3]);
+                        expect(lightDummyDThreeInDefaultSlot2.closestDbuiParent).to.equal(null); // null due to being removed
+                        expect(lightDummyDThreeInDefaultSlot3.closestDbuiParent).to.equal(lightDummyDOneRoot);
+                        expect(lightDummyDThreeInDefaultSlot3.closestDbuiChildren).to.have.members([lightDummyDThreeInDefaultSlot_ShadowDummyB3, lightDummyEInDefaultSlot3]);
+                        expect(lightDummyDThreeInDefaultSlot3.ownerDocument).to.equal(contentWindow.document);
+                        expect(lightDummyDThreeInDefaultSlot3.ownerDocument.defaultView).to.equal(contentWindow);
+                      }
 
                       setTimeout(() => {
                         iframe2.remove();
@@ -860,14 +905,12 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations', () => {
 
                     }, 0);
                   });
-
                   DummyE2.registerSelf();
                 }
               });
 
             }, 0);
           });
-
           DummyE.registerSelf();
         }
       });
