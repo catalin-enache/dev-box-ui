@@ -483,6 +483,7 @@ TODO:
  - improve presets algorithms
  - improve code where possible
  - add circleAround({ selector, steps }) preset ?
+ - allow consumer to set the percent precision with default fallback
 */
 
 const registrationName = 'dbui-draggable';

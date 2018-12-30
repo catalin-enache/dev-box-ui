@@ -2,10 +2,11 @@
 import getDBUIWebComponentCore from '../DBUIWebComponentCore/DBUIWebComponentCore';
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
 import getDBUIDraggable from '../DBUIDraggable/DBUIDraggable';
-import { trunc, getStep } from '../../../utils/math';
+import { trunc, getStep, STEP_PRECISION } from '../../../utils/math';
 import { getWheelDelta } from '../../../utils/mouse';
 
 const PERCENT_AMOUNT_INCREASE = 0.01;
+const PERCENT_PRECISION = STEP_PRECISION;
 const DRAGGABLE_ID = 'draggable';
 const registrationName = 'dbui-slider';
 const DELTA_MULTIPLIER = {
@@ -18,7 +19,7 @@ const KEYS_TO_DELTA_MAP = {
 };
 
 /*
-Behavior:
+Behavior extras:
  - changing step will adjust percent but changing percent will NOT adjust step
  - repaints itself
     - when locale dir changes
@@ -29,6 +30,10 @@ Behavior:
  - is mouse scroll aware with speed influenced by altKey and ctrlKey
  - if no ratio is set then the thickness of the slider button is determined by --dbui-slider-draggable-size css var
  - if debug-show-value is set the component will display current internal percentage on top of slider button
+
+TODO:
+ - allow consumer to set the percent precision with default fallback
+ - if mouse middle click => ignore re-positioning (consider only mouse left btn)
 */
 
 const DBUISliderCssVars = `
@@ -114,7 +119,7 @@ const isDbuiRTL = (self) => {
 };
 
 const getLocalePercent = (self, percent) => {
-  return +(isDbuiRTL(self) ? 1 - percent : percent).toFixed(2);
+  return +(isDbuiRTL(self) ? 1 - percent : percent).toFixed(PERCENT_PRECISION);
 };
 
 const percentToTranslate = (self, percent) => {
@@ -149,10 +154,12 @@ const adjustPercentFromPointerCoords = (self, pointerCoords) => {
   const wrapperMiddlePosition = wrapperMiddle.getBoundingClientRect()[dimension];
   const pointerPosition = self.vertical ? clientY : clientX;
   const distance = pointerPosition - wrapperMiddlePosition;
-  const percent = trunc(2)(distance / totalLength);
-  const safePercent = Math.max(0, Math.min(1, percent));// getStep
+  const percent = trunc(PERCENT_PRECISION)(distance / totalLength);
+  const safePercent = Math.max(0, Math.min(1, percent)); // getStep
   const { value: finalPercent } = getStep(0, 1, safePercent, self.steps);
-  self.percent = finalPercent;
+  const localePercent = getLocalePercent(self, finalPercent);
+  self.percent = localePercent;
+  dispatchSlideEvent(self, { percent: localePercent, step: undefined });
 };
 
 const adjustPercentOrStepFromDelta = (self, delta) => {
@@ -160,11 +167,14 @@ const adjustPercentOrStepFromDelta = (self, delta) => {
     const nextStep = self.step + delta;
     const newStep = Math.max(0, Math.min(self.steps - 1, nextStep));
     self.step = newStep;
+    // self.percent is calculated automatically
+    dispatchSlideEvent(self, { step: self.step, percent: self.percent });
     return;
   }
   const nextPercent = self.percent + (delta * PERCENT_AMOUNT_INCREASE);
   const newPercent = Math.max(0, Math.min(1, nextPercent));
   self.percent = newPercent;
+  dispatchSlideEvent(self, { percent: self.percent, step: undefined });
 };
 
 const adjustRatio = (self) => {
@@ -203,6 +213,13 @@ const adjustRatio = (self) => {
 const forwardSteps = (self) => {
   const steps = self.vertical ? 'constraintStepsY' : 'constraintStepsX';
   getDraggable(self)[steps] = self.steps;
+};
+
+const dispatchSlideEvent = (self, { step, percent }) => {
+  const win = self.ownerDocument.defaultView;
+  self.dispatchEvent(new win.CustomEvent('slidemove', {
+    detail: { step, percent }
+  }));
 };
 
 export default function getDBUISlider(win) {
@@ -407,7 +424,7 @@ export default function getDBUISlider(win) {
       }
 
       set percent(value) {
-        const newValue = trunc(2)(+value);
+        const newValue = trunc(PERCENT_PRECISION)(+value);
         this.setAttribute('percent', newValue);
       }
 
@@ -416,7 +433,7 @@ export default function getDBUISlider(win) {
       }
 
       set ratio(value) {
-        const newValue = trunc(2)(+value);
+        const newValue = trunc(PERCENT_PRECISION)(+value);
         this.setAttribute('ratio', newValue);
       }
 
@@ -455,6 +472,7 @@ export default function getDBUISlider(win) {
           this.percent = localePercent;
         }
         updateDisplayedValue(this, this.percent);
+        dispatchSlideEvent(this, { step, percent: localePercent });
       }
 
       _onDraggableDragStart() {
@@ -544,8 +562,6 @@ export default function getDBUISlider(win) {
         this.removeEventListener('mouseleave', this._onMouseLeave);
         this.removeEventListener('wheel', this._onWheel);
         win.document.removeEventListener('keypress', this._onKeyDown);
-        this._wrapperMiddle = null;
-        this._draggable = null;
       }
 
       onAttributeChangedCallback(name, oldValue, newValue) {
@@ -573,8 +589,9 @@ export default function getDBUISlider(win) {
           }
           case 'steps':
           case 'step': {
-            // forward steps
-            forwardSteps(this);
+            if (!this.isSliding) {
+              forwardSteps(this);
+            }
             adjustPercent(this);
             break;
           }
