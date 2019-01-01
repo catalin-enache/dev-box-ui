@@ -36,7 +36,7 @@ describe('DBUIScrollable', () => {
       #dbui-scrollable-one {
         width: 200px;
         height: 200px;
-        background-color: rgba(0, 0, 0, 0.2);
+        background-color: rgba(0, 0, 255, 0.2);
         border: 0px solid black;
         box-sizing: border-box;
         
@@ -54,10 +54,11 @@ describe('DBUIScrollable', () => {
       `,
       bodyHTML: `
       <div id="container">
-        <div id="locale-provider" dir="rtl"></div>
+        <div id="locale-provider" dir="ltr"></div>
         <div id="wrapper-scrollable-one">
           <dbui-scrollable id="dbui-scrollable-one" sync-locale-with="#locale-provider">
-            <div id="scrollable-content" dir="rtl">${'content'}</div>
+            <div id="scrollable-content" dir="ltr">${'content'}</div>
+            <input type="text" />
           </dbui-scrollable>
         </div>
       </div>
@@ -79,13 +80,21 @@ describe('DBUIScrollable', () => {
           const wrapperScrollableOne = contentWindow.document.querySelector('#wrapper-scrollable-one');
           const scrollableOne = contentWindow.document.querySelector('#dbui-scrollable-one');
           const scrollableContent = contentWindow.document.querySelector('#scrollable-content');
-          const dynamicContent = document.createElement('div');
+          const dynamicContent = contentWindow.document.createElement('div');
           dynamicContent.style.cssText = `
-          width: 500px;
-          height: 500px;
+          /*width: 201px;
+          height: 201px;*/
           background-color: gray;
-          border: 8px solid red;
+          border: 1px solid red;
           `;
+          dynamicContent.innerText = '?';
+          dynamicContent.tabIndex = 0;
+          dynamicContent.setAttribute('contenteditable', 'true');
+          dynamicContent.addEventListener('mousedown', (evt) => {
+            console.log('dynamicContent mousedown', evt);
+            dynamicContent.focus();
+          });
+
           // scrollableOne.remove();
           // wrapperScrollableOne.appendChild(scrollableOne);
           // scrollableOne.remove();
@@ -94,7 +103,8 @@ describe('DBUIScrollable', () => {
           // wrapperScrollableOne.appendChild(scrollableOne);
 
           setTimeout(() => {
-            // scrollableContent.appendChild(dynamicContent);
+            scrollableContent.appendChild(dynamicContent);
+            dynamicContent.focus();
             setTimeout(() => {
               // dynamicContent.remove();
               setTimeout(() => {
