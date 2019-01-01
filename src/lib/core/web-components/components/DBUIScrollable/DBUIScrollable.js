@@ -4,7 +4,6 @@ import ensureSingleRegistration from '../../../internals/ensureSingleRegistratio
 import getDBUISlider from '../DBUISlider/DBUISlider';
 import { trunc, STEP_PRECISION } from '../../../utils/math';
 
-const SLIDER_THICKNESS = 8;
 const SCROLL_PRECISION = STEP_PRECISION;
 
 const isDbuiRTL = (self) => {
@@ -71,6 +70,9 @@ const registrationName = 'dbui-scrollable';
 
 const DBUIScrollableCssVars = `
   :root {
+    --dbui-scrollable-horizontal-slider-thickness: 8px;
+    --dbui-scrollable-vertical-slider-thickness: 8px;
+    --dbui-scrollable-slider-outer-padding: 0px;
   }
 `;
 
@@ -94,6 +96,7 @@ TODO:
  - allow consumer to set the percent precision with default fallback
  - allow consumer to set the slider thickness ? with default fallback
  - dispatch h,v scroll events ?
+ - make horizontal scrollable (ex: for slide-show thumbnails)
 */
 
 
@@ -164,27 +167,30 @@ export default function getDBUIScrollable(win) {
             left: 0px;
             width: 100%;
             height: 100%;
-            background-color: bisque;
+            background-color: transparent;
             z-index: -1;
             overflow: hidden;
             pointer-events: none;
+            border: none;
+            padding: 0px;
+            margin: 0px;
           }
           
           dbui-slider {
             position: absolute;
-            --dbui-slider-outer-padding: 0px;
+            --dbui-slider-outer-padding: var(--dbui-scrollable-slider-outer-padding);
           }
           
           #horizontal-slider {
             bottom: 0px;
-            width: calc(100% - ${SLIDER_THICKNESS}px);
-            height: ${SLIDER_THICKNESS}px;
+            width: calc(100% - var(--dbui-scrollable-vertical-slider-thickness));
+            height: var(--dbui-scrollable-horizontal-slider-thickness);
           }
           
           #vertical-slider {
             top: 0px;
-            width: ${SLIDER_THICKNESS}px;
-            height: calc(100% - ${SLIDER_THICKNESS}px);
+            width: var(--dbui-scrollable-vertical-slider-thickness);
+            height: calc(100% - var(--dbui-scrollable-horizontal-slider-thickness));
           }
           
           :host([dbui-dir=ltr]) #horizontal-slider {
@@ -210,7 +216,7 @@ export default function getDBUIScrollable(win) {
             <div id="middle">
               <div id="inner">
                 <div id="content">
-                  <object id="resize-sensor" type="text/html" data="about:blank"></object>
+                  <iframe id="resize-sensor" src=""></iframe>
                   <slot></slot>
                 </div>
               </div>
@@ -255,6 +261,7 @@ export default function getDBUIScrollable(win) {
 
         this._isHSliding = false;
         this._isVSliding = false;
+        this._isScrolling = false;
       }
 
       onLocaleDirChanged(newDir, oldDir) {
@@ -266,7 +273,7 @@ export default function getDBUIScrollable(win) {
       onConnectedCallback() {
         super.onConnectedCallback();
         getMiddle(this).addEventListener('scroll', this._onScroll);
-        getResizeSensor(this).contentDocument.defaultView.addEventListener('resize', this._onResize);
+        getResizeSensor(this).contentWindow.addEventListener('resize', this._onResize);
         const hSlider = getHSlider(this);
         const vSlider = getVSlider(this);
         hSlider.addEventListener('slidemove', this._onHSlide);
@@ -280,7 +287,7 @@ export default function getDBUIScrollable(win) {
       onDisconnectedCallback() {
         super.onDisconnectedCallback();
         getMiddle(this).removeEventListener('scroll', this._onScroll);
-        getResizeSensor(this).contentDocument.defaultView.removeEventListener('resize', this._onResize);
+        getResizeSensor(this).contentWindow.removeEventListener('resize', this._onResize);
         const hSlider = getHSlider(this);
         const vSlider = getVSlider(this);
         hSlider.removeEventListener('slide', this._onHSlide);
@@ -296,11 +303,11 @@ export default function getDBUIScrollable(win) {
         if (!this.isMounted) return;
         switch (name) {
           case 'h-scroll': {
-            this._adjustHScroll();
+            !this._isScrolling && this._adjustHScroll();
             break;
           }
           case 'v-scroll': {
-            this._adjustVScroll();
+            !this._isScrolling && this._adjustVScroll();
             break;
           }
           default:
@@ -310,19 +317,36 @@ export default function getDBUIScrollable(win) {
 
       // -------------------- public getters/setters ------------------------
 
+
+      /**
+       * Returns vertical scroll percent from 0 to 1.
+       * @return {number}
+       */
       get vScroll() {
         return +this.getAttribute('v-scroll') || 0;
       }
 
+      /**
+       * Sets vertical scroll percent from 0 to 1.
+       * @param value {number}
+       */
       set vScroll(value) {
         const newValue = trunc(SCROLL_PRECISION)(+value);
         this.setAttribute('v-scroll', newValue);
       }
 
+      /**
+       * Returns horizontal scroll percent from 0 to 1.
+       * @return {number}
+       */
       get hScroll() {
         return +this.getAttribute('h-scroll') || 0;
       }
 
+      /**
+       * Sets horizontal scroll percent from 0 to 1.
+       * @param value {number}
+       */
       set hScroll(value) {
         const newValue = trunc(SCROLL_PRECISION)(+value);
         this.setAttribute('h-scroll', newValue);
@@ -331,124 +355,246 @@ export default function getDBUIScrollable(win) {
 
       // -------------------- private getters ------------------------
 
-      get _vSliderThickness() {
+      /**
+       * Returns native vertical slider thickness in pixels.
+       * @return {number}
+       */
+      get _vNativeSliderThickness() {
         const middle = getMiddle(this);
         const vSliderThickness = middle.offsetWidth - middle.clientWidth;
         return vSliderThickness;
       }
 
-      get _hSliderThickness() {
+      /**
+       * Returns native horizontal slider thickness in pixels.
+       * @return {number}
+       */
+      get _hNativeSliderThickness() {
         const middle = getMiddle(this);
         const hSliderThickness = middle.offsetHeight - middle.clientHeight;
         return hSliderThickness;
       }
 
+      /**
+       * Returns custom horizontal/vertical slider thickness in pixels.
+       * @return {object} { hCustomSliderThickness: number, vCustomSliderThickness: number }
+       */
+      get _hvCustomSliderThickness() {
+        const computedStyle = win.getComputedStyle(this);
+        const hCustomSliderThickness = win.parseInt(computedStyle
+          .getPropertyValue('--dbui-scrollable-horizontal-slider-thickness'));
+        const vCustomSliderThickness = win.parseInt(computedStyle
+          .getPropertyValue('--dbui-scrollable-vertical-slider-thickness'));
+        return { hCustomSliderThickness, vCustomSliderThickness };
+      }
+
+      /**
+       * Returns calculated horizontal slider ratio from 0 to 1.
+       * @return {number}
+       */
       get _hSliderRatio() {
-        const hSliderRatio = trunc(SCROLL_PRECISION)(this._clientWidth / this._scrollWidth);
+        const _scrollWidth = this._scrollWidth;
+        const _clientWidth = this._clientWidth;
+        if (_scrollWidth === 0) {
+          return 0;
+        }
+        const hSliderRatio = trunc(SCROLL_PRECISION)(_clientWidth / _scrollWidth);
         return hSliderRatio;
       }
 
+      /**
+       * Returns calculated vertical slider ratio from 0 to 1.
+       * @return {number}
+       */
       get _vSliderRatio() {
-        const vSliderRatio = trunc(SCROLL_PRECISION)(this._clientHeight / this._scrollHeight);
+        const _scrollHeight = this._scrollHeight;
+        const _clientHeight = this._clientHeight;
+        if (_scrollHeight === 0) {
+          return 0;
+        }
+        const vSliderRatio = trunc(SCROLL_PRECISION)(_clientHeight / _scrollHeight);
         return vSliderRatio;
       }
 
+      /**
+       * Returns content width in pixels.
+       * @return {number}
+       */
       get _scrollWidth() {
         const middle = getMiddle(this);
         const scrollWidth = middle.scrollWidth;
         return scrollWidth;
       }
 
+      /**
+       * Returns content height in pixels.
+       * @return {number}
+       */
       get _scrollHeight() {
         const middle = getMiddle(this);
         const scrollHeight = middle.scrollHeight;
         return scrollHeight;
       }
 
+      /**
+       * Returns view width in pixels.
+       * @return {number}
+       */
       get _clientWidth() {
         const middle = getMiddle(this);
         const clientWidth = middle.clientWidth;
         return clientWidth;
       }
 
+      /**
+       * Returns view height in pixels.
+       * @return {number}
+       */
       get _clientHeight() {
         const middle = getMiddle(this);
         const clientHeight = middle.clientHeight;
         return clientHeight;
       }
 
+      /**
+       * Returns available scrolling width in pixels.
+       * @return {number}
+       */
       get _scrollableWidth() {
         const scrollableWidth = this._scrollWidth - this._clientWidth;
         return scrollableWidth;
       }
 
+      /**
+       * Returns available scrolling height in pixels.
+       * @return {number}
+       */
       get _scrollableHeight() {
         const scrollableHeight = this._scrollHeight - this._clientHeight;
         return scrollableHeight;
       }
 
+      /**
+       * Transforms horizontal percent in pixels to scroll.
+       * @return {number}
+       */
       get _hScrollToScrollLeft() {
-        const scrollableWidth = this._scrollableWidth;
+        const _scrollableWidth = this._scrollableWidth;
         const hScroll = this.hScroll;
-        const hScrollToScrollLeft = scrollableWidth * hScroll;
+        const _hScrollToScrollLeft = Math.round(_scrollableWidth * hScroll);
         const localeHScrollToScrollLeft = isDbuiRTL(this) ?
-          this._scrollableWidth - hScrollToScrollLeft :
-          hScrollToScrollLeft;
+          this._scrollableWidth - _hScrollToScrollLeft :
+          _hScrollToScrollLeft;
         return localeHScrollToScrollLeft;
       }
 
+      /**
+       * Transforms vertical percent in pixels to scroll.
+       * @return {number}
+       */
       get _vScrollToScrollTop() {
-        const scrollableHeight = this._scrollableHeight;
+        const _scrollableHeight = this._scrollableHeight;
         const vScroll = this.vScroll;
-        const vScrollToScrollTop = scrollableHeight * vScroll;
+        const vScrollToScrollTop = Math.round(_scrollableHeight * vScroll);
         return vScrollToScrollTop;
       }
 
-      get hScrollRatio() {
+      /**
+       * Returns calculated horizontal scroll in pixels.
+       * @return {number}
+       */
+      get _hScroll() {
         const middle = getMiddle(this);
-        const scrollLeft = middle.scrollLeft;
-        const scrollableWidth = this._scrollableWidth;
-        const hScrollRatio = trunc(SCROLL_PRECISION)(scrollLeft / scrollableWidth);
-        const localeScrollRatio = hScrollRatio;
-        return localeScrollRatio;
+        const _scrollableWidth = this._scrollableWidth;
+        const _hScroll = isDbuiRTL(this) ? _scrollableWidth - middle.scrollLeft : middle.scrollLeft;
+        return _hScroll;
       }
 
-      get vScrollRatio() {
+      /**
+       * Returns calculated vertical scroll in pixels.
+       * @return {number}
+       */
+      get _vScroll() {
         const middle = getMiddle(this);
-        const scrollTop = middle.scrollTop;
-        const scrollableHeight = this._scrollableHeight;
-        const vScrollRatio = trunc(SCROLL_PRECISION)(scrollTop / scrollableHeight);
-        return vScrollRatio;
+        const _vScroll = middle.scrollTop;
+        return _vScroll;
       }
 
+      /**
+       * Returns calculated horizontal scroll ratio from 0 to 1.
+       * @return {number}
+       */
+      get _hScrollRatio() {
+        const _scrollableWidth = this._scrollableWidth;
+        if (_scrollableWidth === 0) {
+          return 0;
+        }
+        const _hScroll = this._hScroll;
+        const _hScrollRatio = trunc(SCROLL_PRECISION)(_hScroll / _scrollableWidth);
+        return _hScrollRatio;
+      }
+
+      /**
+       * Returns calculated vertical scroll ratio from 0 to 1.
+       * @return {number}
+       */
+      get _vScrollRatio() {
+        const _scrollableHeight = this._scrollableHeight;
+        if (_scrollableHeight === 0) {
+          return 0;
+        }
+        const _vScroll = this._vScroll;
+        const _vScrollRatio = trunc(SCROLL_PRECISION)(_vScroll / _scrollableHeight);
+        return _vScrollRatio;
+      }
+
+      /**
+       * @return {boolean}
+       */
       get _isScrollTriggeredBySliders() {
         const hSlider = getHSlider(this);
         const vSlider = getVSlider(this);
         return this._isHSliding || this._isVSliding || hSlider.isSliding || vSlider.isSliding;
       }
 
+      get _hasNativeSliders() {
+        return !!this._vNativeSliderThickness;
+      }
+
       // -------------------- private methods ------------------------
 
+      /**
+       * Sets horizontal scroll.
+       */
       _adjustHScroll() {
         const middle = getMiddle(this);
         middle.scrollLeft = this._hScrollToScrollLeft;
       }
 
+      /**
+       * Sets vertical scroll.
+       */
       _adjustVScroll() {
         const middle = getMiddle(this);
         middle.scrollTop = this._vScrollToScrollTop;
       }
 
+      /**
+       * Sets horizontal slider position.
+       */
       _adjustHSliderPosition() {
         const hSlider = getHSlider(this);
-        const hScrollRatio = this.hScrollRatio;
-        hSlider.percent = hScrollRatio;
+        const _hScrollRatio = this._hScrollRatio;
+        hSlider.percent = _hScrollRatio;
       }
 
+      /**
+       * Sets vertical slider position.
+       */
       _adjustVSliderPosition() {
         const vSlider = getVSlider(this);
-        const vScrollRatio = this.vScrollRatio;
-        vSlider.percent = vScrollRatio;
+        const _vScrollRatio = this._vScrollRatio;
+        vSlider.percent = _vScrollRatio;
       }
 
       _applyDirAndOffsets() {
@@ -459,49 +605,76 @@ export default function getDBUIScrollable(win) {
         const resizeSensor = getResizeSensor(this);
         const hSlider = getHSlider(this);
         const vSlider = getVSlider(this);
-        const vScrollbarThickness = this._vSliderThickness;
-        const hScrollbarThickness = this._hSliderThickness;
+        const vNativeScrollbarThickness = this._vNativeSliderThickness;
+        const hNativeScrollbarThickness = this._hNativeSliderThickness;
+
+        console.log('_applyDirAndOffsets 1', middle.clientHeight, middle.scrollHeight);
 
         [outer, middle, inner, content, resizeSensor].forEach((node) =>
-          node.dir = isDbuiRTL(this) ? 'rtl' : 'ltr'
+          node.dir = 'ltr'
         );
-        console.log({
-          offsetWidth: middle.offsetWidth, clientWidth: middle.clientWidth,
-          hScrollbarThickness,
-          offsetHeight: middle.offsetHeight, clientHeight: middle.clientHeight,
-          vScrollbarThickness,
-          scrollLeft: middle.scrollLeft
-        });
-        middle.style.padding = isDbuiRTL(this) ?
-          `0px 0px ${hScrollbarThickness}px ${vScrollbarThickness}px` :
-          `0px ${vScrollbarThickness}px ${hScrollbarThickness}px 0px`;
-        inner.style.width = `calc(100% + ${vScrollbarThickness}px)`;
-        inner.style.height = `calc(100% + ${hScrollbarThickness}px)`;
+
+        const { hCustomSliderThickness, vCustomSliderThickness } =
+          this._hvCustomSliderThickness;
+
+        // hide native scrollbars
+        middle.style.padding =
+           `0px ${vNativeScrollbarThickness}px ${hNativeScrollbarThickness}px 0px`;
+        inner.style.width = `calc(100% + ${vNativeScrollbarThickness}px)`;
+        inner.style.height = `calc(100% + ${hNativeScrollbarThickness}px)`;
+
+        // make room for custom scrollbars
+        content.style.padding = isDbuiRTL(this) ?
+          `0px 0px ${hCustomSliderThickness}px ${vCustomSliderThickness}px` :
+          `0px ${vCustomSliderThickness}px ${hCustomSliderThickness}px 0px`;
+
+        this._adjustHScroll();
+        this._adjustVScroll();
 
         hSlider.ratio = this._hSliderRatio;
         vSlider.ratio = this._vSliderRatio;
+
+        console.log('_applyDirAndOffsets 2', middle.clientHeight, middle.scrollHeight);
       }
 
-      // -------------------- callbacks ------------------------
+      // -------------------- listeners ------------------------
 
       _onResize() {
+        const middle = getMiddle(this);
+        console.log('_onResize', middle.clientHeight, middle.scrollHeight);
         const hSlider = getHSlider(this);
         const vSlider = getVSlider(this);
         hSlider.ratio = this._hSliderRatio;
         vSlider.ratio = this._vSliderRatio;
+        // The sliders will auto-update position themselves
+        // but we need to re-adapt their position in relation with new size.
         this._adjustHSliderPosition();
         this._adjustVSliderPosition();
+
+        // Need to update hvScrolls to be reflected in component attributes.
+        // Be aware of loops here (no loops so far).
+        this._isScrolling = true;
+        this.hScroll = this._hScrollRatio;
+        this.vScroll = this._vScrollRatio;
+        this._isScrolling = false;
       }
 
-      _onScroll(evt) {
+      _onScroll() {
         if (this._isScrollTriggeredBySliders) {
           return;
         }
-        const scrollLeft = evt.target.scrollLeft;
-        const scrollTop = evt.target.scrollTop;
-        console.log('_onScroll', { scrollLeft, scrollTop });
+        this._isScrolling = true;
+        this.hScroll = this._hScrollRatio;
+        this.vScroll = this._vScrollRatio;
+
+        const _hScroll = this._hScroll;
+        const _vScroll = this._vScroll;
+        console.log('_onScroll', { _hScroll, _vScroll });
+
         this._adjustHSliderPosition();
         this._adjustVSliderPosition();
+
+        this._isScrolling = false;
       }
 
       _onHSlide(evt) {

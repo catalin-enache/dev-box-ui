@@ -60,7 +60,7 @@ describe('DBUISlider', () => {
           id="slider-one"
           sync-locale-with="#locale-provider"
           percent="0.9"
-          steps="3"
+          steps="0"
           step="1"
           dir="ltr"
           vertical

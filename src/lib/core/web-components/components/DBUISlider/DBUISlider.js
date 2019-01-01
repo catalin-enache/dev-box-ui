@@ -34,6 +34,7 @@ Behavior extras:
 TODO:
  - allow consumer to set the percent precision with default fallback
  - if mouse middle click => ignore re-positioning (consider only mouse left btn)
+ - what happens when ratio change while scrolling ? (ex: in scrollable resize event is fired)
 */
 
 const DBUISliderCssVars = `
@@ -126,7 +127,7 @@ const percentToTranslate = (self, percent) => {
   const availableLength = getAvailableLength(self);
   const draggableLength = getDraggableLength(self);
   const localePercent = getLocalePercent(self, percent);
-  return (availableLength - draggableLength) * localePercent;
+  return Math.round((availableLength - draggableLength) * localePercent);
 };
 
 const adjustPosition = (self) => {
@@ -142,7 +143,7 @@ const adjustPosition = (self) => {
 
 const adjustPercent = (self) => {
   const { steps, step, percent: currentPercent } = self;
-  const percent = !steps ? currentPercent : step / (steps - 1);
+  const percent = !steps ? currentPercent : trunc(PERCENT_PRECISION)(step / (steps - 1));
   self.percent = percent;
 };
 
@@ -193,7 +194,7 @@ const adjustRatio = (self) => {
   const availableLength = getAvailableLength(self);
   const dimension = self.vertical ? 'height' : 'width';
   const otherDimension = self.vertical ? 'width' : 'height';
-  const newDraggableSize = ratio * availableLength;
+  const newDraggableSize = Math.round(ratio * availableLength);
   draggable.style[dimension] = newDraggableSize;
   draggable.style[otherDimension] = '100%';
   if (self.vertical) {
@@ -493,7 +494,7 @@ export default function getDBUISlider(win) {
 
       _onWheel(evt) {
         evt.preventDefault();
-        const delta = getWheelDelta(evt, this.steps ? false : DELTA_MULTIPLIER);
+        const delta = getWheelDelta(evt, !this.steps);
         adjustPercentOrStepFromDelta(this, delta);
       }
 
