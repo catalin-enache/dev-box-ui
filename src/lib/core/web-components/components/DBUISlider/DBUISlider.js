@@ -35,6 +35,8 @@ TODO:
  - allow consumer to set the percent precision with default fallback
  - if mouse middle click => ignore re-positioning (consider only mouse left btn)
  - what happens when ratio change while scrolling ? (ex: in scrollable resize event is fired)
+ - when size changes independently then ratio and position should auto-update.
+ - when ratio is too small don't allow the button to shrink too much (have a minimum allowed in pixels)
 */
 
 const DBUISliderCssVars = `
@@ -191,20 +193,21 @@ const adjustRatio = (self) => {
     return;
   }
   const ratio = self.ratio;
-  const availableLength = getAvailableLength(self);
   const dimension = self.vertical ? 'height' : 'width';
   const otherDimension = self.vertical ? 'width' : 'height';
-  const newDraggableSize = Math.round(ratio * availableLength);
-  draggable.style[dimension] = newDraggableSize;
+  // trunc(PERCENT_PRECISION) is redundant though (?) as 0.9708 => 97.08
+  const newDraggableSize = trunc(PERCENT_PRECISION)(100 * ratio);
+  draggable.style[dimension] = `${newDraggableSize}%`;
   draggable.style[otherDimension] = '100%';
+  const innerOffset = `calc(0.5 * ${newDraggableSize}%)`;
   if (self.vertical) {
-    inner.style.top = `calc(0.5 * ${newDraggableSize}px)`;
-    inner.style.bottom = `calc(0.5 * ${newDraggableSize}px)`;
+    inner.style.top = innerOffset;
+    inner.style.bottom = innerOffset;
     inner.style.left = null;
     inner.style.right = null;
   } else {
-    inner.style.left = `calc(0.5 * ${newDraggableSize}px)`;
-    inner.style.right = `calc(0.5 * ${newDraggableSize}px)`;
+    inner.style.left = innerOffset;
+    inner.style.right = innerOffset;
     inner.style.top = null;
     inner.style.bottom = null;
   }

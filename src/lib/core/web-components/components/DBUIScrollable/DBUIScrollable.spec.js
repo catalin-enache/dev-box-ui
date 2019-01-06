@@ -54,10 +54,10 @@ describe('DBUIScrollable', () => {
       `,
       bodyHTML: `
       <div id="container">
-        <div id="locale-provider" dir="ltr"></div>
+        <div id="locale-provider" dir="rtl"></div>
         <div id="wrapper-scrollable-one">
-          <dbui-scrollable id="dbui-scrollable-one" sync-locale-with="#locale-provider">
-            <div id="scrollable-content" dir="ltr">${'content'}</div>
+          <dbui-scrollable id="dbui-scrollable-one" sync-locale-with="#locale-provider" h-scroll="0.20">
+            <div id="scrollable-content" dir="rtl">${content}</div>
             <input type="text" />
           </dbui-scrollable>
         </div>
@@ -87,13 +87,18 @@ describe('DBUIScrollable', () => {
           background-color: gray;
           border: 1px solid red;
           `;
-          dynamicContent.innerText = '?';
+          dynamicContent.innerText = `kkkkkkkkkkkkkkkkkkkkkkkk
+          
+          
+          
+          
+          
+          
+          
+          
+          `;
           dynamicContent.tabIndex = 0;
           dynamicContent.setAttribute('contenteditable', 'true');
-          dynamicContent.addEventListener('mousedown', (evt) => {
-            console.log('dynamicContent mousedown', evt);
-            dynamicContent.focus();
-          });
 
           // scrollableOne.remove();
           // wrapperScrollableOne.appendChild(scrollableOne);
@@ -103,8 +108,7 @@ describe('DBUIScrollable', () => {
           // wrapperScrollableOne.appendChild(scrollableOne);
 
           setTimeout(() => {
-            scrollableContent.appendChild(dynamicContent);
-            dynamicContent.focus();
+            // scrollableContent.appendChild(dynamicContent);
             setTimeout(() => {
               // dynamicContent.remove();
               setTimeout(() => {
@@ -114,7 +118,7 @@ describe('DBUIScrollable', () => {
                 }, 55000);
               }, 0);
             }, 3000);
-          }, 3000);
+          }, 1000);
         });
 
         DBUIScrollable.registerSelf();
