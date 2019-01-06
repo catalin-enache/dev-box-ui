@@ -213,10 +213,11 @@ function getMeasurements(evt) {
   const winScrollX = win.scrollX;
   const winScrollY = win.scrollY;
 
-  const {
-    width: targetWidthOnStart, height: targetHeightOnStart,
-    x: _targetXOnStart, y: _targetYOnStart
-  } = targetBoundingRect;
+  const targetWidthOnStart = Math.round(targetBoundingRect.width);
+  const targetHeightOnStart = Math.round(targetBoundingRect.height);
+  const _targetXOnStart = Math.round(targetBoundingRect.x);
+  const _targetYOnStart = Math.round(targetBoundingRect.y);
+
   const { clientX: _pointerXOnStart, clientY: _pointerYOnStart } = extractedEvent;
   const [targetTranslatedXOnStart, targetTranslatedYOnStart] = [matrix[4], matrix[5]];
   const targetXOnStart = _targetXOnStart + winScrollX;
@@ -383,8 +384,11 @@ const getConstraintsForBoundingClientRect = (targetNode, constraintNode) => {
   const matrix = targetStyle.transform.match(/-?\d*\.?\d+/g).map(Number);
   const [targetTranslatedX, targetTranslatedY] = [matrix[4], matrix[5]];
 
-  const { x: aX, y: aY } = targetBoundingClientRect;
-  const { x: bX, y: bY } = constraintBoundingRect;
+  const aX = Math.round(targetBoundingClientRect.x);
+  const aY = Math.round(targetBoundingClientRect.y);
+  const bX = Math.round(constraintBoundingRect.x);
+  const bY = Math.round(constraintBoundingRect.y);
+
   const offsetX = (bX - aX) + targetTranslatedX;
   const offsetY = (bY - aY) + targetTranslatedY;
 
