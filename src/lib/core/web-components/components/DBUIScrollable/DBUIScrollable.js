@@ -98,8 +98,6 @@ TODO:
  - dispatch h,v scroll events ?
  - hSlider ratio 0.9708 makes the slider button infinitely small. why ? (experiment with contentEditable)
    partially fixed in DBUISlider ratio calculation by specifying units in % instead of px.
- - after adding 2, 3 returns in contentEditable,
-   trying to scroll slowly the vertical scrollbar will make it to .99 only. Why ? (Investigate in DBUISlider)
  - Make sure that all adjustments for all events are done in the correct order.
  - onLocaleDirChanged might not fire at all if no dir specified ?. Handle that. Move some stuff in onConnectedCallback;
  - this._hasNativeSliders => Improve the criteria there ? => if there is scroll room and native slider thickness is 0.
