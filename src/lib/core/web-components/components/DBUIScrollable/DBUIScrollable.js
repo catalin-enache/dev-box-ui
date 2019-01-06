@@ -102,6 +102,7 @@ TODO:
    trying to scroll slowly the vertical scrollbar will make it to .99 only. Why ? (Investigate in DBUISlider)
  - Make sure that all adjustments for all events are done in the correct order.
  - onLocaleDirChanged might not fire at all if no dir specified ?. Handle that. Move some stuff in onConnectedCallback;
+ - this._hasNativeSliders => Improve the criteria there ? => if there is scroll room and native slider thickness is 0.
 */
 
 
@@ -576,7 +577,6 @@ export default function getDBUIScrollable(win) {
        * @return {boolean}
        */
       get _hasNativeSliders() {
-        // TODO: Improve the criteria here ? => if there is scroll room and native slider thickness is 0.
         return !!this._vNativeSliderThickness;
       }
 
