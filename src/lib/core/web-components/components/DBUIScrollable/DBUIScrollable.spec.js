@@ -57,7 +57,7 @@ describe('DBUIScrollable', () => {
         <div id="locale-provider" dir="rtl"></div>
         <div id="wrapper-scrollable-one">
           <dbui-scrollable id="dbui-scrollable-one" sync-locale-with="#locale-provider" h-scroll="0.20">
-            <div id="scrollable-content" dir="rtl">${'content'}</div>
+            <div id="scrollable-content" dir="rtl">${content}</div>
             <input type="text" />
           </dbui-scrollable>
         </div>
@@ -108,7 +108,8 @@ describe('DBUIScrollable', () => {
           // wrapperScrollableOne.appendChild(scrollableOne);
 
           setTimeout(() => {
-            scrollableContent.appendChild(dynamicContent);
+            // scrollableContent.appendChild(dynamicContent);
+            scrollableOne.style.width = '350px';
             setTimeout(() => {
               // dynamicContent.remove();
               setTimeout(() => {

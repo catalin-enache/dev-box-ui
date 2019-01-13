@@ -42,12 +42,20 @@ const getContent = (self) => {
   return self._content;
 };
 
-const getResizeSensor = (self) => {
-  if (self._resizeSensor) {
-    return self._resizeSensor;
+const getResizeSensorContent = (self) => {
+  if (self._resizeSensorContent) {
+    return self._resizeSensorContent;
   }
-  self._resizeSensor = self.shadowRoot.querySelector('#resize-sensor');
-  return self._resizeSensor;
+  self._resizeSensorContent = self.shadowRoot.querySelector('#resize-sensor-content');
+  return self._resizeSensorContent;
+};
+
+const getResizeSensorOuter = (self) => {
+  if (self._resizeSensorOuter) {
+    return self._resizeSensorOuter;
+  }
+  self._resizeSensorOuter = self.shadowRoot.querySelector('#resize-sensor-outer');
+  return self._resizeSensorOuter;
 };
 
 const getHSlider = (self) => {
@@ -166,7 +174,7 @@ export default function getDBUIScrollable(win) {
             display: inline-block;
           }
           
-          #resize-sensor {
+          #resize-sensor-content, #resize-sensor-outer {
             display: block;
             position: absolute;
             top: 0px;
@@ -220,13 +228,14 @@ export default function getDBUIScrollable(win) {
           
           </style>
           <div id="outer">
+            <iframe id="resize-sensor-outer" src=""></iframe>
             <dbui-slider id="horizontal-slider" debug-show-value></dbui-slider>
             <dbui-slider id="vertical-slider" dir="ltr" vertical debug-show-value></dbui-slider>
             <div id="middle">
               <div id="inner">
                 <div id="content">
                   <slot></slot>
-                  <iframe id="resize-sensor" src=""></iframe>
+                  <iframe id="resize-sensor-content" src=""></iframe>
                 </div>
               </div>
             </div>
@@ -254,7 +263,8 @@ export default function getDBUIScrollable(win) {
         this._middle = null;
         this._inner = null;
         this._content = null;
-        this._resizeSensor = null;
+        this._resizeSensorContent = null;
+        this._resizeSensorOuter = null;
         this._hSlider = null;
         this._vSlider = null;
 
@@ -276,16 +286,24 @@ export default function getDBUIScrollable(win) {
       onLocaleDirChanged(newDir, oldDir) {
         // acts like an init
         super.onLocaleDirChanged(newDir, oldDir);
+
         this._applyDir();
         this._applyOffsets();
         this._toggleSliders();
-        this._adjustScrollsAndSliders();
+
+        this._adjustHScroll();
+        this._adjustVScroll();
+        this._adjustHSliderRatio();
+        this._adjustVSliderRatio();
+        this._adjustHSliderPosition();
+        this._adjustVSliderPosition();
       }
 
       onConnectedCallback() {
         super.onConnectedCallback();
         getMiddle(this).addEventListener('scroll', this._onScroll);
-        getResizeSensor(this).contentWindow.addEventListener('resize', this._onResize);
+        getResizeSensorContent(this).contentWindow.addEventListener('resize', this._onResize);
+        getResizeSensorOuter(this).contentWindow.addEventListener('resize', this._onResize);
         const hSlider = getHSlider(this);
         const vSlider = getVSlider(this);
         hSlider.addEventListener('slidemove', this._onHSlide);
@@ -299,7 +317,8 @@ export default function getDBUIScrollable(win) {
       onDisconnectedCallback() {
         super.onDisconnectedCallback();
         getMiddle(this).removeEventListener('scroll', this._onScroll);
-        getResizeSensor(this).contentWindow.removeEventListener('resize', this._onResize);
+        getResizeSensorContent(this).contentWindow.removeEventListener('resize', this._onResize);
+        getResizeSensorOuter(this).contentWindow.removeEventListener('resize', this._onResize);
         const hSlider = getHSlider(this);
         const vSlider = getVSlider(this);
         hSlider.removeEventListener('slide', this._onHSlide);
@@ -651,14 +670,16 @@ export default function getDBUIScrollable(win) {
         const middle = getMiddle(this);
         const inner = getInner(this);
         const content = getContent(this);
-        const resizeSensor = getResizeSensor(this);
+        const resizeSensorContent = getResizeSensorContent(this);
+        const resizeSensorOuter = getResizeSensorContent(this);
 
-        [outer, middle, inner, content, resizeSensor].forEach((node) =>
+        [outer, middle, inner, content, resizeSensorContent, resizeSensorOuter].forEach((node) =>
           node.dir = 'ltr'
         );
       }
 
       _toggleSliders() {
+        console.log('_toggleSliders');
         const hSlider = getHSlider(this);
         const vSlider = getVSlider(this);
         const content = getContent(this);
@@ -686,6 +707,7 @@ export default function getDBUIScrollable(win) {
       }
 
       _applyOffsets() {
+        console.log('_applyOffsets');
         const middle = getMiddle(this);
         const inner = getInner(this);
         const vNativeScrollbarThickness = this._vNativeSliderThickness;
@@ -697,47 +719,45 @@ export default function getDBUIScrollable(win) {
            `0px ${vNativeScrollbarThickness}px ${hNativeScrollbarThickness}px 0px`;
       }
 
-      _adjustScrollsAndSliders() {
-        this._adjustHSliderRatio();
-        this._adjustVSliderRatio();
-        this._adjustHScroll();
-        this._adjustVScroll();
-      }
-
       // -------------------- listeners ------------------------
 
       _onResize() {
+        console.log('_onResize');
         // _onResize might trigger _onScroll when browser tries to
         // keep into focus the cursor
         this._toggleSliders();
 
-        this._adjustHSliderRatio();
-        this._adjustVSliderRatio();
+        // TODO: re-enable behaviours
+
+        // this._adjustHSliderRatio();
+        // this._adjustVSliderRatio();
         // For RTL it keeps the scroll pushed to the right.
         // this._adjustHScroll();
         // this._adjustVScroll();
 
-        // The sliders will auto-update position themselves
-        // but we need to re-adapt their position in relation with new size.
-        this._adjustHSliderPosition();
-        this._adjustVSliderPosition();
-
-        // Need to update hvScrolls to be reflected in component attributes.
-        // Be aware of loops here (no loops so far).
-        this._isScrolling = true;
-        this.hScroll = this._hScrollRatio;
-        this.vScroll = this._vScrollRatio;
-        this._isScrolling = false;
+        // // The sliders will auto-update position themselves
+        // // but we need to re-adapt their position in relation with new size.
+        // this._adjustHSliderPosition();
+        // this._adjustVSliderPosition();
+        //
+        // // Need to update hvScrolls to be reflected in component attributes.
+        // // Be aware of loops here (no loops so far).
+        // this._isScrolling = true;
+        // this.hScroll = this._hScrollRatio;
+        // this.vScroll = this._vScrollRatio;
+        // this._isScrolling = false;
       }
 
       _onScroll() {
+        console.log('_onScroll');
         if (this._isScrollTriggeredBySliders) { return; }
-        this._adjustHSliderPosition();
-        this._adjustVSliderPosition();
-        this._isScrolling = true;
-        this.hScroll = this._hScrollRatio;
-        this.vScroll = this._vScrollRatio;
-        this._isScrolling = false;
+        // TODO: re-enable behaviours
+        // this._adjustHSliderPosition();
+        // this._adjustVSliderPosition();
+        // this._isScrolling = true;
+        // this.hScroll = this._hScrollRatio;
+        // this.vScroll = this._vScrollRatio;
+        // this._isScrolling = false;
       }
 
       _onHSlide(evt) {

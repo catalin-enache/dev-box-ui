@@ -98,11 +98,12 @@ describe('DBUISlider', () => {
           wrapperSliderOne.appendChild(sliderOne);
 
           setTimeout(() => {
+            wrapperSliderOne.style.height = '100px';
             setTimeout(() => {
               iframe.remove();
               done();
             }, 55000);
-          }, 0);
+          }, 1000);
         });
 
         DBUISlider.registerSelf();
