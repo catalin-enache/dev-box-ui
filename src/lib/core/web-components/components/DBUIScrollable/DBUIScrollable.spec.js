@@ -11,6 +11,26 @@ import {
 import getDBUIWebComponentCore from '../DBUIWebComponentCore/DBUIWebComponentCore';
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
 
+const style1 = `
+body {
+  background-color: rgba(0, 0, 255, 0.1);
+}
+
+#dbui-scrollable-one {
+  width: 200px;
+  height: 200px;
+  border: 0px solid black;
+  box-sizing: border-box;
+}
+
+#scrollable-content {
+  width: 400px;
+  height: 400px;
+  box-sizing: border-box;
+  border: 5px solid orange;
+}
+`;
+
 const content = `
 <p>9aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa9</p>
 <p>0aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa0</p>
@@ -24,7 +44,7 @@ const content = `
 <p>0aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa0</p>
 <p>0aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa0</p>
 <p>9aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa9</p>
-`
+`;
 
 describe('DBUIScrollable', () => {
   xit('behaves as expected - live testing', (done) => {
@@ -36,7 +56,7 @@ describe('DBUIScrollable', () => {
       #dbui-scrollable-one {
         width: 200px;
         height: 200px;
-        background-color: rgba(0, 0, 255, 0.2);
+        /*background-color: rgba(0, 0, 255, 0.2);*/
         border: 0px solid black;
         box-sizing: border-box;
         
@@ -124,6 +144,61 @@ describe('DBUIScrollable', () => {
 
         DBUIScrollable.registerSelf();
       }
+    });
+  });
+
+  describe('onLocaleDirChanged', () => {
+    xit('does xxx', (done) => {
+      inIframe({
+        headStyle: style1,
+        bodyHTML: `
+        <div id="container">
+          <div id="locale-provider" dir="rtl"></div>
+          <div id="wrapper-scrollable-one">
+            <dbui-scrollable id="dbui-scrollable-one" h-scroll="0.7" v-scroll="0.7">
+              <div id="scrollable-content"></div>
+            </dbui-scrollable>
+          </div>
+        </div>
+  
+        `,
+
+        onLoad: ({ contentWindow, iframe }) => {
+          const DBUIScrollable = getDBUIScrollable(contentWindow);
+          dbuiWebComponentsSetUp(contentWindow)([{
+            registrationName: DBUIScrollable.registrationName,
+            componentStyle: `
+            `
+          }]);
+
+          Promise.all([
+            DBUIScrollable.registrationName,
+          ].map((localName) => contentWindow.customElements.whenDefined(localName)
+          )).then(() => {
+            const wrapperScrollableOne = contentWindow.document.querySelector('#wrapper-scrollable-one');
+            const scrollableOne = contentWindow.document.querySelector('#dbui-scrollable-one');
+            const scrollableContent = contentWindow.document.querySelector('#scrollable-content');
+
+            console.log('in test', {
+              _scrollWidth: scrollableOne._scrollWidth,
+              _scrollHeight: scrollableOne._scrollHeight,
+            });
+
+            setTimeout(() => {
+              setTimeout(() => {
+                setTimeout(() => {
+                  setTimeout(() => {
+                    iframe.remove();
+                    done();
+                  }, 55000);
+                }, 0);
+              }, 0);
+            }, 0);
+          });
+
+          DBUIScrollable.registerSelf();
+        }
+      });
     });
   });
 });
