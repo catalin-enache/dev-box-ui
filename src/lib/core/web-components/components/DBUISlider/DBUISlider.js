@@ -58,13 +58,6 @@ const DBUISliderCssVars = `
   }
   `;
 
-function defineComponentCSS(win) {
-  const { document } = win;
-  const commonCSSVarsStyleNode = document.querySelector('[dbui-common-css-vars]');
-  commonCSSVarsStyleNode.innerHTML += DBUISliderCssVars;
-}
-
-
 const getDraggable = (self) => {
   if (self._draggable) {
     return self._draggable;
@@ -231,10 +224,11 @@ export default function getDBUISlider(win) {
     const {
       DBUIWebComponentBase,
       defineCommonStaticMethods,
-      Registerable
+      Registerable,
+      defineComponentCssVars
     } = getDBUIWebComponentCore(win);
 
-    defineComponentCSS(win);
+    defineComponentCssVars(win, DBUISliderCssVars);
 
     const DBUIDraggable = getDBUIDraggable(win);
 

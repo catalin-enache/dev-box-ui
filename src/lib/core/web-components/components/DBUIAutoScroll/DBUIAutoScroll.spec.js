@@ -27,7 +27,7 @@ const content = `
 `;
 
 describe('DBUIAutoScroll', () => {
-  it.only('behaves as expected - live testing', (done) => {
+  xit('behaves as expected - live testing', (done) => {
     inIframe({
       headStyle: `
       body {

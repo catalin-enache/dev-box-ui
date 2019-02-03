@@ -1,6 +1,4 @@
 
-centralize defineComponentCSS
-
 react components should document their dependencies on web-components
 and define them as an array on a static method webComponentsDependencies
 so that the user can inspect them and take care of defining by importing

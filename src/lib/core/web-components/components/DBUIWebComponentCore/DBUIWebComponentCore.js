@@ -26,6 +26,18 @@ function defineCommonCSS(win) {
   });
 }
 
+function defineComponentCssVars(win, cssVars) {
+  const { document } = win;
+  const commonCSSVarsStyleNode = document.querySelector('[dbui-common-css-vars]');
+  commonCSSVarsStyleNode.innerHTML += cssVars;
+}
+
+function defineComponentCssClasses(win, cssClasses) {
+  const { document } = win;
+  const commonCSSVarsStyleNode = document.querySelector('[dbui-common-css-classes]');
+  commonCSSVarsStyleNode.innerHTML += cssClasses;
+}
+
 
 /*
 Accessing parents and children:
@@ -1200,7 +1212,9 @@ export default function getDBUIWebComponentCore(win) {
     return {
       DBUIWebComponentBase,
       defineCommonStaticMethods,
-      Registerable
+      Registerable,
+      defineComponentCssVars,
+      defineComponentCssClasses
     };
   });
 }

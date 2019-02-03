@@ -9,12 +9,6 @@ const DBUIAutoScrollCssVars = `
   }
 `;
 
-function defineComponentCSS(win) {
-  const { document } = win;
-  const commonCSSVarsStyleNode = document.querySelector('[dbui-common-css-vars]');
-  commonCSSVarsStyleNode.innerHTML += DBUIAutoScrollCssVars;
-}
-
 const isDbuiRTL = (self) => {
   return self.getAttribute('dbui-dir') === 'rtl';
 };
@@ -44,10 +38,11 @@ export default function getDBUIAutoScroll(win) {
     const {
       DBUIWebComponentBase,
       defineCommonStaticMethods,
-      Registerable
+      Registerable,
+      defineComponentCssVars
     } = getDBUIWebComponentCore(win);
 
-    defineComponentCSS(win);
+    defineComponentCssVars(win, DBUIAutoScrollCssVars);
 
     const DBUIAutoScrollNative = getDBUIAutoScrollNative(win);
 

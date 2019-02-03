@@ -84,12 +84,6 @@ const DBUIScrollableCssVars = `
   }
 `;
 
-function defineComponentCSS(win) {
-  const { document } = win;
-  const commonCSSVarsStyleNode = document.querySelector('[dbui-common-css-vars]');
-  commonCSSVarsStyleNode.innerHTML += DBUIScrollableCssVars;
-}
-
 /*
 TODO:
  - 0 should be to the right when percent is 0 and rtl
@@ -117,10 +111,11 @@ export default function getDBUIScrollable(win) {
     const {
       DBUIWebComponentBase,
       defineCommonStaticMethods,
-      Registerable
+      Registerable,
+      defineComponentCssVars
     } = getDBUIWebComponentCore(win);
 
-    defineComponentCSS(win);
+    defineComponentCssVars(win, DBUIScrollableCssVars);
 
     const DBUISlider = getDBUISlider(win);
 
