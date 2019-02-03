@@ -26,16 +26,18 @@ function defineCommonCSS(win) {
   });
 }
 
+/* istanbul ignore next */
 function defineComponentCssVars(win, cssVars) {
   const { document } = win;
   const commonCSSVarsStyleNode = document.querySelector('[dbui-common-css-vars]');
   commonCSSVarsStyleNode.innerHTML += cssVars;
 }
 
+/* istanbul ignore next */
 function defineComponentCssClasses(win, cssClasses) {
   const { document } = win;
-  const commonCSSVarsStyleNode = document.querySelector('[dbui-common-css-classes]');
-  commonCSSVarsStyleNode.innerHTML += cssClasses;
+  const commonCSSClassesStyleNode = document.querySelector('[dbui-common-css-classes]');
+  commonCSSClassesStyleNode.innerHTML += cssClasses;
 }
 
 
