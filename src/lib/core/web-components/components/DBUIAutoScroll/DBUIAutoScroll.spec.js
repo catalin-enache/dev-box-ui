@@ -40,6 +40,7 @@ describe('DBUIAutoScroll', () => {
         background-color: rgba(0, 0, 255, 0.2);
         border: 2px solid black;
         /*box-sizing: border-box;*/
+        /*--dbui-auto-scroll-custom-slider-thickness: 25px;*/
       }
       
       #scrollable-content {

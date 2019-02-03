@@ -101,6 +101,26 @@ export default function getDBUIAutoScrollNative(win) {
         this._onResizeInner = this._onResizeInner.bind(this);
       }
 
+      /**
+       * Returns native vertical slider thickness in pixels.
+       * @return {number}
+       */
+      get _vNativeSliderThickness() {
+        const outerSensor = getResizeSensorOuter(this);
+        const vSliderThickness = outerSensor.offsetWidth - outerSensor.clientWidth;
+        return vSliderThickness;
+      }
+
+      /**
+       * Returns native horizontal slider thickness in pixels.
+       * @return {number}
+       */
+      get _hNativeSliderThickness() {
+        const outerSensor = getResizeSensorOuter(this);
+        const hSliderThickness = outerSensor.offsetHeight - outerSensor.clientHeight;
+        return hSliderThickness;
+      }
+
       get overflow() {
         const overflow = this.getAttribute('overflow');
         return ['auto', 'scroll'].includes(overflow) ? overflow : 'scroll';
