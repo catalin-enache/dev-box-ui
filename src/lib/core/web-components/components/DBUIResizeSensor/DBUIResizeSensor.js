@@ -1,22 +1,57 @@
-
 import getDBUIWebComponentCore from '../DBUIWebComponentCore/DBUIWebComponentCore';
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
 
+// Inspired from:
+// http://www.backalleycoder.com/2013/03/18/cross-browser-event-based-element-resize-detection/
+// https://github.com/sdecima/javascript-detect-element-resize/blob/master/detect-element-resize.js
+// https://github.com/marcj/css-element-queries/blob/master/src/ResizeSensor.js
+// https://github.com/flowkey/resize-sensor/blob/master/ResizeSensor.js
+
 const registrationName = 'dbui-resize-sensor';
 
-const getResizeSensor = (self) => {
-  if (self._resizeSensor) {
-    return self._resizeSensor;
+const getElement = (self, id) => {
+  if (self[`_${id}`]) {
+    return self[`_${id}`];
   }
-  self._resizeSensor = self.shadowRoot.querySelector('#resize-sensor');
-  return self._resizeSensor;
+  self[`_${id}`] =
+    self.shadowRoot.querySelector(`#${id}`);
+  return self[`_${id}`];
 };
 
-const dispatchResizeEvent = (self, { width, height }) => {
+const getElementSize = (element) => {
+  return {
+    width: element.offsetWidth,
+    height: element.offsetHeight
+  };
+
+  // const rect = element.getBoundingClientRect();
+  // return {
+  //   width: Math.round(rect.width),
+  //   height: Math.round(rect.height)
+  // };
+};
+
+const reset = (self) => {
+  const expand = getElement(self, 'expand');
+  const expandChild = getElement(self, 'expand-child');
+  const shrink = getElement(self, 'shrink');
+  const size = getElementSize(self);
+  const width = self.offsetWidth;
+  const height = self.offsetHeight;
+
+  expandChild.style.width = `${width + 10}px`;
+  expandChild.style.height = `${height + 10}px`;
+  expand.scrollLeft = width + 10;
+  expand.scrollTop = height + 10;
+  shrink.scrollLeft = width + 10;
+  shrink.scrollTop = height + 10;
+  self._lastWidth = size.width;
+  self._lastHeight = size.height;
+};
+
+const dispatchResizeEvent = (self) => {
   const win = self.ownerDocument.defaultView;
-  self.dispatchEvent(new win.CustomEvent('resize', {
-    detail: { width, height }
-  }));
+  self.dispatchEvent(new win.CustomEvent('resize'));
 };
 
 export default function getDBUIResizeSensor(win) {
@@ -37,35 +72,45 @@ export default function getDBUIResizeSensor(win) {
         return `
           <style>
           :host {
-            /*all: initial;*/
+            /* all: initial; */
             display: inline-block;
             position: relative;
           }
-          #resize-sensor {
+          
+          #expand, #shrink {
+            pointer-events: none;
             display: block;
             position: absolute;
-            top: 0px;
-            left: 0px;
-            width: 100%;
-            height: 100%;
-            background-color: transparent;
-            z-index: -1;
+            left: 0px; top: 0px; right: 0; bottom: 0;
             overflow: hidden;
-            pointer-events: none;
-            border: none;
-            padding: 0px;
-            margin: 0px;
+            z-index: -1;
+            visibility: hidden;
+          }
+    
+          #expand-child {
+            position: absolute; left: 0; top: 0; transition: 0s;
+          }
+    
+          #shrink-child {
+            position: absolute; left: 0; top: 0; transition: 0s;
+            width: 200%; height: 200%;
           }
           </style>
+          
+          <div id="expand" dir="ltr">
+            <div id="expand-child" dir="ltr"></div>
+          </div>
+          <div id="shrink" dir="ltr">
+            <div id="shrink-child" dir="ltr"></div>
+          </div>
           <slot></slot>
-          <iframe id="resize-sensor" src=""></iframe>
         `;
       }
 
       constructor() {
         super();
-        this._resizeSensor = null;
-        this._onResize = this._onResize.bind(this);
+        this._onShrinkScroll = this._onShrinkScroll.bind(this);
+        this._onExpandScroll = this._onExpandScroll.bind(this);
       }
 
       get dimensions() {
@@ -73,19 +118,34 @@ export default function getDBUIResizeSensor(win) {
         return { height: Math.round(height), width: Math.round(width) };
       }
 
-      _onResize() {
-        dispatchResizeEvent(this, this.dimensions);
+      _onShrinkScroll() {
+        this._onScroll();
+      }
+
+      _onExpandScroll() {
+        this._onScroll();
+      }
+
+      _onScroll() {
+        const size = getElementSize(this);
+        const dirty = size.width !== this._lastWidth || size.height !== this._lastHeight;
+        if (dirty) {
+          dispatchResizeEvent(this);
+        }
+        reset(this);
       }
 
       onConnectedCallback() {
         super.onConnectedCallback();
-        getResizeSensor(this).contentWindow.addEventListener('resize', this._onResize);
-        this._onResize();
+        reset(this);
+        getElement(this, 'expand').addEventListener('scroll', this._onExpandScroll);
+        getElement(this, 'shrink').addEventListener('scroll', this._onShrinkScroll);
       }
 
       onDisconnectedCallback() {
         super.onDisconnectedCallback();
-        getResizeSensor(this).contentWindow.removeEventListener('resize', this._onResize);
+        getElement(this, 'expand').removeEventListener('scroll', this._onExpandScroll);
+        getElement(this, 'shrink').removeEventListener('scroll', this._onShrinkScroll);
       }
 
     }

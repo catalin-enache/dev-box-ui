@@ -143,9 +143,9 @@ export default function getDBUIAutoScroll(win) {
       onConnectedCallback() {
         super.onConnectedCallback();
         const autoScrollNative = getAutoScrollNative(this);
-        const { _hNativeSliderThickness, _vNativeSliderThickness } = autoScrollNative;
-        autoScrollNative.style.width = `calc(100% + ${_vNativeSliderThickness}px)`;
-        autoScrollNative.style.height = `calc(100% + ${_hNativeSliderThickness}px)`;
+        const { hNativeSliderThickness, vNativeSliderThickness } = autoScrollNative;
+        autoScrollNative.style.width = `calc(100% + ${vNativeSliderThickness}px)`;
+        autoScrollNative.style.height = `calc(100% + ${hNativeSliderThickness}px)`;
       }
 
       onDisconnectedCallback() {

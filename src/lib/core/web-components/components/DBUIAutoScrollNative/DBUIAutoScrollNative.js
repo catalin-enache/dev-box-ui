@@ -12,13 +12,20 @@ const getResizeSensorOuter = (self) => {
   return self._resizeSensorOuter;
 };
 
-const getResizeSensorInner = (self) => {
-  if (self._resizeSensorInner) {
-    return self._resizeSensorInner;
+const getResizeSensorContent = (self) => {
+  if (self._resizeSensorContent) {
+    return self._resizeSensorContent;
   }
-  self._resizeSensorInner =
-    self.shadowRoot.querySelector('#resize-sensor-inner');
-  return self._resizeSensorInner;
+  self._resizeSensorContent =
+    self.shadowRoot.querySelector('#resize-sensor-content');
+  return self._resizeSensorContent;
+};
+
+const dispatchResizeEvent = (self) => {
+  const win = self.ownerDocument.defaultView;
+  self.dispatchEvent(new win.CustomEvent('resize', {
+    detail: self._resizeEventDetails
+  }));
 };
 
 const registrationName = 'dbui-auto-scroll-native';
@@ -68,13 +75,13 @@ export default function getDBUIAutoScrollNative(win) {
             transform: translateZ(0);
           }
           
-          #resize-sensor-inner {
+          #resize-sensor-content {
             display: inline-block;
             position: relative;
           }
           </style>
           <dbui-resize-sensor id="resize-sensor-outer">
-              <dbui-resize-sensor id="resize-sensor-inner">
+              <dbui-resize-sensor id="resize-sensor-content">
                   <slot></slot>
               </dbui-resize-sensor>
           </dbui-resize-sensor>
@@ -95,17 +102,15 @@ export default function getDBUIAutoScrollNative(win) {
 
       constructor() {
         super();
-        this._resizeSensorOuter = null;
-        this._resizeSensorInner = null;
         this._onResizeOuter = this._onResizeOuter.bind(this);
-        this._onResizeInner = this._onResizeInner.bind(this);
+        this._onResizeContent = this._onResizeContent.bind(this);
       }
 
       /**
        * Returns native vertical slider thickness in pixels.
        * @return {number}
        */
-      get _vNativeSliderThickness() {
+      get vNativeSliderThickness() {
         const outerSensor = getResizeSensorOuter(this);
         const vSliderThickness = outerSensor.offsetWidth - outerSensor.clientWidth;
         return vSliderThickness;
@@ -115,7 +120,7 @@ export default function getDBUIAutoScrollNative(win) {
        * Returns native horizontal slider thickness in pixels.
        * @return {number}
        */
-      get _hNativeSliderThickness() {
+      get hNativeSliderThickness() {
         const outerSensor = getResizeSensorOuter(this);
         const hSliderThickness = outerSensor.offsetHeight - outerSensor.clientHeight;
         return hSliderThickness;
@@ -135,12 +140,23 @@ export default function getDBUIAutoScrollNative(win) {
         getResizeSensorOuter(this).style.overflow = this.overflow;
       }
 
-      _onResizeOuter(evt) {
-        console.log('_onResizeOuter', evt.detail);
+      _onResizeOuter() {
+        dispatchResizeEvent(this);
       }
 
-      _onResizeInner(evt) {
-        console.log('_onResizeInner', evt.detail);
+      _onResizeContent() {
+        dispatchResizeEvent(this);
+      }
+
+      get _resizeEventDetails() {
+        const resizeOuter = getResizeSensorOuter(this);
+        const resizeContent = getResizeSensorContent(this);
+        const { width, height } = resizeOuter.dimensions;
+        const { width: contentWidth, height: contentHeight } = resizeContent.dimensions;
+        const resizeEventDetails = {
+          width, height, contentWidth, contentHeight
+        };
+        return resizeEventDetails;
       }
 
       onLocaleDirChanged(newDir, oldDir) {
@@ -151,14 +167,14 @@ export default function getDBUIAutoScrollNative(win) {
       onConnectedCallback() {
         super.onConnectedCallback();
         getResizeSensorOuter(this).addEventListener('resize', this._onResizeOuter);
-        getResizeSensorInner(this).addEventListener('resize', this._onResizeInner);
+        getResizeSensorContent(this).addEventListener('resize', this._onResizeContent);
         this._setOverflow();
       }
 
       onDisconnectedCallback() {
         super.onDisconnectedCallback();
         getResizeSensorOuter(this).removeEventListener('resize', this._onResizeOuter);
-        getResizeSensorInner(this).removeEventListener('resize', this._onResizeInner);
+        getResizeSensorContent(this).removeEventListener('resize', this._onResizeContent);
       }
 
       onAttributeChangedCallback(name, oldValue, newValue) {
