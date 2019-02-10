@@ -18,24 +18,11 @@ const getElement = (self, id) => {
   return self[`_${id}`];
 };
 
-const getElementSize = (element) => {
-  return {
-    width: element.offsetWidth,
-    height: element.offsetHeight
-  };
-
-  // const rect = element.getBoundingClientRect();
-  // return {
-  //   width: Math.round(rect.width),
-  //   height: Math.round(rect.height)
-  // };
-};
-
 const reset = (self) => {
   const expand = getElement(self, 'expand');
   const expandChild = getElement(self, 'expand-child');
   const shrink = getElement(self, 'shrink');
-  const size = getElementSize(self);
+  const size = self.dimensionsAndCoordinates;
   const width = self.offsetWidth;
   const height = self.offsetHeight;
 
@@ -122,7 +109,7 @@ export default function getDBUIResizeSensor(win) {
       }
 
       _onScroll() {
-        const size = getElementSize(this);
+        const size = this.dimensionsAndCoordinates;
         const dirty = size.width !== this._lastWidth || size.height !== this._lastHeight;
         if (dirty) {
           dispatchResizeEvent(this);
