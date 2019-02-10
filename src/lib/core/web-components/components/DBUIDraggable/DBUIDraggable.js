@@ -75,7 +75,7 @@ function registerRootEvents(evt) {
  */
 function unregisterRootEvents(evt) {
   const type = isTouchEvent(evt) ? 'touch' : 'mouse';
-  const { win, root, doc } = getRootDocAndWin(evt);
+  const { win } = getRootDocAndWin(evt);
 
   const self = getElementBeingDragged(evt);
   /* istanbul ignore next */
@@ -112,11 +112,23 @@ function unregisterRootEvents(evt) {
     }
   }
 
-  Object.keys(eventHandlers).forEach((event) => {
-    (type === 'touch' ? root : doc).removeEventListener(event, eventHandlers[event], eventOptions[type]);
+  cancelDragging(self);
+}
+
+function cancelDragging(self) {
+  const doc = self.ownerDocument;
+  const win = doc.defaultView;
+  const root = self.getRootNode();
+  const dbuiDraggableRegisteredEvents = win._dbuiDraggableRegisteredEvents || new Map();
+  const eventHandlers = dbuiDraggableRegisteredEvents.get(self) || {};
+  Object.keys(events).forEach((type) => {
+    Object.keys(eventHandlers).forEach((event) => {
+      (type === 'touch' ? root : doc).removeEventListener(event, eventHandlers[event], eventOptions[type]);
+    });
   });
+  self._lastEvent = null;
   win._dbuiCurrentElementBeingDragged = null;
-  win._dbuiDraggableRegisteredEvents.delete(self);
+  dbuiDraggableRegisteredEvents.delete(self);
   self.dispatchEvent(new win.CustomEvent('dragend', {
     detail: {}
   }));
@@ -261,6 +273,7 @@ function onPointerDown(evt) {
   evt.preventDefault(); // prevents TouchEvent to trigger MouseEvent
   evt.stopPropagation();
   const self = evt.currentTarget;
+  self._lastEvent = evt;
   self._cachedConstraintPreset = null;
   self._measurements = getMeasurements(evt);
   registerRootEvents(evt);
@@ -280,7 +293,7 @@ function onPointerDown(evt) {
  *
  * @param evt MouseEvent (mousemove) || TouchEvent (touchmove) always coming from Document
  */
-function doMove(_evt) {
+function doMove(_evt, { forceDispatch = false } = {}) {
   _evt.preventDefault(); // prevent selection and scrolling
   _evt.stopPropagation(); // for nested draggables (allow dragging of inner most one)
   const evt = extractSingleEvent(_evt);
@@ -305,6 +318,7 @@ function doMove(_evt) {
 
   if (self._dragRunning) { return; }
   self._dragRunning = true;
+  self._lastEvent = _evt;
   win.requestAnimationFrame(() => {
     if (!self.isMounted) { // might be unmounted meanwhile
       self._dragRunning = false;
@@ -354,7 +368,7 @@ function doMove(_evt) {
     self.targetTranslateX = newTargetTranslateX;
     self.targetTranslateY = newTargetTranslateY;
 
-    if (newTargetTranslateX !== prevTargetTranslateX || newTargetTranslateY !== prevTargetTranslateY) {
+    if (forceDispatch || newTargetTranslateX !== prevTargetTranslateX || newTargetTranslateY !== prevTargetTranslateY) {
       self.dispatchEvent(new win.CustomEvent('dragmove', {
         detail: {
           targetWidthOnStart, targetHeightOnStart,
@@ -553,12 +567,14 @@ export default function getDBUIDraggable(win) {
 
       constructor() {
         super();
+        this._lastEvent = null;
         this._cachedTargetToDrag = null;
         this._cachedConstraintPreset = null;
         this._cachedConstraintNode = null;
         this._dbuiDraggable = true;
         this._targetToDragOldTransform = '';
         this._targetToDragOldTransformOrigin = '';
+        this._onConstraintNodeResize = this._onConstraintNodeResize.bind(this);
       }
 
       /**
@@ -860,11 +876,26 @@ export default function getDBUIDraggable(win) {
         this._cachedTargetToDrag = null;
       }
 
+      _onConstraintNodeResize() {
+        const targetToDrag = this._targetToDrag;
+        const targetBoundingRect = targetToDrag.getBoundingClientRect();
+        const newTargetWidthOnStart = Math.round(targetBoundingRect.width);
+        const newTargetHeightOnStart = Math.round(targetBoundingRect.height);
+        (this._measurements || {}).targetWidthOnStart = newTargetWidthOnStart;
+        (this._measurements || {}).targetHeightOnStart = newTargetHeightOnStart;
+
+        this._cachedConstraintPreset = null;
+        this._lastEvent && doMove(this._lastEvent, { forceDispatch: true });
+        // cancelDragging(this);
+      }
+
       onConnectedCallback() {
         this.setAttribute('unselectable', '');
         this.addEventListener('mousedown', handleMouseDown, eventOptions.mouse);
         this.addEventListener('touchstart', handleTouchStart, eventOptions.touch);
         this._initializeTargetToDrag();
+        this._constraintNode &&
+          this._constraintNode.addEventListener('resize', this._onConstraintNodeResize);
       }
 
       onDisconnectedCallback() {
@@ -873,6 +904,8 @@ export default function getDBUIDraggable(win) {
         this.removeEventListener('touchstart', handleTouchStart, eventOptions.touch);
         // should also remove the rest of listeners here
         this._resetTargetToDrag();
+        this._constraintNode &&
+          this._constraintNode.removeEventListener('resize', this._onConstraintNodeResize);
       }
 
       // eslint-disable-next-line
@@ -890,6 +923,8 @@ export default function getDBUIDraggable(win) {
             break;
           // constraint attributes
           case 'constraint-selector':
+            this._constraintNode &&
+              this._constraintNode.removeEventListener('resize', this._onConstraintNodeResize);
             this._cachedConstraintNode = null;
             break;
           case 'constraint-type':

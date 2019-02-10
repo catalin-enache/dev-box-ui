@@ -26,7 +26,7 @@ describe('DBUISlider', () => {
       
       #slider-one {
         width: 300px;
-        height: 90%;
+        height: 100%;
         
         /*
         --dbui-slider-inner-size: 30px;
@@ -98,7 +98,7 @@ describe('DBUISlider', () => {
           wrapperSliderOne.appendChild(sliderOne);
 
           setTimeout(() => {
-            wrapperSliderOne.style.height = '100px';
+            wrapperSliderOne.style.height = '90px';
             setTimeout(() => {
               iframe.remove();
               done();

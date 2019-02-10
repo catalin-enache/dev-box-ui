@@ -4,6 +4,7 @@ import inIframe from '../../../../../../testUtils/inIframe';
 import getDBUIDraggable, {
   extractSingleEvent, getElementBeingDragged
 } from './DBUIDraggable';
+import getDBUIResizeSensor from '../DBUIResizeSensor/DBUIResizeSensor';
 import {
   sendTapEvent,
   sendTouchEvent,
@@ -3057,6 +3058,144 @@ describe('DBUIDraggable', () => {
             }
           });
         });
+      });
+    });
+  });
+
+  describe('_onConstraintNodeResize', () => {
+    it('reposition itself inside the boundaries', (done) => {
+      inIframe({
+        headStyle: `
+        body, html { padding: 0px; margin: 0px; }
+        #resize-sensor {
+          width: 150px;
+          height: 150px;
+          background-color: orange;
+        }
+        #draggable-one {
+          width: 50px;
+          height: 50px;
+          background-color: black;
+        }
+        `,
+        bodyHTML: `
+        <dbui-resize-sensor id="resize-sensor">
+          <dbui-draggable id="draggable-one"
+          constraint-type="boundingClientRectOf"
+          constraint-selector="#resize-sensor"
+          target-translate-x="100"
+          target-translate-y="100"
+          ></dbui-draggable>
+        </dbui-resize-sensor>
+
+        `,
+        onLoad: ({ contentWindow, iframe }) => {
+          const DBUIDraggable = getDBUIDraggable(contentWindow);
+          const DBUIResizeSensor = getDBUIResizeSensor(contentWindow);
+          const resizeSensor = contentWindow.document.querySelector('#resize-sensor');
+          const draggableOne = contentWindow.document.querySelector('#draggable-one');
+
+          Promise.all([
+            DBUIDraggable.registrationName,
+          ].map((localName) => contentWindow.customElements.whenDefined(localName)
+          )).then(() => {
+
+            draggableOne.addEventListener('mousedown', () => {
+              draggableOne.style.backgroundColor = 'red';
+            });
+
+            draggableOne.addEventListener('touchstart', () => {
+              draggableOne.style.backgroundColor = 'red';
+            });
+
+            draggableOne.addEventListener('mouseup', () => {
+              draggableOne.style.backgroundColor = 'black';
+            });
+
+            draggableOne.addEventListener('touchend', () => {
+              draggableOne.style.backgroundColor = 'black';
+            });
+
+            function dragMove1(evt) {
+              expect(draggableOne.getBoundingClientRect().x).to.equal(50);
+              expect(draggableOne.getBoundingClientRect().y).to.equal(50);
+              expect(evt.detail.targetY).to.equal(50);
+              expect(evt.detail.targetY).to.equal(50);
+              draggableOne.removeEventListener('dragmove', dragMove1);
+              draggableOne.addEventListener('dragmove', dragMove2);
+
+              contentWindow.requestAnimationFrame(() => {
+                setTimeout(() => {
+                  sendTapEvent(draggableOne, 'end', {});
+                  contentWindow.requestAnimationFrame(() => {
+                    setTimeout(() => {
+                      resizeSensor.style.width = '150px';
+                      resizeSensor.style.height = '150px';
+                      contentWindow.requestAnimationFrame(() => {
+                        setTimeout(() => {
+                          sendTapEvent(draggableOne, 'start', {
+                            clientX: 50, clientY: 50
+                          });
+                          sendTapEvent(draggableOne, 'move', {
+                            clientX: 100, clientY: 100
+                          });
+                        }, 0);
+                      });
+                    }, 0);
+                  });
+                }, 0);
+              });
+            }
+
+            draggableOne.addEventListener('dragmove', dragMove1);
+
+            function dragMove2(evt) {
+              expect(draggableOne.getBoundingClientRect().x).to.equal(100);
+              expect(draggableOne.getBoundingClientRect().y).to.equal(100);
+              expect(evt.detail.targetX).to.equal(100);
+              expect(evt.detail.targetY).to.equal(100);
+              draggableOne.removeEventListener('dragmove', dragMove2);
+              draggableOne.addEventListener('dragmove', dragMove3);
+              contentWindow.requestAnimationFrame(() => {
+                setTimeout(() => {
+                  resizeSensor.style.width = '100px';
+                  resizeSensor.style.height = '100px';
+                }, 0);
+              });
+
+            }
+
+            function dragMove3(evt) {
+              expect(draggableOne.getBoundingClientRect().x).to.equal(50);
+              expect(draggableOne.getBoundingClientRect().y).to.equal(50);
+              expect(evt.detail.targetX).to.equal(50);
+              expect(evt.detail.targetY).to.equal(50);
+              contentWindow.requestAnimationFrame(() => {
+                setTimeout(() => {
+                  iframe.remove();
+                  done();
+                }, 0);
+              });
+            }
+
+            contentWindow.requestAnimationFrame(() => {
+              setTimeout(() => {
+                sendTapEvent(draggableOne, 'start', {
+                  clientX: 100, clientY: 100
+                });
+                contentWindow.requestAnimationFrame(() => {
+                  expect(draggableOne.getBoundingClientRect().y).to.equal(100);
+                  setTimeout(() => {
+                    resizeSensor.style.width = '100px';
+                    resizeSensor.style.height = '100px';
+                  }, 0);
+                });
+              }, 0);
+            });
+          });
+          DBUIResizeSensor.registerSelf();
+          DBUIDraggable.registerSelf();
+        }
       });
     });
   });

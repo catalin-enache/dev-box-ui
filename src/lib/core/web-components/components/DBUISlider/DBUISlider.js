@@ -2,6 +2,7 @@
 import getDBUIWebComponentCore from '../DBUIWebComponentCore/DBUIWebComponentCore';
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
 import getDBUIDraggable from '../DBUIDraggable/DBUIDraggable';
+import getDBUIResizeSensor from '../DBUIResizeSensor/DBUIResizeSensor';
 import { trunc, getStep, STEP_PRECISION } from '../../../utils/math';
 import { getWheelDelta } from '../../../utils/mouse';
 
@@ -231,6 +232,7 @@ export default function getDBUISlider(win) {
     defineComponentCssVars(win, DBUISliderCssVars);
 
     const DBUIDraggable = getDBUIDraggable(win);
+    const DBUIResizeSensor = getDBUIResizeSensor(win);
 
     class DBUISlider extends DBUIWebComponentBase {
 
@@ -331,7 +333,7 @@ export default function getDBUISlider(win) {
           
           </style>
           <div id="wrapper-outer">
-            <div id="wrapper-middle">
+            <dbui-resize-sensor id="wrapper-middle">
               <div id="inner"></div>
               <dbui-draggable
                 id="${DRAGGABLE_ID}"
@@ -340,13 +342,13 @@ export default function getDBUISlider(win) {
                 constraint-steps-x="0"
                 constraint-steps-y="0"
               ><div id="value-display-wrapper"><div id="value-display"></div></div></dbui-draggable>
-            </div>
+            </dbui-resize-sensor>
           </div>
         `;
       }
 
       static get dependencies() {
-        return [...super.dependencies, DBUIDraggable];
+        return [...super.dependencies, DBUIDraggable, DBUIResizeSensor];
       }
 
       static get propertiesToUpgrade() {
@@ -373,6 +375,7 @@ export default function getDBUISlider(win) {
         this._onSliderMouseDown = this._onSliderMouseDown.bind(this);
         this._onSliderTouchStart = this._onSliderTouchStart.bind(this);
         this._onKeyDown = this._onKeyDown.bind(this);
+        this._onResize = this._onResize.bind(this);
       }
 
       get isSliding() {
@@ -529,6 +532,10 @@ export default function getDBUISlider(win) {
         adjustPercentOrStepFromDelta(this, delta);
       }
 
+      _onResize() {
+        adjustPosition(this);
+      }
+
       _toggleCaptureArrowKeys() {
         if (this.captureArrowKeys) {
           win.document.addEventListener('keydown', this._onKeyDown);
@@ -544,6 +551,7 @@ export default function getDBUISlider(win) {
         getDraggable(this).addEventListener('dragend', this._onDraggableDragEnd);
         getWrapperMiddle(this).addEventListener('mousedown', this._onSliderMouseDown);
         getWrapperMiddle(this).addEventListener('touchstart', this._onSliderTouchStart);
+        getWrapperMiddle(this).addEventListener('resize', this._onResize);
         this.addEventListener('mouseenter', this._onMouseEnter);
         this.addEventListener('mouseleave', this._onMouseLeave);
         this._toggleCaptureArrowKeys();
@@ -556,6 +564,7 @@ export default function getDBUISlider(win) {
         getDraggable(this).removeEventListener('dragend', this._onDraggableDragEnd);
         getWrapperMiddle(this).removeEventListener('mousedown', this._onSliderMouseDown);
         getWrapperMiddle(this).removeEventListener('touchstart', this._onSliderTouchStart);
+        getWrapperMiddle(this).removeEventListener('resize', this._onResize);
         this.removeEventListener('mouseenter', this._onMouseEnter);
         this.removeEventListener('mouseleave', this._onMouseLeave);
         this.removeEventListener('wheel', this._onWheel);
