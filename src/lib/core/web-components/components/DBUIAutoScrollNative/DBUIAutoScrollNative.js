@@ -101,11 +101,11 @@ export default function getDBUIAutoScrollNative(win) {
       }
 
       static get propertiesToUpgrade() {
-        return [...super.propertiesToUpgrade, 'overflow'];
+        return [...super.propertiesToUpgrade];
       }
 
       static get observedAttributes() {
-        return [...super.observedAttributes, 'overflow'];
+        return [...super.observedAttributes];
       }
 
       constructor() {
@@ -130,16 +130,6 @@ export default function getDBUIAutoScrollNative(win) {
       get hNativeSliderThickness() {
         const hSliderThickness = this.offsetHeight - this.clientHeight;
         return hSliderThickness;
-      }
-
-      get overflow() {
-        const overflow = this.getAttribute('overflow');
-        return ['auto', 'scroll'].includes(overflow) ? overflow : 'scroll';
-      }
-
-      set overflow(value) {
-        const overflow = ['auto', 'scroll'].includes(value) ? value : '';
-        this.setAttribute('overflow', overflow);
       }
 
       _onResizeOuter() {
