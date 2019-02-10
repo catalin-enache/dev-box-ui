@@ -62,9 +62,9 @@ describe('DBUIResizeSensor', () => {
           const resizeSensor = contentWindow.document.querySelector('#dbui-resize-sensor');
           const scrollableContent = contentWindow.document.querySelector('#scrollable-content');
 
-          console.log('initial size', resizeSensor.dimensions);
+          console.log('initial size', resizeSensor.dimensionsAndCoordinates);
           resizeSensor.addEventListener('resize', (evt) => {
-            console.log('test resize', evt.target.dimensions);
+            console.log('test resize', evt.target.dimensionsAndCoordinates);
           });
 
           setTimeout(() => {
@@ -130,10 +130,10 @@ describe('DBUIResizeSensor', () => {
             const resizeSensor = contentWindow.document.querySelector('#dbui-resize-sensor');
             const scrollableContent = contentWindow.document.querySelector('#scrollable-content');
 
-            const { width: initialWidth, height: initialHeight } = resizeSensor.dimensions;
+            const { width: initialWidth, height: initialHeight } = resizeSensor.dimensionsAndCoordinates;
 
             function onContentExpand(evt) {
-              const { width, height } = evt.target.dimensions;
+              const { width, height } = evt.target.dimensionsAndCoordinates;
               expect(width).to.be.above(initialWidth);
               expect(height).to.be.above(initialHeight);
               resizeSensor.removeEventListener('resize', onContentExpand);
@@ -144,7 +144,7 @@ describe('DBUIResizeSensor', () => {
             }
 
             function onContentShrink(evt) {
-              const { width, height } = evt.target.dimensions;
+              const { width, height } = evt.target.dimensionsAndCoordinates;
               expect(width).to.be.below(initialWidth);
               expect(height).to.be.below(initialHeight);
               resizeSensor.removeEventListener('resize', onContentShrink);
@@ -156,7 +156,7 @@ describe('DBUIResizeSensor', () => {
             }
 
             function onResizeSensorExpand(evt) {
-              const { width, height } = evt.target.dimensions;
+              const { width, height } = evt.target.dimensionsAndCoordinates;
               expect(width).to.equal(300);
               expect(height).to.equal(300);
               resizeSensor.removeEventListener('resize', onResizeSensorExpand);
@@ -168,7 +168,7 @@ describe('DBUIResizeSensor', () => {
             }
 
             function onResizeSensorShrink(evt) {
-              const { width, height } = evt.target.dimensions;
+              const { width, height } = evt.target.dimensionsAndCoordinates;
               expect(width).to.equal(299);
               expect(height).to.equal(299);
               resizeSensor.removeEventListener('resize', onResizeSensorShrink);

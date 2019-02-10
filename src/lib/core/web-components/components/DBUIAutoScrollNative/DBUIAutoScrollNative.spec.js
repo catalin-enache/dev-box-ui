@@ -43,7 +43,7 @@ describe('DBUIAutoScrollNative', () => {
         <div id="locale-provider" dir="ltr"></div>
         <div id="wrapper-auto-scroll-native">
           <dbui-auto-scroll-native id="dbui-auto-scroll-native" sync-locale-with="#locale-provider" h-scroll="0.20">
-            <div id="scrollable-content" dir="ltr">${content}</div>
+            <div id="scrollable-content">${content}</div>
             <input type="text" />
           </dbui-auto-scroll-native>
         </div>
@@ -65,6 +65,7 @@ describe('DBUIAutoScrollNative', () => {
         )).then(() => {
           // const wrapperAutoScrollNative = contentWindow.document.querySelector('#wrapper-auto-scroll-native');
           // const autoScrollNative = contentWindow.document.querySelector('#dbui-auto-scroll-native');
+          const localeProvider = contentWindow.document.querySelector('#locale-provider');
           const scrollableContent = contentWindow.document.querySelector('#scrollable-content');
           const dynamicContent = contentWindow.document.createElement('div');
           dynamicContent.style.cssText = `
@@ -73,7 +74,7 @@ describe('DBUIAutoScrollNative', () => {
           background-color: gray;
           border: 1px solid red;
           `;
-          dynamicContent.innerText = `kkkkkkkkkkkkkkkkkkkkkkkk
+          dynamicContent.innerText = `LkkkkkkkkkkkkkkkkkkkkkkR
           
           
           
@@ -100,7 +101,9 @@ describe('DBUIAutoScrollNative', () => {
           setTimeout(() => {
             // scrollableContent.appendChild(dynamicContent);
             // autoScrollNative.style.width = '350px';
+            localeProvider.dir = 'rtl';
             setTimeout(() => {
+              localeProvider.dir = 'ltr';
               // dynamicContent.remove();
               setTimeout(() => {
                 setTimeout(() => {
@@ -109,7 +112,7 @@ describe('DBUIAutoScrollNative', () => {
                 }, 55000);
               }, 0);
             }, 3000);
-          }, 1000);
+          }, 3000);
         });
 
         DBUIAutoScrollNative.registerSelf();
@@ -264,18 +267,18 @@ describe('DBUIAutoScrollNative', () => {
         #wrapper-auto-scroll-native {
           width: 100px;
           height: 100px;
+          outline: 1px solid maroon;
         }
         
         #scrollable-content {
-          width: 100px;
-          height: 100px;
-          border: 1px solid red;
-          box-sizing: border-box;
+          width: 50px;
+          height: 50px;
+          outline: 1px solid green;
         }
         `,
         bodyHTML: `
           <div id="wrapper-auto-scroll-native">
-            <dbui-auto-scroll-native id="dbui-auto-scroll-native" overflow="auto">
+            <dbui-auto-scroll-native id="dbui-auto-scroll-native" style="_overflow: hidden;">
               <div id="scrollable-content"></div>
             </dbui-auto-scroll-native>
           </div>
@@ -290,16 +293,21 @@ describe('DBUIAutoScrollNative', () => {
           ].map((localName) => contentWindow.customElements.whenDefined(localName)
           )).then(() => {
 
+            // Setting style.overflow at runtime does not work well in mozilla.
+            // It makes DBUIAutoScrollNative#resize-sensor-content "resize" event to NOT fire.
+            // To work with mozilla overflow must be set in html style.
+            // autoScrollNative.style.overflow = 'scroll';
+
             function onAutoScrollExpand(evt) {
               const { width, height, contentWidth, contentHeight } = evt.detail;
               expect(width).to.equal(200);
               expect(height).to.equal(199);
-              expect(contentWidth).to.equal(100);
-              expect(contentHeight).to.equal(100);
+              expect(contentWidth).to.equal(50);
+              expect(contentHeight).to.equal(50);
               autoScrollNative.removeEventListener('resize', onAutoScrollExpand);
-              autoScrollNative.addEventListener('resize', onAutoScrollShrink);
               // AutoScrollShrink
               setTimeout(() => {
+                autoScrollNative.addEventListener('resize', onAutoScrollShrink);
                 wrapperAutoScrollNative.style.width = '95px';
                 wrapperAutoScrollNative.style.height = '94px';
               }, 0);
@@ -309,14 +317,14 @@ describe('DBUIAutoScrollNative', () => {
               const { width, height, contentWidth, contentHeight } = evt.detail;
               expect(width).to.equal(95);
               expect(height).to.equal(94);
-              expect(contentWidth).to.equal(100);
-              expect(contentHeight).to.equal(100);
+              expect(contentWidth).to.equal(50);
+              expect(contentHeight).to.equal(50);
               autoScrollNative.removeEventListener('resize', onAutoScrollShrink);
-              autoScrollNative.addEventListener('resize', onContentExpand);
               // ContentExpand
               setTimeout(() => {
-                scrollableContent.style.width = '101px';
-                scrollableContent.style.height = '102px';
+                autoScrollNative.addEventListener('resize', onContentExpand);
+                scrollableContent.style.width = '102px';
+                scrollableContent.style.height = '101px';
               }, 0);
             }
 
@@ -324,14 +332,14 @@ describe('DBUIAutoScrollNative', () => {
               const { width, height, contentWidth, contentHeight } = evt.detail;
               expect(width).to.equal(95);
               expect(height).to.equal(94);
-              expect(contentWidth).to.equal(101);
-              expect(contentHeight).to.equal(102);
+              expect(contentWidth).to.equal(102);
+              expect(contentHeight).to.equal(101);
               autoScrollNative.removeEventListener('resize', onContentExpand);
-              autoScrollNative.addEventListener('resize', onContentShrink);
               // ContentShrink
               setTimeout(() => {
-                scrollableContent.style.width = '94px';
-                scrollableContent.style.height = '93px';
+                autoScrollNative.addEventListener('resize', onContentShrink);
+                scrollableContent.style.width = '50px';
+                scrollableContent.style.height = '49px';
               }, 0);
             }
 
@@ -339,18 +347,23 @@ describe('DBUIAutoScrollNative', () => {
               const { width, height, contentWidth, contentHeight } = evt.detail;
               expect(width).to.equal(95);
               expect(height).to.equal(94);
-              expect(contentWidth).to.equal(94);
-              expect(contentHeight).to.equal(93);
-              autoScrollNative.removeEventListener('resize', onContentExpand);
-              autoScrollNative.remove();
-              iframe.remove();
-              done();
+              expect(contentWidth).to.equal(50);
+              expect(contentHeight).to.equal(49);
+              autoScrollNative.removeEventListener('resize', onContentShrink);
+              setTimeout(() => {
+                autoScrollNative.remove();
+                iframe.remove();
+                done();
+              }, 0);
             }
 
             // AutoScrollExpand
             autoScrollNative.addEventListener('resize', onAutoScrollExpand);
-            wrapperAutoScrollNative.style.width = '200px';
-            wrapperAutoScrollNative.style.height = '199px';
+
+            setTimeout(() => {
+              wrapperAutoScrollNative.style.width = '200px';
+              wrapperAutoScrollNative.style.height = '199px';
+            }, 0);
           });
 
           DBUIAutoScrollNative.registerSelf();

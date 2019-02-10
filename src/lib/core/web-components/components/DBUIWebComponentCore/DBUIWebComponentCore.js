@@ -150,6 +150,22 @@ export default function getDBUIWebComponentCore(win) {
         return this._isDisconnected;
       }
 
+      /* istanbul ignore next */
+      get dimensionsAndCoordinates() {
+        // vp stands for view-port
+        const { x: _xvp, y: _yvp, width: _fullWidth, height: _fullHeight } =
+          this.getBoundingClientRect();
+        const [xvp, yvp, fullWidth, fullHeight] =
+          [_xvp, _yvp, _fullWidth, _fullHeight].map(Math.round);
+        const width = this.offsetWidth;
+        const height = this.offsetHeight;
+        const x = xvp + win.scrollX;
+        const y = yvp + win.scrollY;
+        return {
+          x, y, xvp, yvp, width, height, fullWidth, fullHeight
+        };
+      }
+
       constructor() {
         super();
 

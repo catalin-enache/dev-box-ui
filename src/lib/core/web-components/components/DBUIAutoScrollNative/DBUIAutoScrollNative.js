@@ -3,6 +3,10 @@ import getDBUIWebComponentCore from '../DBUIWebComponentCore/DBUIWebComponentCor
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
 import getDBUIResizeSensor from '../DBUIResizeSensor/DBUIResizeSensor';
 
+const isDbuiRTL = (self) => {
+  return self.getAttribute('dbui-dir') === 'rtl';
+};
+
 const getResizeSensorOuter = (self) => {
   if (self._resizeSensorOuter) {
     return self._resizeSensorOuter;
@@ -55,6 +59,12 @@ export default function getDBUIAutoScrollNative(win) {
             width: 100%;
             height: 100%;
             position: relative;
+            /*
+            Setting overflow at runtime makes Mozilla
+            to not fire resize event for #resize-sensor-content
+            so, it must be set in CSS or in HTML style.
+            */
+            overflow: auto;
           }
           
           :host([dbui-dir=ltr]) {
@@ -69,8 +79,6 @@ export default function getDBUIAutoScrollNative(win) {
             width: 100%;
             height: 100%;
             display: block;
-            /* overflow: scroll; */
-            position: relative;
             /* partially fix chrome repaint bug on overflow auto */
             transform: translateZ(0);
           }
@@ -111,8 +119,7 @@ export default function getDBUIAutoScrollNative(win) {
        * @return {number}
        */
       get vNativeSliderThickness() {
-        const outerSensor = getResizeSensorOuter(this);
-        const vSliderThickness = outerSensor.offsetWidth - outerSensor.clientWidth;
+        const vSliderThickness = this.offsetWidth - this.clientWidth;
         return vSliderThickness;
       }
 
@@ -121,8 +128,7 @@ export default function getDBUIAutoScrollNative(win) {
        * @return {number}
        */
       get hNativeSliderThickness() {
-        const outerSensor = getResizeSensorOuter(this);
-        const hSliderThickness = outerSensor.offsetHeight - outerSensor.clientHeight;
+        const hSliderThickness = this.offsetHeight - this.clientHeight;
         return hSliderThickness;
       }
 
@@ -136,10 +142,6 @@ export default function getDBUIAutoScrollNative(win) {
         this.setAttribute('overflow', overflow);
       }
 
-      _setOverflow() {
-        getResizeSensorOuter(this).style.overflow = this.overflow;
-      }
-
       _onResizeOuter() {
         dispatchResizeEvent(this);
       }
@@ -149,26 +151,36 @@ export default function getDBUIAutoScrollNative(win) {
       }
 
       get _resizeEventDetails() {
-        const resizeOuter = getResizeSensorOuter(this);
+        const { width, fullWidth, height, fullHeight } = this.dimensionsAndCoordinates;
         const resizeContent = getResizeSensorContent(this);
-        const { width, height } = resizeOuter.dimensions;
-        const { width: contentWidth, height: contentHeight } = resizeContent.dimensions;
+        const {
+          width: contentWidth,
+          height: contentHeight,
+          fullWidth: contentFullWidth,
+          fullHeight: contentFullHeight
+        } = resizeContent.dimensionsAndCoordinates;
         const resizeEventDetails = {
-          width, height, contentWidth, contentHeight
+          width, fullWidth, height, fullHeight,
+          contentWidth, contentHeight, contentFullWidth, contentFullHeight
         };
         return resizeEventDetails;
+      }
+
+      _applyDir() {
+        const dir = isDbuiRTL(this) ? 'rtl' : 'ltr';
+        getResizeSensorOuter(this).dir = dir;
       }
 
       onLocaleDirChanged(newDir, oldDir) {
         // acts like an init
         super.onLocaleDirChanged(newDir, oldDir);
+        this._applyDir();
       }
 
       onConnectedCallback() {
         super.onConnectedCallback();
         getResizeSensorOuter(this).addEventListener('resize', this._onResizeOuter);
         getResizeSensorContent(this).addEventListener('resize', this._onResizeContent);
-        this._setOverflow();
       }
 
       onDisconnectedCallback() {
@@ -181,10 +193,6 @@ export default function getDBUIAutoScrollNative(win) {
         super.onAttributeChangedCallback(name, oldValue, newValue);
         if (!this.isMounted) return;
         switch (name) {
-          case 'overflow': {
-            this._setOverflow();
-            break;
-          }
           default:
             // pass
         }

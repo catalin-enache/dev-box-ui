@@ -113,11 +113,6 @@ export default function getDBUIResizeSensor(win) {
         this._onExpandScroll = this._onExpandScroll.bind(this);
       }
 
-      get dimensions() {
-        const { height, width } = this.getBoundingClientRect();
-        return { height: Math.round(height), width: Math.round(width) };
-      }
-
       _onShrinkScroll() {
         this._onScroll();
       }
