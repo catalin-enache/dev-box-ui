@@ -158,7 +158,7 @@ export default function getDBUIAutoScrollNative(win) {
 
       _applyDir() {
         const dir = isDbuiRTL(this) ? 'rtl' : 'ltr';
-        getResizeSensorOuter(this).dir = dir;
+        this.dir = dir;
       }
 
       onLocaleDirChanged(newDir, oldDir) {
