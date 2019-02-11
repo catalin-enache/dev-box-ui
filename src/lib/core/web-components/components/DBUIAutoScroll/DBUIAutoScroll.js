@@ -13,25 +13,22 @@ const isDbuiRTL = (self) => {
   return self.getAttribute('dbui-dir') === 'rtl';
 };
 
-const getAutoScrollNative = (self) => {
-  if (self._autoScrollNative) {
-    return self._autoScrollNative;
+const getElement = (self, id) => {
+  if (self[`_${id}`]) {
+    return self[`_${id}`];
   }
-  self._autoScrollNative =
-    self.shadowRoot.querySelector('#auto-scroll-native');
-  return self._autoScrollNative;
-};
-
-const getContent = (self) => {
-  if (self._content) {
-    return self._content;
-  }
-  self._content =
-    self.shadowRoot.querySelector('#content');
-  return self._content;
+  self[`_${id}`] =
+    self.shadowRoot.querySelector(`#${id}`);
+  return self[`_${id}`];
 };
 
 const registrationName = 'dbui-auto-scroll';
+
+/*
+TODO:
+ - should be used as native or custom and the DBUIAutoScrollNative should be private
+   reason: DBUIAutoScrollNative needs "dir" to be set which prevent dir propagation
+*/
 
 export default function getDBUIAutoScroll(win) {
   return ensureSingleRegistration(win, registrationName, () => {
@@ -74,7 +71,6 @@ export default function getDBUIAutoScroll(win) {
           #outer {
             width: 100%;
             height: 100%;
-            overflow: visible;
           }
           
           #auto-scroll-native {
@@ -89,7 +85,7 @@ export default function getDBUIAutoScroll(win) {
 
           </style>
           <div id="outer">
-            <dbui-auto-scroll-native id="auto-scroll-native" overflow="scroll">
+            <dbui-auto-scroll-native id="auto-scroll-native">
               <div id="content">
                 <slot></slot>
               </div>
@@ -104,17 +100,29 @@ export default function getDBUIAutoScroll(win) {
       }
 
       static get propertiesToUpgrade() {
-        return [...super.propertiesToUpgrade];
+        return [...super.propertiesToUpgrade, 'native'];
       }
 
       static get observedAttributes() {
-        return [...super.observedAttributes];
+        return [...super.observedAttributes, 'native'];
       }
 
       constructor() {
         super();
         this._autoScrollNative = null;
         this._content = null;
+        this._onDBUIAutoScrollNativeResize =
+          this._onDBUIAutoScrollNativeResize.bind(this);
+      }
+
+      get native() {
+        return this.getAttribute('native') !== null;
+      }
+
+      set native(value) {
+        const newValue = !!value;
+        newValue && this.setAttribute('native', '');
+        !newValue && this.removeAttribute('native');
       }
 
       /**
@@ -131,21 +139,61 @@ export default function getDBUIAutoScroll(win) {
         return customSliderThickness;
       }
 
-      onLocaleDirChanged(newDir, oldDir) {
-        // acts like an init
-        super.onLocaleDirChanged(newDir, oldDir);
-        const content = getContent(this);
+      _nativeSetupOnOff() {
+        this.native ?
+          this._nativeSetupOnCustomSetupOff() :
+          this._customSetupOnNativeSetupOff();
+      }
+
+      _nativeSetupOnCustomSetupOff() {
+        const autoScrollNative = getElement(this, 'auto-scroll-native');
+        const content = getElement(this, 'content');
+        const isRtl = isDbuiRTL(this);
+        const paddingDir = isRtl ? 'Left' : 'Right';
+        autoScrollNative.style.width = '100%';
+        autoScrollNative.style.height = '100%';
+        autoScrollNative.style.marginLeft = '0px';
+        content.style[`padding${paddingDir}`] = '0px';
+        content.style.paddingBottom = '0px';
+      }
+
+      _customSetupOnNativeSetupOff() {
+        const autoScrollNative = getElement(this, 'auto-scroll-native');
+        const content = getElement(this, 'content');
+        const isRtl = isDbuiRTL(this);
+        const paddingDir = isRtl ? 'Left' : 'Right';
+        const { hNativeSliderThickness, vNativeSliderThickness } = autoScrollNative;
         const customSliderThickness = this._customSliderThickness;
-        content.style.paddingRight = `${customSliderThickness}px`;
+        autoScrollNative.style.width = `calc(100% + ${vNativeSliderThickness}px)`;
+        autoScrollNative.style.height = `calc(100% + ${hNativeSliderThickness+2}px)`;
+        // need to address border and padding ?
+        autoScrollNative.style.marginLeft = `${(isRtl ? -vNativeSliderThickness-2 : 0)}px`;
+        content.style[`padding${paddingDir}`] = `${customSliderThickness}px`;
         content.style.paddingBottom = `${customSliderThickness}px`;
+      }
+
+      _onDBUIAutoScrollNativeResize(evt) {
+        const { width, height, contentWidth, contentHeight } = evt.detail;
+        console.log('_onDBUIAutoScrollNativeResize', {
+          width, height, contentWidth, contentHeight
+        });
+      }
+
+      onLocaleDirChanged(newDir, oldDir) {
+        super.onLocaleDirChanged(newDir, oldDir);
+        const autoScrollNative = getElement(this, 'auto-scroll-native');
+        const { vNativeSliderThickness } = autoScrollNative;
+        autoScrollNative.dir = newDir;
+        if (!this.native) {
+          autoScrollNative.style.marginLeft = `${(newDir === 'rtl' ? -vNativeSliderThickness : 0)}px`;
+        }
       }
 
       onConnectedCallback() {
         super.onConnectedCallback();
-        const autoScrollNative = getAutoScrollNative(this);
-        const { hNativeSliderThickness, vNativeSliderThickness } = autoScrollNative;
-        autoScrollNative.style.width = `calc(100% + ${vNativeSliderThickness}px)`;
-        autoScrollNative.style.height = `calc(100% + ${hNativeSliderThickness}px)`;
+        this._nativeSetupOnOff();
+        getElement(this, 'auto-scroll-native')
+          .addEventListener('resize', this._onDBUIAutoScrollNativeResize);
       }
 
       onDisconnectedCallback() {
@@ -154,6 +202,14 @@ export default function getDBUIAutoScroll(win) {
 
       onAttributeChangedCallback(name, oldValue, newValue) {
         super.onAttributeChangedCallback(name, oldValue, newValue);
+        if (!this.isMounted) return;
+        switch (name) {
+          case 'native':
+            this._nativeSetupOnOff();
+            break;
+          default:
+            // pass
+        }
       }
 
     }

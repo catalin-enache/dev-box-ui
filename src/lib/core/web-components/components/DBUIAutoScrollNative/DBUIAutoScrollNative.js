@@ -32,6 +32,12 @@ const dispatchResizeEvent = (self) => {
   }));
 };
 
+/*
+DBUIAutoScrollNative needs "dir" to be set which prevent dir propagation.
+For this reason this component should remain private.
+Instead DBUIAutoScroll should be public and act as native if needed.
+*/
+
 const registrationName = 'dbui-auto-scroll-native';
 
 export default function getDBUIAutoScrollNative(win) {

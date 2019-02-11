@@ -2,6 +2,7 @@
 const grace = 100;
 let lastTimeStamp = 0;
 
+// TODO: improve this
 // eslint-disable-next-line
 export function getWheelDelta(wheelEvent, withMultiplier) {
   const delta = wheelEvent.deltaY < 0 ? -1 : 1;

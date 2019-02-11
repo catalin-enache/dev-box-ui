@@ -231,7 +231,7 @@ describe('DBUIAutoScrollNative', () => {
             // Setting style.overflow at runtime does not work well in mozilla.
             // It makes DBUIAutoScrollNative#resize-sensor-content "resize" event to NOT fire.
             // To work with mozilla overflow must be set in html style.
-            // autoScrollNative.style.overflow = 'scroll';
+            // autoScrollNative.style.overflow = 'scroll'; // do not use
 
             function onAutoScrollExpand(evt) {
               const { width, height, contentWidth, contentHeight } = evt.detail;

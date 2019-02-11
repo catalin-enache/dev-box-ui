@@ -56,9 +56,9 @@ describe('DBUIAutoScroll', () => {
       `,
       bodyHTML: `
       <div id="container">
-        <div id="locale-provider" dir="ltr"></div>
+        <div id="locale-provider" dir="rtl"></div>
         <div id="wrapper-auto-scroll">
-          <dbui-auto-scroll id="dbui-auto-scroll" sync-locale-with="#locale-provider" h-scroll="0.20">
+          <dbui-auto-scroll id="dbui-auto-scroll" sync-locale-with="#locale-provider" h-scroll="0.20" native>
             <div id="scrollable-content" dir="ltr">${'content'}</div>
             <input type="text" />
           </dbui-auto-scroll>
