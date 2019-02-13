@@ -119,7 +119,9 @@ export default function getDBUIResizeSensor(win) {
 
       onConnectedCallback() {
         super.onConnectedCallback();
-        reset(this);
+        setTimeout(() => {
+          reset(this);
+        }, 0);
         getElement(this, 'expand').addEventListener('scroll', this._onExpandScroll);
         getElement(this, 'shrink').addEventListener('scroll', this._onShrinkScroll);
       }

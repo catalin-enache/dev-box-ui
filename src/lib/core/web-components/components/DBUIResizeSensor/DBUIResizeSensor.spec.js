@@ -178,7 +178,10 @@ describe('DBUIResizeSensor', () => {
             }
 
             resizeSensor.addEventListener('resize', onContentExpand);
-            scrollableContent.innerHTML += 'oooooooooooooooooooooo1';
+
+            setTimeout(() => {
+              scrollableContent.innerHTML += 'oooooooooooooooooooooo1';
+            });
           });
 
           DBUIResizeSensor.registerSelf();
