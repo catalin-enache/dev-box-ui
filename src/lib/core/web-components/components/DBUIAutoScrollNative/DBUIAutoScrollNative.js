@@ -32,6 +32,13 @@ const dispatchResizeEvent = (self) => {
   }));
 };
 
+const dispatchScrollEvent = (self) => {
+  const win = self.ownerDocument.defaultView;
+  self.dispatchEvent(new win.CustomEvent('scroll', {
+    detail: {}
+  }));
+};
+
 const registrationName = 'dbui-auto-scroll-native';
 
 export default function getDBUIAutoScrollNative(win) {
@@ -54,7 +61,7 @@ export default function getDBUIAutoScrollNative(win) {
         return `
           <style>
           :host {
-            /*all: initial;*/
+            /* all: initial; */
             display: block;
             width: 100%;
             height: 100%;
@@ -95,11 +102,11 @@ export default function getDBUIAutoScrollNative(win) {
       }
 
       static get propertiesToUpgrade() {
-        return [...super.propertiesToUpgrade, 'overflow'];
+        return [...super.propertiesToUpgrade, 'overflow', 'hScroll', 'vScroll'];
       }
 
       static get observedAttributes() {
-        return [...super.observedAttributes, 'overflow'];
+        return [...super.observedAttributes, 'overflow', 'h-scroll', 'v-scroll'];
       }
 
       constructor() {
@@ -109,49 +116,140 @@ export default function getDBUIAutoScrollNative(win) {
         this._onScroll = this._onScroll.bind(this);
       }
 
+      /**
+       * Returns overflow value auto || scroll || hidden
+       * @return {string}
+       */
       get overflow() {
         const overflow = this.getAttribute('overflow');
-        return ['auto', 'scroll'].includes(overflow) ? overflow : 'scroll';
+        return ['auto', 'scroll', 'hidden'].includes(overflow) ? overflow : 'scroll';
       }
 
+      /**
+       * Sets overflow value auto || scroll || hidden
+       * @param value {string}
+       */
       set overflow(value) {
-        const overflow = ['auto', 'scroll'].includes(value) ? value : '';
+        // setting invalid overflow value will return scroll on read
+        const overflow = ['auto', 'scroll', 'hidden'].includes(value) ? value : '';
         this.setAttribute('overflow', overflow);
       }
 
-      _setOverflow() {
-        getResizeSensorOuter(this).style.overflow = this.overflow;
+      /**
+       * Returns horizontal scroll as percentage between 0 and 1
+       * @return {number}
+       */
+      get hScroll() {
+        return +this.getAttribute('h-scroll') || 0;
       }
 
-      _setScroll() {
-        if (this.id !== 'dbui-auto-scroll-native') {
-          return;
-        }
-        // Do a feature detection here to detect negative scroll on rtl
-        const isRtl = isDbuiRTL(this);
+      /**
+       * Sets horizontal scroll as percentage between 0 and 1
+       * @param value {number}
+       */
+      set hScroll(value) {
+        this.setAttribute('h-scroll', (+value || 0).toString());
+      }
+
+      /**
+       * Returns vertical scroll as percentage between 0 and 1
+       * @return {number}
+       */
+      get vScroll() {
+        return +this.getAttribute('v-scroll') || 0;
+      }
+
+      /**
+       * Sets vertical scroll as percentage between 0 and 1
+       * @param value {number}
+       */
+      set vScroll(value) {
+        this.setAttribute('v-scroll', (+value || 0).toString());
+      }
+
+      /**
+       * Returns content width in pixels.
+       * @return {number}
+       */
+      get _scrollWidth() {
+        return getResizeSensorOuter(this).scrollWidth;
+      }
+
+      /**
+       * Returns content height in pixels.
+       * @return {number}
+       */
+      get _scrollHeight() {
+        return getResizeSensorOuter(this).scrollHeight;
+      }
+
+      /**
+       * Returns view width in pixels.
+       * @return {number}
+       */
+      get _clientWidth() {
+        return getResizeSensorOuter(this).clientWidth;
+      }
+
+      /**
+       * Returns view height in pixels.
+       * @return {number}
+       */
+      get _clientHeight() {
+        return getResizeSensorOuter(this).clientHeight;
+      }
+
+      /**
+       * Returns available scrolling width in pixels.
+       * @return {number}
+       */
+      get _scrollableWidth() {
+        return this._scrollWidth - this._clientWidth;
+      }
+
+      /**
+       * Returns available scrolling height in pixels.
+       * @return {number}
+       */
+      get _scrollableHeight() {
+        return this._scrollHeight - this._clientHeight;
+      }
+
+      /**
+       * Returns the amount of horizontal scroll in pixels
+       * @return {number}
+       */
+      get _scrollLeft() {
         const resizeOuter = getResizeSensorOuter(this);
-        const resizeContent = getResizeSensorContent(this);
-        const scrollableWidth = resizeOuter.scrollWidth - resizeOuter.clientWidth;
-        const newScrollLeft = isRtl ? scrollableWidth - 50 : 50;
-        console.log('AutoScroll#_setScroll', {
-          hasNegativeRTLScroll: this.hasNegativeRTLScroll,
-          scrollableWidth
-        });
-
-        resizeOuter.scrollLeft = newScrollLeft;
+        const _hScroll = resizeOuter.scrollLeft;
+        const hScroll = isDbuiRTL(this) && this.hasNegativeRTLScroll ? -_hScroll :
+          isDbuiRTL(this) ? this._scrollableWidth - _hScroll :
+            _hScroll;
+        return hScroll;
       }
 
-      _onResizeOuter() {
-        dispatchResizeEvent(this);
+      /**
+       * Sets The amount of horizontal scroll in pixels
+       * @param value {number}
+       */
+      set _scrollLeft(value) {
+        getResizeSensorOuter(this).scrollLeft = this._normalizeHLocaleScroll(value);
       }
 
-      _onResizeContent() {
-        dispatchResizeEvent(this);
+      /**
+       * Returns the amount of vertical scroll in pixels
+       * @return {number}
+       */
+      get _scrollTop() {
+        return getResizeSensorOuter(this).scrollTop;
       }
 
-      _onScroll(evt) {
-        const resizeContent = evt.target;
-        console.log('AutoScroll#_onScroll', resizeContent.scrollLeft);
+      /**
+       * Sets The amount of vertical scroll in pixels
+       * @param value {number}
+       */
+      set _scrollTop(value) {
+        getResizeSensorOuter(this).scrollTop = value;
       }
 
       get _resizeEventDetails() {
@@ -172,11 +270,67 @@ export default function getDBUIAutoScrollNative(win) {
         return resizeEventDetails;
       }
 
+      _applyOverflow() {
+        getResizeSensorOuter(this).style.overflow = this.overflow;
+      }
+
+      _normalizeHLocaleScroll(value) {
+        if (isDbuiRTL(this)) {
+          return this.hasNegativeRTLScroll ? -value : this._scrollableWidth - value;
+        }
+        return value;
+      }
+
+      _convertHScrollPercentageToPx(hScrollPercentage) {
+        return this._scrollableWidth * hScrollPercentage;
+      }
+
+      _convertVScrollPercentageToPx(vScrollPercentage) {
+        return this._scrollableHeight * vScrollPercentage;
+      }
+
+      _convertHScrollPxToPercentage(value) {
+        if (this._scrollableWidth === 0) return 0;
+        return +(value / this._scrollableWidth).toFixed(2);
+      }
+
+      _convertVScrollPxToPercentage(value) {
+        if (this._scrollableHeight === 0) return 0;
+        return +(value / this._scrollableHeight).toFixed(2);
+      }
+
+      _applyHScrollPercentage() {
+        this._scrollLeft = this._convertHScrollPercentageToPx(this.hScroll);
+      }
+
+      _applyVScrollPercentage() {
+        this._scrollTop = this._convertVScrollPercentageToPx(this.vScroll);
+      }
+
+      _applyHVScrollPercentage() {
+        this._applyHScrollPercentage();
+        this._applyVScrollPercentage();
+      }
+
+      _onResizeOuter() {
+        dispatchResizeEvent(this);
+      }
+
+      _onResizeContent() {
+        dispatchResizeEvent(this);
+      }
+
+      _onScroll() {
+        this.hScroll = this._convertHScrollPxToPercentage(this._scrollLeft);
+        this.vScroll = this._convertVScrollPxToPercentage(this._scrollTop);
+        dispatchScrollEvent(this);
+      }
+
       onLocaleDirChanged(newDir, oldDir) {
         super.onLocaleDirChanged(newDir, oldDir);
         getResizeSensorOuter(this).dir = newDir;
         if (!this.isMounted) return;
-        this._setScroll();
+        this._applyHVScrollPercentage();
       }
 
       onConnectedCallback() {
@@ -184,8 +338,10 @@ export default function getDBUIAutoScrollNative(win) {
         getResizeSensorOuter(this).addEventListener('scroll', this._onScroll);
         getResizeSensorOuter(this).addEventListener('resize', this._onResizeOuter);
         getResizeSensorContent(this).addEventListener('resize', this._onResizeContent);
-        this._setOverflow();
-        this._setScroll();
+        this._applyOverflow();
+        setTimeout(() => {
+          this._applyHVScrollPercentage();
+        }, 0);
       }
 
       onDisconnectedCallback() {
@@ -199,7 +355,15 @@ export default function getDBUIAutoScrollNative(win) {
         if (!this.isMounted) return;
         switch (name) {
           case 'overflow': {
-            this._setOverflow();
+            this._applyOverflow();
+            break;
+          }
+          case 'h-scroll': {
+            this._applyHScrollPercentage();
+            break;
+          }
+          case 'v-scroll': {
+            this._applyVScrollPercentage();
             break;
           }
           default:

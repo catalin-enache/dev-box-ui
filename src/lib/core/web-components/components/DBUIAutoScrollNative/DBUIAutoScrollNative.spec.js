@@ -19,7 +19,7 @@ const content = `
 `;
 
 describe('DBUIAutoScrollNative', () => {
-  xit('behaves as expected - live testing', (done) => {
+  it.only('behaves as expected - live testing', (done) => {
     inIframe({
       headStyle: `
       body {
@@ -42,7 +42,7 @@ describe('DBUIAutoScrollNative', () => {
       <div id="container">
         <div id="locale-provider" dir="rtl"></div>
         <div id="wrapper-auto-scroll-native">
-          <dbui-auto-scroll-native id="dbui-auto-scroll-native" sync-locale-with="#locale-provider" h-scroll="0.20">
+          <dbui-auto-scroll-native id="dbui-auto-scroll-native" _overflow="auto" sync-locale-with="#locale-provider" h-scroll="1" v-scroll="1">
             <!--<div id="scrollable-content">${content}</div>-->
             <div id="scrollable-content">
               <dbui-auto-scroll-native id="inner-scroll">
@@ -69,9 +69,17 @@ describe('DBUIAutoScrollNative', () => {
         ].map((localName) => contentWindow.customElements.whenDefined(localName)
         )).then(() => {
           // const wrapperAutoScrollNative = contentWindow.document.querySelector('#wrapper-auto-scroll-native');
-          // const autoScrollNative = contentWindow.document.querySelector('#dbui-auto-scroll-native');
+          const autoScrollNative = contentWindow.document.querySelector('#dbui-auto-scroll-native');
           const localeProvider = contentWindow.document.querySelector('#locale-provider');
           const scrollableContent = contentWindow.document.querySelector('#scrollable-content');
+
+          autoScrollNative.addEventListener('scroll', (evt) => {
+            console.log('test autoScrollNative scroll', {
+              hScroll: evt.target.hScroll,
+              vScroll: evt.target.vScroll
+            });
+          });
+
           const dynamicContent = contentWindow.document.createElement('div');
           dynamicContent.style.cssText = `
           /*width: 201px;
