@@ -19,7 +19,7 @@ const content = `
 `;
 
 describe('DBUIAutoScrollNative', () => {
-  it.only('behaves as expected - live testing', (done) => {
+  xit('behaves as expected - live testing', (done) => {
     inIframe({
       headStyle: `
       body {
@@ -42,7 +42,7 @@ describe('DBUIAutoScrollNative', () => {
       <div id="container">
         <div id="locale-provider" dir="rtl"></div>
         <div id="wrapper-auto-scroll-native">
-          <dbui-auto-scroll-native id="dbui-auto-scroll-native" _overflow="auto" sync-locale-with="#locale-provider" h-scroll="1" v-scroll="1">
+          <dbui-auto-scroll-native id="dbui-auto-scroll-native" _overflow="auto" sync-locale-with="#locale-provider" h-scroll="0.33" v-scroll="0.33">
             <!--<div id="scrollable-content">${content}</div>-->
             <div id="scrollable-content">
               <dbui-auto-scroll-native id="inner-scroll">
@@ -70,7 +70,7 @@ describe('DBUIAutoScrollNative', () => {
         )).then(() => {
           // const wrapperAutoScrollNative = contentWindow.document.querySelector('#wrapper-auto-scroll-native');
           const autoScrollNative = contentWindow.document.querySelector('#dbui-auto-scroll-native');
-          const localeProvider = contentWindow.document.querySelector('#locale-provider');
+          // const localeProvider = contentWindow.document.querySelector('#locale-provider');
           const scrollableContent = contentWindow.document.querySelector('#scrollable-content');
 
           autoScrollNative.addEventListener('scroll', (evt) => {
@@ -190,6 +190,159 @@ describe('DBUIAutoScrollNative', () => {
           setTimeout(() => {
             iframe.remove();
             done();
+          }, 0);
+        });
+
+        DBUIAutoScrollNative.registerSelf();
+      }
+    });
+  });
+
+  it('can set h-scroll, v-scroll from attribute or property', (done) => {
+    inIframe({
+      headStyle: `
+      #dbui-auto-scroll-native {
+        width: 100px;
+        height: 100px;
+      }
+      #content {
+        width: 200px;
+        height: 200px;
+      }
+      `,
+      bodyHTML: `
+        <dbui-auto-scroll-native
+        id="dbui-auto-scroll-native"
+        h-scroll="1" 
+        >
+        <div id="content"></div>
+        </dbui-auto-scroll-native>
+      `,
+      onLoad: ({ contentWindow, iframe }) => {
+        const DBUIAutoScrollNative = getDBUIAutoScrollNative(contentWindow);
+        const autoScrollNative = contentWindow.document.querySelector('#dbui-auto-scroll-native');
+        autoScrollNative.vScroll = '1';
+        Promise.all([
+          DBUIAutoScrollNative.registrationName,
+        ].map((localName) => contentWindow.customElements.whenDefined(localName)
+        )).then(() => {
+
+          const resizeOuter = autoScrollNative.shadowRoot.querySelector('#resize-sensor-outer');
+
+          setTimeout(() => {
+            expect(resizeOuter.scrollTop).to.equal(100 + autoScrollNative.vNativeScrollbarThickness);
+            expect(resizeOuter.scrollLeft).to.equal(100 + autoScrollNative.hNativeScrollbarThickness);
+
+            autoScrollNative.hScroll = '0';
+            autoScrollNative.vScroll = '0';
+
+            expect(resizeOuter.scrollTop).to.equal(0);
+            expect(resizeOuter.scrollLeft).to.equal(0);
+
+            setTimeout(() => {
+              iframe.remove();
+              done();
+            }, 0);
+          }, 0);
+        });
+
+        DBUIAutoScrollNative.registerSelf();
+      }
+    });
+  });
+
+  it('dispatches scroll event on scroll', (done) => {
+    inIframe({
+      headStyle: `
+      #dbui-auto-scroll-native {
+        width: 100px;
+        height: 100px;
+      }
+      #content {
+        width: 200px;
+        height: 200px;
+      }
+      `,
+      bodyHTML: `
+        <dbui-auto-scroll-native
+        id="dbui-auto-scroll-native"
+        h-scroll="1" 
+        v-scroll="1" 
+        >
+        <div id="content"></div>
+        </dbui-auto-scroll-native>
+      `,
+      onLoad: ({ contentWindow, iframe }) => {
+        const DBUIAutoScrollNative = getDBUIAutoScrollNative(contentWindow);
+        const autoScrollNative = contentWindow.document.querySelector('#dbui-auto-scroll-native');
+        Promise.all([
+          DBUIAutoScrollNative.registrationName,
+        ].map((localName) => contentWindow.customElements.whenDefined(localName)
+        )).then(() => {
+
+          const resizeOuter = autoScrollNative.shadowRoot.querySelector('#resize-sensor-outer');
+
+          setTimeout(() => {
+            autoScrollNative.addEventListener('scroll', () => {
+              expect(resizeOuter.scrollTop).to.equal(100 + autoScrollNative.vNativeScrollbarThickness);
+              expect(resizeOuter.scrollLeft).to.equal(100 + autoScrollNative.hNativeScrollbarThickness);
+              iframe.remove();
+              done();
+            });
+
+          }, 0);
+        });
+
+        DBUIAutoScrollNative.registerSelf();
+      }
+    });
+  });
+
+  it('is locale aware', (done) => {
+    inIframe({
+      headStyle: `
+      #dbui-auto-scroll-native {
+        width: 100px;
+        height: 100px;
+      }
+      #content {
+        width: 200px;
+        height: 200px;
+      }
+      `,
+      bodyHTML: `
+        <dbui-auto-scroll-native
+        id="dbui-auto-scroll-native"
+        h-scroll="1" 
+        v-scroll="1"
+        dir="rtl"
+        >
+        <div id="content"></div>
+        </dbui-auto-scroll-native>
+      `,
+      onLoad: ({ contentWindow, iframe }) => {
+        const DBUIAutoScrollNative = getDBUIAutoScrollNative(contentWindow);
+        const autoScrollNative = contentWindow.document.querySelector('#dbui-auto-scroll-native');
+        Promise.all([
+          DBUIAutoScrollNative.registrationName,
+        ].map((localName) => contentWindow.customElements.whenDefined(localName)
+        )).then(() => {
+
+          const resizeOuter = autoScrollNative.shadowRoot.querySelector('#resize-sensor-outer');
+
+          setTimeout(() => {
+            autoScrollNative.addEventListener('scroll', () => {
+              if (autoScrollNative.hasNegativeRTLScroll) {
+                expect(resizeOuter.scrollLeft).to.equal(-(100 + autoScrollNative.hNativeScrollbarThickness));
+              } else {
+                expect(resizeOuter.scrollLeft).to.equal(0);
+              }
+              autoScrollNative.dir = 'ltr';
+              expect(resizeOuter.scrollLeft).to.equal(100 + autoScrollNative.hNativeScrollbarThickness);
+
+              iframe.remove();
+              done();
+            });
           }, 0);
         });
 
