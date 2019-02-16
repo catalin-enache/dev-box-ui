@@ -912,6 +912,94 @@ export default function getDBUIWebComponentCore(win) {
 
       // ============================ << [unselectable] =============================================
 
+      // ============================ [browser features/behaviors detection] >> ======================================
+
+      /**
+       * Returns native vertical slider thickness in pixels.
+       * @return {number}
+       */
+      get vNativeScrollbarThickness() {
+        return (win._DBUIBDetectedBrowserFeatures || {})
+          ._vNativeScrollbarThickness;
+      }
+
+      /**
+       * Returns native horizontal slider thickness in pixels.
+       * @return {number}
+       */
+      get hNativeScrollbarThickness() {
+        return (win._DBUIBDetectedBrowserFeatures || {})
+          ._hNativeScrollbarThickness;
+      }
+
+      /**
+       * Returns whether browser runs on desktop.
+       * @return {boolean}
+       */
+      get isDesktopBrowser() {
+        return this.vNativeScrollbarThickness > 0;
+      }
+
+      /**
+       * Returns whether browser runs on mobile.
+       * @return {boolean}
+       */
+      get isMobileBrowser() {
+        return this.vNativeScrollbarThickness === 0;
+      }
+
+      /**
+       * Returns whether browser has negative RTL scroll values.
+       * @return {boolean}
+       */
+      get hasNegativeRTLScroll() {
+        return (win._DBUIBDetectedBrowserFeatures || {})
+          ._hasNegativeRTLScroll;
+      }
+
+      _detectScrollPropertiesAndBehavior() {
+        if (this.hasNegativeRTLScroll !== undefined) {
+          return;
+        }
+
+        const parent = win.document.createElement('div');
+        const child = win.document.createElement('div');
+        parent.dir = 'rtl';
+        parent.style.cssText = `
+        position: absolute;
+        width: 50px;
+        height: 50px;
+        overflow: scroll;
+        outline: 1px solid red;
+        `;
+        child.style.cssText = `
+        width: 50px;
+        height: 50px;
+        background-color: gray;
+        border: 2px solid blue;
+        `;
+        parent.appendChild(child);
+        this.shadowRoot.appendChild(parent);
+        parent.scrollLeft = -2;
+        win._DBUIBDetectedBrowserFeatures._hasNegativeRTLScroll =
+          parent.scrollLeft < 0;
+        win._DBUIBDetectedBrowserFeatures._vNativeScrollbarThickness =
+          parent.offsetWidth - parent.clientWidth;
+        win._DBUIBDetectedBrowserFeatures._hNativeScrollbarThickness =
+          parent.offsetHeight - parent.clientHeight;
+        child.innerText = this.hasNegativeRTLScroll ? 'negative' : 'positive';
+        parent.remove();
+      }
+
+      _detectFeaturesAndBehaviors() {
+        if (win._DBUIBDetectedBrowserFeatures === undefined) {
+          win._DBUIBDetectedBrowserFeatures = {};
+        }
+        this._detectScrollPropertiesAndBehavior();
+      }
+
+      // ============================ << [browser features/behaviors detection] ======================================
+
       /**
        *
        * @param prop String
@@ -975,6 +1063,7 @@ export default function getDBUIWebComponentCore(win) {
        * @private
        */
       _onAdoptedCallback(oldDocument, newDocument) {
+        this._detectFeaturesAndBehaviors();
         // Call public hook.
         this.onAdoptedCallback(oldDocument, newDocument);
       }
@@ -1022,6 +1111,7 @@ export default function getDBUIWebComponentCore(win) {
       _onConnectedCallback() {
         this._isMounted = true;
         this._isDisconnected = false;
+        this._detectFeaturesAndBehaviors();
         win.addEventListener('beforeunload', this.disconnectedCallback, false);
         const { propertiesToUpgrade, attributesToDefine } = this.constructor;
         propertiesToUpgrade.forEach((property) => {

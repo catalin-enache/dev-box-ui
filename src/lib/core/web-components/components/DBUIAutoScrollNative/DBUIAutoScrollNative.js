@@ -32,12 +32,6 @@ const dispatchResizeEvent = (self) => {
   }));
 };
 
-/*
-DBUIAutoScrollNative needs "dir" to be set which prevent dir propagation.
-For this reason this component should remain private.
-Instead DBUIAutoScroll should be public and act as native if needed.
-*/
-
 const registrationName = 'dbui-auto-scroll-native';
 
 export default function getDBUIAutoScrollNative(win) {
@@ -64,13 +58,6 @@ export default function getDBUIAutoScrollNative(win) {
             display: block;
             width: 100%;
             height: 100%;
-            position: relative;
-            /*
-            Setting overflow at runtime makes Mozilla
-            to not fire resize event for #resize-sensor-content
-            so, it must be set in CSS or in HTML style.
-            */
-            overflow: auto;
           }
           
           :host([dbui-dir=ltr]) {
@@ -85,6 +72,7 @@ export default function getDBUIAutoScrollNative(win) {
             width: 100%;
             height: 100%;
             display: block;
+            /* overflow: scroll; */ /* set at runtime */
             /* partially fix chrome repaint bug on overflow auto */
             transform: translateZ(0);
           }
@@ -107,35 +95,50 @@ export default function getDBUIAutoScrollNative(win) {
       }
 
       static get propertiesToUpgrade() {
-        return [...super.propertiesToUpgrade];
+        return [...super.propertiesToUpgrade, 'overflow'];
       }
 
       static get observedAttributes() {
-        return [...super.observedAttributes];
+        return [...super.observedAttributes, 'overflow'];
       }
 
       constructor() {
         super();
         this._onResizeOuter = this._onResizeOuter.bind(this);
         this._onResizeContent = this._onResizeContent.bind(this);
+        this._onScroll = this._onScroll.bind(this);
       }
 
-      /**
-       * Returns native vertical slider thickness in pixels.
-       * @return {number}
-       */
-      get vNativeSliderThickness() {
-        const vSliderThickness = this.offsetWidth - this.clientWidth;
-        return vSliderThickness;
+      get overflow() {
+        const overflow = this.getAttribute('overflow');
+        return ['auto', 'scroll'].includes(overflow) ? overflow : 'scroll';
       }
 
-      /**
-       * Returns native horizontal slider thickness in pixels.
-       * @return {number}
-       */
-      get hNativeSliderThickness() {
-        const hSliderThickness = this.offsetHeight - this.clientHeight;
-        return hSliderThickness;
+      set overflow(value) {
+        const overflow = ['auto', 'scroll'].includes(value) ? value : '';
+        this.setAttribute('overflow', overflow);
+      }
+
+      _setOverflow() {
+        getResizeSensorOuter(this).style.overflow = this.overflow;
+      }
+
+      _setScroll() {
+        if (this.id !== 'dbui-auto-scroll-native') {
+          return;
+        }
+        // Do a feature detection here to detect negative scroll on rtl
+        const isRtl = isDbuiRTL(this);
+        const resizeOuter = getResizeSensorOuter(this);
+        const resizeContent = getResizeSensorContent(this);
+        const scrollableWidth = resizeOuter.scrollWidth - resizeOuter.clientWidth;
+        const newScrollLeft = isRtl ? scrollableWidth - 50 : 50;
+        console.log('AutoScroll#_setScroll', {
+          hasNegativeRTLScroll: this.hasNegativeRTLScroll,
+          scrollableWidth
+        });
+
+        resizeOuter.scrollLeft = newScrollLeft;
       }
 
       _onResizeOuter() {
@@ -146,9 +149,16 @@ export default function getDBUIAutoScrollNative(win) {
         dispatchResizeEvent(this);
       }
 
+      _onScroll(evt) {
+        const resizeContent = evt.target;
+        console.log('AutoScroll#_onScroll', resizeContent.scrollLeft);
+      }
+
       get _resizeEventDetails() {
-        const { width, fullWidth, height, fullHeight } = this.dimensionsAndCoordinates;
+        const resizeOuter = getResizeSensorOuter(this);
         const resizeContent = getResizeSensorContent(this);
+        const { width, fullWidth, height, fullHeight } =
+          resizeOuter.dimensionsAndCoordinates;
         const {
           width: contentWidth,
           height: contentHeight,
@@ -162,21 +172,20 @@ export default function getDBUIAutoScrollNative(win) {
         return resizeEventDetails;
       }
 
-      _applyDir() {
-        const dir = isDbuiRTL(this) ? 'rtl' : 'ltr';
-        this.dir = dir;
-      }
-
       onLocaleDirChanged(newDir, oldDir) {
-        // acts like an init
         super.onLocaleDirChanged(newDir, oldDir);
-        this._applyDir();
+        getResizeSensorOuter(this).dir = newDir;
+        if (!this.isMounted) return;
+        this._setScroll();
       }
 
       onConnectedCallback() {
         super.onConnectedCallback();
+        getResizeSensorOuter(this).addEventListener('scroll', this._onScroll);
         getResizeSensorOuter(this).addEventListener('resize', this._onResizeOuter);
         getResizeSensorContent(this).addEventListener('resize', this._onResizeContent);
+        this._setOverflow();
+        this._setScroll();
       }
 
       onDisconnectedCallback() {
@@ -189,6 +198,10 @@ export default function getDBUIAutoScrollNative(win) {
         super.onAttributeChangedCallback(name, oldValue, newValue);
         if (!this.isMounted) return;
         switch (name) {
+          case 'overflow': {
+            this._setOverflow();
+            break;
+          }
           default:
             // pass
         }

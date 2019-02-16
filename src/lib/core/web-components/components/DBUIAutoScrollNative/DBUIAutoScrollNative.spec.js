@@ -40,10 +40,15 @@ describe('DBUIAutoScrollNative', () => {
       `,
       bodyHTML: `
       <div id="container">
-        <div id="locale-provider" dir="ltr"></div>
+        <div id="locale-provider" dir="rtl"></div>
         <div id="wrapper-auto-scroll-native">
           <dbui-auto-scroll-native id="dbui-auto-scroll-native" sync-locale-with="#locale-provider" h-scroll="0.20">
-            <div id="scrollable-content">${content}</div>
+            <!--<div id="scrollable-content">${content}</div>-->
+            <div id="scrollable-content">
+              <dbui-auto-scroll-native id="inner-scroll">
+                <div style="width: 500px; height: 500px; background-color: #0C9A9A;"></div>
+              </dbui-auto-scroll-native>
+            </div>
             <input type="text" />
           </dbui-auto-scroll-native>
         </div>
@@ -85,7 +90,7 @@ describe('DBUIAutoScrollNative', () => {
           
           `;
           // dynamicContent.tabIndex = 0;
-          // dynamicContent.setAttribute('contenteditable', 'true');
+          dynamicContent.setAttribute('contenteditable', 'true');
 
           // scrollableOne.remove();
           // wrapperScrollableOne.appendChild(scrollableOne);
@@ -101,9 +106,9 @@ describe('DBUIAutoScrollNative', () => {
           setTimeout(() => {
             // scrollableContent.appendChild(dynamicContent);
             // autoScrollNative.style.width = '350px';
-            localeProvider.dir = 'rtl';
+            // localeProvider.dir = 'rtl';
             setTimeout(() => {
-              localeProvider.dir = 'ltr';
+              // localeProvider.dir = 'ltr';
               // dynamicContent.remove();
               setTimeout(() => {
                 setTimeout(() => {
@@ -113,6 +118,71 @@ describe('DBUIAutoScrollNative', () => {
               }, 0);
             }, 3000);
           }, 3000);
+        });
+
+        DBUIAutoScrollNative.registerSelf();
+      }
+    });
+  });
+
+  it('has default overflow', (done) => {
+    inIframe({
+      headStyle: `
+      `,
+      bodyHTML: `
+        <dbui-auto-scroll-native
+        id="dbui-auto-scroll-native" 
+        ></dbui-auto-scroll-native>
+      `,
+      onLoad: ({ contentWindow, iframe }) => {
+        const DBUIAutoScrollNative = getDBUIAutoScrollNative(contentWindow);
+        Promise.all([
+          DBUIAutoScrollNative.registrationName,
+        ].map((localName) => contentWindow.customElements.whenDefined(localName)
+        )).then(() => {
+          const autoScrollNative = contentWindow.document.querySelector('#dbui-auto-scroll-native');
+          expect(autoScrollNative.overflow).to.equal('scroll');
+
+          setTimeout(() => {
+            iframe.remove();
+            done();
+          }, 0);
+        });
+
+        DBUIAutoScrollNative.registerSelf();
+      }
+    });
+  });
+
+  it('can set overflow from attribute or property', (done) => {
+    inIframe({
+      headStyle: `
+      `,
+      bodyHTML: `
+        <dbui-auto-scroll-native
+        id="dbui-auto-scroll-native"
+        overflow="auto" 
+        ></dbui-auto-scroll-native>
+      `,
+      onLoad: ({ contentWindow, iframe }) => {
+        const DBUIAutoScrollNative = getDBUIAutoScrollNative(contentWindow);
+        const autoScrollNative = contentWindow.document.querySelector('#dbui-auto-scroll-native');
+        Promise.all([
+          DBUIAutoScrollNative.registrationName,
+        ].map((localName) => contentWindow.customElements.whenDefined(localName)
+        )).then(() => {
+          expect(autoScrollNative.overflow).to.equal('auto');
+          // Setting unsupported value will set empty string value
+          // which when being read will return the default.
+          autoScrollNative.overflow = 'whatever';
+          expect(autoScrollNative.overflow).to.equal('scroll');
+          autoScrollNative.overflow = 'auto';
+          expect(autoScrollNative.overflow).to.equal('auto');
+
+          setTimeout(() => {
+            iframe.remove();
+            done();
+          }, 0);
         });
 
         DBUIAutoScrollNative.registerSelf();
@@ -157,40 +227,6 @@ describe('DBUIAutoScrollNative', () => {
     });
   });
 
-  describe('vNativeSliderThickness, hNativeSliderThickness', () => {
-    it('returns the thickness of native h/v scrolls', (done) => {
-      inIframe({
-        headStyle: `
-        `,
-        bodyHTML: `
-            <dbui-auto-scroll-native
-            id="dbui-auto-scroll-native"
-            overflow="scroll" 
-            ></dbui-auto-scroll-native>
-        </div>
-        `,
-        onLoad: ({ contentWindow, iframe }) => {
-          const DBUIAutoScrollNative = getDBUIAutoScrollNative(contentWindow);
-          const autoScrollNative = contentWindow.document.querySelector('#dbui-auto-scroll-native');
-          Promise.all([
-            DBUIAutoScrollNative.registrationName,
-          ].map((localName) => contentWindow.customElements.whenDefined(localName)
-          )).then(() => {
-            expect(autoScrollNative.vNativeSliderThickness).to.equal(autoScrollNative.hNativeSliderThickness);
-            expect(autoScrollNative.vNativeSliderThickness).to.be.within(0, 25);
-
-            setTimeout(() => {
-              iframe.remove();
-              done();
-            }, 0);
-          });
-
-          DBUIAutoScrollNative.registerSelf();
-        }
-      });
-    });
-  });
-
   describe('onResize - either auto-scroll or inner content', () => {
     it('dispatches resize event', (done) => {
       inIframe({
@@ -227,11 +263,6 @@ describe('DBUIAutoScrollNative', () => {
             DBUIAutoScrollNative.registrationName,
           ].map((localName) => contentWindow.customElements.whenDefined(localName)
           )).then(() => {
-
-            // Setting style.overflow at runtime does not work well in mozilla.
-            // It makes DBUIAutoScrollNative#resize-sensor-content "resize" event to NOT fire.
-            // To work with mozilla overflow must be set in html style.
-            // autoScrollNative.style.overflow = 'scroll'; // do not use
 
             function onAutoScrollExpand(evt) {
               const { width, height, contentWidth, contentHeight } = evt.detail;

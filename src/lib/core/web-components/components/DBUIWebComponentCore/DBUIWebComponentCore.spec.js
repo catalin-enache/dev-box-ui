@@ -765,6 +765,105 @@ describe('DBUIWebComponentBase', () => {
     });
   });
 
+  describe('vNativeScrollbarThickness, hNativeScrollbarThickness', () => {
+    it('returns the thickness of native h/v scrolls', (done) => {
+      inIframe({
+        headStyle: `
+        `,
+        bodyHTML: `
+            <dummy-one></dummy-one>
+        </div>
+        `,
+        onLoad: ({ contentWindow, iframe }) => {
+          const DummyOne = getDummyOne(contentWindow);
+          const dummyOneInst = contentWindow.document.querySelector('dummy-one');
+          Promise.all([
+            DummyOne.registrationName,
+          ].map((localName) => contentWindow.customElements.whenDefined(localName)
+          )).then(() => {
+            expect(dummyOneInst.vNativeScrollbarThickness).to.equal(dummyOneInst.hNativeScrollbarThickness);
+            expect(dummyOneInst.vNativeScrollbarThickness).to.be.within(0, 25);
+
+            setTimeout(() => {
+              iframe.remove();
+              done();
+            }, 0);
+          });
+
+          DummyOne.registerSelf();
+        }
+      });
+    });
+  });
+
+  describe('isDesktopBrowser, isMobileBrowser', () => {
+    it('returns true if vNativeScrollbarThickness > 0 else false', (done) => {
+      inIframe({
+        headStyle: `
+        `,
+        bodyHTML: `
+            <dummy-one></dummy-one>
+        </div>
+        `,
+        onLoad: ({ contentWindow, iframe }) => {
+          const DummyOne = getDummyOne(contentWindow);
+          const dummyOneInst = contentWindow.document.querySelector('dummy-one');
+          Promise.all([
+            DummyOne.registrationName,
+          ].map((localName) => contentWindow.customElements.whenDefined(localName)
+          )).then(() => {
+            expect(dummyOneInst.vNativeScrollbarThickness).to.equal(dummyOneInst.hNativeScrollbarThickness);
+            expect(dummyOneInst.vNativeScrollbarThickness).to.be.within(0, 25);
+            if (dummyOneInst.vNativeScrollbarThickness > 0) {
+              expect(dummyOneInst.isDesktopBrowser).to.equal(true);
+              expect(dummyOneInst.isMobileBrowser).to.equal(false);
+            } else {
+              expect(dummyOneInst.isDesktopBrowser).to.equal(false);
+              expect(dummyOneInst.isMobileBrowser).to.equal(true);
+            }
+
+            setTimeout(() => {
+              iframe.remove();
+              done();
+            }, 0);
+          });
+
+          DummyOne.registerSelf();
+        }
+      });
+    });
+  });
+
+  describe('hasNegativeRTLScroll', () => {
+    it('returns boolean', (done) => {
+      inIframe({
+        headStyle: `
+        `,
+        bodyHTML: `
+            <dummy-one></dummy-one>
+        </div>
+        `,
+        onLoad: ({ contentWindow, iframe }) => {
+          const DummyOne = getDummyOne(contentWindow);
+          const dummyOneInst = contentWindow.document.querySelector('dummy-one');
+          Promise.all([
+            DummyOne.registrationName,
+          ].map((localName) => contentWindow.customElements.whenDefined(localName)
+          )).then(() => {
+            expect(typeof dummyOneInst.hasNegativeRTLScroll).to.equal('boolean');
+
+            setTimeout(() => {
+              iframe.remove();
+              done();
+            }, 0);
+          });
+
+          DummyOne.registerSelf();
+        }
+      });
+    });
+  });
+
   describe('unselectable attribute', () => {
     it('makes component unselectable', (done) => {
       inIframe({
