@@ -31,6 +31,7 @@ TODO:
  - should be used as native or custom
  - import SCROLL_PRECISION
  - add Behavior Extras
+ - add an option to add the custom scroll to the external side of content
 */
 
 export default function getDBUIAutoScroll(win) {
@@ -253,14 +254,17 @@ export default function getDBUIAutoScroll(win) {
 
       _onDBUIAutoScrollNativeResize(evt) {
         const { width, height, contentWidth, contentHeight } = evt.detail;
-        const toScroll = evt.target._scrollableWidth - evt.target._scrollLeft;
-        // TODO: improve and do the same for vertical-slider, use SCROLL_PRECISION
+        const toScrollHorizontal = evt.target._scrollableWidth - evt.target._scrollLeft;
+        const toScrollVertical = evt.target._scrollableHeight - evt.target._scrollTop;
+        // TODO: improve, use SCROLL_PRECISION
         // this behavior can be seen with an inner content-editable
-        const scrollRatio = (1 - +(toScroll / evt.target._scrollableWidth).toFixed(4)).toFixed(4);
+        const scrollRatioHorizontal = (1 - +(toScrollHorizontal / evt.target._scrollableWidth).toFixed(4)).toFixed(4);
+        const scrollRatioVertical = (1 - +(toScrollVertical / evt.target._scrollableHeight).toFixed(4)).toFixed(4);
         console.log('_onDBUIAutoScrollNativeResize', {
-          width, height, contentWidth, contentHeight, toScroll, scrollRatio
+          width, height, contentWidth, contentHeight, toScrollHorizontal, toScrollVertical, scrollRatioHorizontal, scrollRatioVertical
         });
-        getElement(this, 'horizontal-slider').percent = scrollRatio;
+        getElement(this, 'horizontal-slider').percent = scrollRatioHorizontal;
+        getElement(this, 'vertical-slider').percent = scrollRatioVertical;
       }
 
       _onDBUIAutoScrollNativeScroll(evt) {
