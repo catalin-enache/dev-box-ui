@@ -41,6 +41,7 @@ const _killSelection = (e) => {
   const doc = node.ownerDocument || node;
   const win = doc.defaultView;
   // Handling the case where mouseup was fired outside the document.
+  /* istanbul ignore if */
   if (e instanceof win.MouseEvent && e.buttons === 0) {
     _enableSelection(e);
   }
