@@ -40,7 +40,7 @@ function getDummyDraggableComp(win) {
           <div id="container">
             <div id="one">draggable</div>
             <div id="two"></div>
-            <dbui-draggable id="dbui-draggable" drag-target="#one">
+            <dbui-draggable id="dbui-draggable" drag-target="#one" stop-propagating-pointer-down>
               <p>dragger</p>
             </dbui-draggable>
           </div>
@@ -100,12 +100,14 @@ function getDummyDraggableInner(win) {
             <dbui-draggable id="draggable-inner-1"
             constraint-type="boundingClientRectOf"
             constraint-selector="parent"
+            stop-propagating-pointer-down
             >
               <p id="content-1">draggable-inner-1</p>
             </dbui-draggable>
             <dbui-draggable id="draggable-inner-2"
             constraint-type="boundingClientRectOf"
             constraint-selector="parent"
+            stop-propagating-pointer-down
             >
               <p id="content-2">draggable-inner-2</p>
             </dbui-draggable>
@@ -169,6 +171,7 @@ function getDummyDraggableMiddle(win) {
             <dbui-draggable id="draggable-middle-1"
             constraint-type="boundingClientRectOf"
             constraint-selector="parent"
+            stop-propagating-pointer-down
             >
               <dummy-draggable-inner id="dummy-draggable-inner-1"></dummy-draggable-inner>
             </dbui-draggable><dbui-draggable id="draggable-middle-2"
@@ -235,12 +238,14 @@ function getDummyDraggableOuter(win) {
             <dbui-draggable id="draggable-outer-1"
             constraint-type="boundingClientRectOf"
             constraint-selector="parent"
+            stop-propagating-pointer-down
             >
               <dummy-draggable-middle id="dummy-draggable-middle-1"></dummy-draggable-middle>
             </dbui-draggable>
             <dbui-draggable id="draggable-outer-2"
             constraint-type="boundingClientRectOf"
             constraint-selector="parent"
+            stop-propagating-pointer-down
             >
               <dummy-draggable-middle id="dummy-draggable-middle-2"></dummy-draggable-middle>
             </dbui-draggable>
@@ -336,6 +341,7 @@ const html_1 = `
       constraint-selector="parent"
       target-translate-x="10"
       target-translate-y="10"
+      stop-propagating-pointer-down
     >
       <p id="draggable-two-content">draggable content 1</p>
     </dbui-draggable>
@@ -348,7 +354,9 @@ const html_1 = `
     constraint-type="boundingClientRectOf"
     constraint-selector="#wrapper-draggable-one"
     constraint-steps-x="3" target-step-x="1"
-    constraint-steps-y="3" target-step-y="1">
+    constraint-steps-y="3" target-step-y="1"
+    stop-propagating-pointer-down
+  >
       <p id="draggable-two-content">draggable content 2</p>
     </dbui-draggable>
   </div>
@@ -366,6 +374,7 @@ const html_1 = `
     constraint-cy="790"
     constraint-radius="175"
     constraint-steps="12"
+    stop-propagating-pointer-down
     >
       <p>4</p>
     </dbui-draggable>
@@ -407,36 +416,43 @@ const html_2 = `
   <dbui-draggable class="draggable-outer" id="draggable-outer-1"
   constraint-type="boundingClientRectOf"
   constraint-selector="parent"
+  stop-propagating-pointer-down
   >
     <dbui-draggable class="draggable-middle" id="draggable-middle-1"
     constraint-type="boundingClientRectOf"
     constraint-selector="parent"
+    stop-propagating-pointer-down
     >
       <dbui-draggable class="draggable-inner" id="draggable-inner-1"
       constraint-type="boundingClientRectOf"
       constraint-selector="parent"
+      stop-propagating-pointer-down
       >
         <p class="content" id="content-1">content 1</p>
       </dbui-draggable>
       <dbui-draggable class="draggable-inner" id="draggable-inner-2"
       constraint-type="boundingClientRectOf"
       constraint-selector="parent"
+      stop-propagating-pointer-down
       >
         <p class="content" id="content-2">content 2</p>
       </dbui-draggable>
     </dbui-draggable><dbui-draggable class="draggable-middle"
     constraint-type="boundingClientRectOf"
     constraint-selector="parent"
+    stop-propagating-pointer-down
     >
       <dbui-draggable class="draggable-inner"
       constraint-type="boundingClientRectOf"
       constraint-selector="parent"
+      stop-propagating-pointer-down
       >
         <p class="content">content 1</p>
       </dbui-draggable>
       <dbui-draggable class="draggable-inner"
       constraint-type="boundingClientRectOf"
       constraint-selector="parent"
+      stop-propagating-pointer-down
       >
         <p class="content">content 2</p>
       </dbui-draggable>
@@ -445,36 +461,43 @@ const html_2 = `
   <dbui-draggable class="draggable-outer"
   constraint-type="boundingClientRectOf"
   constraint-selector="parent"
+  stop-propagating-pointer-down
   >
     <dbui-draggable class="draggable-middle"
     constraint-type="boundingClientRectOf"
     constraint-selector="parent"
+    stop-propagating-pointer-down
     >
       <dbui-draggable class="draggable-inner"
       constraint-type="boundingClientRectOf"
       constraint-selector="parent"
+      stop-propagating-pointer-down
       >
         <p class="content">content 1</p>
       </dbui-draggable>
       <dbui-draggable class="draggable-inner"
       constraint-type="boundingClientRectOf"
       constraint-selector="parent"
+      stop-propagating-pointer-down
       >
         <p class="content">content 2</p>
       </dbui-draggable>
     </dbui-draggable><dbui-draggable class="draggable-middle"
     constraint-type="boundingClientRectOf"
     constraint-selector="parent"
+    stop-propagating-pointer-down
     >
       <dbui-draggable class="draggable-inner"
       constraint-type="boundingClientRectOf"
       constraint-selector="parent"
+      stop-propagating-pointer-down
       >
         <p class="content">content 1</p>
       </dbui-draggable>
       <dbui-draggable class="draggable-inner"
       constraint-type="boundingClientRectOf"
       constraint-selector="parent"
+      stop-propagating-pointer-down
       >
         <p class="content">content 2</p>
       </dbui-draggable>

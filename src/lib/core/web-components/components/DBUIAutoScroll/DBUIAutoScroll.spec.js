@@ -11,6 +11,69 @@ import {
 import getDBUIWebComponentCore from '../DBUIWebComponentCore/DBUIWebComponentCore';
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
 
+const dummyOneRegistrationName = 'dummy-one';
+function getDummyOne(win) {
+  return ensureSingleRegistration(win, dummyOneRegistrationName, () => {
+    const {
+      DBUIWebComponentBase,
+      defineCommonStaticMethods,
+      Registerable
+    } = getDBUIWebComponentCore(win);
+
+    const DBUIAutoScroll = getDBUIAutoScroll(win);
+
+    class DummyOne extends DBUIWebComponentBase {
+
+      static get registrationName() {
+        return dummyOneRegistrationName;
+      }
+
+      static get dependencies() {
+        return [...super.dependencies, DBUIAutoScroll];
+      }
+
+      static get templateInnerHTML() {
+        return `
+          <style>
+          :host {
+            display: block;
+            color: blue;
+          }
+          dbui-auto-scroll {
+            width: 100px;
+            height: 100px;
+          }
+          </style>
+          <div>
+            <p>Dummy One</p>
+            <div>
+              <dbui-auto-scroll debug-show-value>
+                <p>LppppppppppppR</p>
+                <p>LaaaaaaaaaaaaR</p>
+                <p>LssssssssssssR</p>
+                <p>LccccccccccccR</p>
+                <p>LssssssssssssR</p>
+                <p>LaaaaaaaaaaaaR</p>
+              </dbui-auto-scroll>
+            </div>
+            <br />
+            <br />
+            <br />
+            <slot></slot>
+          </div>
+        `;
+      }
+    }
+
+    return Registerable(
+      defineCommonStaticMethods(
+        DummyOne
+      )
+    );
+  });
+}
+getDummyOne.registrationName = dummyOneRegistrationName;
+
 const content = `
 <p>9aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa9</p>
 <p>0aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa0</p>
@@ -38,7 +101,8 @@ describe('DBUIAutoScroll', () => {
         width: 200px;
         height: 200px;
         background-color: rgba(0, 0, 255, 0.2);
-        border: 2px solid black;
+        border: 1px solid black;
+        /*padding: 10px;*/
         /*box-sizing: border-box;*/
         /*--dbui-auto-scroll-custom-slider-thickness: 25px;*/
       }
@@ -58,17 +122,27 @@ describe('DBUIAutoScroll', () => {
       <div id="container">
         <div id="locale-provider" dir="rtl"></div>
         <div id="wrapper-auto-scroll">
-          <dbui-auto-scroll id="dbui-auto-scroll" sync-locale-with="#locale-provider" h-scroll="0.20" native>
-            <div id="scrollable-content" dir="ltr">${'content'}</div>
+          <dummy-one>
+          <dbui-auto-scroll
+          id="dbui-auto-scroll"
+          sync-locale-with="#locale-provider"
+          h-scroll="0.20"
+          _native
+          debug-show-value
+          >
+            <div id="scrollable-content">${'content'}</div>
             <input type="text" />
           </dbui-auto-scroll>
+          </dummy-one>
         </div>
       </div>
 
       `,
 
       onLoad: ({ contentWindow, iframe }) => {
+        // onScreenConsole();
         const DBUIAutoScroll = getDBUIAutoScroll(contentWindow);
+        const DummyOne = getDummyOne(contentWindow);
         dbuiWebComponentsSetUp(contentWindow)([{
           registrationName: DBUIAutoScroll.registrationName,
           componentStyle: `
@@ -114,10 +188,10 @@ describe('DBUIAutoScroll', () => {
           // scrollableContent.innerHTML = content;
           scrollableContent.appendChild(dynamicContent);
 
-
           setTimeout(() => {
             // scrollableContent.appendChild(dynamicContent);
             // autoScrollNative.style.width = '350px';
+            // autoScroll.style.width = '50px';
             setTimeout(() => {
               // dynamicContent.remove();
               setTimeout(() => {
@@ -129,7 +203,7 @@ describe('DBUIAutoScroll', () => {
             }, 3000);
           }, 1000);
         });
-
+        DummyOne.registerSelf();
         DBUIAutoScroll.registerSelf();
       }
     });

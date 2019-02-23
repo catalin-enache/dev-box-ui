@@ -54,7 +54,7 @@ export function sendMouseEvent(element, eventType, {
   cancelable = true, bubbles = true, composed = true,
   clientX = 0, clientY = 0, screenX, screenY,
   ctrlKey, shiftKey, altKey, metaKey,
-  button = 0, buttons = 0,
+  button = 1, buttons = 1,
   relatedTarget, region,
   target,
   // if !element.ownerDocument then element is document
@@ -80,7 +80,7 @@ export function sendTapEvent(element, eventType, {
   view = (element.ownerDocument || element).defaultView,
   detail, target,
   // MouseEvent specifics
-  relatedTarget, button = 0, buttons = 0,
+  relatedTarget, button = 1, buttons = 1,
   // TouchEvent specifics
   touches
 } = {}) {

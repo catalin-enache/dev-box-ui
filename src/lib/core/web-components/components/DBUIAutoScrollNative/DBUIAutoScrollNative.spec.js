@@ -42,7 +42,7 @@ describe('DBUIAutoScrollNative', () => {
       <div id="container">
         <div id="locale-provider" dir="rtl"></div>
         <div id="wrapper-auto-scroll-native">
-          <dbui-auto-scroll-native id="dbui-auto-scroll-native" _overflow="auto" sync-locale-with="#locale-provider" h-scroll="0.33" v-scroll="0.33">
+          <dbui-auto-scroll-native id="dbui-auto-scroll-native" _overflow="auto" sync-locale-with="#locale-provider" h-scroll="0.5" v-scroll="0.5">
             <!--<div id="scrollable-content">${content}</div>-->
             <div id="scrollable-content">
               <dbui-auto-scroll-native id="inner-scroll">
@@ -115,9 +115,11 @@ describe('DBUIAutoScrollNative', () => {
             // scrollableContent.appendChild(dynamicContent);
             // autoScrollNative.style.width = '350px';
             // localeProvider.dir = 'rtl';
+            autoScrollNative.hScroll = '0.3463';
             setTimeout(() => {
               // localeProvider.dir = 'ltr';
               // dynamicContent.remove();
+              autoScrollNative.hScroll = '0.3464';
               setTimeout(() => {
                 setTimeout(() => {
                   iframe.remove();
@@ -289,6 +291,8 @@ describe('DBUIAutoScrollNative', () => {
               iframe.remove();
               done();
             });
+            autoScrollNative._hasNativeScrollControl = true;
+            autoScrollNative._onScroll();
 
           }, 0);
         });
@@ -343,6 +347,8 @@ describe('DBUIAutoScrollNative', () => {
               iframe.remove();
               done();
             });
+            autoScrollNative._hasNativeScrollControl = true;
+            autoScrollNative._onScroll();
           }, 0);
         });
 

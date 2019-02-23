@@ -36,6 +36,10 @@ const _jsEnableSelection = (node) => {
   node.removeEventListener('touchcancel', _enableSelection);
 };
 
+/*
+TODO:
+When moving mouse outside doc _killSelection remains hanging and in Firefox doc is null throwing exception
+*/
 const _killSelection = (e) => {
   const node = e.target;
   const doc = node.ownerDocument;

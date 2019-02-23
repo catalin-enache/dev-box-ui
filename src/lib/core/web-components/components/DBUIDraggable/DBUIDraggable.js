@@ -7,7 +7,7 @@ const events = {
   mouse: {
     mousemove() {
       return (evt) => {
-        evt.which === 1 ? doMove(evt) : unregisterRootEvents(evt);
+        evt.buttons === 1 ? doMove(evt) : unregisterRootEvents(evt);
       };
     },
     mouseup() {
@@ -129,6 +129,7 @@ function cancelDragging(self) {
   self._lastEvent = null;
   win._dbuiCurrentElementBeingDragged = null;
   dbuiDraggableRegisteredEvents.delete(self);
+  // TODO: must rename dragend as it shadows native event
   self.dispatchEvent(new win.CustomEvent('dragend', {
     detail: {}
   }));
@@ -251,7 +252,7 @@ function getMeasurements(evt) {
  */
 /* istanbul ignore next */
 function handleMouseDown(evt) {
-  if (evt.which === 3) return;
+  if (evt.buttons !== 1) return;
   onPointerDown(evt);
 }
 
@@ -271,8 +272,9 @@ function handleTouchStart(evt) {
  */
 function onPointerDown(evt) {
   evt.preventDefault(); // prevents TouchEvent to trigger MouseEvent
-  evt.stopPropagation();
   const self = evt.currentTarget;
+  // stopPropagation for nested draggables (allow dragging of inner most one)
+  self.stopPropagatingPointerDown && evt.stopPropagation();
   self._lastEvent = evt;
   self._cachedConstraintPreset = null;
   self._measurements = getMeasurements(evt);
@@ -550,7 +552,8 @@ export default function getDBUIDraggable(win) {
           'dragTarget',
           'constraintType', 'constraintSelector',
           'constraintCX', 'constraintCY', 'constraintRadius',
-          'constraintStepsX', 'constraintStepsY', 'constraintSteps'
+          'constraintStepsX', 'constraintStepsY', 'constraintSteps',
+          'stopPropagatingPointerDown'
         ];
       }
 
@@ -561,7 +564,8 @@ export default function getDBUIDraggable(win) {
           'drag-target',
           'constraint-type', 'constraint-selector',
           'constraint-cx', 'constraint-cy', 'constraint-radius',
-          'constraint-steps-x', 'constraint-steps-y', 'constraint-steps'
+          'constraint-steps-x', 'constraint-steps-y', 'constraint-steps',
+          'stop-propagating-pointer-down'
         ];
       }
 
@@ -575,6 +579,26 @@ export default function getDBUIDraggable(win) {
         this._targetToDragOldTransform = '';
         this._targetToDragOldTransformOrigin = '';
         this._onConstraintNodeResize = this._onConstraintNodeResize.bind(this);
+      }
+
+      /**
+       * Returns whether should stop propagate mousedown or touchstart event.
+       * Useful for nested draggables
+       * @return {boolean}
+       */
+      get stopPropagatingPointerDown() {
+        return this.getAttribute('stop-propagating-pointer-down') !== null;
+      }
+
+      /**
+       * Sets whether should stop propagate mousedown or touchstart event.
+       * Useful for nested draggables
+       * @param value {boolean}
+       */
+      set stopPropagatingPointerDown(value) {
+        const newValue = !!value;
+        newValue && this.setAttribute('stop-propagating-pointer-down', '');
+        !newValue && this.removeAttribute('stop-propagating-pointer-down');
       }
 
       /**

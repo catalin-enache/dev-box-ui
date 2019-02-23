@@ -27,7 +27,7 @@ Behavior extras:
     - when any of step/steps/percent/ratio/vertical attributes change
  - captures arrow keys if capture-arrow-keys attr is set directly or via captureArrowKeys property.
    when arrow keys are captured it adjusts self percentage via an internal delta
-   which can be influenced by altKey and ctrlKey
+   that can be influenced by altKey and ctrlKey
  - is mouse scroll aware with speed influenced by altKey and ctrlKey
  - if no ratio is set then the thickness of the slider button is determined by --dbui-slider-draggable-size css var
  - if debug-show-value is set the component will display current internal percentage on top of slider button
@@ -94,7 +94,7 @@ const getValueDisplayNode = (self) => {
 };
 
 const updateDisplayedValue = (self, value) => {
-  self.debugShowValue && (getValueDisplayNode(self).innerText = value);
+  getValueDisplayNode(self).innerText = self.debugShowValue ? value : '';
 };
 
 const getAvailableLength = (self) => {
@@ -156,7 +156,7 @@ const adjustPercentFromPointerCoords = (self, pointerCoords) => {
   const { value: finalPercent } = getStep(0, 1, safePercent, self.steps);
   const localePercent = getLocalePercent(self, finalPercent);
   self.percent = localePercent;
-  dispatchSlideEvent(self, { percent: localePercent, step: undefined });
+  dispatchSlideEvent(self);
 };
 
 const adjustPercentOrStepFromDelta = (self, delta) => {
@@ -165,13 +165,13 @@ const adjustPercentOrStepFromDelta = (self, delta) => {
     const newStep = Math.max(0, Math.min(self.steps - 1, nextStep));
     self.step = newStep;
     // self.percent is calculated automatically
-    dispatchSlideEvent(self, { step: self.step, percent: self.percent });
+    dispatchSlideEvent(self);
     return;
   }
   const nextPercent = self.percent + (delta * PERCENT_AMOUNT_INCREASE);
   const newPercent = Math.max(0, Math.min(1, nextPercent));
   self.percent = newPercent;
-  dispatchSlideEvent(self, { percent: self.percent, step: undefined });
+  dispatchSlideEvent(self);
 };
 
 const adjustRatio = (self) => {
@@ -213,10 +213,10 @@ const forwardSteps = (self) => {
   getDraggable(self)[steps] = self.steps;
 };
 
-const dispatchSlideEvent = (self, { step, percent }) => {
+const dispatchSlideEvent = (self) => {
   const win = self.ownerDocument.defaultView;
   self.dispatchEvent(new win.CustomEvent('slidemove', {
-    detail: { step, percent }
+    detail: {}
   }));
 };
 
@@ -352,11 +352,11 @@ export default function getDBUISlider(win) {
       }
 
       static get propertiesToUpgrade() {
-        return [...super.propertiesToUpgrade, 'steps', 'step', 'percent', 'vertical', 'ratio', 'captureArrowKeys'];
+        return [...super.propertiesToUpgrade, 'steps', 'step', 'percent', 'vertical', 'ratio', 'captureArrowKeys', 'debugShowValue'];
       }
 
       static get observedAttributes() {
-        return [...super.observedAttributes, 'steps', 'step', 'percent', 'vertical', 'ratio', 'capture-arrow-keys'];
+        return [...super.observedAttributes, 'steps', 'step', 'percent', 'vertical', 'ratio', 'capture-arrow-keys', 'debug-show-value'];
       }
 
       constructor() {
@@ -473,7 +473,7 @@ export default function getDBUISlider(win) {
           this.percent = localePercent;
         }
         updateDisplayedValue(this, this.percent);
-        dispatchSlideEvent(this, { step, percent: localePercent });
+        dispatchSlideEvent(this);
       }
 
       _onDraggableDragStart() {
@@ -499,9 +499,14 @@ export default function getDBUISlider(win) {
       }
 
       _onSliderMouseDown(evt) {
-        if (evt.which === 3) return;
+        if (evt.buttons !== 1) return;
         evt.preventDefault();
-        evt.stopPropagation();
+        const wrapperMiddle = getWrapperMiddle(this);
+        const inner = getInner(this);
+        if (![wrapperMiddle, inner].includes(evt.target)) {
+          // prevent slider to slide on mousedown if target is not wrapper-middle
+          return;
+        }
         const { clientX, clientY } = evt;
         adjustPercentFromPointerCoords(this, {
           clientX: Math.round(clientX),
@@ -511,8 +516,12 @@ export default function getDBUISlider(win) {
 
       _onSliderTouchStart(evt) {
         evt.preventDefault();
-        evt.stopPropagation();
         const wrapperMiddle = getWrapperMiddle(this);
+        const inner = getInner(this);
+        if (![wrapperMiddle, inner].includes(evt.target)) {
+          // prevent slider to slide on mousedown if target is not wrapper-middle
+          return;
+        }
         const touch = [...evt.touches].find((t) => t.target === wrapperMiddle);
         const { clientX, clientY } = touch;
         adjustPercentFromPointerCoords(this, {
@@ -600,6 +609,10 @@ export default function getDBUISlider(win) {
               forwardSteps(this);
             }
             adjustPercent(this);
+            break;
+          }
+          case 'debug-show-value': {
+            updateDisplayedValue(this, this.percent);
             break;
           }
           default:
