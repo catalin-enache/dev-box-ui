@@ -49,6 +49,11 @@ If children are accessed in connectedCallback they might not be complete yet at 
 */
 
 // https://www.kirupa.com/html5/handling_events_for_many_elements.htm
+
+/*
+TODO: add Behavior Extras
+*/
+
 /**
  *
  * @param win Window

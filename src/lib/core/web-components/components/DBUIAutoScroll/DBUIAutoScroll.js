@@ -30,6 +30,7 @@ const registrationName = 'dbui-auto-scroll';
 TODO:
  - should be used as native or custom
  - import SCROLL_PRECISION
+ - add Behavior Extras
 */
 
 export default function getDBUIAutoScroll(win) {

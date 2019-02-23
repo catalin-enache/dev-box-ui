@@ -7,6 +7,10 @@ const INTERPOLATION_ATTR_PREFIX = 'message-';
 
 const registrationName = 'dbui-translated';
 
+/*
+TODO: add Behavior Extras
+*/
+
 export default function getDBUITranslated(win) {
   return ensureSingleRegistration(win, registrationName, () => {
     const {

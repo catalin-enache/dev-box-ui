@@ -41,6 +41,10 @@ const dispatchResizeEvent = (self) => {
   self.dispatchEvent(new win.CustomEvent('resize'));
 };
 
+/*
+TODO: add Behavior Extras
+*/
+
 export default function getDBUIResizeSensor(win) {
   return ensureSingleRegistration(win, registrationName, () => {
     const {

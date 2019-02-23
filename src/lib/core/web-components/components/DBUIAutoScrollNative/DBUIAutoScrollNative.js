@@ -46,6 +46,7 @@ const dispatchScrollEvent = (self) => {
 TODO:
 Finish userControlled behavior and do related unittests.
 Decide with SCROLL_PRECISION
+add Behavior Extras
 */
 
 const registrationName = 'dbui-auto-scroll-native';

@@ -7,6 +7,10 @@ If you want to set focus programmatically call .focus() method on component.
 `
 };
 
+/*
+TODO: add Behavior Extras
+*/
+
 /**
  * When an inner focusable is focused (ex: via click) the entire component gets focused.
  * When the component gets focused (ex: via tab) the first inner focusable gets focused too.

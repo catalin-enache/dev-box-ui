@@ -503,6 +503,7 @@ TODO:
  - improve code where possible
  - add circleAround({ selector, steps }) preset ?
  - allow consumer to set the percent precision with default fallback
+ - add Behavior extras
 */
 
 const registrationName = 'dbui-draggable';

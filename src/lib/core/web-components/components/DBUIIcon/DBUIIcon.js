@@ -10,6 +10,10 @@ const registrationName = 'dbui-icon';
 // https://github.com/gorangajic/react-icons/blob/master/go/mark-github.js
 // https://gorangajic.github.io/react-icons/go.html
 
+/*
+TODO: add Behavior Extras
+*/
+
 export default function getDBUIIcon(win) {
   return ensureSingleRegistration(win, registrationName, () => {
     const {
