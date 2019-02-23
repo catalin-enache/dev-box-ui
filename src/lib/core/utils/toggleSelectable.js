@@ -36,14 +36,14 @@ const _jsEnableSelection = (node) => {
   node.removeEventListener('touchcancel', _enableSelection);
 };
 
-/*
-TODO:
-When moving mouse outside doc _killSelection remains hanging and in Firefox doc is null throwing exception
-*/
 const _killSelection = (e) => {
   const node = e.target;
-  const doc = node.ownerDocument;
+  const doc = node.ownerDocument || node;
   const win = doc.defaultView;
+  // Handling the case where mouseup was fired outside the document.
+  if (e instanceof win.MouseEvent && e.buttons === 0) {
+    _enableSelection(e);
+  }
   switch (e.type) {
     case 'mousemove':
     case 'touchmove':
@@ -56,7 +56,7 @@ const _killSelection = (e) => {
 
 const _disableSelection = (e) => {
   const node = e.target;
-  const doc = node.ownerDocument;
+  const doc = node.ownerDocument || node;
   const win = doc.defaultView;
   // first clear any current selection
   win.getSelection && win.getSelection().removeAllRanges();
@@ -69,7 +69,7 @@ const _disableSelection = (e) => {
 
 const _enableSelection = (e) => {
   const node = e.target;
-  const doc = node.ownerDocument;
+  const doc = node.ownerDocument || node;
   // enable further selection
   // 1. by style
   _cssEnableSelection(doc.body);
