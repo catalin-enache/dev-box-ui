@@ -291,9 +291,9 @@ export default function getDBUIAutoScroll(win) {
         getElement(this, 'auto-scroll-native')
           .addEventListener('scroll', this._onDBUIAutoScrollNativeScroll);
         getElement(this, 'horizontal-slider')
-          .addEventListener('slidemove', this._onHorizontalSliderMove);
+          .addEventListener('dbui-event-slidemove', this._onHorizontalSliderMove);
         getElement(this, 'vertical-slider')
-          .addEventListener('slidemove', this._onVerticalSliderMove);
+          .addEventListener('dbui-event-slidemove', this._onVerticalSliderMove);
       }
 
       onDisconnectedCallback() {
@@ -303,9 +303,9 @@ export default function getDBUIAutoScroll(win) {
         getElement(this, 'auto-scroll-native')
           .removeEventListener('scroll', this._onDBUIAutoScrollNativeScroll);
         getElement(this, 'horizontal-slider')
-          .removeEventListener('slidemove', this._onHorizontalSliderMove);
+          .removeEventListener('dbui-event-slidemove', this._onHorizontalSliderMove);
         getElement(this, 'vertical-slider')
-          .removeEventListener('slidemove', this._onVerticalSliderMove);
+          .removeEventListener('dbui-event-slidemove', this._onVerticalSliderMove);
       }
 
       onAttributeChangedCallback(name, oldValue, newValue) {

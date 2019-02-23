@@ -647,7 +647,7 @@ describe('DBUIDraggable', () => {
           };
 
           let translateEvent = null;
-          draggableOne.addEventListener('dragmove', (evt) => {
+          draggableOne.addEventListener('dbui-event-dragmove', (evt) => {
             translateEvent = evt;
           });
 
@@ -751,7 +751,7 @@ describe('DBUIDraggable', () => {
           };
 
           let translateEvent = null;
-          draggableOne.addEventListener('dragmove', (evt) => {
+          draggableOne.addEventListener('dbui-event-dragmove', (evt) => {
             translateEvent = evt;
           });
 
@@ -860,7 +860,7 @@ describe('DBUIDraggable', () => {
           };
 
           let translateEvent = null;
-          draggableOne.addEventListener('dragmove', (evt) => {
+          draggableOne.addEventListener('dbui-event-dragmove', (evt) => {
             translateEvent = evt;
           });
 
@@ -969,7 +969,7 @@ describe('DBUIDraggable', () => {
           };
 
           let translateEvent = null;
-          draggableOne.addEventListener('dragmove', (evt) => {
+          draggableOne.addEventListener('dbui-event-dragmove', (evt) => {
             translateEvent = evt;
           });
 
@@ -1098,7 +1098,7 @@ describe('DBUIDraggable', () => {
           };
 
           let translateEvent = null;
-          draggableOne.addEventListener('dragmove', (evt) => {
+          draggableOne.addEventListener('dbui-event-dragmove', (evt) => {
             translateEvent = evt;
           });
 
@@ -1876,7 +1876,7 @@ describe('DBUIDraggable', () => {
                 expect(evtDetail.targetY).to.equal(100);
               };
 
-              draggableOne.addEventListener('dragmove', (evt) => {
+              draggableOne.addEventListener('dbui-event-dragmove', (evt) => {
                 evtDetail = evt.detail;
               });
 
@@ -1952,7 +1952,7 @@ describe('DBUIDraggable', () => {
                 expect(evtDetails[2].targetY).to.equal(100);
               };
 
-              draggableOne.addEventListener('dragmove', (evt) => {
+              draggableOne.addEventListener('dbui-event-dragmove', (evt) => {
                 evtDetails.push(evt.detail);
               });
 
@@ -2044,7 +2044,7 @@ describe('DBUIDraggable', () => {
                 expect(evtDetail.targetY).to.equal(75);
               };
 
-              draggableOne.addEventListener('dragmove', (evt) => {
+              draggableOne.addEventListener('dbui-event-dragmove', (evt) => {
                 evtDetail = evt.detail;
               });
 
@@ -2145,7 +2145,7 @@ describe('DBUIDraggable', () => {
                 expect(evtDetails[2].targetPercent).to.equal(0.75);
               };
 
-              draggableOne.addEventListener('dragmove', (evt) => {
+              draggableOne.addEventListener('dbui-event-dragmove', (evt) => {
                 evtDetails.push(evt.detail);
               });
 
@@ -3144,8 +3144,8 @@ describe('DBUIDraggable', () => {
               expect(draggableOne.getBoundingClientRect().y).to.equal(50);
               expect(evt.detail.targetY).to.equal(50);
               expect(evt.detail.targetY).to.equal(50);
-              draggableOne.removeEventListener('dragmove', dragMove1);
-              draggableOne.addEventListener('dragmove', dragMove2);
+              draggableOne.removeEventListener('dbui-event-dragmove', dragMove1);
+              draggableOne.addEventListener('dbui-event-dragmove', dragMove2);
 
               contentWindow.requestAnimationFrame(() => {
                 setTimeout(() => {
@@ -3170,15 +3170,15 @@ describe('DBUIDraggable', () => {
               });
             }
 
-            draggableOne.addEventListener('dragmove', dragMove1);
+            draggableOne.addEventListener('dbui-event-dragmove', dragMove1);
 
             function dragMove2(evt) {
               expect(draggableOne.getBoundingClientRect().x).to.equal(100);
               expect(draggableOne.getBoundingClientRect().y).to.equal(100);
               expect(evt.detail.targetX).to.equal(100);
               expect(evt.detail.targetY).to.equal(100);
-              draggableOne.removeEventListener('dragmove', dragMove2);
-              draggableOne.addEventListener('dragmove', dragMove3);
+              draggableOne.removeEventListener('dbui-event-dragmove', dragMove2);
+              draggableOne.addEventListener('dbui-event-dragmove', dragMove3);
               contentWindow.requestAnimationFrame(() => {
                 setTimeout(() => {
                   resizeSensor.style.width = '100px';

@@ -301,8 +301,8 @@ export default function getDBUIScrollable(win) {
         getResizeSensorOuter(this).contentWindow.addEventListener('resize', this._onResize);
         const hSlider = getHSlider(this);
         const vSlider = getVSlider(this);
-        hSlider.addEventListener('slidemove', this._onHSlide);
-        vSlider.addEventListener('slidemove', this._onVSlide);
+        hSlider.addEventListener('dbui-event-slidemove', this._onHSlide);
+        vSlider.addEventListener('dbui-event-slidemove', this._onVSlide);
         hSlider.addEventListener('mouseenter', this._onHSliderMouseEnter);
         hSlider.addEventListener('mouseleave', this._onHSliderMouseLeave);
         vSlider.addEventListener('mouseenter', this._onVSliderMouseEnter);

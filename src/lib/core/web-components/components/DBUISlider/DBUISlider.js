@@ -215,7 +215,7 @@ const forwardSteps = (self) => {
 
 const dispatchSlideEvent = (self) => {
   const win = self.ownerDocument.defaultView;
-  self.dispatchEvent(new win.CustomEvent('slidemove', {
+  self.dispatchEvent(new win.CustomEvent('dbui-event-slidemove', {
     detail: {}
   }));
 };
@@ -555,9 +555,9 @@ export default function getDBUISlider(win) {
 
       onConnectedCallback() {
         super.onConnectedCallback();
-        getDraggable(this).addEventListener('dragmove', this._onDraggableMove);
-        getDraggable(this).addEventListener('dragstart', this._onDraggableDragStart);
-        getDraggable(this).addEventListener('dragend', this._onDraggableDragEnd);
+        getDraggable(this).addEventListener('dbui-event-dragmove', this._onDraggableMove);
+        getDraggable(this).addEventListener('dbui-event-dragstart', this._onDraggableDragStart);
+        getDraggable(this).addEventListener('dbui-event-dragend', this._onDraggableDragEnd);
         getWrapperMiddle(this).addEventListener('mousedown', this._onSliderMouseDown);
         getWrapperMiddle(this).addEventListener('touchstart', this._onSliderTouchStart);
         getWrapperMiddle(this).addEventListener('resize', this._onResize);
@@ -568,9 +568,9 @@ export default function getDBUISlider(win) {
 
       onDisconnectedCallback() {
         super.onDisconnectedCallback();
-        getDraggable(this).removeEventListener('dragmove', this._onDraggableMove);
-        getDraggable(this).removeEventListener('dragstart', this._onDraggableDragStart);
-        getDraggable(this).removeEventListener('dragend', this._onDraggableDragEnd);
+        getDraggable(this).removeEventListener('dbui-event-dragmove', this._onDraggableMove);
+        getDraggable(this).removeEventListener('dbui-event-dragstart', this._onDraggableDragStart);
+        getDraggable(this).removeEventListener('dbui-event-dragend', this._onDraggableDragEnd);
         getWrapperMiddle(this).removeEventListener('mousedown', this._onSliderMouseDown);
         getWrapperMiddle(this).removeEventListener('touchstart', this._onSliderTouchStart);
         getWrapperMiddle(this).removeEventListener('resize', this._onResize);

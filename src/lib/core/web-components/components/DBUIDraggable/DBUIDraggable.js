@@ -129,8 +129,7 @@ function cancelDragging(self) {
   self._lastEvent = null;
   win._dbuiCurrentElementBeingDragged = null;
   dbuiDraggableRegisteredEvents.delete(self);
-  // TODO: must rename dragend as it shadows native event
-  self.dispatchEvent(new win.CustomEvent('dragend', {
+  self.dispatchEvent(new win.CustomEvent('dbui-event-dragend', {
     detail: {}
   }));
 }
@@ -284,7 +283,7 @@ function onPointerDown(evt) {
   const {
     clientX, clientY
   } = extractedEvent;
-  self.dispatchEvent(new win.CustomEvent('dragstart', {
+  self.dispatchEvent(new win.CustomEvent('dbui-event-dragstart', {
     detail: {
       clientX, clientY
     }
@@ -371,7 +370,7 @@ function doMove(_evt, { forceDispatch = false } = {}) {
     self.targetTranslateY = newTargetTranslateY;
 
     if (forceDispatch || newTargetTranslateX !== prevTargetTranslateX || newTargetTranslateY !== prevTargetTranslateY) {
-      self.dispatchEvent(new win.CustomEvent('dragmove', {
+      self.dispatchEvent(new win.CustomEvent('dbui-event-dragmove', {
         detail: {
           targetWidthOnStart, targetHeightOnStart,
           targetXOnStart, targetYOnStart,
