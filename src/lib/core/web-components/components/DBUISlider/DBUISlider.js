@@ -36,7 +36,6 @@ Behavior extras:
 TODO:
  - what happens when ratio change while scrolling ? (ex: in scrollable resize event is fired)
  - when size changes independently then ratio and position should auto-update.
- - when ratio is too small don't allow the button to shrink too much (have a minimum allowed in pixels)
 */
 
 const DBUISliderCssVars = `
@@ -51,7 +50,7 @@ const DBUISliderCssVars = `
     --dbui-slider-inner-size: 1px;
     --dbui-slider-inner-color: rgba(0, 0, 255, 0.2);
     
-    --dbui-slider-draggable-size: 30px;
+    --dbui-slider-draggable-size: 16px;
     --dbui-slider-draggable-color: rgba(0, 0, 0, 0.2);
     --dbui-slider-draggable-border-radius: 0px;
     --dbui-slider-draggable-font-size: 8px;
@@ -309,12 +308,14 @@ export default function getDBUISlider(win) {
           
           :host(:not([vertical])) #${DRAGGABLE_ID} {
             width: var(--dbui-slider-draggable-size);
+            min-width: var(--dbui-slider-draggable-size);
             height: 100%;
           }
           
           :host([vertical]) #${DRAGGABLE_ID} {
             width: 100%;
             height: var(--dbui-slider-draggable-size);
+            min-height: var(--dbui-slider-draggable-size);
           }
           
           #value-display-wrapper {

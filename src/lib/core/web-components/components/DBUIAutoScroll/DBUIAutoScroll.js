@@ -32,7 +32,7 @@ const registrationName = 'dbui-auto-scroll';
 TODO:
  - should be used as native or custom
  - add an option to add the custom scroll to the external side of content
- - adjust slider ratio on resize
+ - adjust scroll position on load and on user programmatic change
 */
 
 /*
@@ -217,6 +217,24 @@ export default function getDBUIAutoScroll(win) {
       }
 
       /**
+       * Returns the ratio between horizontal with and horizontal content width.
+       * (forwarded from internal auto-scroll-native)
+       * @return {number}
+       */
+      get hRatio() {
+        return getElement(this, 'auto-scroll-native').hRatio;
+      }
+
+      /**
+       * Returns the ratio between vertical height and vertical content height.
+       * (forwarded from internal auto-scroll-native)
+       * @return {number}
+       */
+      get vRatio() {
+        return getElement(this, 'auto-scroll-native').vRatio;
+      }
+
+      /**
        * Returns custom slider thickness in pixels.
        * @return {number}
        */
@@ -276,22 +294,23 @@ export default function getDBUIAutoScroll(win) {
       }
 
       _onDBUIAutoScrollNativeResize(evt) {
-        const { width, height, contentWidth, contentHeight } = evt.detail;
-        const toScrollHorizontal = evt.target._scrollableWidth - evt.target._scrollLeft;
-        const toScrollVertical = evt.target._scrollableHeight - evt.target._scrollTop;
-        // TODO: improve
+        const toScrollHorizontal = evt.target.scrollableWidth - evt.target.scrollLeft;
+        const toScrollVertical = evt.target.scrollableHeight - evt.target.scrollTop;
         // this behavior can be seen with an inner content-editable
         const scrollRatioHorizontal =
-          (1 - +(toScrollHorizontal / evt.target._scrollableWidth).toFixed(this.percentPrecision))
-            .toFixed(this.percentPrecision);
+          (
+            1 - +(toScrollHorizontal / evt.target.scrollableWidth)
+              .toFixed(this.percentPrecision)
+          ).toFixed(this.percentPrecision);
         const scrollRatioVertical =
-          (1 - +(toScrollVertical / evt.target._scrollableHeight).toFixed(this.percentPrecision))
-            .toFixed(this.percentPrecision);
-        console.log('_onDBUIAutoScrollNativeResize', {
-          width, height, contentWidth, contentHeight, toScrollHorizontal, toScrollVertical, scrollRatioHorizontal, scrollRatioVertical
-        });
+          (
+            1 - +(toScrollVertical / evt.target.scrollableHeight)
+              .toFixed(this.percentPrecision)
+          ).toFixed(this.percentPrecision);
         getElement(this, 'horizontal-slider').percent = scrollRatioHorizontal;
         getElement(this, 'vertical-slider').percent = scrollRatioVertical;
+        getElement(this, 'horizontal-slider').ratio = evt.target.hRatio;
+        getElement(this, 'vertical-slider').ratio = evt.target.vRatio;
       }
 
       _onDBUIAutoScrollNativeScroll(evt) {
@@ -333,6 +352,10 @@ export default function getDBUIAutoScroll(win) {
         getElement(this, 'vertical-slider')
           .addEventListener('dbui-event-slidemove', this._onVerticalSliderMove);
         this._setPercentPrecision();
+        setTimeout(() => {
+          getElement(this, 'horizontal-slider').ratio = this.hRatio;
+          getElement(this, 'vertical-slider').ratio = this.vRatio;
+        }, 0);
       }
 
       onDisconnectedCallback() {

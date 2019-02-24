@@ -31,6 +31,7 @@ const getResizeSensorContent = (self) => {
 const dispatchResizeEvent = (self) => {
   const win = self.ownerDocument.defaultView;
   self.dispatchEvent(new win.CustomEvent('resize', {
+    // TODO: prefix the event with dbui-event
     detail: self._resizeEventDetails
   }));
 };
@@ -38,6 +39,7 @@ const dispatchResizeEvent = (self) => {
 const dispatchScrollEvent = (self) => {
   const win = self.ownerDocument.defaultView;
   self.dispatchEvent(new win.CustomEvent('scroll', {
+    // TODO: prefix the event with dbui-event
     detail: {}
   }));
 };
@@ -208,10 +210,26 @@ export default function getDBUIAutoScrollNative(win) {
       }
 
       /**
+       * Returns the ratio between horizontal with and horizontal content width
+       * @return {number}
+       */
+      get hRatio() {
+        return trunc(this.percentPrecision)(this.clientWidth / this.scrollWidth);
+      }
+
+      /**
+       * Returns the ratio between horizontal height and horizontal content height
+       * @return {number}
+       */
+      get vRatio() {
+        return trunc(this.percentPrecision)(this.clientHeight / this.scrollHeight);
+      }
+
+      /**
        * Returns content width in pixels.
        * @return {number}
        */
-      get _scrollWidth() {
+      get scrollWidth() {
         return getResizeSensorOuter(this).scrollWidth;
       }
 
@@ -219,7 +237,7 @@ export default function getDBUIAutoScrollNative(win) {
        * Returns content height in pixels.
        * @return {number}
        */
-      get _scrollHeight() {
+      get scrollHeight() {
         return getResizeSensorOuter(this).scrollHeight;
       }
 
@@ -227,7 +245,7 @@ export default function getDBUIAutoScrollNative(win) {
        * Returns view width in pixels.
        * @return {number}
        */
-      get _clientWidth() {
+      get clientWidth() {
         return getResizeSensorOuter(this).clientWidth;
       }
 
@@ -235,7 +253,7 @@ export default function getDBUIAutoScrollNative(win) {
        * Returns view height in pixels.
        * @return {number}
        */
-      get _clientHeight() {
+      get clientHeight() {
         return getResizeSensorOuter(this).clientHeight;
       }
 
@@ -243,27 +261,27 @@ export default function getDBUIAutoScrollNative(win) {
        * Returns available scrolling width in pixels.
        * @return {number}
        */
-      get _scrollableWidth() {
-        return this._scrollWidth - this._clientWidth;
+      get scrollableWidth() {
+        return this.scrollWidth - this.clientWidth;
       }
 
       /**
        * Returns available scrolling height in pixels.
        * @return {number}
        */
-      get _scrollableHeight() {
-        return this._scrollHeight - this._clientHeight;
+      get scrollableHeight() {
+        return this.scrollHeight - this.clientHeight;
       }
 
       /**
        * Returns the amount of horizontal scroll in pixels
        * @return {number}
        */
-      get _scrollLeft() {
+      get scrollLeft() {
         const resizeOuter = getResizeSensorOuter(this);
         const _hScroll = resizeOuter.scrollLeft;
         const hScroll = isDbuiRTL(this) && this.hasNegativeRTLScroll ? -_hScroll :
-          isDbuiRTL(this) ? this._scrollableWidth - _hScroll :
+          isDbuiRTL(this) ? this.scrollableWidth - _hScroll :
             _hScroll;
         return hScroll;
       }
@@ -272,7 +290,7 @@ export default function getDBUIAutoScrollNative(win) {
        * Sets The amount of horizontal scroll in pixels
        * @param value {number}
        */
-      set _scrollLeft(value) {
+      set scrollLeft(value) {
         getResizeSensorOuter(this).scrollLeft = this._normalizeHLocaleScroll(value);
       }
 
@@ -280,7 +298,7 @@ export default function getDBUIAutoScrollNative(win) {
        * Returns the amount of vertical scroll in pixels
        * @return {number}
        */
-      get _scrollTop() {
+      get scrollTop() {
         return getResizeSensorOuter(this).scrollTop;
       }
 
@@ -288,7 +306,7 @@ export default function getDBUIAutoScrollNative(win) {
        * Sets The amount of vertical scroll in pixels
        * @param value {number}
        */
-      set _scrollTop(value) {
+      set scrollTop(value) {
         getResizeSensorOuter(this).scrollTop = value;
       }
 
@@ -316,35 +334,35 @@ export default function getDBUIAutoScrollNative(win) {
 
       _normalizeHLocaleScroll(value) {
         if (isDbuiRTL(this)) {
-          return this.hasNegativeRTLScroll ? -value : this._scrollableWidth - value;
+          return this.hasNegativeRTLScroll ? -value : this.scrollableWidth - value;
         }
         return value;
       }
 
       _convertHScrollPercentageToPx(hScrollPercentage) {
-        return Math.round(this._scrollableWidth * hScrollPercentage);
+        return Math.round(this.scrollableWidth * hScrollPercentage);
       }
 
       _convertVScrollPercentageToPx(vScrollPercentage) {
-        return Math.round(this._scrollableHeight * vScrollPercentage);
+        return Math.round(this.scrollableHeight * vScrollPercentage);
       }
 
       _convertHScrollPxToPercentage(value) {
-        if (this._scrollableWidth === 0) return 0;
-        return trunc(this.percentPrecision)(value / this._scrollableWidth);
+        if (this.scrollableWidth === 0) return 0;
+        return trunc(this.percentPrecision)(value / this.scrollableWidth);
       }
 
       _convertVScrollPxToPercentage(value) {
-        if (this._scrollableHeight === 0) return 0;
-        return trunc(this.percentPrecision)(value / this._scrollableHeight);
+        if (this.scrollableHeight === 0) return 0;
+        return trunc(this.percentPrecision)(value / this.scrollableHeight);
       }
 
       _applyHScrollPercentage() {
-        this._scrollLeft = this._convertHScrollPercentageToPx(this.hScroll);
+        this.scrollLeft = this._convertHScrollPercentageToPx(this.hScroll);
       }
 
       _applyVScrollPercentage() {
-        this._scrollTop = this._convertVScrollPercentageToPx(this.vScroll);
+        this.scrollTop = this._convertVScrollPercentageToPx(this.vScroll);
       }
 
       _applyHVScrollPercentage() {
@@ -364,8 +382,8 @@ export default function getDBUIAutoScrollNative(win) {
         // When hvScroll was set programmatically resulting in a scroll event
         // there is no need to set hvScroll again from internal calculation
         if (!this._hasNativeScrollControl) return;
-        this.hScroll = this._convertHScrollPxToPercentage(this._scrollLeft);
-        this.vScroll = this._convertVScrollPxToPercentage(this._scrollTop);
+        this.hScroll = this._convertHScrollPxToPercentage(this.scrollLeft);
+        this.vScroll = this._convertVScrollPxToPercentage(this.scrollTop);
         dispatchScrollEvent(this);
       }
 
