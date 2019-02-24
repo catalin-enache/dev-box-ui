@@ -4,6 +4,8 @@ import ensureSingleRegistration from '../../../internals/ensureSingleRegistratio
 import getDBUIAutoScrollNative from '../DBUIAutoScrollNative/DBUIAutoScrollNative';
 import getDBUISlider from '../DBUISlider/DBUISlider';
 
+const DEFAULT_PERCENT_PRECISION = 4;
+
 const DBUIAutoScrollCssVars = `
   :root {
     --dbui-auto-scroll-custom-slider-thickness: 20px;
@@ -29,9 +31,13 @@ const registrationName = 'dbui-auto-scroll';
 /*
 TODO:
  - should be used as native or custom
- - import SCROLL_PRECISION
- - add Behavior Extras
  - add an option to add the custom scroll to the external side of content
+ - adjust slider ratio on resize
+*/
+
+/*
+Behavior Extras:
+ - scroll precision is configurable (percentPrecision) and defaults to 4
 */
 
 export default function getDBUIAutoScroll(win) {
@@ -146,11 +152,11 @@ export default function getDBUIAutoScroll(win) {
       }
 
       static get propertiesToUpgrade() {
-        return [...super.propertiesToUpgrade, 'native', 'debugShowValue'];
+        return [...super.propertiesToUpgrade, 'native', 'debugShowValue', 'percentPrecision'];
       }
 
       static get observedAttributes() {
-        return [...super.observedAttributes, 'native', 'debug-show-value'];
+        return [...super.observedAttributes, 'native', 'debug-show-value', 'percent-precision'];
       }
 
       constructor() {
@@ -173,6 +179,23 @@ export default function getDBUIAutoScroll(win) {
         const newValue = !!value;
         newValue && this.setAttribute('debug-show-value', '');
         !newValue && this.removeAttribute('debug-show-value');
+      }
+
+      /**
+       * Returns precision to be used when calculating percent
+       * @return {number} integer
+       */
+      get percentPrecision() {
+        return this.getAttribute('percent-precision') || DEFAULT_PERCENT_PRECISION;
+      }
+
+      /**
+       * Sets precision to be used when calculating percent
+       * @param value {number} integer
+       */
+      set percentPrecision(value) {
+        const newValue = (Math.round(+value) || 0).toString();
+        this.setAttribute('percent-precision', newValue);
       }
 
       /**
@@ -256,10 +279,14 @@ export default function getDBUIAutoScroll(win) {
         const { width, height, contentWidth, contentHeight } = evt.detail;
         const toScrollHorizontal = evt.target._scrollableWidth - evt.target._scrollLeft;
         const toScrollVertical = evt.target._scrollableHeight - evt.target._scrollTop;
-        // TODO: improve, use SCROLL_PRECISION
+        // TODO: improve
         // this behavior can be seen with an inner content-editable
-        const scrollRatioHorizontal = (1 - +(toScrollHorizontal / evt.target._scrollableWidth).toFixed(4)).toFixed(4);
-        const scrollRatioVertical = (1 - +(toScrollVertical / evt.target._scrollableHeight).toFixed(4)).toFixed(4);
+        const scrollRatioHorizontal =
+          (1 - +(toScrollHorizontal / evt.target._scrollableWidth).toFixed(this.percentPrecision))
+            .toFixed(this.percentPrecision);
+        const scrollRatioVertical =
+          (1 - +(toScrollVertical / evt.target._scrollableHeight).toFixed(this.percentPrecision))
+            .toFixed(this.percentPrecision);
         console.log('_onDBUIAutoScrollNativeResize', {
           width, height, contentWidth, contentHeight, toScrollHorizontal, toScrollVertical, scrollRatioHorizontal, scrollRatioVertical
         });
@@ -283,6 +310,12 @@ export default function getDBUIAutoScroll(win) {
         getElement(this, 'auto-scroll-native').vScroll = evt.target.percent;
       }
 
+      _setPercentPrecision() {
+        getElement(this, 'horizontal-slider').percentPrecision = this.percentPrecision;
+        getElement(this, 'vertical-slider').percentPrecision = this.percentPrecision;
+        getElement(this, 'auto-scroll-native').percentPrecision = this.percentPrecision;
+      }
+
       onLocaleDirChanged(newDir, oldDir) {
         super.onLocaleDirChanged(newDir, oldDir);
         this._nativeSetupOnOff();
@@ -299,6 +332,7 @@ export default function getDBUIAutoScroll(win) {
           .addEventListener('dbui-event-slidemove', this._onHorizontalSliderMove);
         getElement(this, 'vertical-slider')
           .addEventListener('dbui-event-slidemove', this._onVerticalSliderMove);
+        this._setPercentPrecision();
       }
 
       onDisconnectedCallback() {
@@ -324,6 +358,10 @@ export default function getDBUIAutoScroll(win) {
             getElement(this, 'horizontal-slider').debugShowValue = newValue !== null;
             getElement(this, 'vertical-slider').debugShowValue = newValue !== null;
             break;
+          case 'percent-precision': {
+            this._setPercentPrecision();
+            break;
+          }
           default:
             // pass
         }

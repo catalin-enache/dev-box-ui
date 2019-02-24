@@ -3,11 +3,11 @@ import getDBUIWebComponentCore from '../DBUIWebComponentCore/DBUIWebComponentCor
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
 import getDBUIDraggable from '../DBUIDraggable/DBUIDraggable';
 import getDBUIResizeSensor from '../DBUIResizeSensor/DBUIResizeSensor';
-import { trunc, getStep, STEP_PRECISION } from '../../../utils/math';
+import { trunc, getStep } from '../../../utils/math';
 import { getWheelDelta } from '../../../utils/mouse';
 
 const PERCENT_AMOUNT_INCREASE = 0.01;
-const PERCENT_PRECISION = STEP_PRECISION;
+const DEFAULT_PERCENT_PRECISION = 4;
 const DRAGGABLE_ID = 'draggable';
 const registrationName = 'dbui-slider';
 const DELTA_MULTIPLIER = {
@@ -31,10 +31,9 @@ Behavior extras:
  - is mouse scroll aware with speed influenced by altKey and ctrlKey
  - if no ratio is set then the thickness of the slider button is determined by --dbui-slider-draggable-size css var
  - if debug-show-value is set the component will display current internal percentage on top of slider button
+ - percent-precision is configurable (defaults to 4)
 
 TODO:
- - allow consumer to set the percent precision with default fallback
- - if mouse middle click => ignore re-positioning (consider only mouse left btn)
  - what happens when ratio change while scrolling ? (ex: in scrollable resize event is fired)
  - when size changes independently then ratio and position should auto-update.
  - when ratio is too small don't allow the button to shrink too much (have a minimum allowed in pixels)
@@ -116,7 +115,7 @@ const isDbuiRTL = (self) => {
 };
 
 const getLocalePercent = (self, percent) => {
-  return +(isDbuiRTL(self) ? 1 - percent : percent).toFixed(PERCENT_PRECISION);
+  return +(isDbuiRTL(self) ? 1 - percent : percent).toFixed(self.percentPrecision);
 };
 
 const percentToTranslate = (self, percent) => {
@@ -139,7 +138,7 @@ const adjustPosition = (self) => {
 
 const adjustPercent = (self) => {
   const { steps, step, percent: currentPercent } = self;
-  const percent = !steps ? currentPercent : trunc(PERCENT_PRECISION)(step / (steps - 1));
+  const percent = !steps ? currentPercent : trunc(self.percentPrecision)(step / (steps - 1));
   self.percent = percent;
 };
 
@@ -151,9 +150,9 @@ const adjustPercentFromPointerCoords = (self, pointerCoords) => {
   const wrapperMiddlePosition = wrapperMiddle.getBoundingClientRect()[dimension];
   const pointerPosition = self.vertical ? clientY : clientX;
   const distance = pointerPosition - wrapperMiddlePosition;
-  const percent = trunc(PERCENT_PRECISION)(distance / totalLength);
-  const safePercent = Math.max(0, Math.min(1, percent)); // getStep
-  const { value: finalPercent } = getStep(0, 1, safePercent, self.steps);
+  const percent = trunc(self.percentPrecision)(distance / totalLength);
+  const safePercent = Math.max(0, Math.min(1, percent));
+  const { value: finalPercent } = getStep(0, 1, safePercent, self.steps, self.percentPrecision);
   const localePercent = getLocalePercent(self, finalPercent);
   self.percent = localePercent;
   dispatchSlideEvent(self);
@@ -189,8 +188,7 @@ const adjustRatio = (self) => {
   const ratio = self.ratio;
   const dimension = self.vertical ? 'height' : 'width';
   const otherDimension = self.vertical ? 'width' : 'height';
-  // trunc(PERCENT_PRECISION) is redundant though (?) as 0.9708 => 97.08
-  const newDraggableSize = trunc(PERCENT_PRECISION)(100 * ratio);
+  const newDraggableSize = trunc(self.percentPrecision)(100 * ratio);
   draggable.style[dimension] = `${newDraggableSize}%`;
   draggable.style[otherDimension] = '100%';
   const innerOffset = `calc(0.5 * ${newDraggableSize}%)`;
@@ -352,11 +350,17 @@ export default function getDBUISlider(win) {
       }
 
       static get propertiesToUpgrade() {
-        return [...super.propertiesToUpgrade, 'steps', 'step', 'percent', 'vertical', 'ratio', 'captureArrowKeys', 'debugShowValue'];
+        return [...super.propertiesToUpgrade,
+          'steps', 'step', 'percent', 'vertical', 'ratio', 'captureArrowKeys',
+          'debugShowValue', 'percentPrecision'
+        ];
       }
 
       static get observedAttributes() {
-        return [...super.observedAttributes, 'steps', 'step', 'percent', 'vertical', 'ratio', 'capture-arrow-keys', 'debug-show-value'];
+        return [...super.observedAttributes,
+          'steps', 'step', 'percent', 'vertical', 'ratio', 'capture-arrow-keys',
+          'debug-show-value', 'percent-precision'
+        ];
       }
 
       constructor() {
@@ -377,6 +381,24 @@ export default function getDBUISlider(win) {
         this._onKeyDown = this._onKeyDown.bind(this);
         this._onResize = this._onResize.bind(this);
       }
+
+      /**
+       * Returns precision to be used when calculating percent
+       * @return {number} integer
+       */
+      get percentPrecision() {
+        return this.getAttribute('percent-precision') || DEFAULT_PERCENT_PRECISION;
+      }
+
+      /**
+       * Sets precision to be used when calculating percent
+       * @param value {number} integer
+       */
+      set percentPrecision(value) {
+        const newValue = (Math.round(+value) || 0).toString();
+        this.setAttribute('percent-precision', newValue);
+      }
+
 
       get isSliding() {
         return this._isSliding;
@@ -425,7 +447,7 @@ export default function getDBUISlider(win) {
       }
 
       set percent(value) {
-        const newValue = trunc(PERCENT_PRECISION)(+value);
+        const newValue = trunc(this.percentPrecision)(+value);
         this.setAttribute('percent', newValue);
       }
 
@@ -434,7 +456,7 @@ export default function getDBUISlider(win) {
       }
 
       set ratio(value) {
-        const newValue = trunc(PERCENT_PRECISION)(+value);
+        const newValue = trunc(this.percentPrecision)(+value);
         this.setAttribute('ratio', newValue);
       }
 
@@ -563,6 +585,7 @@ export default function getDBUISlider(win) {
         getWrapperMiddle(this).addEventListener('resize', this._onResize);
         this.addEventListener('mouseenter', this._onMouseEnter);
         this.addEventListener('mouseleave', this._onMouseLeave);
+        getDraggable(this).percentPrecision = this.percentPrecision;
         this._toggleCaptureArrowKeys();
       }
 
@@ -613,6 +636,10 @@ export default function getDBUISlider(win) {
           }
           case 'debug-show-value': {
             updateDisplayedValue(this, this.percent);
+            break;
+          }
+          case 'percent-precision': {
+            getDraggable(this).percentPrecision = newValue;
             break;
           }
           default:

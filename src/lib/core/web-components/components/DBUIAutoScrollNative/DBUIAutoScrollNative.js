@@ -4,7 +4,7 @@ import ensureSingleRegistration from '../../../internals/ensureSingleRegistratio
 import getDBUIResizeSensor from '../DBUIResizeSensor/DBUIResizeSensor';
 import { trunc } from '../../../utils/math';
 
-export const SCROLL_PRECISION = 4;
+export const DEFAULT_PERCENT_PRECISION = 4;
 
 const isDbuiRTL = (self) => {
   return self.getAttribute('dbui-dir') === 'rtl';
@@ -45,8 +45,11 @@ const dispatchScrollEvent = (self) => {
 /*
 TODO:
 Finish userControlled behavior and do related unittests.
-Decide with SCROLL_PRECISION
-add Behavior Extras
+*/
+
+/*
+Behavior Extras:
+ - precision of scroll percent is configurable and defaults to 4
 */
 
 const registrationName = 'dbui-auto-scroll-native';
@@ -112,11 +115,11 @@ export default function getDBUIAutoScrollNative(win) {
       }
 
       static get propertiesToUpgrade() {
-        return [...super.propertiesToUpgrade, 'overflow', 'hScroll', 'vScroll'];
+        return [...super.propertiesToUpgrade, 'overflow', 'hScroll', 'vScroll', 'percentPrecision'];
       }
 
       static get observedAttributes() {
-        return [...super.observedAttributes, 'overflow', 'h-scroll', 'v-scroll'];
+        return [...super.observedAttributes, 'overflow', 'h-scroll', 'v-scroll', 'percent-precision'];
       }
 
       constructor() {
@@ -134,6 +137,23 @@ export default function getDBUIAutoScrollNative(win) {
         this._hasNativeScrollControl = false;
         this._mouseIn = false;
         this._mouseDown = false;
+      }
+
+      /**
+       * Returns precision to be used when calculating percent
+       * @return {number} integer
+       */
+      get percentPrecision() {
+        return this.getAttribute('percent-precision') || DEFAULT_PERCENT_PRECISION;
+      }
+
+      /**
+       * Sets precision to be used when calculating percent
+       * @param value {number} integer
+       */
+      set percentPrecision(value) {
+        const newValue = (Math.round(+value) || 0).toString();
+        this.setAttribute('percent-precision', newValue);
       }
 
       /**
@@ -311,12 +331,12 @@ export default function getDBUIAutoScrollNative(win) {
 
       _convertHScrollPxToPercentage(value) {
         if (this._scrollableWidth === 0) return 0;
-        return trunc(SCROLL_PRECISION)(value / this._scrollableWidth);
+        return trunc(this.percentPrecision)(value / this._scrollableWidth);
       }
 
       _convertVScrollPxToPercentage(value) {
         if (this._scrollableHeight === 0) return 0;
-        return trunc(SCROLL_PRECISION)(value / this._scrollableHeight);
+        return trunc(this.percentPrecision)(value / this._scrollableHeight);
       }
 
       _applyHScrollPercentage() {

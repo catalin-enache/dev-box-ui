@@ -341,6 +341,7 @@ const html_1 = `
       constraint-selector="parent"
       target-translate-x="10"
       target-translate-y="10"
+      percent-precision=""
       stop-propagating-pointer-down
     >
       <p id="draggable-two-content">draggable content 1</p>
@@ -514,8 +515,7 @@ describe('DBUIDraggable', () => {
       onLoad: ({ contentWindow, iframe }) => {
         const DBUIDraggable = getDBUIDraggable(contentWindow);
 
-        // const draggableTwo = contentWindow.document.querySelector('#draggable-two');
-        // const draggableFour = contentWindow.document.querySelector('#draggable-four');
+        // const draggableOne = contentWindow.document.querySelector('#draggable-one');
 
         Promise.all([
           DBUIDraggable.registrationName,

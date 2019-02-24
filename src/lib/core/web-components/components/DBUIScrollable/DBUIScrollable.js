@@ -2,9 +2,9 @@
 import getDBUIWebComponentCore from '../DBUIWebComponentCore/DBUIWebComponentCore';
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
 import getDBUISlider from '../DBUISlider/DBUISlider';
-import { trunc, STEP_PRECISION } from '../../../utils/math';
+import { trunc } from '../../../utils/math';
 
-const SCROLL_PRECISION = STEP_PRECISION;
+const SCROLL_PRECISION = 4;
 
 const isDbuiRTL = (self) => {
   return self.getAttribute('dbui-dir') === 'rtl';

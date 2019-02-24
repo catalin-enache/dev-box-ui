@@ -3,6 +3,8 @@ import getDBUIWebComponentCore from '../DBUIWebComponentCore/DBUIWebComponentCor
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
 import { getStep } from '../../../utils/math';
 
+const DEFAULT_PERCENT_PRECISION = 4;
+
 const events = {
   mouse: {
     mousemove() {
@@ -320,6 +322,7 @@ function doMove(_evt, { forceDispatch = false } = {}) {
   if (self._dragRunning) { return; }
   self._dragRunning = true;
   self._lastEvent = _evt;
+  const percentPrecision = self.percentPrecision;
   win.requestAnimationFrame(() => {
     if (!self.isMounted) { // might be unmounted meanwhile
       self._dragRunning = false;
@@ -359,7 +362,8 @@ function doMove(_evt, { forceDispatch = false } = {}) {
         targetX, targetY,
         targetOriginalX, targetOriginalY,
         pointerXOnStart, pointerYOnStart,
-        pointerX, pointerY
+        pointerX, pointerY,
+        percentPrecision
       });
 
     const prevTargetTranslateX = self.targetTranslateX;
@@ -416,7 +420,7 @@ const getConstraintsForBoundingClientRect = (targetNode, constraintNode) => {
 const presetBoundingClientRect =
 ({ rectWidth, rectHeight, offsetX, offsetY, stepsX = 0, stepsY = 0 }) =>
   ({
-    targetTranslateX, targetTranslateY, targetWidthOnStart, targetHeightOnStart
+    targetTranslateX, targetTranslateY, targetWidthOnStart, targetHeightOnStart, percentPrecision
   }) => {
     const maxX = rectWidth - targetWidthOnStart;
     const maxY = rectHeight - targetHeightOnStart;
@@ -426,9 +430,9 @@ const presetBoundingClientRect =
     const revisedTranslateY = Math.max(_offsetY, Math.min(targetTranslateY, maxY + _offsetY));
 
     const { value: stepX, percent: percentX, index: stepIndexX } =
-      getStep(_offsetX, maxX + _offsetX, revisedTranslateX, stepsX);
+      getStep(_offsetX, maxX + _offsetX, revisedTranslateX, stepsX, percentPrecision);
     const { value: stepY, percent: percentY, index: stepIndexY } =
-      getStep(_offsetY, maxY + _offsetY, revisedTranslateY, stepsY);
+      getStep(_offsetY, maxY + _offsetY, revisedTranslateY, stepsY, percentPrecision);
 
     return {
       targetTranslateX: stepX, targetTranslateY: stepY,
@@ -442,7 +446,7 @@ const presetCircle =
   ({
     targetWidthOnStart, targetHeightOnStart,
     targetOriginalX, targetOriginalY,
-    pointerX, pointerY
+    pointerX, pointerY, percentPrecision
   }) => {
     const targetHalfWidth = targetWidthOnStart / 2;
     const targetHalfHeight = targetHeightOnStart / 2;
@@ -464,7 +468,7 @@ const presetCircle =
     const degrees = (radians * 180) / Math.PI;
     // for circle first step (0) === last step (2 * Math.PI or 360deg)
     const { value: degreeStep, index: stepIndex, percent } =
-      getStep(0, 360, degrees, steps ? steps + 1 : 0);
+      getStep(0, 360, degrees, steps ? steps + 1 : 0, percentPrecision);
     const radiansStep = (degreeStep * Math.PI) / 180;
 
     const cos = +Math.cos(radiansStep).toFixed(15);
@@ -502,8 +506,13 @@ TODO:
  - improve presets algorithms
  - improve code where possible
  - add circleAround({ selector, steps }) preset ?
- - allow consumer to set the percent precision with default fallback
- - add Behavior extras
+*/
+
+/*
+Behavior Extras:
+ 1. Can drag other target than self and can be constrained.
+ 2. dbui-event-dragmove event has standard information + extra details depending on constraint
+ 3. percent-precision defaults to 4 but can be set by user
 */
 
 const registrationName = 'dbui-draggable';
@@ -553,7 +562,7 @@ export default function getDBUIDraggable(win) {
           'constraintType', 'constraintSelector',
           'constraintCX', 'constraintCY', 'constraintRadius',
           'constraintStepsX', 'constraintStepsY', 'constraintSteps',
-          'stopPropagatingPointerDown'
+          'stopPropagatingPointerDown', 'percentPrecision'
         ];
       }
 
@@ -565,7 +574,7 @@ export default function getDBUIDraggable(win) {
           'constraint-type', 'constraint-selector',
           'constraint-cx', 'constraint-cy', 'constraint-radius',
           'constraint-steps-x', 'constraint-steps-y', 'constraint-steps',
-          'stop-propagating-pointer-down'
+          'stop-propagating-pointer-down', 'percent-precision'
         ];
       }
 
@@ -579,6 +588,23 @@ export default function getDBUIDraggable(win) {
         this._targetToDragOldTransform = '';
         this._targetToDragOldTransformOrigin = '';
         this._onConstraintNodeResize = this._onConstraintNodeResize.bind(this);
+      }
+
+      /**
+       * Returns precision to be used when calculating percent
+       * @return {number} integer
+       */
+      get percentPrecision() {
+        return this.getAttribute('percent-precision') || DEFAULT_PERCENT_PRECISION;
+      }
+
+      /**
+       * Sets precision to be used when calculating percent
+       * @param value {number} integer
+       */
+      set percentPrecision(value) {
+        const newValue = (Math.round(+value) || 0).toString();
+        this.setAttribute('percent-precision', newValue);
       }
 
       /**
@@ -998,7 +1024,8 @@ export default function getDBUIDraggable(win) {
         targetX, targetY,
         targetOriginalX, targetOriginalY,
         pointerXOnStart, pointerYOnStart,
-        pointerX, pointerY
+        pointerX, pointerY,
+        percentPrecision
       }) {
         // Different algorithms for different constraint presets.
         return this._constraintPreset({
@@ -1009,7 +1036,8 @@ export default function getDBUIDraggable(win) {
           targetX, targetY,
           targetOriginalX, targetOriginalY,
           pointerXOnStart, pointerYOnStart,
-          pointerX, pointerY
+          pointerX, pointerY,
+          percentPrecision
         });
       }
 

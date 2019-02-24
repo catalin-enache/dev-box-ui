@@ -67,6 +67,7 @@ describe('DBUISlider', () => {
           debug-show-value
           ratio="0.5"
           capture-arrow-keys
+          percent-precision="6"
           ></dbui-slider>
         </div>
       </div>
@@ -98,7 +99,7 @@ describe('DBUISlider', () => {
           wrapperSliderOne.appendChild(sliderOne);
 
           setTimeout(() => {
-            wrapperSliderOne.style.height = '90px';
+            wrapperSliderOne.style.height = '93px';
             setTimeout(() => {
               iframe.remove();
               done();

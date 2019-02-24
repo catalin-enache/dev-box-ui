@@ -129,6 +129,7 @@ describe('DBUIAutoScroll', () => {
           h-scroll="0.20"
           _native
           debug-show-value
+          percent-precision=""
           >
             <div id="scrollable-content">${'content'}</div>
             <input type="text" />

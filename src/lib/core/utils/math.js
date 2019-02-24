@@ -1,6 +1,4 @@
 
-export const STEP_PRECISION = 4;
-
 export const trunc = (precision) => (number) => (
   (+number * (10 ** precision)).toFixed(1).split('.')[0] / (10 ** precision)
 );
@@ -9,17 +7,18 @@ export const trunc = (precision) => (number) => (
  * @param min Number
  * @param max Number
  * @param current Number
- * @param steps Number (optional)
+ * @param steps Number (optional) defaults to 0
+ * @param percentPrecision Number (optional) defaults to 4
  * @return { value: Number, index: Number (if steps >= 2), percent: Number }
  */
-export const getStep = (min, max, current, steps) => {
+export const getStep = (min, max, current, steps = 0, percentPrecision = 4) => {
   const _steps = Number(steps);
   const interval = max - min;
 
   let percent = null;
 
   if (!_steps || _steps < 2) {
-    percent = +(((current - min) / interval) || 0).toFixed(STEP_PRECISION);
+    percent = +(((current - min) / interval) || 0).toFixed(percentPrecision);
     return { value: current, percent };
   }
 
@@ -40,7 +39,7 @@ export const getStep = (min, max, current, steps) => {
       idx = i - 1;
     }
   }
-  const stepValue = +allSteps[idx].toFixed(STEP_PRECISION);
-  percent = +(((stepValue - min) / interval) || 0).toFixed(STEP_PRECISION);
+  const stepValue = +allSteps[idx].toFixed(percentPrecision);
+  percent = +(((stepValue - min) / interval) || 0).toFixed(percentPrecision);
   return { value: allSteps[idx], index: idx, percent };
 };
