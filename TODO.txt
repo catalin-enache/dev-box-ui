@@ -4,14 +4,7 @@ and define them as an array on a static method webComponentsDependencies
 so that the user can inspect them and take care of defining by importing
 and calling registerSelf() for each of them
 
-make setters and getters dynamically to avoid boilerplate
-
 intelligent forms (with message passing, value aggregating, validating)
-
-what behaviour when component is adopted ?
-inject global css to handle dbui-web-component (hide when not defined, un hide when defined)
-
-make selection disableable behaviour
 
 add doc-blocks
 
@@ -43,7 +36,6 @@ in other words document how user can define its web-components using exposed int
 
 add favicon.ico
 
-document lack of support for: delegatesFocus: true
 make pages for documenting features like Focusable and how to use css[focusable]?
 
 document dev-box-ui purpose, browser support etc - some general words
@@ -56,6 +48,5 @@ in unittests we should test among other things:
   - css vars are inherited and style can be overridden
   - we have some default css vars injected when using the lib (like input height)
   - web component are not registered multiple times even if using a mix of import styles (ensureSingleRegistration)
-  - web components register their dependencies before they register self
   - web component can use external renderers like the col renderer in a table or option renderer in select
 

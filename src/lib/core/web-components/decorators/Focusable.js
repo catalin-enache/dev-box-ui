@@ -9,6 +9,7 @@ If you want to set focus programmatically call .focus() method on component.
 
 /*
 TODO: add Behavior Extras
+ - document lack of support for: delegatesFocus: true
 */
 
 /**

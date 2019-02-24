@@ -6,6 +6,7 @@ import getDBUISlider from '../DBUISlider/DBUISlider';
 
 const DEFAULT_PERCENT_PRECISION = 4;
 
+// TODO: move this into core as a standard method
 const DBUIAutoScrollCssVars = `
   :root {
     --dbui-auto-scroll-custom-slider-thickness: 20px;
@@ -13,6 +14,7 @@ const DBUIAutoScrollCssVars = `
   }
 `;
 
+// TODO: move this into core
 const isDbuiRTL = (self) => {
   return self.getAttribute('dbui-dir') === 'rtl';
 };
@@ -26,18 +28,32 @@ const getElement = (self, id) => {
   return self[`_${id}`];
 };
 
+// TODO: move this into core
+const dispatchScrollEvent = (self) => {
+  const win = self.ownerDocument.defaultView;
+  self.dispatchEvent(new win.CustomEvent('dbui-event-scroll', {
+    detail: {}
+  }));
+};
+
 const registrationName = 'dbui-auto-scroll';
 
 /*
 TODO:
  - should be used as native or custom
  - add an option to add the custom scroll to the external side of content
- - adjust scroll position on load and on user programmatic change
+ - make custom scrolls adapt (show hide - auto) depending on what is to be scrolled.
 */
 
 /*
 Behavior Extras:
- - scroll precision is configurable (percentPrecision) and defaults to 4
+ - Can display native or custom scrolls.
+ - Custom sliders thickness is configurable via CSS --dbui-auto-scroll-custom-slider-thickness.
+ - The scroll (horizontal or vertical) can be set programmatically in percent (0..1).
+ - Scroll precision is configurable (percentPrecision) and defaults to 4.
+ - Dispatches dbui-event-scroll when resizing DBUIAutoScroll or inner content,
+   when user scrolling native with mouse scroll or mobile scroll,
+   when user changes horizontal or vertical slider position.
 */
 
 export default function getDBUIAutoScroll(win) {
@@ -152,11 +168,15 @@ export default function getDBUIAutoScroll(win) {
       }
 
       static get propertiesToUpgrade() {
-        return [...super.propertiesToUpgrade, 'native', 'debugShowValue', 'percentPrecision'];
+        return [...super.propertiesToUpgrade,
+          'native', 'debugShowValue', 'percentPrecision', 'hScroll', 'vScroll'
+        ];
       }
 
       static get observedAttributes() {
-        return [...super.observedAttributes, 'native', 'debug-show-value', 'percent-precision'];
+        return [...super.observedAttributes,
+          'native', 'debug-show-value', 'percent-precision', 'h-scroll', 'v-scroll'
+        ];
       }
 
       constructor() {
@@ -214,6 +234,38 @@ export default function getDBUIAutoScroll(win) {
         const newValue = !!value;
         newValue && this.setAttribute('native', '');
         !newValue && this.removeAttribute('native');
+      }
+
+      /**
+       * Returns horizontal scroll as percentage between 0 and 1
+       * @return {number}
+       */
+      get hScroll() {
+        return +this.getAttribute('h-scroll') || 0;
+      }
+
+      /**
+       * Sets horizontal scroll as percentage between 0 and 1
+       * @param value {number}
+       */
+      set hScroll(value) {
+        this.setAttribute('h-scroll', (+value || 0).toString());
+      }
+
+      /**
+       * Returns vertical scroll as percentage between 0 and 1
+       * @return {number}
+       */
+      get vScroll() {
+        return +this.getAttribute('v-scroll') || 0;
+      }
+
+      /**
+       * Sets vertical scroll as percentage between 0 and 1
+       * @param value {number}
+       */
+      set vScroll(value) {
+        this.setAttribute('v-scroll', (+value || 0).toString());
       }
 
       /**
@@ -298,41 +350,67 @@ export default function getDBUIAutoScroll(win) {
         const toScrollVertical = evt.target.scrollableHeight - evt.target.scrollTop;
         // this behavior can be seen with an inner content-editable
         const scrollRatioHorizontal =
-          (
+          +(
             1 - +(toScrollHorizontal / evt.target.scrollableWidth)
               .toFixed(this.percentPrecision)
           ).toFixed(this.percentPrecision);
         const scrollRatioVertical =
-          (
+          +(
             1 - +(toScrollVertical / evt.target.scrollableHeight)
               .toFixed(this.percentPrecision)
           ).toFixed(this.percentPrecision);
-        getElement(this, 'horizontal-slider').percent = scrollRatioHorizontal;
-        getElement(this, 'vertical-slider').percent = scrollRatioVertical;
+        this.hScroll = scrollRatioHorizontal;
+        this.vScroll = scrollRatioVertical;
         getElement(this, 'horizontal-slider').ratio = evt.target.hRatio;
         getElement(this, 'vertical-slider').ratio = evt.target.vRatio;
+        dispatchScrollEvent(this);
       }
 
       _onDBUIAutoScrollNativeScroll(evt) {
-        console.log('AutoScroll#_onDBUIAutoScrollNativeScroll', evt.target.hScroll, evt.target.vScroll);
-        getElement(this, 'vertical-slider').percent = evt.target.vScroll;
-        getElement(this, 'horizontal-slider').percent = evt.target.hScroll;
+        this.hScroll = evt.target.hScroll;
+        this.vScroll = evt.target.vScroll;
+        // Setting hScroll/vScroll in these methods
+        // (_onDBUIAutoScrollNativeScroll, _onDBUIAutoScrollNativeResize,
+        // _onHorizontalSliderMove, _onVerticalSliderMove)
+        // will trigger _applyHScrollPercentage/_applyVScrollPercentage which in return
+        // will set back these values on those components
+        // (vertical-slider, horizontal-slider, auto-scroll-native).
+        // But since the values will be identical
+        //  - when compared oldValue with newValue in their attributeChangedCallback
+        // which is handled in DBUIWebComponentCore -
+        // their onAttributeChangedCallback will not fire, thus not causing multiple updates.
+        dispatchScrollEvent(this);
       }
 
       _onHorizontalSliderMove(evt) {
-        console.log('AutoScroll#_onHorizontalSliderMove', evt.target.percent);
-        getElement(this, 'auto-scroll-native').hScroll = evt.target.percent;
+        this.hScroll = evt.target.percent;
+        dispatchScrollEvent(this);
       }
 
       _onVerticalSliderMove(evt) {
-        console.log('AutoScroll#_onVerticalSliderMove', evt.target.percent);
-        getElement(this, 'auto-scroll-native').vScroll = evt.target.percent;
+        this.vScroll = evt.target.percent;
+        dispatchScrollEvent(this);
       }
 
       _setPercentPrecision() {
         getElement(this, 'horizontal-slider').percentPrecision = this.percentPrecision;
         getElement(this, 'vertical-slider').percentPrecision = this.percentPrecision;
         getElement(this, 'auto-scroll-native').percentPrecision = this.percentPrecision;
+      }
+
+      _applyHScrollPercentage() {
+        getElement(this, 'auto-scroll-native').hScroll = this.hScroll;
+        getElement(this, 'horizontal-slider').percent = this.hScroll;
+      }
+
+      _applyVScrollPercentage() {
+        getElement(this, 'auto-scroll-native').vScroll = this.vScroll;
+        getElement(this, 'vertical-slider').percent = this.vScroll;
+      }
+
+      _applyHVScrollPercentage() {
+        this._applyHScrollPercentage();
+        this._applyVScrollPercentage();
       }
 
       onLocaleDirChanged(newDir, oldDir) {
@@ -355,6 +433,7 @@ export default function getDBUIAutoScroll(win) {
         setTimeout(() => {
           getElement(this, 'horizontal-slider').ratio = this.hRatio;
           getElement(this, 'vertical-slider').ratio = this.vRatio;
+          this._applyHVScrollPercentage();
         }, 0);
       }
 
@@ -383,6 +462,14 @@ export default function getDBUIAutoScroll(win) {
             break;
           case 'percent-precision': {
             this._setPercentPrecision();
+            break;
+          }
+          case 'h-scroll': {
+            this._applyHScrollPercentage();
+            break;
+          }
+          case 'v-scroll': {
+            this._applyVScrollPercentage();
             break;
           }
           default:

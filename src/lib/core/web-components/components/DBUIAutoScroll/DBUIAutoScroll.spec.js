@@ -126,7 +126,8 @@ describe('DBUIAutoScroll', () => {
           <dbui-auto-scroll
           id="dbui-auto-scroll"
           sync-locale-with="#locale-provider"
-          h-scroll="0.20"
+          h-scroll="0.5"
+          v-scroll="0.5"
           _native
           debug-show-value
           percent-precision=""
@@ -156,6 +157,12 @@ describe('DBUIAutoScroll', () => {
         )).then(() => {
           const wrapperAutoScroll = contentWindow.document.querySelector('#wrapper-auto-scroll');
           const autoScroll = contentWindow.document.querySelector('#dbui-auto-scroll');
+          autoScroll.addEventListener('dbui-event-scroll', () => {
+            console.log('dbui-event-scroll', {
+              hScroll: autoScroll.hScroll,
+              vScroll: autoScroll.vScroll,
+            });
+          });
           const scrollableContent = contentWindow.document.querySelector('#scrollable-content');
           const dynamicContent = contentWindow.document.createElement('div');
           dynamicContent.style.cssText = `

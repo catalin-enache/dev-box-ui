@@ -40,18 +40,21 @@ function defineComponentCssClasses(win, cssClasses) {
   commonCSSClassesStyleNode.innerHTML += cssClasses;
 }
 
-
-/*
-Accessing parents and children:
-If parent is accessed in connectedCallback it exists (if it should exist), however,
-the parent might not be itself connected yet.
-If children are accessed in connectedCallback they might not be complete yet at that time.
-*/
-
 // https://www.kirupa.com/html5/handling_events_for_many_elements.htm
 
 /*
-TODO: add Behavior Extras
+TODO:
+ - make setters and getters dynamically to avoid boilerplate ?
+ - what behaviour when component is adopted ? what about its dependency on global variables ?
+ - inject global css to handle dbui-web-component (hide when not defined, un hide when defined) ?
+*/
+
+/*
+Behavior Extras:
+ - Accessing parents and children:
+   If parent is accessed in connectedCallback it exists (if it should exist), however,
+   the parent might not be itself connected yet.
+   If children are accessed in connectedCallback they might not be complete yet at that time.
 */
 
 /**

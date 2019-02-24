@@ -389,8 +389,8 @@ export default function getDBUIAutoScrollNative(win) {
 
       // =========== controlling the dispatch of scroll event only when _hasNativeScrollControl >> =======
 
-      _onMouseDown() {
-        this._mouseDown = true;
+      _onMouseDown(evt) {
+        this._mouseDown = evt.buttons === 1; // so that right click acts like a mouse up
         win.getSelection && win.getSelection().removeAllRanges();
         // If not clearing current selection, then, on second mousedown on AutoScrollNative
         // followed by dragging outside, browser will try to move the current selection and NOT fire mouseup.
