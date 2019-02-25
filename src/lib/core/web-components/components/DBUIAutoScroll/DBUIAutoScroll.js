@@ -43,6 +43,12 @@ TODO:
  - should be used as native or custom
  - add an option to add the custom scroll to the external side of content
  - make custom scrolls adapt (show hide - auto) depending on what is to be scrolled.
+ - No Scrollbar if mobile, show-scrollbar should be auto or always/never
+ - Make a horizontal default scrolling somehow via attributes (ex: for gallery thumbnails).
+   https://css-tricks.com/pure-css-horizontal-scrolling/
+ - onLocaleDirChanged might not fire at all if no dir specified ?
+ - Should dispatch on resize (proxy from DBUIAutoScrollNative)
+ - Check correct behavior on dir and native change
 */
 
 /*

@@ -47,7 +47,11 @@ function getDummyOne(win) {
           <div>
             <p>Dummy One</p>
             <div>
-              <dbui-auto-scroll debug-show-value>
+              <dbui-auto-scroll id="dbui-auto-scroll-shadow"
+              debug-show-value
+              h-scroll="1"
+              v-scroll="1"
+              >
                 <p>LppppppppppppR</p>
                 <p>LaaaaaaaaaaaaR</p>
                 <p>LssssssssssssR</p>
@@ -122,12 +126,11 @@ describe('DBUIAutoScroll', () => {
       <div id="container">
         <div id="locale-provider" dir="rtl"></div>
         <div id="wrapper-auto-scroll">
-          <dummy-one>
+          <dummy-one id="dummy-one" sync-locale-with="#locale-provider">
           <dbui-auto-scroll
           id="dbui-auto-scroll"
-          sync-locale-with="#locale-provider"
-          h-scroll="0.5"
-          v-scroll="0.5"
+          h-scroll="1"
+          v-scroll="1"
           _native
           debug-show-value
           percent-precision=""
@@ -158,10 +161,10 @@ describe('DBUIAutoScroll', () => {
           const wrapperAutoScroll = contentWindow.document.querySelector('#wrapper-auto-scroll');
           const autoScroll = contentWindow.document.querySelector('#dbui-auto-scroll');
           autoScroll.addEventListener('dbui-event-scroll', () => {
-            console.log('dbui-event-scroll', {
-              hScroll: autoScroll.hScroll,
-              vScroll: autoScroll.vScroll,
-            });
+            // console.log('dbui-event-scroll', {
+            //   hScroll: autoScroll.hScroll,
+            //   vScroll: autoScroll.vScroll,
+            // });
           });
           const scrollableContent = contentWindow.document.querySelector('#scrollable-content');
           const dynamicContent = contentWindow.document.createElement('div');
@@ -200,8 +203,10 @@ describe('DBUIAutoScroll', () => {
             // scrollableContent.appendChild(dynamicContent);
             // autoScrollNative.style.width = '350px';
             // autoScroll.style.width = '50px';
+            // autoScroll.native = true;
             setTimeout(() => {
               // dynamicContent.remove();
+              // autoScroll.native = false;
               setTimeout(() => {
                 setTimeout(() => {
                   iframe.remove();

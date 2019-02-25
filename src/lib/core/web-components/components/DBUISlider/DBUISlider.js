@@ -188,6 +188,7 @@ const adjustRatio = (self) => {
   const dimension = self.vertical ? 'height' : 'width';
   const otherDimension = self.vertical ? 'width' : 'height';
   const newDraggableSize = trunc(self.percentPrecision)(100 * ratio);
+  // TODO: re-check these and see if should be percent or pixels
   draggable.style[dimension] = `${newDraggableSize}%`;
   draggable.style[otherDimension] = '100%';
   const innerOffset = `calc(0.5 * ${newDraggableSize}%)`;
