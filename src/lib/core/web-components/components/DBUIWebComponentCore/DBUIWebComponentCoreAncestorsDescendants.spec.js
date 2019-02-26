@@ -402,7 +402,7 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations', () => {
               }, 0);
             }, 0);
           });
-
+          DummyD.registerSelf();
           DummyE.registerSelf();
         }
       });
@@ -512,6 +512,7 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations', () => {
 
           });
 
+          DummyD.registerSelf();
           DummyE.registerSelf();
         }
       });
@@ -619,6 +620,7 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations', () => {
               done();
             }, 0);
           });
+          DummyD.registerSelf();
           DummyE.registerSelf();
         }
       });
@@ -681,6 +683,7 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations', () => {
             done();
           });
 
+          DummyD.registerSelf();
           DummyE.registerSelf();
         }
       });
@@ -751,6 +754,7 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations', () => {
             }, 0);
           });
 
+          DummyD.registerSelf();
           DummyE.registerSelf();
         }
       });
@@ -905,12 +909,14 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations', () => {
 
                     }, 0);
                   });
+                  DummyD2.registerSelf();
                   DummyE2.registerSelf();
                 }
               });
 
             }, 0);
           });
+          DummyD.registerSelf();
           DummyE.registerSelf();
         }
       });
@@ -983,6 +989,7 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations', () => {
 
           });
 
+          DummyD.registerSelf();
           DummyE.registerSelf();
         }
       });
@@ -1056,6 +1063,7 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations', () => {
 
           });
 
+          DummyD.registerSelf();
           DummyE.registerSelf();
         }
       });

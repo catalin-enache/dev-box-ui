@@ -396,6 +396,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
           }, 0);
         });
 
+        DummyD.registerSelf();
         DummyE.registerSelf();
       }
     });

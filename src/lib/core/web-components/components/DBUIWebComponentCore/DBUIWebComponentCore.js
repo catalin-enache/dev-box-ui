@@ -1288,19 +1288,23 @@ export default function getDBUIWebComponentCore(win) {
       klass.registerSelf = () => {
         const registrationName = klass.registrationName;
         const dependencies = klass.dependencies;
-        // Make sure our dependencies are registered before we register self
-        dependencies.forEach((dependency) => dependency.registerSelf());
+
         // Don't try to register self if already registered
-        if (customElements.get(registrationName)) return registrationName;
-        // Give a chance to override web-component style if provided before being registered.
-        const componentStyle = ((win.DBUIWebComponents || {})[registrationName] || {}).componentStyle;
-        if (componentStyle) {
-          klass.componentStyle += '\n\n/* ==== overrides ==== */\n\n';
-          klass.componentStyle += componentStyle;
+        if (!customElements.get(registrationName)) {
+          // Give a chance to override web-component style if provided before being registered.
+          const componentStyle = ((win.DBUIWebComponents || {})[registrationName] || {}).componentStyle;
+          if (componentStyle) {
+            klass.componentStyle += '\n\n/* ==== overrides ==== */\n\n';
+            klass.componentStyle += componentStyle;
+          }
+          // Do registration
+          // https://html.spec.whatwg.org/multipage/custom-elements.html#concept-upgrade-an-element
+          customElements.define(registrationName, klass);
         }
-        // Do registration
-        // https://html.spec.whatwg.org/multipage/custom-elements.html#concept-upgrade-an-element
-        customElements.define(registrationName, klass);
+        // Make sure our dependencies are registered after self
+        // so that children can register to their parent
+        dependencies.forEach((dependency) => dependency.registerSelf());
+
         return registrationName;
       };
 

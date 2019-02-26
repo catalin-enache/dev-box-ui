@@ -431,6 +431,7 @@ describe('DBUIWebComponentBase context passing', () => {
             }, 0);
           });
 
+          DummyD.registerSelf();
           DummyE.registerSelf();
         }
       });
@@ -1362,6 +1363,7 @@ describe('DBUIWebComponentBase context passing', () => {
               }, 0);
             });
 
+            DummyD.registerSelf();
             DummyE.registerSelf();
           }
         });
@@ -1530,6 +1532,7 @@ describe('DBUIWebComponentBase context passing', () => {
               }, 0);
             });
 
+            DummyD.registerSelf();
             DummyE.registerSelf();
           }
         });
