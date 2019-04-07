@@ -1361,7 +1361,7 @@ export default function getDBUIWebComponentCore(win) {
           // before their shadow DOM was ready.
           // Ex: Safari is providing a, b, a_shadow, b_shadow
           // Ex: if b is light child of a then b should not be allowed to runtimeSetup before a.
-          this.dbuiWebComponentRoot._pendingRuntimeSetupForLightDom.push(this);
+          this.dbuiWebComponentRoot._pendingRuntimeSetupForLightDom.add(this);
         } else {
           this.dbuiWebComponentRoot
             ._runtimeSetUpForLightDomMutations(this);
@@ -1430,8 +1430,7 @@ export default function getDBUIWebComponentCore(win) {
       // Assuming light descendants are not connected.
       // This method is only triggered on dbuiRoot.
       _runtimeSetUpForLightDomMutations(node) {
-        this._pendingRuntimeSetupForLightDom =
-          this._pendingRuntimeSetupForLightDom.filter((pending) => pending !== node);
+        this._pendingRuntimeSetupForLightDom.delete(node);
 
         // Only rootNode which is only instance uses _descendantsQueueLightDom.
         // Here this is always rootNode.
@@ -1441,19 +1440,18 @@ export default function getDBUIWebComponentCore(win) {
           const pendingLightDomConnections = lightDescendants;
           /* eslint no-multi-assign: 0 */
           this._descendantsQueueLightDom = allDBUIComponentsNotConnected;
-          this._pendingLightDomConnections = pendingLightDomConnections;
+          this._pendingLightDomConnections = new Set(pendingLightDomConnections);
           // if component asking for registration has no dbui descendant
-          if (this._descendantsQueueLightDom.length === 1) {
-            this._pendingLightDomConnections.pop();
+          if (this._descendantsQueueLightDom.length === 1) { // the node itself
+            // this._pendingLightDomConnections is 0 in this case
             const lastDescendantInQueue = this._descendantsQueueLightDom.pop();
             lastDescendantInQueue._integrateSelfInTheTree();
             lastDescendantInQueue._shadowDomSetUp();
             lastDescendantInQueue._deliverSelf();
           }
         } else {
-          this._pendingLightDomConnections =
-            this._pendingLightDomConnections.filter((pending) => pending !== node);
-          if (!this._pendingLightDomConnections.length) {
+          this._pendingLightDomConnections.delete(node);
+          if (!this._pendingLightDomConnections.size) {
             this._descendantsQueueLightDom.forEach((descendant) => {
               descendant._integrateSelfInTheTree();
               descendant._shadowDomSetUp();
@@ -1470,20 +1468,11 @@ export default function getDBUIWebComponentCore(win) {
         // Complication due to Safari which provide consecutive light DOM nodes for runtimeSetup
         // before their shadow DOM was ready.
         // Ex: Safari is providing a, b, a_shadow, b_shadow
-        const stillPendingRuntimeSetupNodes = [];
-        const pendingRuntimeSetupNodesReady = [];
+        // Kick it again.
         this._pendingRuntimeSetupForLightDom.forEach((pendingNode) => {
           if (pendingNode.lightDomDbuiParent === node) {
-            pendingRuntimeSetupNodesReady.push(pendingNode);
-          } else {
-            stillPendingRuntimeSetupNodes.push(pendingNode);
+            this._runtimeSetUpForLightDomMutations(pendingNode);
           }
-        });
-
-        this._pendingRuntimeSetupForLightDom = stillPendingRuntimeSetupNodes;
-
-        pendingRuntimeSetupNodesReady.forEach((node) => {
-          this._runtimeSetUpForLightDomMutations(node);
         });
       }
 
@@ -1571,7 +1560,8 @@ export default function getDBUIWebComponentCore(win) {
         if (this.dbuiWebComponentRoot._disconnectChainStartedWith === this) {
           this.dbuiWebComponentRoot._disconnectChainStartedWith = null;
           while (this.dbuiWebComponentRoot._pendingConnectionsDuringDisconnectFlow.length) {
-            const pendingConnection = this.dbuiWebComponentRoot._pendingConnectionsDuringDisconnectFlow.shift();
+            const pendingConnection =
+              this.dbuiWebComponentRoot._pendingConnectionsDuringDisconnectFlow.shift();
             pendingConnection._onConnectedCallback();
           }
         }

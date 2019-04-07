@@ -42,11 +42,11 @@ export default function getDBUIWebComponentRoot(win) {
         // _descendantsQueueLightDom nodes that did not entered _runtimeSetUpForLightDomMutations
         // due to their time had not come yet.
         // When _descendantsQueueLightDom is defined _pendingLightDomConnections is the same.
-        this._pendingLightDomConnections = [];
+        this._pendingLightDomConnections = new Set();
         // _descendantsQueueLightDom nodes that were about to enter _runtimeSetUpForLightDomMutations
         // but were prevented due to their parent did not entered _runtimeSetUpForLightDomMutations.
         // This happens when parent was prevented to _doLightDomSetup due to its shadow DOM was not connected.
-        this._pendingRuntimeSetupForLightDom = [];
+        this._pendingRuntimeSetupForLightDom = new Set();
         // When replacing a light node, due to connects being interleaved with disconnects by some browsers
         // we want first to do disconnect everything under the node being disconnected and then do all re-connects.
         // Here are kept intended connections that were discarded due to being interleaved.

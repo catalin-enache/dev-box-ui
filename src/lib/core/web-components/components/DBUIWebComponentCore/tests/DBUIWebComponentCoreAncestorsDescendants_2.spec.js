@@ -2134,7 +2134,7 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
               ({ wrapper, dummy0, dbuiRoot } = selectAllComponents());
 
               expect(dbuiRoot._descendantsQueueLightDom.length).to.equal(0);
-              expect(dbuiRoot._pendingLightDomConnections.length).to.equal(0);
+              expect(dbuiRoot._pendingLightDomConnections.size).to.equal(0);
 
               // --------------------test 2 re-appending dummy0
 
@@ -2146,7 +2146,7 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
               expect(connectedComponents.length).to.equal(24);
               expect(connectedComponents).to.deep.equal(standardConnectOrder);
               expect(dbuiRoot._descendantsQueueLightDom.length).to.equal(0);
-              expect(dbuiRoot._pendingLightDomConnections.length).to.equal(0);
+              expect(dbuiRoot._pendingLightDomConnections.size).to.equal(0);
 
               // --------------------test 3 re-appending dbuiRoot
 
@@ -2155,8 +2155,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
 
               wrapper.appendChild(dbuiRoot);
               expect(dbuiRoot._descendantsQueueLightDom.length).to.equal(0);
-              expect(dbuiRoot._pendingLightDomConnections.length).to.equal(0);
-              expect(dbuiRoot._pendingRuntimeSetupForLightDom.length).to.equal(0);
+              expect(dbuiRoot._pendingLightDomConnections.size).to.equal(0);
+              expect(dbuiRoot._pendingRuntimeSetupForLightDom.size).to.equal(0);
               expect(connectedComponents.length).to.equal(24);
               expect(connectedComponents).to.deep.equal(standardConnectOrder);
 
@@ -2184,8 +2184,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
               `;
 
               expect(dbuiRoot._descendantsQueueLightDom.length).to.equal(0);
-              expect(dbuiRoot._pendingLightDomConnections.length).to.equal(0);
-              expect(dbuiRoot._pendingRuntimeSetupForLightDom.length).to.equal(0);
+              expect(dbuiRoot._pendingLightDomConnections.size).to.equal(0);
+              expect(dbuiRoot._pendingRuntimeSetupForLightDom.size).to.equal(0);
               expect(connectedComponents.length).to.equal(24);
               expect(connectedComponents).to.deep.equal([
                 'dbui-dummy-0', 'dbui-dummy-q-shadow', 'dbui-dummy-nnn-shadow',
@@ -2226,8 +2226,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
               `;
 
               expect(dbuiRoot._descendantsQueueLightDom.length).to.equal(0);
-              expect(dbuiRoot._pendingLightDomConnections.length).to.equal(0);
-              expect(dbuiRoot._pendingRuntimeSetupForLightDom.length).to.equal(0);
+              expect(dbuiRoot._pendingLightDomConnections.size).to.equal(0);
+              expect(dbuiRoot._pendingRuntimeSetupForLightDom.size).to.equal(0);
               expect(connectedComponents.length).to.equal(24);
               expect(connectedComponents).to.deep.equal(standardConnectOrder);
 
@@ -2254,8 +2254,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
               dummyA.removeAttribute('_expectClosestDbuiParentAlreadyIsConnected');
 
               expect(dbuiRoot._descendantsQueueLightDom.length).to.equal(0);
-              expect(dbuiRoot._pendingLightDomConnections.length).to.equal(0);
-              expect(dbuiRoot._pendingRuntimeSetupForLightDom.length).to.equal(0);
+              expect(dbuiRoot._pendingLightDomConnections.size).to.equal(0);
+              expect(dbuiRoot._pendingRuntimeSetupForLightDom.size).to.equal(0);
               expect(connectedComponents.length).to.equal(24);
               expect(connectedComponents).to.deep.equal([
                 'dbui-dummy-vv-shadow', 'dbui-dummy-v-shadow', 'dbui-dummy-tt-shadow',
@@ -2290,8 +2290,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
               dummyE.removeAttribute('_expectClosestDbuiParentAlreadyIsConnected');
 
               expect(dbuiRoot._descendantsQueueLightDom.length).to.equal(0);
-              expect(dbuiRoot._pendingLightDomConnections.length).to.equal(0);
-              expect(dbuiRoot._pendingRuntimeSetupForLightDom.length).to.equal(0);
+              expect(dbuiRoot._pendingLightDomConnections.size).to.equal(0);
+              expect(dbuiRoot._pendingRuntimeSetupForLightDom.size).to.equal(0);
               expect(connectedComponents.length).to.equal(24);
               expect(connectedComponents).to.deep.equal([
                 'dbui-dummy-vv-shadow', 'dbui-dummy-v-shadow', 'dbui-dummy-d',
@@ -2375,8 +2375,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
                 expect(connectedComponents.length).to.equal(24);
                 expect(connectedComponents).to.deep.equal(standardConnectOrder);
                 expect(dbuiRoot._descendantsQueueLightDom.length).to.equal(0);
-                expect(dbuiRoot._pendingLightDomConnections.length).to.equal(0);
-                expect(dbuiRoot._pendingRuntimeSetupForLightDom.length).to.equal(0);
+                expect(dbuiRoot._pendingLightDomConnections.size).to.equal(0);
+                expect(dbuiRoot._pendingRuntimeSetupForLightDom.size).to.equal(0);
               }
 
               ({ dummy0, dummyD, dummyA, dummyG } = selectAllComponents());
@@ -2397,8 +2397,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
                 'dbui-dummy-t-shadow', 'dbui-dummy-f', 'dbui-dummy-e', 'dbui-dummy-d'
               ]);
               expect(dbuiRoot._descendantsQueueLightDom.length).to.equal(0);
-              expect(dbuiRoot._pendingLightDomConnections.length).to.equal(0);
-              expect(dbuiRoot._pendingRuntimeSetupForLightDom.length).to.equal(0);
+              expect(dbuiRoot._pendingLightDomConnections.size).to.equal(0);
+              expect(dbuiRoot._pendingRuntimeSetupForLightDom.size).to.equal(0);
               expect(dbuiRoot._pendingConnectionsDuringDisconnectFlow.length).to.equal(0);
 
 
@@ -2416,8 +2416,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
                 'dbui-dummy-t-shadow', 'dbui-dummy-f', 'dbui-dummy-e', 'dbui-dummy-d'
               ]);
               expect(dbuiRoot._descendantsQueueLightDom.length).to.equal(0);
-              expect(dbuiRoot._pendingLightDomConnections.length).to.equal(0);
-              expect(dbuiRoot._pendingRuntimeSetupForLightDom.length).to.equal(0);
+              expect(dbuiRoot._pendingLightDomConnections.size).to.equal(0);
+              expect(dbuiRoot._pendingRuntimeSetupForLightDom.size).to.equal(0);
               expect(dbuiRoot._pendingConnectionsDuringDisconnectFlow.length).to.equal(0);
 
 
@@ -2430,8 +2430,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
                 'dbui-dummy-d'
               ]);
               expect(dbuiRoot._descendantsQueueLightDom.length).to.equal(0);
-              expect(dbuiRoot._pendingLightDomConnections.length).to.equal(0);
-              expect(dbuiRoot._pendingRuntimeSetupForLightDom.length).to.equal(0);
+              expect(dbuiRoot._pendingLightDomConnections.size).to.equal(0);
+              expect(dbuiRoot._pendingRuntimeSetupForLightDom.size).to.equal(0);
               expect(dbuiRoot._pendingConnectionsDuringDisconnectFlow.length).to.equal(0);
 
 
@@ -2449,8 +2449,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
                 'dbui-dummy-b', 'dbui-dummy-a'
               ]);
               expect(dbuiRoot._descendantsQueueLightDom.length).to.equal(0);
-              expect(dbuiRoot._pendingLightDomConnections.length).to.equal(0);
-              expect(dbuiRoot._pendingRuntimeSetupForLightDom.length).to.equal(0);
+              expect(dbuiRoot._pendingLightDomConnections.size).to.equal(0);
+              expect(dbuiRoot._pendingRuntimeSetupForLightDom.size).to.equal(0);
               expect(dbuiRoot._pendingConnectionsDuringDisconnectFlow.length).to.equal(0);
 
 
