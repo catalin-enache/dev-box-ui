@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import inIframe from '../../../../../../testUtils/inIframe';
+import getDBUIWebComponentRoot from '../DBUIWebComponentRoot/DBUIWebComponentRoot';
 import getDBUIResizeSensor from './DBUIResizeSensor';
 import dbuiWebComponentsSetUp from '../../helpers/dbuiWebComponentsSetup';
 
@@ -36,17 +37,19 @@ describe('DBUIResizeSensor', () => {
       }
       `,
       bodyHTML: `
-      <div id="container">
-        <div id="wrapper-resize-sensor">
-          <dbui-resize-sensor id="dbui-resize-sensor">
-            <pre id="scrollable-content" contenteditable="true">${content}</pre>
-          </dbui-resize-sensor>
+      <dbui-web-component-root id="dbui-web-component-root">
+        <div id="container">
+          <div id="wrapper-resize-sensor">
+            <dbui-resize-sensor id="dbui-resize-sensor">
+              <pre id="scrollable-content" contenteditable="true">${content}</pre>
+            </dbui-resize-sensor>
+          </div>
         </div>
-      </div>
-
+      </dbui-web-component-root>
       `,
 
       onLoad: ({ contentWindow, iframe }) => {
+        const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
         const DBUIResizeSensor = getDBUIResizeSensor(contentWindow);
         dbuiWebComponentsSetUp(contentWindow)([{
           registrationName: DBUIResizeSensor.registrationName,
@@ -55,7 +58,7 @@ describe('DBUIResizeSensor', () => {
         }]);
 
         Promise.all([
-          DBUIResizeSensor.registrationName,
+          DBUIRoot.registrationName,
         ].map((localName) => contentWindow.customElements.whenDefined(localName)
         )).then(() => {
           // const wrapperResizeSensor = contentWindow.document.querySelector('#wrapper-resize-sensor');
@@ -82,6 +85,7 @@ describe('DBUIResizeSensor', () => {
         });
 
         DBUIResizeSensor.registerSelf();
+        DBUIRoot.registerSelf();
       }
     });
   });
@@ -107,15 +111,17 @@ describe('DBUIResizeSensor', () => {
         }
         `,
         bodyHTML: `
-        <div id="container">
-          <dbui-resize-sensor id="dbui-resize-sensor">
-            <pre id="scrollable-content" contenteditable="true">${content}</pre>
-          </dbui-resize-sensor>
-        </div>
-  
+        <dbui-web-component-root id="dbui-web-component-root">
+          <div id="container">
+            <dbui-resize-sensor id="dbui-resize-sensor">
+              <pre id="scrollable-content" contenteditable="true">${content}</pre>
+            </dbui-resize-sensor>
+          </div>
+        </dbui-web-component-root>
         `,
 
         onLoad: ({ contentWindow, iframe }) => {
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DBUIResizeSensor = getDBUIResizeSensor(contentWindow);
           dbuiWebComponentsSetUp(contentWindow)([{
             registrationName: DBUIResizeSensor.registrationName,
@@ -124,7 +130,7 @@ describe('DBUIResizeSensor', () => {
           }]);
 
           Promise.all([
-            DBUIResizeSensor.registrationName,
+            DBUIRoot.registrationName,
           ].map((localName) => contentWindow.customElements.whenDefined(localName)
           )).then(() => {
             const resizeSensor = contentWindow.document.querySelector('#dbui-resize-sensor');
@@ -181,10 +187,11 @@ describe('DBUIResizeSensor', () => {
 
             setTimeout(() => {
               scrollableContent.innerHTML += 'oooooooooooooooooooooo1';
-            });
+            }, 0);
           });
 
           DBUIResizeSensor.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });

@@ -1,6 +1,8 @@
 import { expect } from 'chai';
 import inIframe from '../../../../../../testUtils/inIframe';
 import getDBUIAutoScroll from './DBUIAutoScroll';
+import getDBUIDraggable from '../DBUIDraggable/DBUIDraggable';
+import getDBUISlider from '../DBUISlider/DBUISlider';
 import dbuiWebComponentsSetUp from '../../helpers/dbuiWebComponentsSetup';
 import onScreenConsole from '../../../utils/onScreenConsole';
 import {
@@ -9,9 +11,10 @@ import {
   sendMouseEvent
 } from '../../../../../../testUtils/simulateEvents';
 import getDBUIWebComponentCore from '../DBUIWebComponentCore/DBUIWebComponentCore';
+import getDBUIWebComponentRoot from '../DBUIWebComponentRoot/DBUIWebComponentRoot';
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
 
-const dummyOneRegistrationName = 'dummy-one';
+const dummyOneRegistrationName = 'dbui-dummy-one';
 function getDummyOne(win) {
   return ensureSingleRegistration(win, dummyOneRegistrationName, () => {
     const {
@@ -123,10 +126,11 @@ describe('DBUIAutoScroll', () => {
 
       `,
       bodyHTML: `
+      <dbui-web-component-root>
       <div id="container">
         <div id="locale-provider" dir="rtl"></div>
         <div id="wrapper-auto-scroll">
-          <dummy-one id="dummy-one" sync-locale-with="#locale-provider">
+          <dbui-dummy-one id="dummy-one" sync-locale-with="#locale-provider">
           <dbui-auto-scroll
           id="dbui-auto-scroll"
           h-scroll="1"
@@ -138,16 +142,19 @@ describe('DBUIAutoScroll', () => {
             <div id="scrollable-content">${'content'}</div>
             <input type="text" />
           </dbui-auto-scroll>
-          </dummy-one>
+          </dbui-dummy-one>
         </div>
       </div>
-
+      </dbui-web-component-root>
       `,
 
       onLoad: ({ contentWindow, iframe }) => {
         // onScreenConsole();
+        const DBUIWebComponentRoot = getDBUIWebComponentRoot(contentWindow);
         const DBUIAutoScroll = getDBUIAutoScroll(contentWindow);
         const DummyOne = getDummyOne(contentWindow);
+        const DBUIDraggable = getDBUIDraggable(contentWindow);
+        const DBUISlider = getDBUISlider(contentWindow);
         dbuiWebComponentsSetUp(contentWindow)([{
           registrationName: DBUIAutoScroll.registrationName,
           componentStyle: `
@@ -216,8 +223,13 @@ describe('DBUIAutoScroll', () => {
             }, 3000);
           }, 1000);
         });
-        DummyOne.registerSelf();
+        // DBUIDraggable.registerSelf();
+        // DBUISlider.registerSelf();
         DBUIAutoScroll.registerSelf();
+        DummyOne.registerSelf();
+        DBUIWebComponentRoot.registerSelf();
+
+        console.log('Registrations DONE!');
       }
     });
   });

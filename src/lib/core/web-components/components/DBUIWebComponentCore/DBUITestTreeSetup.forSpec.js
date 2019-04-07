@@ -1,5 +1,6 @@
 import getDBUIWebComponentCore from './DBUIWebComponentCore';
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
+import getDBUIWebComponentRoot from '../DBUIWebComponentRoot/DBUIWebComponentRoot';
 
 /* eslint max-len: 0 */
 
@@ -67,37 +68,67 @@ const treeStyle = `
   }
 `;
 
-// 23 total components to connect (3 * d: 3 + 2 * e: 7)
+// 23 total components to connect (3 * d: 3 + 2 * e: 7) + 1 more dbui-web-component-root = 24
 const treeOne = `
-<dummy-d id="light-dummy-d-one-root" context-color1="green" context-color2="maroon" context-color4="bisque" >
+<dbui-web-component-root id="dbui-web-component-root">
+  <dbui-dummy-d id="light-dummy-d-one-root" context-color1="green" context-color2="maroon" context-color4="bisque" >
+    <ul slot="named-slot" id="ul1">
+      <li id="ul1-li1">
+        <dbui-dummy-e id="light-dummy-e-in-named-slot"></dbui-dummy-e>
+      </li>
+    </ul>
+    <ul id="ul2">
+      <li id="ul2-li1">
+        <dbui-dummy-d id="light-dummy-d-two-in-default-slot">
+          <ul id="ul2-li1-ul1">
+            <li id="ul2-li1-ul1-li1">
+              <dbui-dummy-d id="light-dummy-d-three-in-default-slot" context-color1="orange" context-color2="deepskyblue" context-color3="olive">
+                <ul id="ul2-li1-ul1-li1-ul1">
+                  <li id="ul2-li1-ul1-li1-ul1-li1">
+                    <dbui-dummy-e id="light-dummy-e-in-default-slot"></dbui-dummy-e>
+                  </li>
+                </ul>
+              </dbui-dummy-d>
+            </li>
+          </ul>
+        </dbui-dummy-d>
+      </li>
+    </ul>
+  </dbui-dummy-d>
+</dbui-web-component-root>
+`;
+
+const treeOneNoDbuiRoot = `
+<dbui-dummy-d id="light-dummy-d-one-root" context-color1="green" context-color2="maroon" context-color4="bisque" >
   <ul slot="named-slot" id="ul1">
     <li id="ul1-li1">
-      <dummy-e id="light-dummy-e-in-named-slot"></dummy-e>
+      <dbui-dummy-e id="light-dummy-e-in-named-slot"></dbui-dummy-e>
     </li>
   </ul>
   <ul id="ul2">
     <li id="ul2-li1">
-      <dummy-d id="light-dummy-d-two-in-default-slot">
+      <dbui-dummy-d id="light-dummy-d-two-in-default-slot">
         <ul id="ul2-li1-ul1">
           <li id="ul2-li1-ul1-li1">
-            <dummy-d id="light-dummy-d-three-in-default-slot" context-color1="orange" context-color2="deepskyblue" context-color3="olive">
+            <dbui-dummy-d id="light-dummy-d-three-in-default-slot" context-color1="orange" context-color2="deepskyblue" context-color3="olive">
               <ul id="ul2-li1-ul1-li1-ul1">
                 <li id="ul2-li1-ul1-li1-ul1-li1">
-                  <dummy-e id="light-dummy-e-in-default-slot"></dummy-e>
+                  <dbui-dummy-e id="light-dummy-e-in-default-slot"></dbui-dummy-e>
                 </li>
               </ul>
-            </dummy-d>
+            </dbui-dummy-d>
           </li>
         </ul>
-      </dummy-d>
+      </dbui-dummy-d>
     </li>
   </ul>
-</dummy-d>
+</dbui-dummy-d>
 `;
 
 /* eslint camelcase: 0 */
 
 function treeOneGetDbuiNodes(contentWindow) {
+  const dbuiWebComponentRoot = contentWindow.document.querySelector('#dbui-web-component-root');
   // selections
   const lightDummyDOneRoot = contentWindow.document.querySelector('#light-dummy-d-one-root');
   const lightDummyDOneRoot_ShadowDummyB = lightDummyDOneRoot.shadowRoot.querySelector('#shadow-dummy-b');
@@ -128,6 +159,8 @@ function treeOneGetDbuiNodes(contentWindow) {
   const lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB_ShadowDummyA = lightDummyEInDefaultSlot_ShadowDummyCInDefaultSlot_ShadowDummyB.shadowRoot.querySelector('#shadow-dummy-a');
 
   return {
+    dbuiWebComponentRoot,
+
     lightDummyDOneRoot,
     lightDummyDOneRoot_ShadowDummyB,
     lightDummyDOneRoot_ShadowDummyB_ShadowDummyA,
@@ -227,7 +260,7 @@ function getBase(win) {
   });
 }
 
-const dummyARegistrationName = 'dummy-a';
+const dummyARegistrationName = 'dbui-dummy-a';
 const dummyAStyle = `
 ${treeStyle}
 `;
@@ -265,7 +298,7 @@ function getDummyA(win) {
 getDummyA.registrationName = dummyARegistrationName;
 
 
-const dummyBRegistrationName = 'dummy-b';
+const dummyBRegistrationName = 'dbui-dummy-b';
 const dummyBStyle = `
 ${treeStyle}
 `;
@@ -296,7 +329,7 @@ function getDummyB(win) {
             <p>Dummy B ${commonReportHtml}</p>
             <ul>
               <li>
-                <dummy-a id="shadow-dummy-a"></dummy-a>
+                <dbui-dummy-a id="shadow-dummy-a"></dbui-dummy-a>
               </li>
             </ul>
           </div>
@@ -314,7 +347,7 @@ function getDummyB(win) {
 getDummyB.registrationName = dummyBRegistrationName;
 
 
-const dummyCRegistrationName = 'dummy-c';
+const dummyCRegistrationName = 'dbui-dummy-c';
 const dummyCStyle = `
 ${treeStyle}
 `;
@@ -346,7 +379,7 @@ function getDummyC(win) {
             <p>Dummy C ${commonReportHtml}</p>
             <ul>
               <li>
-                <dummy-b id="shadow-dummy-b"></dummy-b>
+                <dbui-dummy-b id="shadow-dummy-b"></dbui-dummy-b>
               </li>
             </ul>
           </div>
@@ -364,7 +397,7 @@ function getDummyC(win) {
 getDummyC.registrationName = dummyCRegistrationName;
 
 
-const dummyDRegistrationName = 'dummy-d';
+const dummyDRegistrationName = 'dbui-dummy-d';
 const dummyDStyle = `
 ${treeStyle}
 `;
@@ -396,7 +429,7 @@ function getDummyD(win) {
             <p>Dummy D ${commonReportHtml}</p>
             <ul>
               <li>
-                <dummy-b id="shadow-dummy-b"></dummy-b>
+                <dbui-dummy-b id="shadow-dummy-b"></dbui-dummy-b>
               </li>
             </ul>
             <slot name="named-slot"></slot>
@@ -417,7 +450,7 @@ function getDummyD(win) {
 getDummyD.registrationName = dummyDRegistrationName;
 
 
-const dummyERegistrationName = 'dummy-e';
+const dummyERegistrationName = 'dbui-dummy-e';
 const dummyEStyle = `
 ${treeStyle}
 `;
@@ -449,13 +482,13 @@ function getDummyE(win) {
             <p>Dummy E ${commonReportHtml}</p>
             <ul>
               <li>
-                <dummy-d id="shadow-dummy-d">
+                <dbui-dummy-d id="shadow-dummy-d">
                   <ul>
                     <li>
-                      <dummy-c id="shadow-dummy-c-in-default-slot"></dummy-c>
+                      <dbui-dummy-c id="shadow-dummy-c-in-default-slot"></dbui-dummy-c>
                     </li>
                   </ul>
-                </dummy-d>
+                </dbui-dummy-d>
               </li>
             </ul>
           </div>
@@ -473,13 +506,14 @@ function getDummyE(win) {
 getDummyE.registrationName = dummyERegistrationName;
 
 export {
+  getDBUIWebComponentRoot,
   getBase,
   getDummyA,
   getDummyB,
   getDummyC,
   getDummyD,
   getDummyE,
-  treeOne,
+  treeOne, treeOneNoDbuiRoot,
   treeOneGetDbuiNodes,
   treeStyle
 };

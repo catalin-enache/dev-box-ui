@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import inIframe from '../../../../../../testUtils/inIframe';
+import getDBUIWebComponentRoot from '../DBUIWebComponentRoot/DBUIWebComponentRoot';
 import getDBUIAutoScrollNative from './DBUIAutoScrollNative';
 import dbuiWebComponentsSetUp from '../../helpers/dbuiWebComponentsSetup';
 
@@ -39,24 +40,26 @@ describe('DBUIAutoScrollNative', () => {
 
       `,
       bodyHTML: `
-      <div id="container">
-        <div id="locale-provider" dir="rtl"></div>
-        <div id="wrapper-auto-scroll-native">
-          <dbui-auto-scroll-native id="dbui-auto-scroll-native" _overflow="auto" sync-locale-with="#locale-provider" h-scroll="0.5" v-scroll="0.5">
-            <!--<div id="scrollable-content">${content}</div>-->
-            <div id="scrollable-content">
-              <dbui-auto-scroll-native id="inner-scroll">
-                <div style="width: 500px; height: 500px; background-color: #0C9A9A;"></div>
-              </dbui-auto-scroll-native>
-            </div>
-            <input type="text" />
-          </dbui-auto-scroll-native>
+      <dbui-web-component-root id="dbui-web-component-root">
+        <div id="container">
+          <div id="locale-provider" dir="rtl"></div>
+          <div id="wrapper-auto-scroll-native">
+            <dbui-auto-scroll-native id="dbui-auto-scroll-native" _overflow="auto" sync-locale-with="#locale-provider" h-scroll="0.5" v-scroll="0.5">
+              <!--<div id="scrollable-content">${content}</div>-->
+              <div id="scrollable-content">
+                <dbui-auto-scroll-native id="inner-scroll">
+                  <div style="width: 500px; height: 500px; background-color: #0C9A9A;"></div>
+                </dbui-auto-scroll-native>
+              </div>
+              <input type="text" />
+            </dbui-auto-scroll-native>
+          </div>
         </div>
-      </div>
-
+      </dbui-web-component-root>
       `,
 
       onLoad: ({ contentWindow, iframe }) => {
+        const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
         const DBUIAutoScrollNative = getDBUIAutoScrollNative(contentWindow);
         dbuiWebComponentsSetUp(contentWindow)([{
           registrationName: DBUIAutoScrollNative.registrationName,
@@ -65,7 +68,7 @@ describe('DBUIAutoScrollNative', () => {
         }]);
 
         Promise.all([
-          DBUIAutoScrollNative.registrationName,
+          DBUIRoot.registrationName,
         ].map((localName) => contentWindow.customElements.whenDefined(localName)
         )).then(() => {
           // const wrapperAutoScrollNative = contentWindow.document.querySelector('#wrapper-auto-scroll-native');
@@ -131,6 +134,7 @@ describe('DBUIAutoScrollNative', () => {
         });
 
         DBUIAutoScrollNative.registerSelf();
+        DBUIRoot.registerSelf();
       }
     });
   });
@@ -140,14 +144,17 @@ describe('DBUIAutoScrollNative', () => {
       headStyle: `
       `,
       bodyHTML: `
+      <dbui-web-component-root id="dbui-web-component-root">
         <dbui-auto-scroll-native
         id="dbui-auto-scroll-native" 
         ></dbui-auto-scroll-native>
+      </dbui-web-component-root>
       `,
       onLoad: ({ contentWindow, iframe }) => {
+        const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
         const DBUIAutoScrollNative = getDBUIAutoScrollNative(contentWindow);
         Promise.all([
-          DBUIAutoScrollNative.registrationName,
+          DBUIRoot.registrationName,
         ].map((localName) => contentWindow.customElements.whenDefined(localName)
         )).then(() => {
           const autoScrollNative = contentWindow.document.querySelector('#dbui-auto-scroll-native');
@@ -160,6 +167,7 @@ describe('DBUIAutoScrollNative', () => {
         });
 
         DBUIAutoScrollNative.registerSelf();
+        DBUIRoot.registerSelf();
       }
     });
   });
@@ -169,16 +177,19 @@ describe('DBUIAutoScrollNative', () => {
       headStyle: `
       `,
       bodyHTML: `
+      <dbui-web-component-root id="dbui-web-component-root">
         <dbui-auto-scroll-native
         id="dbui-auto-scroll-native"
         overflow="auto" 
         ></dbui-auto-scroll-native>
+      </dbui-web-component-root>
       `,
       onLoad: ({ contentWindow, iframe }) => {
+        const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
         const DBUIAutoScrollNative = getDBUIAutoScrollNative(contentWindow);
         const autoScrollNative = contentWindow.document.querySelector('#dbui-auto-scroll-native');
         Promise.all([
-          DBUIAutoScrollNative.registrationName,
+          DBUIRoot.registrationName,
         ].map((localName) => contentWindow.customElements.whenDefined(localName)
         )).then(() => {
           expect(autoScrollNative.overflow).to.equal('auto');
@@ -196,6 +207,7 @@ describe('DBUIAutoScrollNative', () => {
         });
 
         DBUIAutoScrollNative.registerSelf();
+        DBUIRoot.registerSelf();
       }
     });
   });
@@ -213,19 +225,22 @@ describe('DBUIAutoScrollNative', () => {
       }
       `,
       bodyHTML: `
+      <dbui-web-component-root id="dbui-web-component-root">
         <dbui-auto-scroll-native
         id="dbui-auto-scroll-native"
         h-scroll="1" 
         >
         <div id="content"></div>
         </dbui-auto-scroll-native>
+      </dbui-web-component-root>
       `,
       onLoad: ({ contentWindow, iframe }) => {
+        const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
         const DBUIAutoScrollNative = getDBUIAutoScrollNative(contentWindow);
         const autoScrollNative = contentWindow.document.querySelector('#dbui-auto-scroll-native');
         autoScrollNative.vScroll = '1';
         Promise.all([
-          DBUIAutoScrollNative.registrationName,
+          DBUIRoot.registrationName,
         ].map((localName) => contentWindow.customElements.whenDefined(localName)
         )).then(() => {
 
@@ -249,6 +264,7 @@ describe('DBUIAutoScrollNative', () => {
         });
 
         DBUIAutoScrollNative.registerSelf();
+        DBUIRoot.registerSelf();
       }
     });
   });
@@ -266,6 +282,7 @@ describe('DBUIAutoScrollNative', () => {
       }
       `,
       bodyHTML: `
+      <dbui-web-component-root id="dbui-web-component-root">
         <dbui-auto-scroll-native
         id="dbui-auto-scroll-native"
         h-scroll="1" 
@@ -273,12 +290,14 @@ describe('DBUIAutoScrollNative', () => {
         >
         <div id="content"></div>
         </dbui-auto-scroll-native>
+      </dbui-web-component-root>
       `,
       onLoad: ({ contentWindow, iframe }) => {
+        const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
         const DBUIAutoScrollNative = getDBUIAutoScrollNative(contentWindow);
         const autoScrollNative = contentWindow.document.querySelector('#dbui-auto-scroll-native');
         Promise.all([
-          DBUIAutoScrollNative.registrationName,
+          DBUIRoot.registrationName,
         ].map((localName) => contentWindow.customElements.whenDefined(localName)
         )).then(() => {
 
@@ -298,6 +317,7 @@ describe('DBUIAutoScrollNative', () => {
         });
 
         DBUIAutoScrollNative.registerSelf();
+        DBUIRoot.registerSelf();
       }
     });
   });
@@ -315,6 +335,7 @@ describe('DBUIAutoScrollNative', () => {
       }
       `,
       bodyHTML: `
+      <dbui-web-component-root id="dbui-web-component-root">
         <dbui-auto-scroll-native
         id="dbui-auto-scroll-native"
         h-scroll="1" 
@@ -323,12 +344,14 @@ describe('DBUIAutoScrollNative', () => {
         >
         <div id="content"></div>
         </dbui-auto-scroll-native>
+      </dbui-web-component-root>
       `,
       onLoad: ({ contentWindow, iframe }) => {
+        const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
         const DBUIAutoScrollNative = getDBUIAutoScrollNative(contentWindow);
         const autoScrollNative = contentWindow.document.querySelector('#dbui-auto-scroll-native');
         Promise.all([
-          DBUIAutoScrollNative.registrationName,
+          DBUIRoot.registrationName,
         ].map((localName) => contentWindow.customElements.whenDefined(localName)
         )).then(() => {
 
@@ -353,6 +376,7 @@ describe('DBUIAutoScrollNative', () => {
         });
 
         DBUIAutoScrollNative.registerSelf();
+        DBUIRoot.registerSelf();
       }
     });
   });
@@ -366,18 +390,21 @@ describe('DBUIAutoScrollNative', () => {
       }
       `,
       bodyHTML: `
-          <div id="container">
-            <dbui-auto-scroll-native
-            id="dbui-auto-scroll-native"
-            overflow="auto" 
-            ></dbui-auto-scroll-native>
-          </div>
+      <dbui-web-component-root id="dbui-web-component-root">
+        <div id="container">
+          <dbui-auto-scroll-native
+          id="dbui-auto-scroll-native"
+          overflow="auto" 
+          ></dbui-auto-scroll-native>
+        </div>
+      </dbui-web-component-root>
       `,
       onLoad: ({ contentWindow, iframe }) => {
+        const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
         const DBUIAutoScrollNative = getDBUIAutoScrollNative(contentWindow);
         const autoScrollNative = contentWindow.document.querySelector('#dbui-auto-scroll-native');
         Promise.all([
-          DBUIAutoScrollNative.registrationName,
+          DBUIRoot.registrationName,
         ].map((localName) => contentWindow.customElements.whenDefined(localName)
         )).then(() => {
           expect(autoScrollNative.scrollWidth).to.equal(200);
@@ -390,6 +417,7 @@ describe('DBUIAutoScrollNative', () => {
         });
 
         DBUIAutoScrollNative.registerSelf();
+        DBUIRoot.registerSelf();
       }
     });
   });
@@ -415,19 +443,22 @@ describe('DBUIAutoScrollNative', () => {
         }
         `,
         bodyHTML: `
+        <dbui-web-component-root id="dbui-web-component-root">
           <div id="wrapper-auto-scroll-native">
             <dbui-auto-scroll-native id="dbui-auto-scroll-native" style="_overflow: hidden;">
               <div id="scrollable-content"></div>
             </dbui-auto-scroll-native>
           </div>
+        </dbui-web-component-root>
         `,
         onLoad: ({ contentWindow, iframe }) => {
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DBUIAutoScrollNative = getDBUIAutoScrollNative(contentWindow);
           const wrapperAutoScrollNative = contentWindow.document.querySelector('#wrapper-auto-scroll-native');
           const autoScrollNative = contentWindow.document.querySelector('#dbui-auto-scroll-native');
           const scrollableContent = contentWindow.document.querySelector('#scrollable-content');
           Promise.all([
-            DBUIAutoScrollNative.registrationName,
+            DBUIRoot.registrationName,
           ].map((localName) => contentWindow.customElements.whenDefined(localName)
           )).then(() => {
 
@@ -500,6 +531,7 @@ describe('DBUIAutoScrollNative', () => {
           });
 
           DBUIAutoScrollNative.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });

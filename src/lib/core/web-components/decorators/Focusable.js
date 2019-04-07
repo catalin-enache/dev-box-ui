@@ -86,8 +86,8 @@ export default function Focusable(Klass) {
       }
     }
 
-    connectedCallback() {
-      super.connectedCallback();
+    onConnectedCallback() {
+      super.onConnectedCallback();
 
       readOnlyProperties.forEach((readOnlyProperty) => {
         if (this.hasAttribute(readOnlyProperty)) {

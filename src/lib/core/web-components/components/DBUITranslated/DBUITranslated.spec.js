@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import inIframe from '../../../../../../testUtils/inIframe';
+import getDBUIWebComponentRoot from '../DBUIWebComponentRoot/DBUIWebComponentRoot';
 import getDBUITranslated from './DBUITranslated';
 import getDBUII18nService from '../../../services/DBUII18nService';
 import template from '../../../utils/template';
@@ -20,20 +21,23 @@ describe('DBUITranslated', () => {
     inIframe({
       headStyle: '',
       bodyHTML: `
-      <div id="container">
-        <dbui-translated
-          sync-locale-with="#container"
-          id="one"
-          message-0="zero"
-          message-1="one"
-          message="Hello"
-          message-age="22"
-          message-name="John"
-        ></dbui-translated>
-      </div>
+      <dbui-web-component-root id="dbui-web-component-root">
+        <div id="container">
+          <dbui-translated
+            sync-locale-with="#container"
+            id="one"
+            message-0="zero"
+            message-1="one"
+            message="Hello"
+            message-age="22"
+            message-name="John"
+          ></dbui-translated>
+        </div>
+      </dbui-web-component-root>
       
       `,
       onLoad: ({ contentWindow, iframe }) => {
+        const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
         const DBUITranslated = getDBUITranslated(contentWindow);
         const i18nService = getDBUII18nService(contentWindow);
 
@@ -43,7 +47,7 @@ describe('DBUITranslated', () => {
         const one = contentWindow.document.querySelector('#one');
 
         Promise.all([
-          DBUITranslated.registrationName,
+          DBUIRoot.registrationName,
         ].map((localName) => contentWindow.customElements.whenDefined(localName)
         )).then(() => {
 
@@ -111,6 +115,7 @@ describe('DBUITranslated', () => {
         });
 
         DBUITranslated.registerSelf();
+        DBUIRoot.registerSelf();
       }
     });
   });

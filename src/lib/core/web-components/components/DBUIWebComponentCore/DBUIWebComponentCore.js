@@ -47,15 +47,19 @@ TODO:
  - make setters and getters dynamically to avoid boilerplate ?
  - what behaviour when component is adopted ? what about its dependency on global variables ?
  - inject global css to handle dbui-web-component (hide when not defined, un hide when defined) ?
+ - test a setup like auto-scroll to check the order of registrations and onDomSettled
+ - what happens when shadow children are added dynamically later ?
 */
 
 /*
 Behavior Extras:
  - Accessing parents and children:
-   If parent is accessed in connectedCallback it exists (if it should exist), however,
-   the parent might not be itself connected yet.
-   If children are accessed in connectedCallback they might not be complete yet at that time.
+   Parents and children are not always accessible/upgraded in connectedCallback (native)
+   but they are in onConnectedCallback (custom - internally fired)
 */
+
+// const describeElement =
+//   (element) => `${element.constructor.registrationName}|${element.tagName.toUpperCase()}#${element.id}`;
 
 /**
  *
@@ -196,6 +200,15 @@ export default function getDBUIWebComponentCore(win) {
         this._previouslyObservedDynamicAttributes = {};
         this._prevDir = null;
         this._prevLang = null;
+        this._dbuiWebComponentRoot = null;
+
+        // delivery flags
+        this._wasOnConnectedCallbackFired = false;
+        this._wasRuntimeSetUpForLightDomMutationsRun = false;
+        this._isDelivered = false;
+
+        this._pendingAttributeChanges = [];
+
         this._insertTemplate();
 
         this.connectedCallback = this.connectedCallback.bind(this);
@@ -797,9 +810,9 @@ export default function getDBUIWebComponentCore(win) {
        */
       get closestDbuiParentLiveQuery() {
         let closestParent = this.parentElement;
-        // might be null if disconnected from dom
+        // might be null if disconnected from DOM
         if (closestParent === null) {
-          return null;
+          return this.shadowDomDbuiParent;
         }
         closestParent = closestParent.closest('[dbui-web-component]');
         return closestParent || this.shadowDomDbuiParent;
@@ -824,6 +837,29 @@ export default function getDBUIWebComponentCore(win) {
       }
 
       /**
+       * The only dbui component that returns true is DBUIWebComponentRoot
+       * @return Boolean
+       */
+      get isDBUIRootNode() {
+        return false;
+      }
+
+      /**
+       *
+       * @return DBUIWebComponentRoot | null
+       */
+      get dbuiWebComponentRoot() {
+        if (this.isDBUIRootNode) {
+          return this;
+        } else if (this._dbuiWebComponentRoot) {
+          return this._dbuiWebComponentRoot;
+        }
+        this._dbuiWebComponentRoot =
+          win.document.querySelector('dbui-web-component-root');
+        return this._dbuiWebComponentRoot;
+      }
+
+      /**
        *
        * @return DBUIWebComponent | null
        */
@@ -841,14 +877,137 @@ export default function getDBUIWebComponentCore(win) {
       }
 
       /**
-       *
        * @return Array<DBUIWebComponent>
        */
       // might be useful in some scenarios
       get closestDbuiChildrenLiveQuery() {
-        const dbuiChildren = [...this.lightDomDbuiChildren, ...this.shadowDomDbuiChildren];
-        const closestDbuiChildren = dbuiChildren.filter((child) => child.closestDbuiParentLiveQuery === this);
-        return closestDbuiChildren;
+        const allClosestDbuiChildren = [
+          ...this.closetsDBUIChildrenInLightDomLiveQuery,
+          ...this.closetsDBUIChildrenInShadowDomLiveQuery
+        ];
+        return allClosestDbuiChildren;
+      }
+
+      /**
+       * @return Array<DBUIWebComponent>
+       */
+      get closetsDBUIChildrenInLightDomLiveQuery() {
+        const lightDomDbuiChildren = [...this.lightDomDbuiChildren];
+        const closestLightDomDbuiChildren =
+          lightDomDbuiChildren.filter((child) => child.closestDbuiParentLiveQuery === this);
+        return closestLightDomDbuiChildren;
+      }
+
+      /**
+       * @return Array<DBUIWebComponent>
+       */
+      get closetsDBUIChildrenInShadowDomLiveQuery() {
+        const shadowDomDbuiChildren = [...this.shadowDomDbuiChildren];
+        const closestShadowDomDbuiChildren =
+          shadowDomDbuiChildren.filter((child) => child.closestDbuiParentLiveQuery === this);
+        return closestShadowDomDbuiChildren;
+      }
+
+      /**
+       * @return Array<DBUIWebComponent>
+       */
+      get lightDescendantsLiveQuery() {
+        return [...this.querySelectorAll('*')].filter((descendant) =>
+          descendant.tagName.toUpperCase().startsWith('DBUI-')
+        );
+      }
+
+      /**
+       * @return Array<DBUIWebComponent>
+       */
+      get lightDescendantsUpgradedLiveQuery() {
+        return this.lightDomDbuiChildren;
+      }
+
+      /**
+       * @return Array<DBUIWebComponent>
+       */
+      get lightDescendantsNotUpgradedLiveQuery() {
+        return [...this.querySelectorAll('*')].filter((descendant) =>
+          descendant.tagName.toUpperCase().startsWith('DBUI-') &&
+          !(descendant instanceof DBUIWebComponentBase)
+        );
+      }
+
+      /**
+       * @return Array<DBUIWebComponent>
+       */
+      get lightDescendantsNotConnectedLiveQuery() {
+        return [...this.querySelectorAll('*')].filter((descendant) =>
+          descendant.tagName.toUpperCase().startsWith('DBUI-') &&
+          !descendant.isMounted
+        );
+      }
+
+      /**
+       * @return Array<DBUIWebComponent>
+       */
+      get shadowDescendantsLiveQuery() {
+        return [...this.shadowRoot.querySelectorAll('*')].filter((descendant) =>
+          descendant.tagName.toUpperCase().startsWith('DBUI-')
+        );
+      }
+
+      /**
+       * @return Array<DBUIWebComponent>
+       */
+      get shadowDescendantsDeepLiveQuery() {
+        const dbuiChildren = this.shadowDescendantsLiveQuery;
+        return [...dbuiChildren,
+          ...dbuiChildren.map((descendant) => (
+            descendant.shadowDescendantsDeepLiveQuery
+          )).flat()];
+      }
+
+      /**
+       * @return Array<DBUIWebComponent>
+       */
+      get shadowDescendantsConnectedLiveQuery() {
+        return this.shadowDomDbuiChildren;
+      }
+
+      /**
+       * @return Array<DBUIWebComponent>
+       */
+      get shadowDescendantsNotUpgradedLiveQuery() {
+        return [...this.shadowRoot.querySelectorAll('*')].filter((descendant) =>
+          descendant.tagName.toUpperCase().startsWith('DBUI-') &&
+          !(descendant instanceof DBUIWebComponentBase)
+        );
+      }
+
+      get shadowDescendantsNotConnectedLiveQuery() {
+        return [...this.shadowRoot.querySelectorAll('*')].filter((descendant) =>
+          descendant.tagName.toUpperCase().startsWith('DBUI-') &&
+          !descendant.isMounted
+        );
+      }
+
+      /**
+       * @return Array<DBUIWebComponent>
+       */
+      get shadowDescendantsNotConnectedDeepLiveQuery() {
+        const dbuiChildren = [...this.shadowRoot.querySelectorAll('*')].filter((descendant) =>
+          descendant.tagName.toUpperCase().startsWith('DBUI-')
+        );
+        const dbuiChildrenUpgraded = dbuiChildren.filter((descendant) => (
+          (descendant instanceof DBUIWebComponentBase)
+        ));
+        const dbuiChildrenUpgradedButNotConnected = dbuiChildrenUpgraded.filter((descendant) => (
+          !descendant.isMounted
+        ));
+        const dbuiChildrenNotUpgraded = dbuiChildren.filter((descendant) => (
+          !(descendant instanceof DBUIWebComponentBase)
+        ));
+        return [...dbuiChildrenNotUpgraded, ...dbuiChildrenUpgradedButNotConnected,
+          ...dbuiChildrenUpgraded.map((descendant) => (
+            descendant.shadowDescendantsNotConnectedDeepLiveQuery
+          )).flat()];
       }
 
       /**
@@ -877,6 +1036,7 @@ export default function getDBUIWebComponentCore(win) {
        * @private
        */
       _registerChild(child) {
+        // TODO: make _closestDbuiChildren a Map
         this._closestDbuiChildren.push(child);
       }
 
@@ -1104,6 +1264,8 @@ export default function getDBUIWebComponentCore(win) {
       * Is called after attributeChangedCallback.
       * */
       connectedCallback() {
+        // https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements#Using_the_lifecycle_callbacks
+        if (!this.isConnected) return;
         // Using this pattern as it seems that the component
         // is immune to overriding connectedCallback at runtime.
         // Most probably the browser keeps a reference to connectedCallback
@@ -1117,9 +1279,58 @@ export default function getDBUIWebComponentCore(win) {
        * @private
        */
       _onConnectedCallback() {
+        if (this.dbuiWebComponentRoot._disconnectChainStartedWith) {
+          this.dbuiWebComponentRoot._pendingConnectionsDuringDisconnectFlow.push(this);
+          return;
+        }
+        this._wasOnConnectedCallbackFired = true;
+        const shadowDescendants = this.shadowDescendantsLiveQuery;
+        const shadowDescendantsNotConnected = shadowDescendants.filter((descendant) => (
+          !descendant.isMounted || descendant.shadowDescendantsNotConnectedDeepLiveQuery.length
+        ));
+        this._initSelf();
+
+        if (!this.shadowDomDbuiParent && !shadowDescendantsNotConnected.length) {
+          // Connecting light DOM node, no shadow.
+          this._doLightDomSetup();
+        } else if (this.shadowDomDbuiParent && !shadowDescendantsNotConnected.length) {
+          // Connecting shadow DOM node, no shadow,
+          // but parent (which was actually added) setup was delayed due to self.
+          if (!this.shadowDomDbuiParent._isDelivered) {
+            if (!shadowDescendantsNotConnected.length) {
+              this.shadowDomDbuiParent._onShadowDomChildConnected();
+            }
+          } else {
+            // Connecting shadow DOM node, no shadow.
+            // This is the node being added at runtime and has no unconnected shadow children.
+            this._doShadowDomSetup();
+          }
+        }
+      }
+
+      // Descendants tell their ancestors that they are connected
+      // so that their ancestors can do their setup.
+      // Recursively propagating up-tree.
+      _onShadowDomChildConnected() {
+        const shadowDescendantsNotConnected = this.shadowDescendantsNotConnectedDeepLiveQuery;
+        if (shadowDescendantsNotConnected.length || !this._wasOnConnectedCallbackFired) {
+          return;
+        }
+        if (!this.shadowDomDbuiParent && !this._isDelivered) {
+          // light node added at runtime (setup was delayed)
+          this._doLightDomSetup();
+        } else if (this.shadowDomDbuiParent && this.shadowDomDbuiParent._isDelivered) {
+          // shadow node was added at runtime (setup was delayed)
+          this._doShadowDomSetup();
+        } else if (this.shadowDomDbuiParent && !this.shadowDomDbuiParent._isDelivered) {
+          this.shadowDomDbuiParent._onShadowDomChildConnected();
+        }
+      }
+
+      _initSelf() {
         this._isMounted = true;
         this._isDisconnected = false;
-        this._detectFeaturesAndBehaviors();
+        this._detectFeaturesAndBehaviors(); // This runs only once then is cached on window.
         win.addEventListener('beforeunload', this.disconnectedCallback, false);
         const { propertiesToUpgrade, attributesToDefine } = this.constructor;
         propertiesToUpgrade.forEach((property) => {
@@ -1128,18 +1339,188 @@ export default function getDBUIWebComponentCore(win) {
         Object.keys(attributesToDefine).forEach((property) => {
           this._defineAttribute(property, attributesToDefine[property]);
         });
-        // We can safely register to closestDbuiParent because it exists at this time
-        // but we must not assume it was connected.
-        // NOTE: even if closestDbuiParent (or any ancestor) is not connected
-        // the top of the tree (topDbuiAncestor) can be reached if needed
+      }
+
+      _doLightDomSetup() {
+        if (!this.dbuiWebComponentRoot) return;
+        if (!win.DBUIWebComponents.dbuiRootNodeUpgraded && !this.isDBUIRootNode) return;
+
+        if (this.isDBUIRootNode) {
+          this._initialSetUpForLightDomEventuallyFullyUpgraded(this);
+          // If light node.
+          // For non dbuiRoot the following code is only run at runtime after dbuiRoot was connected.
+        } else if (
+          // If in light DOM and not directly under dbuiRoot
+          // and lightDomDbuiParent has not run runtimeSetUpForLightDom
+          !this.shadowDomDbuiParent &&
+          this.lightDomDbuiParent !== this.dbuiWebComponentRoot &&
+          !this.lightDomDbuiParent._wasRuntimeSetUpForLightDomMutationsRun
+        ) {
+          // Complication due to Safari which provides light DOM nodes for runtimeSetup
+          // before their shadow DOM was ready.
+          // Ex: Safari is providing a, b, a_shadow, b_shadow
+          // Ex: if b is light child of a then b should not be allowed to runtimeSetup before a.
+          this.dbuiWebComponentRoot._pendingRuntimeSetupForLightDom.push(this);
+        } else {
+          this.dbuiWebComponentRoot
+            ._runtimeSetUpForLightDomMutations(this);
+        }
+      }
+
+      _doShadowDomSetup() {
+        this._runtimeSetUpForShadowDomMutations();
+      }
+
+
+      /**
+       * Only triggered by DBUIWebComponentRoot subclass in light DOM
+       * or by any component for its shadow DOM
+       * @param node DBUIWebComponent
+       */
+      // For the case when dbui children connectedCallback was already fired
+      // (where components registration happened after DOM has been parsed
+      // and DBUIWebComponentRoot.registerSelf() was called last)
+      // This method is only triggered on dbuiRoot.
+      _initialSetUpForLightDomEventuallyFullyUpgraded(dbuiRootNode) {
+        const lightDescendantsUpgraded = [dbuiRootNode, ...this.lightDescendantsUpgradedLiveQuery];
+        const lightDescendantsNotConnected = this.lightDescendantsNotConnectedLiveQuery;
+
+        // In Safari only, when DOM is parsed after all registrations happened,
+        // all descendants are fully upgraded during the parsing.
+        // Setting win.DBUIWebComponents.dbuiRootNodeUpgraded = true here is incorrect
+        // as it will make children register twice,
+        // once by dbui-web-component-root and once by themselves.
+        if (
+          lightDescendantsUpgraded.length === 1 || // where 1 is dbuiRootNode itself
+          lightDescendantsNotConnected.length > 0
+        ) {
+          // Handle exceptional case when _initialSetUp is called on DBUIWebComponentRoot
+          // before children (upgraded or not upgraded) fired connectedCallback.
+          // Ex: all children's Classes were registered
+          // and the innerHTML of dbui-web-component-root container was rewritten.
+          // or dbuiRoot was unmounted then mounted back.
+          // Switch to the other kind of setup.
+          win.DBUIWebComponents.dbuiRootNodeUpgraded = true;
+          this._runtimeSetUpForLightDomMutations(dbuiRootNode);
+          return;
+        }
+        // Handling the main case where DOM is fully upgraded and all children had fired connectedCallback already.
+        // With this approach we guarantee that registrations and context discovery
+        // happens from root to leaves and onConnectedCallback is fired from leaves to root.
+        // Benefits: when onConnectedCallback is fired
+        // - the component can access its upgraded parent
+        // - all descendants are also mounted and upgraded
+        // - component is fully aware of surrounding context
+        lightDescendantsUpgraded
+          .forEach((descendant) => {
+            descendant._integrateSelfInTheTree();
+            descendant._shadowDomSetUp();
+          });
+        lightDescendantsUpgraded.reverse().forEach((descendant) => {
+          // Call public hook.
+          descendant._deliverSelf();
+          descendant._wasRuntimeSetUpForLightDomMutationsRun = true;
+        });
+        win.DBUIWebComponents.dbuiRootNodeUpgraded = true;
+      }
+
+      // For the case dbui children connectedCallback will be fired after
+      // (when innerHTML is changed after registerSelf was called).
+      // Assuming light descendants are not connected.
+      // This method is only triggered on dbuiRoot.
+      _runtimeSetUpForLightDomMutations(node) {
+        this._pendingRuntimeSetupForLightDom =
+          this._pendingRuntimeSetupForLightDom.filter((pending) => pending !== node);
+
+        // Only rootNode which is only instance uses _descendantsQueueLightDom.
+        // Here this is always rootNode.
+        if (this._descendantsQueueLightDom.length === 0) {
+          const lightDescendants = node.lightDescendantsLiveQuery;
+          const allDBUIComponentsNotConnected = [node, ...lightDescendants];
+          const pendingLightDomConnections = lightDescendants;
+          /* eslint no-multi-assign: 0 */
+          this._descendantsQueueLightDom = allDBUIComponentsNotConnected;
+          this._pendingLightDomConnections = pendingLightDomConnections;
+          // if component asking for registration has no dbui descendant
+          if (this._descendantsQueueLightDom.length === 1) {
+            this._pendingLightDomConnections.pop();
+            const lastDescendantInQueue = this._descendantsQueueLightDom.pop();
+            lastDescendantInQueue._integrateSelfInTheTree();
+            lastDescendantInQueue._shadowDomSetUp();
+            lastDescendantInQueue._deliverSelf();
+          }
+        } else {
+          this._pendingLightDomConnections =
+            this._pendingLightDomConnections.filter((pending) => pending !== node);
+          if (!this._pendingLightDomConnections.length) {
+            this._descendantsQueueLightDom.forEach((descendant) => {
+              descendant._integrateSelfInTheTree();
+              descendant._shadowDomSetUp();
+            });
+            while (this._descendantsQueueLightDom.length) {
+              const lastDescendantInQueue = this._descendantsQueueLightDom.pop();
+              lastDescendantInQueue._deliverSelf();
+            }
+          }
+        }
+
+        node._wasRuntimeSetUpForLightDomMutationsRun = true;
+
+        // Complication due to Safari which provide consecutive light DOM nodes for runtimeSetup
+        // before their shadow DOM was ready.
+        // Ex: Safari is providing a, b, a_shadow, b_shadow
+        const stillPendingRuntimeSetupNodes = [];
+        const pendingRuntimeSetupNodesReady = [];
+        this._pendingRuntimeSetupForLightDom.forEach((pendingNode) => {
+          if (pendingNode.lightDomDbuiParent === node) {
+            pendingRuntimeSetupNodesReady.push(pendingNode);
+          } else {
+            stillPendingRuntimeSetupNodes.push(pendingNode);
+          }
+        });
+
+        this._pendingRuntimeSetupForLightDom = stillPendingRuntimeSetupNodes;
+
+        pendingRuntimeSetupNodesReady.forEach((node) => {
+          this._runtimeSetUpForLightDomMutations(node);
+        });
+      }
+
+      _runtimeSetUpForShadowDomMutations() {
+        this._integrateSelfInTheTree();
+        this._shadowDomSetUp();
+        this._deliverSelf();
+      }
+
+      _shadowDomSetUp() {
+        // Assuming all shadow descendants are already connected.
+        const shadowDescendantsConnected = this.shadowDescendantsConnectedLiveQuery;
+        shadowDescendantsConnected
+          .forEach((descendant) => {
+            descendant._integrateSelfInTheTree();
+            descendant._shadowDomSetUp();
+          });
+        shadowDescendantsConnected.reverse().forEach((descendant) => {
+          descendant._deliverSelf();
+        });
+      }
+
+      _integrateSelfInTheTree() {
         this._registerSelfToClosestDbuiParent();
         this._checkContext(); // is ignored by top most dbui ancestors
         // makes top most ancestors or dbui components having localeTarget specified
         // to set dbuiDir/Locale on context
         this._syncLocaleAndMonitorChanges();
         this._initializeDynamicAttributesObserver();
+      }
+
+      _deliverSelf() {
         // Call public hook.
         this.onConnectedCallback();
+        this._isDelivered = true;
+        while (this._pendingAttributeChanges.length) {
+          this.attributeChangedCallback(...this._pendingAttributeChanges.pop());
+        }
       }
 
       /**
@@ -1147,6 +1528,12 @@ export default function getDBUIWebComponentCore(win) {
        */
       onConnectedCallback() {
         // pass
+        // console.log(describeElement(this),
+        //   'having shadowDomDbuiParent', this.shadowDomDbuiParent && describeElement(this.shadowDomDbuiParent),
+        //   'and closestDBUIParent', this.closestDbuiParent && describeElement(this.closestDbuiParent),
+        //   'onConnectedCallback',
+        //   'closestDbuiChildren', this.closestDbuiChildren.map(describeElement),
+        // );
       }
 
       // web components standard API
@@ -1158,14 +1545,36 @@ export default function getDBUIWebComponentCore(win) {
        * @private
        */
       _onDisconnectedCallback() {
+        if (this._isDisconnected) return;
+        if (!this.dbuiWebComponentRoot._disconnectChainStartedWith) {
+          this.dbuiWebComponentRoot._disconnectChainStartedWith = this;
+        }
+
+        this._isMounted = false;
+        this._isDisconnected = true;
         this._resetContext();
         this._resetProvidedLocale();
         this._unregisterSelfFromClosestDbuiParent();
         win.removeEventListener('beforeunload', this.disconnectedCallback, false);
-        this._isMounted = false;
-        this._isDisconnected = true;
+
         this._closestDbuiParent = null;
+
+        // delivery flags
+        this._wasOnConnectedCallbackFired = false;
+        this._wasRuntimeSetUpForLightDomMutationsRun = false;
+        this._isDelivered = false;
+
         this._dismissDynamicAttributesObserver();
+        this.closestDbuiChildren.forEach((child) => child._onDisconnectedCallback());
+
+        if (this.dbuiWebComponentRoot._disconnectChainStartedWith === this) {
+          this.dbuiWebComponentRoot._disconnectChainStartedWith = null;
+          while (this.dbuiWebComponentRoot._pendingConnectionsDuringDisconnectFlow.length) {
+            const pendingConnection = this.dbuiWebComponentRoot._pendingConnectionsDuringDisconnectFlow.shift();
+            pendingConnection._onConnectedCallback();
+          }
+        }
+
         // Call public hook.
         this.onDisconnectedCallback();
       }
@@ -1199,6 +1608,10 @@ export default function getDBUIWebComponentCore(win) {
        * @param newValue String
        */
       attributeChangedCallback(name, oldValue, newValue) {
+        if (!this.isMounted) {
+          this._pendingAttributeChanges.push([name, oldValue, newValue]);
+          return;
+        }
         // web components standard API
         // Scenario 1: component was created in detached tree BEFORE being defined.
         // attributeChangedCallback will not be called when being defined but when inserted into DOM.
@@ -1289,6 +1702,20 @@ export default function getDBUIWebComponentCore(win) {
         const registrationName = klass.registrationName;
         const dependencies = klass.dependencies;
 
+        if (customElements.get('dbui-web-component-root')) {
+          throw new win.Error(`
+          DBUIWebComponentRoot must be registered last.
+          You can register in advance all dbui components that you plan to use.
+          `);
+        }
+
+        // This order (registering dependencies before or after)
+        // eventually matters only when registrations happen after DOM tree was parsed and displayed.
+
+        dependencies.forEach((dependency) => {
+          dependency.registerSelf();
+        });
+
         // Don't try to register self if already registered
         if (!customElements.get(registrationName)) {
           // Give a chance to override web-component style if provided before being registered.
@@ -1301,9 +1728,6 @@ export default function getDBUIWebComponentCore(win) {
           // https://html.spec.whatwg.org/multipage/custom-elements.html#concept-upgrade-an-element
           customElements.define(registrationName, klass);
         }
-        // Make sure our dependencies are registered after self
-        // so that children can register to their parent
-        dependencies.forEach((dependency) => dependency.registerSelf());
 
         return registrationName;
       };

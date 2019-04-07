@@ -4,7 +4,10 @@ import inIframe from '../../../../../../testUtils/inIframe';
 
 import monkeyPatch from '../../../../../../testUtils/monkeyPatch';
 
+import { isFirefox } from '../../../utils/browserDetect';
+
 import {
+  getDBUIWebComponentRoot,
   getBase,
   getDummyA,
   getDummyB,
@@ -53,6 +56,7 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations', () => {
         `,
         onLoad: ({ contentWindow, iframe }) => {
 
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const Base = getBase(contentWindow);
           const DummyA = getDummyA(contentWindow);
           const DummyB = getDummyB(contentWindow);
@@ -67,6 +71,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations', () => {
           const doTest = () => {
             const dbuiNodes = treeOneGetDbuiNodes(contentWindow);
             const {
+              dbuiWebComponentRoot,
+
               lightDummyDOneRoot,
               lightDummyDOneRoot_ShadowDummyB,
               lightDummyDOneRoot_ShadowDummyB_ShadowDummyA,
@@ -99,11 +105,11 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations', () => {
             // Test closestDbuiParent sync.
             // Also test that closestDbuiParent existed at the time of connectedCallback.
             // NOTE: even it existed it might not have been connected yet.
-            expect(lightDummyDOneRoot.closestDbuiParent).to.equal(null);
+            expect(lightDummyDOneRoot.closestDbuiParent).to.equal(dbuiWebComponentRoot);
             expect(lightDummyDOneRoot.closestDbuiParent).to.equal(lightDummyDOneRoot.__testClosestDbuiParent);
             expect(lightDummyDOneRoot.shadowDomDbuiParent).to.equal(null);
             expect(lightDummyDOneRoot.shadowDomDbuiParent).to.equal(lightDummyDOneRoot.__testShadowDomDbuiParent);
-            expect(lightDummyDOneRoot.lightDomDbuiParent).to.equal(null);
+            expect(lightDummyDOneRoot.lightDomDbuiParent).to.equal(dbuiWebComponentRoot);
             expect(lightDummyDOneRoot.lightDomDbuiParent).to.equal(lightDummyDOneRoot.__testLightDomDbuiParent);
             expect(lightDummyDOneRoot_ShadowDummyB.closestDbuiParent).to.equal(lightDummyDOneRoot);
             expect(lightDummyDOneRoot_ShadowDummyB.closestDbuiParent).to.equal(lightDummyDOneRoot_ShadowDummyB.__testClosestDbuiParent);
@@ -333,6 +339,7 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations', () => {
             DummyC.registrationName,
             DummyD.registrationName,
             DummyE.registrationName,
+            DBUIRoot.registrationName
           ].map((localName) => contentWindow.customElements.whenDefined(localName)
           )).then(() => {
 
@@ -364,8 +371,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations', () => {
                   const node1 = dbuiNodes1[key];
                   // expect NOT to be same instances as we used innerHTML
                   expect(node1).to.not.equal(node);
-                  if (node !== dbuiNodes.lightDummyDOneRoot) {
-                    expect(node.topDbuiAncestor).to.equal(dbuiNodes.lightDummyDOneRoot);
+                  if (node !== dbuiNodes.dbuiWebComponentRoot) {
+                    expect(node.topDbuiAncestor).to.equal(dbuiNodes.dbuiWebComponentRoot);
                   }
                 });
 
@@ -379,7 +386,7 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations', () => {
 
                 setTimeout(() => {
                   // restart using appendChild
-                  container.appendChild(dbuiNodes2.lightDummyDOneRoot);
+                  container.appendChild(dbuiNodes2.dbuiWebComponentRoot);
 
                   const dbuiNodes = treeOneGetDbuiNodes(contentWindow);
 
@@ -388,8 +395,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations', () => {
                     const node2 = dbuiNodes2[key];
                     // expect to be same instances as we used appendChild
                     expect(node2).to.equal(node);
-                    if (node !== dbuiNodes.lightDummyDOneRoot) {
-                      expect(node.topDbuiAncestor).to.equal(dbuiNodes.lightDummyDOneRoot);
+                    if (node !== dbuiNodes.dbuiWebComponentRoot) {
+                      expect(node.topDbuiAncestor).to.equal(dbuiNodes.dbuiWebComponentRoot);
                     }
                   });
 
@@ -404,6 +411,7 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations', () => {
           });
           DummyD.registerSelf();
           DummyE.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });
@@ -419,18 +427,12 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations', () => {
         </div>
         `,
         onLoad: ({ contentWindow, iframe }) => {
-          const DummyA = getDummyA(contentWindow);
-          const DummyB = getDummyB(contentWindow);
-          const DummyC = getDummyC(contentWindow);
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DummyD = getDummyD(contentWindow);
           const DummyE = getDummyE(contentWindow);
 
           Promise.all([
-            DummyA.registrationName,
-            DummyB.registrationName,
-            DummyC.registrationName,
-            DummyD.registrationName,
-            DummyE.registrationName,
+            DBUIRoot.registrationName
           ].map((localName) => contentWindow.customElements.whenDefined(localName)
           )).then(() => {
             const dbuiNodes = treeOneGetDbuiNodes(contentWindow);
@@ -514,6 +516,7 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations', () => {
 
           DummyD.registerSelf();
           DummyE.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });
@@ -530,18 +533,12 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations', () => {
         </div>
         `,
         onLoad: ({ contentWindow, iframe }) => {
-          const DummyA = getDummyA(contentWindow);
-          const DummyB = getDummyB(contentWindow);
-          const DummyC = getDummyC(contentWindow);
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DummyD = getDummyD(contentWindow);
           const DummyE = getDummyE(contentWindow);
 
           Promise.all([
-            DummyA.registrationName,
-            DummyB.registrationName,
-            DummyC.registrationName,
-            DummyD.registrationName,
-            DummyE.registrationName,
+            DBUIRoot.registrationName,
           ].map((localName) => contentWindow.customElements.whenDefined(localName)
           )).then(() => {
             const dbuiNodes = treeOneGetDbuiNodes(contentWindow);
@@ -615,6 +612,7 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations', () => {
             lightDummyDOneRoot.querySelector('#ul2-li1-ul1-li1').appendChild(lightDummyDThreeInDefaultSlot);
 
             doTest();
+
             setTimeout(() => {
               iframe.remove();
               done();
@@ -622,6 +620,7 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations', () => {
           });
           DummyD.registerSelf();
           DummyE.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });
@@ -637,18 +636,12 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations', () => {
         </div>
         `,
         onLoad: ({ contentWindow, iframe }) => {
-          const DummyA = getDummyA(contentWindow);
-          const DummyB = getDummyB(contentWindow);
-          const DummyC = getDummyC(contentWindow);
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DummyD = getDummyD(contentWindow);
           const DummyE = getDummyE(contentWindow);
 
           Promise.all([
-            DummyA.registrationName,
-            DummyB.registrationName,
-            DummyC.registrationName,
-            DummyD.registrationName,
-            DummyE.registrationName,
+            DBUIRoot.registrationName
           ].map((localName) => contentWindow.customElements.whenDefined(localName)
           )).then(() => {
             const dbuiNodes = treeOneGetDbuiNodes(contentWindow);
@@ -685,6 +678,7 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations', () => {
 
           DummyD.registerSelf();
           DummyE.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });
@@ -700,18 +694,12 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations', () => {
         </div>
         `,
         onLoad: ({ contentWindow, iframe }) => {
-          const DummyA = getDummyA(contentWindow);
-          const DummyB = getDummyB(contentWindow);
-          const DummyC = getDummyC(contentWindow);
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DummyD = getDummyD(contentWindow);
           const DummyE = getDummyE(contentWindow);
 
           Promise.all([
-            DummyA.registrationName,
-            DummyB.registrationName,
-            DummyC.registrationName,
-            DummyD.registrationName,
-            DummyE.registrationName,
+            DBUIRoot.registrationName
           ].map((localName) => contentWindow.customElements.whenDefined(localName)
           )).then(() => {
             const dbuiNodes = treeOneGetDbuiNodes(contentWindow);
@@ -756,6 +744,7 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations', () => {
 
           DummyD.registerSelf();
           DummyE.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });
@@ -772,18 +761,12 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations', () => {
         </div>
         `,
         onLoad: ({ contentWindow, iframe }) => {
-          const DummyA = getDummyA(contentWindow);
-          const DummyB = getDummyB(contentWindow);
-          const DummyC = getDummyC(contentWindow);
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DummyD = getDummyD(contentWindow);
           const DummyE = getDummyE(contentWindow);
 
           Promise.all([
-            DummyA.registrationName,
-            DummyB.registrationName,
-            DummyC.registrationName,
-            DummyD.registrationName,
-            DummyE.registrationName,
+            DBUIRoot.registrationName
           ].map((localName) => contentWindow.customElements.whenDefined(localName)
           )).then(() => {
             const dbuiNodes = treeOneGetDbuiNodes(contentWindow);
@@ -808,18 +791,12 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations', () => {
                 </div>
                 `,
                 onLoad: ({ contentWindow: contentWindow2, iframe: iframe2 }) => {
-                  const DummyA2 = getDummyA(contentWindow2);
-                  const DummyB2 = getDummyB(contentWindow2);
-                  const DummyC2 = getDummyC(contentWindow2);
+                  const DBUIRoot2 = getDBUIWebComponentRoot(contentWindow2);
                   const DummyD2 = getDummyD(contentWindow2);
                   const DummyE2 = getDummyE(contentWindow2);
 
                   Promise.all([
-                    DummyA2.registrationName,
-                    DummyB2.registrationName,
-                    DummyC2.registrationName,
-                    DummyD2.registrationName,
-                    DummyE2.registrationName,
+                    DBUIRoot2.registrationName
                   ].map((localName) => contentWindow2.customElements.whenDefined(localName)
                   )).then(() => {
                     const dbuiNodes2 = treeOneGetDbuiNodes(contentWindow2);
@@ -845,10 +822,11 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations', () => {
 
                     setTimeout(() => {
 
-                      if (!navigator.userAgent.includes('Firefox')) {
+                      if (!isFirefox(contentWindow)) {
                         // Chrome & Safari (expected behaviour)
                         // nodes are adopted and parents/children are updated
                         const subtree = contentWindow2.document.querySelector('#ul2-li1-ul1-li1');
+                        subtree.remove(); // for Safari
                         contentWindow.document.querySelector('#ul1').appendChild(
                           subtree
                         );
@@ -911,6 +889,7 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations', () => {
                   });
                   DummyD2.registerSelf();
                   DummyE2.registerSelf();
+                  DBUIRoot2.registerSelf();
                 }
               });
 
@@ -918,6 +897,7 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations', () => {
           });
           DummyD.registerSelf();
           DummyE.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });
@@ -933,18 +913,12 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations', () => {
         </div>
         `,
         onLoad: ({ contentWindow, iframe }) => {
-          const DummyA = getDummyA(contentWindow);
-          const DummyB = getDummyB(contentWindow);
-          const DummyC = getDummyC(contentWindow);
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DummyD = getDummyD(contentWindow);
           const DummyE = getDummyE(contentWindow);
 
           Promise.all([
-            DummyA.registrationName,
-            DummyB.registrationName,
-            DummyC.registrationName,
-            DummyD.registrationName,
-            DummyE.registrationName,
+            DBUIRoot.registrationName
           ].map((localName) => contentWindow.customElements.whenDefined(localName)
           )).then(() => {
             const dbuiNodes = treeOneGetDbuiNodes(contentWindow);
@@ -989,8 +963,9 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations', () => {
 
           });
 
-          DummyD.registerSelf();
           DummyE.registerSelf();
+          DummyD.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });
@@ -1006,18 +981,12 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations', () => {
         </div>
         `,
         onLoad: ({ contentWindow, iframe }) => {
-          const DummyA = getDummyA(contentWindow);
-          const DummyB = getDummyB(contentWindow);
-          const DummyC = getDummyC(contentWindow);
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DummyD = getDummyD(contentWindow);
           const DummyE = getDummyE(contentWindow);
 
           Promise.all([
-            DummyA.registrationName,
-            DummyB.registrationName,
-            DummyC.registrationName,
-            DummyD.registrationName,
-            DummyE.registrationName,
+            DBUIRoot.registrationName
           ].map((localName) => contentWindow.customElements.whenDefined(localName)
           )).then(() => {
             const dbuiNodes = treeOneGetDbuiNodes(contentWindow);
@@ -1065,6 +1034,7 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations', () => {
 
           DummyD.registerSelf();
           DummyE.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });

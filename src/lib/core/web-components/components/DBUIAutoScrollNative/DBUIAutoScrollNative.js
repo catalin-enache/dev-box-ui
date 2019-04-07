@@ -445,7 +445,15 @@ export default function getDBUIAutoScrollNative(win) {
         getResizeSensorContent(this).addEventListener('resize', this._onResizeContent);
         this._applyOverflow();
         setTimeout(() => {
-          this._applyHVScrollPercentage();
+          // In order to apply initial scroll it is needed to ignore eventual
+          // mouse being on top of the this when this was just connected.
+          const hasNativeScrollControl = this._hasNativeScrollControl;
+          this._hasNativeScrollControl = false;
+          this._applyHVScrollPercentage(); // will dispatch a scroll event.
+          setTimeout(() => {
+            // Set back _hasNativeScrollControl to its original value.
+            this._hasNativeScrollControl = hasNativeScrollControl;
+          }, 0);
         }, 0);
         this.addEventListener('mousedown', this._onMouseDown);
         this.addEventListener('mouseenter', this._onMouseEnter);

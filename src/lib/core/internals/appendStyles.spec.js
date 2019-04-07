@@ -2,9 +2,10 @@ import { expect } from 'chai';
 import inIframe from '../../../../testUtils/inIframe';
 import appendStyles, { _appendStyle } from './appendStyles';
 import getDBUIWebComponentCore from '../web-components/components/DBUIWebComponentCore/DBUIWebComponentCore';
+import getDBUIWebComponentRoot from '../web-components/components/DBUIWebComponentRoot/DBUIWebComponentRoot';
 import ensureSingleRegistration from './ensureSingleRegistration';
 
-const dummyOneRegistrationName = 'dummy-one';
+const dummyOneRegistrationName = 'dbui-dummy-one';
 const dummyOneDefaultStyle = `
   :host {
     all: initial; 
@@ -59,10 +60,13 @@ describe('_appendStyle', () => {
         headStyle: `
         `,
         bodyHTML: `
-        <dummy-one id="one"></dummy-one>
+        <dbui-web-component-root id="dbui-web-component-root">
+          <dbui-dummy-one id="one"></dbui-dummy-one>
+        </dbui-web-component-root>
         `,
         onLoad: ({ contentWindow, iframe }) => {
           const dummyOne = contentWindow.document.querySelector('#one');
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DummyOne = getDummyOne(contentWindow);
           const styleToAppend = `
             :host {
@@ -77,7 +81,7 @@ describe('_appendStyle', () => {
 
           expect(contentWindow.DBUIWebComponents[dummyOneRegistrationName].componentStyle).to.equal(styleToAppend);
 
-          contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+          contentWindow.customElements.whenDefined(DBUIRoot.registrationName).then(() => {
 
             /* eslint prefer-template: 0 */
             expect(DummyOne.componentStyle).to.equal(
@@ -95,6 +99,7 @@ describe('_appendStyle', () => {
           });
 
           DummyOne.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });

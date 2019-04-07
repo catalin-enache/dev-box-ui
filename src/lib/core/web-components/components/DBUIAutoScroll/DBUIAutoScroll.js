@@ -337,6 +337,7 @@ export default function getDBUIAutoScroll(win) {
         const paddingDir = isRtl ? 'Left' : 'Right';
         const paddingOtherDir = paddingDir === 'Left' ? 'Right' : 'Left';
         const { hNativeScrollbarThickness, vNativeScrollbarThickness } = autoScrollNative;
+        // console.log('_customSetupOnNativeSetupOff', autoScrollNative.constructor.name);
         const customSliderThickness = this._customSliderThickness;
         autoScrollNative.style.width = `calc(100% + ${vNativeScrollbarThickness}px)`;
         autoScrollNative.style.height = `calc(100% + ${hNativeScrollbarThickness}px)`;
@@ -421,6 +422,7 @@ export default function getDBUIAutoScroll(win) {
 
       onLocaleDirChanged(newDir, oldDir) {
         super.onLocaleDirChanged(newDir, oldDir);
+        console.log('-----------------DBUIAutoScroll', this.id, 'onLocaleDirChanged', newDir);
         this._nativeSetupOnOff();
       }
 

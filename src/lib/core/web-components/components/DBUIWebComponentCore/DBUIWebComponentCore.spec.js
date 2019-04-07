@@ -1,6 +1,7 @@
 import { expect, assert } from 'chai';
 import sinon from 'sinon';
 import getDBUIWebComponentCore from './DBUIWebComponentCore';
+import getDBUIWebComponentRoot from '../DBUIWebComponentRoot/DBUIWebComponentRoot';
 import DBUICommonCssVars from './DBUICommonCssVars';
 import DBUICommonCssClasses from './DBUICommonCssClasses';
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
@@ -21,7 +22,7 @@ function getDummyNoRegistrationNameNoTemplate(win) {
   });
 }
 
-const dummyOneRegistrationName = 'dummy-one';
+const dummyOneRegistrationName = 'dbui-dummy-one';
 const dummyOneStyle = ':host { color: blue; }';
 function getDummyOne(win) {
   return ensureSingleRegistration(win, dummyOneRegistrationName, () => {
@@ -94,7 +95,7 @@ function getDummyOne(win) {
 }
 getDummyOne.registrationName = dummyOneRegistrationName;
 
-const dummyOneParentRegistrationName = 'dummy-one-parent';
+const dummyOneParentRegistrationName = 'dbui-dummy-one-parent';
 const dummyOneParentStyle = ':host div { background-color: #eee; }';
 function getDummyOneParent(win) {
   return ensureSingleRegistration(win, dummyOneParentRegistrationName, () => {
@@ -123,7 +124,7 @@ function getDummyOneParent(win) {
             <p style="padding: 0px; margin: 0px;">dummy one parent component</p>
             <ul style="padding-top: 0px; padding-bottom: 0px; margin-top: 0px; margin-bottom: 0px;">
               <li>
-                <dummy-one id="shadow-dummy-one"></dummy-one>
+                <dbui-dummy-one id="shadow-dummy-one"></dbui-dummy-one>
               </li>
             </ul>
           </div>
@@ -188,21 +189,24 @@ describe('DBUIWebComponentBase', () => {
     it('registers the component using registrationName', (done) => {
       inIframe({
         bodyHTML: `
-        <dummy-one></dummy-one>
+        <dbui-web-component-root id="dbui-web-component-root">
+          <dbui-dummy-one></dbui-dummy-one>
+        </dbui-web-component-root>
         `,
         onLoad: ({ contentWindow, iframe }) => {
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DummyOne = getDummyOne(contentWindow);
           const dummyOneInstance = contentWindow.document.querySelector(DummyOne.registrationName);
 
           const notDefinedElementsBefore = [...contentWindow.document.querySelectorAll(':not(:defined)')]
             .map((element) => (element.localName));
           // localName exists in list returned by :not(:defined) CSS selector
-          expect(notDefinedElementsBefore).to.eql([DummyOne.registrationName]);
+          expect(notDefinedElementsBefore).to.eql([DBUIRoot.registrationName, DummyOne.registrationName]);
           // prototype has not been upgraded yet
           expect(dummyOneInstance.constructor).to.equal(contentWindow.HTMLElement);
           expect(dummyOneInstance.constructor.name).to.equal('HTMLElement');
 
-          contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+          contentWindow.customElements.whenDefined(DBUIRoot.registrationName).then(() => {
             const notDefinedElementsAfter = [...contentWindow.document.querySelectorAll(':not(:defined)')]
               .map((element) => (element.localName));
             // localName does not exist anymore in list returned by :not(:defined) CSS selector
@@ -218,6 +222,7 @@ describe('DBUIWebComponentBase', () => {
           });
 
           DummyOne.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });
@@ -225,12 +230,15 @@ describe('DBUIWebComponentBase', () => {
 
   describe('dependencies', () => {
     describe('when registerSelf', () => {
-      it('registers the dependencies first', (done) => {
+      it('registers the dependencies', (done) => {
         inIframe({
           bodyHTML: `
-          <dummy-one-parent></dummy-one-parent>
+          <dbui-web-component-root id="dbui-web-component-root">
+            <dbui-dummy-one-parent></dbui-dummy-one-parent>
+          </dbui-web-component-root>
           `,
           onLoad: ({ contentWindow, iframe }) => {
+            const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
             const DummyOneParent = getDummyOneParent(contentWindow);
             const DummyOne = getDummyOne(contentWindow);
             const dummyOneRegisterSelf = DummyOne.registerSelf;
@@ -245,6 +253,7 @@ describe('DBUIWebComponentBase', () => {
             });
 
             DummyOneParent.registerSelf();
+            DBUIRoot.registerSelf();
             // registerSelf took care of registering the dependencies
             expect(spyDummyOneRegisterSelf.callCount).to.equal(1);
             spyDummyOneRegisterSelf.restore();
@@ -264,13 +273,16 @@ describe('DBUIWebComponentBase', () => {
     `, (done) => {
       inIframe({
         bodyHTML: `
-          <dummy-one-parent></dummy-one-parent>
+          <dbui-web-component-root id="dbui-web-component-root">
+            <dbui-dummy-one-parent></dbui-dummy-one-parent>
+          </dbui-web-component-root>
           `,
         onLoad: ({ contentWindow, iframe }) => {
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DummyOneParent = getDummyOneParent(contentWindow);
           const dummyOneParentInstance = contentWindow.document.querySelector(DummyOneParent.registrationName);
 
-          contentWindow.customElements.whenDefined(DummyOneParent.registrationName).then(() => {
+          contentWindow.customElements.whenDefined(DBUIRoot.registrationName).then(() => {
             const parentNode = dummyOneParentInstance.parentNode;
             expect(dummyOneParentInstance.isMounted).to.equal(true);
             expect(dummyOneParentInstance.isDisconnected).to.equal(false);
@@ -290,6 +302,7 @@ describe('DBUIWebComponentBase', () => {
           });
 
           DummyOneParent.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });
@@ -319,14 +332,17 @@ describe('DBUIWebComponentBase', () => {
     it('defines the component HTML structure', (done) => {
       inIframe({
         bodyHTML: `
-        <dummy-one-parent></dummy-one-parent>
+        <dbui-web-component-root id="dbui-web-component-root">
+          <dbui-dummy-one-parent></dbui-dummy-one-parent>
+        </dbui-web-component-root>
         `,
         onLoad: ({ contentWindow, iframe }) => {
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DummyOne = getDummyOne(contentWindow);
           const DummyOneParent = getDummyOneParent(contentWindow);
           const dummyOneParentInstance = contentWindow.document.querySelector(DummyOneParent.registrationName);
 
-          contentWindow.customElements.whenDefined(DummyOneParent.registrationName).then(() => {
+          contentWindow.customElements.whenDefined(DBUIRoot.registrationName).then(() => {
 
             // shadow dom structure was build as expected
             expect(dummyOneParentInstance
@@ -346,6 +362,7 @@ describe('DBUIWebComponentBase', () => {
           });
 
           DummyOneParent.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });
@@ -414,19 +431,22 @@ describe('DBUIWebComponentBase', () => {
     it('are upgraded', (done) => {
       inIframe({
         bodyHTML: `
-        <dummy-one></dummy-one>
+        <dbui-web-component-root id="dbui-web-component-root">
+          <dbui-dummy-one></dbui-dummy-one>
+        </dbui-web-component-root>
         `,
         onLoad: ({ contentWindow, iframe }) => {
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DummyOne = getDummyOne(contentWindow);
           const dummyOneUpgradeProperty = DummyOne.prototype._upgradeProperty;
           const spyDummyOneUpgradeProperty = sinon.stub(DummyOne.prototype, '_upgradeProperty')
             .callsFake(dummyOneUpgradeProperty);
-          const dummyOneInst = contentWindow.document.querySelector('dummy-one');
+          const dummyOneInst = contentWindow.document.querySelector('dbui-dummy-one');
           dummyOneInst.foo = 'fooValue';
           // foo setter has not been called yet
           expect(dummyOneInst._foo).to.equal(undefined);
 
-          contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+          contentWindow.customElements.whenDefined(DBUIRoot.registrationName).then(() => {
             expect(spyDummyOneUpgradeProperty.callCount).to.equal(2);
             assert(spyDummyOneUpgradeProperty.calledWithExactly('foo'), 'called with foo');
             // foo setter has been called as a result of upgrading foo property
@@ -440,6 +460,7 @@ describe('DBUIWebComponentBase', () => {
           });
 
           DummyOne.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });
@@ -449,16 +470,19 @@ describe('DBUIWebComponentBase', () => {
     it('are defined if not set by user', (done) => {
       inIframe({
         bodyHTML: `
-        <dummy-one></dummy-one>
+        <dbui-web-component-root id="dbui-web-component-root">
+          <dbui-dummy-one></dbui-dummy-one>
+        </dbui-web-component-root>
         `,
         onLoad: ({ contentWindow, iframe }) => {
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DummyOne = getDummyOne(contentWindow);
           const dummyOneDefineAttribute = DummyOne.prototype._defineAttribute;
           const spyDummyOneDefineAttribute = sinon.stub(DummyOne.prototype, '_defineAttribute')
             .callsFake(dummyOneDefineAttribute);
-          const dummyOneInst = contentWindow.document.querySelector('dummy-one');
+          const dummyOneInst = contentWindow.document.querySelector('dbui-dummy-one');
 
-          contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+          contentWindow.customElements.whenDefined(DBUIRoot.registrationName).then(() => {
             expect(spyDummyOneDefineAttribute.callCount).to.equal(2);
             assert(spyDummyOneDefineAttribute.calledWithExactly('bar', 'BAR'), 'called with bar, BAR');
             expect(dummyOneInst.getAttribute('bar')).to.equal('BAR');
@@ -469,6 +493,7 @@ describe('DBUIWebComponentBase', () => {
           });
 
           DummyOne.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });
@@ -476,17 +501,20 @@ describe('DBUIWebComponentBase', () => {
     it('are NOT defined if already set by user', (done) => {
       inIframe({
         bodyHTML: `
-        <dummy-one></dummy-one>
+        <dbui-web-component-root id="dbui-web-component-root">
+          <dbui-dummy-one></dbui-dummy-one>
+        </dbui-web-component-root>
         `,
         onLoad: ({ contentWindow, iframe }) => {
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DummyOne = getDummyOne(contentWindow);
           const dummyOneDefineAttribute = DummyOne.prototype._defineAttribute;
           const spyDummyOneDefineAttribute = sinon.stub(DummyOne.prototype, '_defineAttribute')
             .callsFake(dummyOneDefineAttribute);
-          const dummyOneInst = contentWindow.document.querySelector('dummy-one');
+          const dummyOneInst = contentWindow.document.querySelector('dbui-dummy-one');
           dummyOneInst.setAttribute('bar', 'customBar');
 
-          contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+          contentWindow.customElements.whenDefined(DBUIRoot.registrationName).then(() => {
             expect(spyDummyOneDefineAttribute.callCount).to.equal(2);
             assert(spyDummyOneDefineAttribute.calledWithExactly('bar', 'BAR'), 'called with bar, BAR');
             // user defined property was not overridden with default value
@@ -498,6 +526,7 @@ describe('DBUIWebComponentBase', () => {
           });
 
           DummyOne.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });
@@ -557,15 +586,18 @@ describe('DBUIWebComponentBase', () => {
     it('are observed', (done) => {
       inIframe({
         bodyHTML: `
-        <dummy-one></dummy-one>
+        <dbui-web-component-root id="dbui-web-component-root">
+          <dbui-dummy-one></dbui-dummy-one>
+        </dbui-web-component-root>
         `,
         onLoad: ({ contentWindow, iframe }) => {
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DummyOne = getDummyOne(contentWindow);
-          const dummyOneInst = contentWindow.document.querySelector('dummy-one');
+          const dummyOneInst = contentWindow.document.querySelector('dbui-dummy-one');
 
           dummyOneInst.setAttribute('baz', 3);
 
-          contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+          contentWindow.customElements.whenDefined(DBUIRoot.registrationName).then(() => {
 
             expect(dummyOneInst._attributeChangedName).to.equal('baz');
             expect(dummyOneInst._attributeChangedOldValue).to.equal(null);
@@ -582,6 +614,7 @@ describe('DBUIWebComponentBase', () => {
           });
 
           DummyOne.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });
@@ -591,17 +624,20 @@ describe('DBUIWebComponentBase', () => {
     it('return closest ancestor matching condition', (done) => {
       inIframe({
         bodyHTML: `
-        <div id="one" foo="bar">
-          <div id="two">
-            <dummy-one></dummy-one>
+        <dbui-web-component-root id="dbui-web-component-root">
+          <div id="one" foo="bar">
+            <div id="two">
+              <dbui-dummy-one></dbui-dummy-one>
+            </div>
           </div>
-        </div>
+        </dbui-web-component-root>
         `,
         onLoad: ({ contentWindow, iframe }) => {
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DummyOne = getDummyOne(contentWindow);
-          const dummyOneInst = contentWindow.document.querySelector('dummy-one');
+          const dummyOneInst = contentWindow.document.querySelector('dbui-dummy-one');
 
-          contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+          contentWindow.customElements.whenDefined(DBUIRoot.registrationName).then(() => {
             const closestAncestorMatchingCondition =
               dummyOneInst.getClosestAncestorMatchingCondition((node) => {
                 return node.getAttribute('foo') === 'bar';
@@ -612,6 +648,7 @@ describe('DBUIWebComponentBase', () => {
           });
 
           DummyOne.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });
@@ -622,13 +659,16 @@ describe('DBUIWebComponentBase', () => {
       it('does not have _dynamicAttributesObserver', (done) => {
         inIframe({
           bodyHTML: `
-            <dummy-one></dummy-one>
+            <dbui-web-component-root id="dbui-web-component-root">
+              <dbui-dummy-one></dbui-dummy-one>
+            </dbui-web-component-root>
           `,
           onLoad: ({ contentWindow, iframe }) => {
+            const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
             const DummyOne = getDummyOne(contentWindow);
-            const dummyOneInst = contentWindow.document.querySelector('dummy-one');
+            const dummyOneInst = contentWindow.document.querySelector('dbui-dummy-one');
 
-            contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+            contentWindow.customElements.whenDefined(DBUIRoot.registrationName).then(() => {
 
               expect(dummyOneInst._dynamicAttributesObserver).to.equal(null);
               expect(dummyOneInst.hasDynamicAttributes).to.equal(false);
@@ -639,6 +679,7 @@ describe('DBUIWebComponentBase', () => {
             });
 
             DummyOne.registerSelf();
+            DBUIRoot.registerSelf();
           }
         });
       });
@@ -648,11 +689,14 @@ describe('DBUIWebComponentBase', () => {
       it('has _dynamicAttributesObserver observing observedDynamicAttributes', (done) => {
         inIframe({
           bodyHTML: `
-            <div id="container">
-              <dummy-one dynamic-one="one" dynamic-two="two"></dummy-one>
-            </div>
+            <dbui-web-component-root id="dbui-web-component-root">
+              <div id="container">
+                <dbui-dummy-one dynamic-one="one" dynamic-two="two"></dbui-dummy-one>
+              </div>
+            </dbui-web-component-root>
           `,
           onLoad: ({ contentWindow, iframe }) => {
+            const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
             const DummyOne = getDummyOne(contentWindow);
 
             monkeyPatch(DummyOne).proto.set('hasDynamicAttributes', () => {
@@ -675,9 +719,9 @@ describe('DBUIWebComponentBase', () => {
             });
 
             const container = contentWindow.document.querySelector('#container');
-            const dummyOneInst = contentWindow.document.querySelector('dummy-one');
+            const dummyOneInst = contentWindow.document.querySelector('dbui-dummy-one');
 
-            contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+            contentWindow.customElements.whenDefined(DBUIRoot.registrationName).then(() => {
               const dynamicAttributesObserver1 = dummyOneInst._dynamicAttributesObserver;
 
               expect(dynamicAttributesObserver1)
@@ -759,6 +803,7 @@ describe('DBUIWebComponentBase', () => {
             });
 
             DummyOne.registerSelf();
+            DBUIRoot.registerSelf();
           }
         });
       });
@@ -771,14 +816,16 @@ describe('DBUIWebComponentBase', () => {
         headStyle: `
         `,
         bodyHTML: `
-            <dummy-one></dummy-one>
-        </div>
+          <dbui-web-component-root id="dbui-web-component-root">
+            <dbui-dummy-one></dbui-dummy-one>
+          </dbui-web-component-root>
         `,
         onLoad: ({ contentWindow, iframe }) => {
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DummyOne = getDummyOne(contentWindow);
-          const dummyOneInst = contentWindow.document.querySelector('dummy-one');
+          const dummyOneInst = contentWindow.document.querySelector('dbui-dummy-one');
           Promise.all([
-            DummyOne.registrationName,
+            DBUIRoot.registrationName,
           ].map((localName) => contentWindow.customElements.whenDefined(localName)
           )).then(() => {
             expect(dummyOneInst.vNativeScrollbarThickness).to.equal(dummyOneInst.hNativeScrollbarThickness);
@@ -791,6 +838,7 @@ describe('DBUIWebComponentBase', () => {
           });
 
           DummyOne.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });
@@ -802,14 +850,16 @@ describe('DBUIWebComponentBase', () => {
         headStyle: `
         `,
         bodyHTML: `
-            <dummy-one></dummy-one>
-        </div>
+        <dbui-web-component-root id="dbui-web-component-root">
+          <dbui-dummy-one></dbui-dummy-one>
+        </dbui-web-component-root>
         `,
         onLoad: ({ contentWindow, iframe }) => {
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DummyOne = getDummyOne(contentWindow);
-          const dummyOneInst = contentWindow.document.querySelector('dummy-one');
+          const dummyOneInst = contentWindow.document.querySelector('dbui-dummy-one');
           Promise.all([
-            DummyOne.registrationName,
+            DBUIRoot.registrationName,
           ].map((localName) => contentWindow.customElements.whenDefined(localName)
           )).then(() => {
             expect(dummyOneInst.vNativeScrollbarThickness).to.equal(dummyOneInst.hNativeScrollbarThickness);
@@ -829,6 +879,7 @@ describe('DBUIWebComponentBase', () => {
           });
 
           DummyOne.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });
@@ -840,14 +891,16 @@ describe('DBUIWebComponentBase', () => {
         headStyle: `
         `,
         bodyHTML: `
-            <dummy-one></dummy-one>
-        </div>
+        <dbui-web-component-root id="dbui-web-component-root">
+          <dbui-dummy-one></dbui-dummy-one>
+        </dbui-web-component-root>
         `,
         onLoad: ({ contentWindow, iframe }) => {
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DummyOne = getDummyOne(contentWindow);
-          const dummyOneInst = contentWindow.document.querySelector('dummy-one');
+          const dummyOneInst = contentWindow.document.querySelector('dbui-dummy-one');
           Promise.all([
-            DummyOne.registrationName,
+            DBUIRoot.registrationName,
           ].map((localName) => contentWindow.customElements.whenDefined(localName)
           )).then(() => {
             expect(typeof dummyOneInst.hasNegativeRTLScroll).to.equal('boolean');
@@ -859,6 +912,7 @@ describe('DBUIWebComponentBase', () => {
           });
 
           DummyOne.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });
@@ -877,17 +931,20 @@ describe('DBUIWebComponentBase', () => {
         */
         `,
         bodyHTML: `
+        <dbui-web-component-root id="dbui-web-component-root">
           <div id="container">
             <div>light DOM text</div>
-            <dummy-one unselectable>dummy one slot text content</dummy-one>
+            <dbui-dummy-one unselectable>dummy one slot text content</dbui-dummy-one>
             <div>light DOM text</div>
           </div>
+        </dbui-web-component-root>
         `,
         onLoad: ({ contentWindow, iframe }) => {
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DummyOne = getDummyOne(contentWindow);
-          const dummyOneInst = contentWindow.document.querySelector('dummy-one');
+          const dummyOneInst = contentWindow.document.querySelector('dbui-dummy-one');
 
-          contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+          contentWindow.customElements.whenDefined(DBUIRoot.registrationName).then(() => {
 
             expect(dummyOneInst.style.userSelect).to.equal('none');
             expect(dummyOneInst.unselectable).to.equal(true);
@@ -926,6 +983,7 @@ describe('DBUIWebComponentBase', () => {
           });
 
           DummyOne.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });

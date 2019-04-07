@@ -43,3 +43,12 @@ export const getStep = (min, max, current, steps = 0, percentPrecision = 4) => {
   percent = +(((stepValue - min) / interval) || 0).toFixed(percentPrecision);
   return { value: allSteps[idx], index: idx, percent };
 };
+
+export const randomArrayNum = (max) => {
+  const set = new Set();
+  while (set.size < max) {
+    const num = Math.floor(Math.random() * max);
+    set.add(num);
+  }
+  return [...set];
+};

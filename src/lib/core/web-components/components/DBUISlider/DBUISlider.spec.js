@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import inIframe from '../../../../../../testUtils/inIframe';
 import getDBUISlider from './DBUISlider';
 import dbuiWebComponentsSetUp from '../../helpers/dbuiWebComponentsSetup';
+import getDBUIWebComponentRoot from '../DBUIWebComponentRoot/DBUIWebComponentRoot';
 import {
   sendTapEvent,
   sendTouchEvent,
@@ -53,28 +54,30 @@ describe('DBUISlider', () => {
 
       `,
       bodyHTML: `
-      <div id="container">
-        <div id="locale-provider" dir="rtl"></div>
-        <div id="wrapper-slider-one">
-          <dbui-slider
-          id="slider-one"
-          sync-locale-with="#locale-provider"
-          percent="0.9"
-          steps="0"
-          step="1"
-          dir="ltr"
-          vertical
-          debug-show-value
-          ratio="0.5"
-          capture-arrow-keys
-          percent-precision="6"
-          ></dbui-slider>
+      <dbui-web-component-root id="dbui-web-component-root">
+        <div id="container">
+          <div id="locale-provider" dir="rtl"></div>
+          <div id="wrapper-slider-one">
+            <dbui-slider
+            id="slider-one"
+            sync-locale-with="#locale-provider"
+            percent="0.9"
+            steps="0"
+            step="1"
+            dir="ltr"
+            vertical
+            debug-show-value
+            ratio="0.5"
+            capture-arrow-keys
+            percent-precision="6"
+            ></dbui-slider>
+          </div>
         </div>
-      </div>
-
+      </dbui-web-component-root>
       `,
 
       onLoad: ({ contentWindow, iframe }) => {
+        const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
         const DBUISlider = getDBUISlider(contentWindow);
         dbuiWebComponentsSetUp(contentWindow)([{
           registrationName: DBUISlider.registrationName,
@@ -90,7 +93,7 @@ describe('DBUISlider', () => {
         }]);
 
         Promise.all([
-          DBUISlider.registrationName,
+          DBUIRoot.registrationName,
         ].map((localName) => contentWindow.customElements.whenDefined(localName)
         )).then(() => {
           const wrapperSliderOne = contentWindow.document.querySelector('#wrapper-slider-one');
@@ -108,6 +111,7 @@ describe('DBUISlider', () => {
         });
 
         DBUISlider.registerSelf();
+        DBUIRoot.registerSelf();
       }
     });
   });

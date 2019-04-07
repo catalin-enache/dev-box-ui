@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 // import onScreenConsole from '../../../utils/onScreenConsole';
 import inIframe from '../../../../../../testUtils/inIframe';
+import getDBUIWebComponentRoot from '../DBUIWebComponentRoot/DBUIWebComponentRoot';
 import getDBUIDraggable, {
   extractSingleEvent, getElementBeingDragged
 } from './DBUIDraggable';
@@ -13,7 +14,7 @@ import {
 import getDBUIWebComponentCore from '../DBUIWebComponentCore/DBUIWebComponentCore';
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
 
-const dummyDraggableCompRegistrationName = 'dummy-draggable-comp';
+const dummyDraggableCompRegistrationName = 'dbui-dummy-draggable-comp';
 function getDummyDraggableComp(win) {
   return ensureSingleRegistration(win, dummyDraggableCompRegistrationName, () => {
     const {
@@ -57,7 +58,7 @@ function getDummyDraggableComp(win) {
 }
 getDummyDraggableComp.registrationName = dummyDraggableCompRegistrationName;
 
-const dummyDraggableInnerRegistrationName = 'dummy-draggable-inner';
+const dummyDraggableInnerRegistrationName = 'dbui-dummy-draggable-inner';
 function getDummyDraggableInner(win) {
   return ensureSingleRegistration(win, dummyDraggableInnerRegistrationName, () => {
     const {
@@ -125,7 +126,7 @@ function getDummyDraggableInner(win) {
 }
 getDummyDraggableInner.registrationName = dummyDraggableInnerRegistrationName;
 
-const dummyDraggableMiddleRegistrationName = 'dummy-draggable-middle';
+const dummyDraggableMiddleRegistrationName = 'dbui-dummy-draggable-middle';
 function getDummyDraggableMiddle(win) {
   return ensureSingleRegistration(win, dummyDraggableMiddleRegistrationName, () => {
     const {
@@ -173,12 +174,12 @@ function getDummyDraggableMiddle(win) {
             constraint-selector="parent"
             stop-propagating-pointer-down
             >
-              <dummy-draggable-inner id="dummy-draggable-inner-1"></dummy-draggable-inner>
+              <dbui-dummy-draggable-inner id="dummy-draggable-inner-1"></dbui-dummy-draggable-inner>
             </dbui-draggable><dbui-draggable id="draggable-middle-2"
             constraint-type="boundingClientRectOf"
             constraint-selector="parent"
             >
-              <dummy-draggable-inner id="dummy-draggable-inner-2"></dummy-draggable-inner>
+              <dbui-dummy-draggable-inner id="dummy-draggable-inner-2"></dbui-dummy-draggable-inner>
             </dbui-draggable>
           </div>
         `;
@@ -194,7 +195,7 @@ function getDummyDraggableMiddle(win) {
 }
 getDummyDraggableMiddle.registrationName = dummyDraggableMiddleRegistrationName;
 
-const dummyDraggableOuterRegistrationName = 'dummy-draggable-outer';
+const dummyDraggableOuterRegistrationName = 'dbui-dummy-draggable-outer';
 function getDummyDraggableOuter(win) {
   return ensureSingleRegistration(win, dummyDraggableOuterRegistrationName, () => {
     const {
@@ -240,14 +241,14 @@ function getDummyDraggableOuter(win) {
             constraint-selector="parent"
             stop-propagating-pointer-down
             >
-              <dummy-draggable-middle id="dummy-draggable-middle-1"></dummy-draggable-middle>
+              <dbui-dummy-draggable-middle id="dummy-draggable-middle-1"></dbui-dummy-draggable-middle>
             </dbui-draggable>
             <dbui-draggable id="draggable-outer-2"
             constraint-type="boundingClientRectOf"
             constraint-selector="parent"
             stop-propagating-pointer-down
             >
-              <dummy-draggable-middle id="dummy-draggable-middle-2"></dummy-draggable-middle>
+              <dbui-dummy-draggable-middle id="dummy-draggable-middle-2"></dbui-dummy-draggable-middle>
             </dbui-draggable>
           </div>
         `;
@@ -330,6 +331,7 @@ dbui-draggable {
 `;
 
 const html_1 = `
+<dbui-web-component-root id="dbui-web-component-root">
 <span id="locale-provider" dir="rtl"></span>
 <div id="container">
 
@@ -385,6 +387,7 @@ const html_1 = `
   <div style="height: 300px; position: absolute; top: 700px; border: 1px solid black;"></div>
 
 </div>
+</dbui-web-component-root>
 `;
 
 const style_2 = `
@@ -413,6 +416,7 @@ body, html { padding: 0px; margin: 0px; }
 `;
 
 const html_2 = `
+<dbui-web-component-root id="dbui-web-component-root">
 <div class="container">
   <dbui-draggable class="draggable-outer" id="draggable-outer-1"
   constraint-type="boundingClientRectOf"
@@ -505,6 +509,7 @@ const html_2 = `
     </dbui-draggable>
   </dbui-draggable>  
 </div>
+</dbui-web-component-root>
 `;
 
 describe('DBUIDraggable', () => {
@@ -513,12 +518,13 @@ describe('DBUIDraggable', () => {
       headStyle: style_1,
       bodyHTML: html_1,
       onLoad: ({ contentWindow, iframe }) => {
+        const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
         const DBUIDraggable = getDBUIDraggable(contentWindow);
 
         // const draggableOne = contentWindow.document.querySelector('#draggable-one');
 
         Promise.all([
-          DBUIDraggable.registrationName,
+          DBUIRoot.registrationName,
         ].map((localName) => contentWindow.customElements.whenDefined(localName)
         )).then(() => {
           // onScreenConsole({ win: contentWindow });
@@ -531,6 +537,7 @@ describe('DBUIDraggable', () => {
         });
 
         DBUIDraggable.registerSelf();
+        DBUIRoot.registerSelf();
       }
     });
   });
@@ -540,10 +547,11 @@ describe('DBUIDraggable', () => {
       headStyle: style_2,
       bodyHTML: html_2,
       onLoad: ({ contentWindow, iframe }) => {
+        const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
         const DBUIDraggable = getDBUIDraggable(contentWindow);
         // onScreenConsole({ win: contentWindow });
         Promise.all([
-          DBUIDraggable.registrationName,
+          DBUIRoot.registrationName,
         ].map((localName) => contentWindow.customElements.whenDefined(localName)
         )).then(() => {
           setTimeout(() => {
@@ -555,6 +563,7 @@ describe('DBUIDraggable', () => {
         });
 
         DBUIDraggable.registerSelf();
+        DBUIRoot.registerSelf();
       }
     });
   });
@@ -565,17 +574,19 @@ describe('DBUIDraggable', () => {
       body, html { padding: 0px; margin: 0px; }
       `,
       bodyHTML: `
-      <div id="container">
-        <dummy-draggable-outer></dummy-draggable-outer>
-      </div>
-      
+      <dbui-web-component-root id="dbui-web-component-root">
+        <div id="container">
+          <dbui-dummy-draggable-outer></dbui-dummy-draggable-outer>
+        </div>
+      </dbui-web-component-root>
       `,
       onLoad: ({ contentWindow, iframe }) => {
         // onScreenConsole({ win: contentWindow });
+        const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
         const DummyDraggableOuter = getDummyDraggableOuter(contentWindow);
 
         Promise.all([
-          DummyDraggableOuter.registrationName,
+          DBUIRoot.registrationName,
         ].map((localName) => contentWindow.customElements.whenDefined(localName)
         )).then(() => {
           setTimeout(() => {
@@ -587,6 +598,7 @@ describe('DBUIDraggable', () => {
         });
 
         DummyDraggableOuter.registerSelf();
+        DBUIRoot.registerSelf();
       }
     });
   });
@@ -609,19 +621,22 @@ describe('DBUIDraggable', () => {
       }
       `,
       bodyHTML: `
-      <div id="container">
-        <div id="wrapper-draggable-one">
-          <dbui-draggable id="draggable-one">
-            <div id="draggable-one-content"></div>
-          </dbui-draggable>
+      <dbui-web-component-root id="dbui-web-component-root">
+        <div id="container">
+          <div id="wrapper-draggable-one">
+            <dbui-draggable id="draggable-one">
+              <div id="draggable-one-content"></div>
+            </dbui-draggable>
+          </div>
         </div>
-      </div>
+      </dbui-web-component-root>
       `,
       onLoad: ({ contentWindow, iframe }) => {
+        const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
         const DBUIDraggable = getDBUIDraggable(contentWindow);
         const draggableOne = contentWindow.document.querySelector('#draggable-one');
         Promise.all([
-          DBUIDraggable.registrationName,
+          DBUIRoot.registrationName,
         ].map((localName) => contentWindow.customElements.whenDefined(localName)
         )).then(() => {
 
@@ -691,6 +706,7 @@ describe('DBUIDraggable', () => {
         });
 
         DBUIDraggable.registerSelf();
+        DBUIRoot.registerSelf();
       }
     });
   });
@@ -713,19 +729,22 @@ describe('DBUIDraggable', () => {
       }
       `,
       bodyHTML: `
-      <div id="container">
-        <div id="wrapper-draggable-one">
-          <dbui-draggable id="draggable-one">
-            <div id="draggable-one-content"></div>
-          </dbui-draggable>
+      <dbui-web-component-root id="dbui-web-component-root">
+        <div id="container">
+          <div id="wrapper-draggable-one">
+            <dbui-draggable id="draggable-one">
+              <div id="draggable-one-content"></div>
+            </dbui-draggable>
+          </div>
         </div>
-      </div>
+      </dbui-web-component-root>
       `,
       onLoad: ({ contentWindow, iframe }) => {
+        const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
         const DBUIDraggable = getDBUIDraggable(contentWindow);
         const draggableOne = contentWindow.document.querySelector('#draggable-one');
         Promise.all([
-          DBUIDraggable.registrationName,
+          DBUIRoot.registrationName,
         ].map((localName) => contentWindow.customElements.whenDefined(localName)
         )).then(() => {
 
@@ -795,6 +814,7 @@ describe('DBUIDraggable', () => {
         });
 
         DBUIDraggable.registerSelf();
+        DBUIRoot.registerSelf();
       }
     });
   });
@@ -817,24 +837,27 @@ describe('DBUIDraggable', () => {
       }
       `,
       bodyHTML: `
-      <div id="container">
-        <div id="wrapper-draggable-one">
-          <dbui-draggable id="draggable-one">
-            <div id="draggable-one-content">
-              <span id="draggable-one-content-inner">
-                content
-              </span>
-            </div>
-          </dbui-draggable>
+      <dbui-web-component-root id="dbui-web-component-root">
+        <div id="container">
+          <div id="wrapper-draggable-one">
+            <dbui-draggable id="draggable-one">
+              <div id="draggable-one-content">
+                <span id="draggable-one-content-inner">
+                  content
+                </span>
+              </div>
+            </dbui-draggable>
+          </div>
         </div>
-      </div>
+      </dbui-web-component-root>
       `,
       onLoad: ({ contentWindow, iframe }) => {
+        const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
         const DBUIDraggable = getDBUIDraggable(contentWindow);
         const draggableOne = contentWindow.document.querySelector('#draggable-one');
         const draggableOneContentInner = contentWindow.document.querySelector('#draggable-one-content-inner');
         Promise.all([
-          DBUIDraggable.registrationName,
+          DBUIRoot.registrationName,
         ].map((localName) => contentWindow.customElements.whenDefined(localName)
         )).then(() => {
 
@@ -904,6 +927,7 @@ describe('DBUIDraggable', () => {
         });
 
         DBUIDraggable.registerSelf();
+        DBUIRoot.registerSelf();
       }
     });
   });
@@ -926,24 +950,27 @@ describe('DBUIDraggable', () => {
       }
       `,
       bodyHTML: `
-      <div id="container">
-        <div id="wrapper-draggable-one">
-          <dbui-draggable id="draggable-one">
-            <div id="draggable-one-content">
-              <span id="draggable-one-content-inner">
-                content
-              </span>
-            </div>
-          </dbui-draggable>
+      <dbui-web-component-root id="dbui-web-component-root">
+        <div id="container">
+          <div id="wrapper-draggable-one">
+            <dbui-draggable id="draggable-one">
+              <div id="draggable-one-content">
+                <span id="draggable-one-content-inner">
+                  content
+                </span>
+              </div>
+            </dbui-draggable>
+          </div>
         </div>
-      </div>
+      </dbui-web-component-root>
       `,
       onLoad: ({ contentWindow, iframe }) => {
+        const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
         const DBUIDraggable = getDBUIDraggable(contentWindow);
         const draggableOne = contentWindow.document.querySelector('#draggable-one');
         const draggableOneContentInner = contentWindow.document.querySelector('#draggable-one-content-inner');
         Promise.all([
-          DBUIDraggable.registrationName,
+          DBUIRoot.registrationName,
         ].map((localName) => contentWindow.customElements.whenDefined(localName)
         )).then(() => {
 
@@ -1013,6 +1040,7 @@ describe('DBUIDraggable', () => {
         });
 
         DBUIDraggable.registerSelf();
+        DBUIRoot.registerSelf();
       }
     });
   });
@@ -1035,18 +1063,20 @@ describe('DBUIDraggable', () => {
       }
       `,
       bodyHTML: `
-      <div id="container">
-        <div id="other-target"></div>
-        <div id="wrapper-draggable-one">
-          <dbui-draggable id="draggable-one">
-            <div id="draggable-one-content">
-              <span id="draggable-one-content-inner">
-                content
-              </span>
-            </div>
-          </dbui-draggable>
+      <dbui-web-component-root id="dbui-web-component-root">
+        <div id="container">
+          <div id="other-target"></div>
+          <div id="wrapper-draggable-one">
+            <dbui-draggable id="draggable-one">
+              <div id="draggable-one-content">
+                <span id="draggable-one-content-inner">
+                  content
+                </span>
+              </div>
+            </dbui-draggable>
+          </div>
         </div>
-      </div>
+      </dbui-web-component-root>
       `,
       onLoad: ({ contentWindow, iframe }) => {
 
@@ -1067,12 +1097,13 @@ describe('DBUIDraggable', () => {
           }
         };
 
+        const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
         const DBUIDraggable = getDBUIDraggable(contentWindow);
         const otherTarget = contentWindow.document.querySelector('#other-target');
         const draggableOne = contentWindow.document.querySelector('#draggable-one');
         const draggableOneContentInner = contentWindow.document.querySelector('#draggable-one-content-inner');
         Promise.all([
-          DBUIDraggable.registrationName,
+          DBUIRoot.registrationName,
         ].map((localName) => contentWindow.customElements.whenDefined(localName)
         )).then(() => {
 
@@ -1149,6 +1180,7 @@ describe('DBUIDraggable', () => {
         });
 
         DBUIDraggable.registerSelf();
+        DBUIRoot.registerSelf();
       }
     });
   });
@@ -1158,15 +1190,18 @@ describe('DBUIDraggable', () => {
       headStyle: `
       `,
       bodyHTML: `
-      <dbui-draggable id="draggable-one">
-        <div id="draggable-one-content">content</div>
-      </dbui-draggable>
+      <dbui-web-component-root id="dbui-web-component-root">
+        <dbui-draggable id="draggable-one">
+          <div id="draggable-one-content">content</div>
+        </dbui-draggable>
+      </dbui-web-component-root>
       `,
       onLoad: ({ contentWindow, iframe }) => {
+        const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
         const DBUIDraggable = getDBUIDraggable(contentWindow);
         const draggableOne = contentWindow.document.querySelector('#draggable-one');
         Promise.all([
-          DBUIDraggable.registrationName,
+          DBUIRoot.registrationName,
         ].map((localName) => contentWindow.customElements.whenDefined(localName)
         )).then(() => {
 
@@ -1181,6 +1216,7 @@ describe('DBUIDraggable', () => {
         });
         expect(draggableOne.getAttribute('unselectable')).to.equal(null);
         DBUIDraggable.registerSelf();
+        DBUIRoot.registerSelf();
       }
     });
   });
@@ -1191,11 +1227,14 @@ describe('DBUIDraggable', () => {
         headStyle: `
         `,
         bodyHTML: `
-        <dbui-draggable id="draggable-one">
-          <div id="draggable-one-content">content</div>
-        </dbui-draggable>
+        <dbui-web-component-root id="dbui-web-component-root">
+          <dbui-draggable id="draggable-one">
+            <div id="draggable-one-content">content</div>
+          </dbui-draggable>
+        </dbui-web-component-root>
         `,
         onLoad: ({ contentWindow, iframe }) => {
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DBUIDraggable = getDBUIDraggable(contentWindow);
           const draggableOne = contentWindow.document.querySelector('#draggable-one');
 
@@ -1226,7 +1265,7 @@ describe('DBUIDraggable', () => {
           draggableOne.constraintRadius = constraintRadius;
 
           Promise.all([
-            DBUIDraggable.registrationName,
+            DBUIRoot.registrationName,
           ].map((localName) => contentWindow.customElements.whenDefined(localName)
           )).then(() => {
 
@@ -1250,6 +1289,7 @@ describe('DBUIDraggable', () => {
             }, 0);
           });
           DBUIDraggable.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });
@@ -1261,25 +1301,28 @@ describe('DBUIDraggable', () => {
         headStyle: `
         `,
         bodyHTML: `
-        <div id="one"></div>
-        <dbui-draggable
-          id="draggable-one"
-          target-translate-x="1"
-          target-translate-y="2"
-          drag-target="#one"
-          constraint-type="boundingClientRectOf"
-          constraint-selector="parent"
-          constraint-steps-x="3"
-          constraint-steps-y="3"
-          constraint-steps="3"
-          constraint-cx="3"
-          constraint-cy="4"
-          constraint-radius="5"
-        >
-          <div id="draggable-one-content">content</div>
-        </dbui-draggable>
+        <dbui-web-component-root id="dbui-web-component-root">
+          <div id="one"></div>
+          <dbui-draggable
+            id="draggable-one"
+            target-translate-x="1"
+            target-translate-y="2"
+            drag-target="#one"
+            constraint-type="boundingClientRectOf"
+            constraint-selector="parent"
+            constraint-steps-x="3"
+            constraint-steps-y="3"
+            constraint-steps="3"
+            constraint-cx="3"
+            constraint-cy="4"
+            constraint-radius="5"
+          >
+            <div id="draggable-one-content">content</div>
+          </dbui-draggable>
+        </dbui-web-component-root>
         `,
         onLoad: ({ contentWindow, iframe }) => {
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DBUIDraggable = getDBUIDraggable(contentWindow);
           const draggableOne = contentWindow.document.querySelector('#draggable-one');
 
@@ -1296,7 +1339,7 @@ describe('DBUIDraggable', () => {
           expect(draggableOne.constraintRadius).to.equal(undefined);
 
           Promise.all([
-            DBUIDraggable.registrationName,
+            DBUIRoot.registrationName,
           ].map((localName) => contentWindow.customElements.whenDefined(localName)
           )).then(() => {
 
@@ -1318,6 +1361,7 @@ describe('DBUIDraggable', () => {
             }, 0);
           });
           DBUIDraggable.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });
@@ -1329,11 +1373,14 @@ describe('DBUIDraggable', () => {
         headStyle: `
         `,
         bodyHTML: `
-        <div id="container">
-          <div id="one"></div>
-        </div>
+        <dbui-web-component-root id="dbui-web-component-root">
+          <div id="container">
+            <div id="one"></div>
+          </div>
+        </dbui-web-component-root>
         `,
         onLoad: ({ contentWindow, iframe }) => {
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DBUIDraggable = getDBUIDraggable(contentWindow);
           const one = contentWindow.document.querySelector('#one');
           const container = contentWindow.document.querySelector('#container');
@@ -1345,7 +1392,7 @@ describe('DBUIDraggable', () => {
           `;
 
           Promise.all([
-            DBUIDraggable.registrationName,
+            DBUIRoot.registrationName,
           ].map((localName) => contentWindow.customElements.whenDefined(localName)
           )).then(() => {
 
@@ -1361,6 +1408,7 @@ describe('DBUIDraggable', () => {
             }, 0);
           });
           DBUIDraggable.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });
@@ -1371,16 +1419,19 @@ describe('DBUIDraggable', () => {
           headStyle: `
           `,
           bodyHTML: `
-          <dbui-draggable id="draggable-one">
-            <div id="draggable-one-content">content</div>
-          </dbui-draggable>
+          <dbui-web-component-root id="dbui-web-component-root">
+            <dbui-draggable id="draggable-one">
+              <div id="draggable-one-content">content</div>
+            </dbui-draggable>
+          </dbui-web-component-root>
           `,
           onLoad: ({ contentWindow, iframe }) => {
+            const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
             const DBUIDraggable = getDBUIDraggable(contentWindow);
             const draggableOne = contentWindow.document.querySelector('#draggable-one');
 
             Promise.all([
-              DBUIDraggable.registrationName,
+              DBUIRoot.registrationName,
             ].map((localName) => contentWindow.customElements.whenDefined(localName)
             )).then(() => {
 
@@ -1392,6 +1443,7 @@ describe('DBUIDraggable', () => {
               }, 0);
             });
             DBUIDraggable.registerSelf();
+            DBUIRoot.registerSelf();
           }
         });
       });
@@ -1403,23 +1455,26 @@ describe('DBUIDraggable', () => {
           headStyle: `
           `,
           bodyHTML: `
-          <div id="one">
-            <dbui-draggable id="draggable-zero" drag-target="parent">
-              <div id="draggable-zero-content">content</div>
+          <dbui-web-component-root id="dbui-web-component-root">
+            <div id="one">
+              <dbui-draggable id="draggable-zero" drag-target="parent">
+                <div id="draggable-zero-content">content</div>
+              </dbui-draggable>
+            </div>
+            <dbui-draggable id="draggable-one" drag-target="#one">
+              <div id="draggable-one-content">content</div>
             </dbui-draggable>
-          </div>
-          <dbui-draggable id="draggable-one" drag-target="#one">
-            <div id="draggable-one-content">content</div>
-          </dbui-draggable>
+          </dbui-web-component-root>
           `,
           onLoad: ({ contentWindow, iframe }) => {
+            const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
             const DBUIDraggable = getDBUIDraggable(contentWindow);
             const one = contentWindow.document.querySelector('#one');
             const draggableZero = contentWindow.document.querySelector('#draggable-zero');
             const draggableOne = contentWindow.document.querySelector('#draggable-one');
 
             Promise.all([
-              DBUIDraggable.registrationName,
+              DBUIRoot.registrationName,
             ].map((localName) => contentWindow.customElements.whenDefined(localName)
             )).then(() => {
 
@@ -1432,6 +1487,7 @@ describe('DBUIDraggable', () => {
               }, 0);
             });
             DBUIDraggable.registerSelf();
+            DBUIRoot.registerSelf();
           }
         });
       });
@@ -1443,14 +1499,17 @@ describe('DBUIDraggable', () => {
           headStyle: `
           `,
           bodyHTML: `
-          <dummy-draggable-comp></dummy-draggable-comp>
+          <dbui-web-component-root id="dbui-web-component-root">
+            <dbui-dummy-draggable-comp></dbui-dummy-draggable-comp>
+          </dbui-web-component-root>
           `,
           onLoad: ({ contentWindow, iframe }) => {
+            const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
             const DummyDraggableComp = getDummyDraggableComp(contentWindow);
-            const dummyComp = contentWindow.document.querySelector('dummy-draggable-comp');
+            const dummyComp = contentWindow.document.querySelector('dbui-dummy-draggable-comp');
 
             Promise.all([
-              DummyDraggableComp.registrationName,
+              DBUIRoot.registrationName,
             ].map((localName) => contentWindow.customElements.whenDefined(localName)
             )).then(() => {
 
@@ -1470,6 +1529,7 @@ describe('DBUIDraggable', () => {
               }, 0);
             });
             DummyDraggableComp.registerSelf();
+            DBUIRoot.registerSelf();
           }
         });
       });
@@ -1487,11 +1547,14 @@ describe('DBUIDraggable', () => {
         headStyle: `
         `,
         bodyHTML: `
-        <div id="container">
-          <div id="one"></div>
-        </div>
+        <dbui-web-component-root id="dbui-web-component-root">
+          <div id="container">
+            <div id="one"></div>
+          </div>
+        </dbui-web-component-root>
         `,
         onLoad: ({ contentWindow, iframe }) => {
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DBUIDraggable = getDBUIDraggable(contentWindow);
           const one = contentWindow.document.querySelector('#one');
           const container = contentWindow.document.querySelector('#container');
@@ -1504,7 +1567,7 @@ describe('DBUIDraggable', () => {
           draggableOne.targetTranslateX = 1;
 
           Promise.all([
-            DBUIDraggable.registrationName,
+            DBUIRoot.registrationName,
           ].map((localName) => contentWindow.customElements.whenDefined(localName)
           )).then(() => {
 
@@ -1522,6 +1585,7 @@ describe('DBUIDraggable', () => {
             }, 0);
           });
           DBUIDraggable.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });
@@ -1536,11 +1600,14 @@ describe('DBUIDraggable', () => {
         headStyle: `
         `,
         bodyHTML: `
-        <div id="container">
-          <div id="one"></div>
-        </div>
+        <dbui-web-component-root id="dbui-web-component-root">
+          <div id="container">
+            <div id="one"></div>
+          </div>
+        </dbui-web-component-root>
         `,
         onLoad: ({ contentWindow, iframe }) => {
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DBUIDraggable = getDBUIDraggable(contentWindow);
           const one = contentWindow.document.querySelector('#one');
           const container = contentWindow.document.querySelector('#container');
@@ -1554,7 +1621,7 @@ describe('DBUIDraggable', () => {
           draggableOne.setAttribute('target-translate-y', 1);
 
           Promise.all([
-            DBUIDraggable.registrationName,
+            DBUIRoot.registrationName,
           ].map((localName) => contentWindow.customElements.whenDefined(localName)
           )).then(() => {
 
@@ -1570,6 +1637,7 @@ describe('DBUIDraggable', () => {
             }, 0);
           });
           DBUIDraggable.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });
@@ -1584,20 +1652,23 @@ describe('DBUIDraggable', () => {
         headStyle: `
         `,
         bodyHTML: `
-        <div id="one" style="transform: translate(-1px, -2px)"></div>
-        <div id="two" style="transform: translate(-2px, -1px)"></div>
-        <dbui-draggable id="draggable-one" drag-target="#one" target-translate-x="2">
-          <div id="draggable-one-content">content</div>
-        </dbui-draggable>
+        <dbui-web-component-root id="dbui-web-component-root">
+          <div id="one" style="transform: translate(-1px, -2px)"></div>
+          <div id="two" style="transform: translate(-2px, -1px)"></div>
+          <dbui-draggable id="draggable-one" drag-target="#one" target-translate-x="2">
+            <div id="draggable-one-content">content</div>
+          </dbui-draggable>
+        </dbui-web-component-root>
         `,
         onLoad: ({ contentWindow, iframe }) => {
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DBUIDraggable = getDBUIDraggable(contentWindow);
           const one = contentWindow.document.querySelector('#one');
           const two = contentWindow.document.querySelector('#two');
           const draggableOne = contentWindow.document.querySelector('#draggable-one');
 
           Promise.all([
-            DBUIDraggable.registrationName,
+            DBUIRoot.registrationName,
           ].map((localName) => contentWindow.customElements.whenDefined(localName)
           )).then(() => {
 
@@ -1631,6 +1702,7 @@ describe('DBUIDraggable', () => {
             }, 0);
           });
           DBUIDraggable.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });
@@ -1642,14 +1714,17 @@ describe('DBUIDraggable', () => {
         it('returns element in light DOM', (done) => {
           inIframe({
             bodyHTML: `
-            <div id="one"></div>
-            <div id="two">
-              <div id="three"></div>
-              <dbui-draggable id="draggable-one" drag-target="#three">
-              </dbui-draggable>
-            </div>
+            <dbui-web-component-root id="dbui-web-component-root">
+              <div id="one"></div>
+              <div id="two">
+                <div id="three"></div>
+                <dbui-draggable id="draggable-one" drag-target="#three">
+                </dbui-draggable>
+              </div>
+            </dbui-web-component-root>
             `,
             onLoad: ({ contentWindow, iframe }) => {
+              const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
               const DBUIDraggable = getDBUIDraggable(contentWindow);
               const one = contentWindow.document.querySelector('#one');
               const two = contentWindow.document.querySelector('#two');
@@ -1670,7 +1745,7 @@ describe('DBUIDraggable', () => {
               };
 
               Promise.all([
-                DBUIDraggable.registrationName,
+                DBUIRoot.registrationName,
               ].map((localName) => contentWindow.customElements.whenDefined(localName)
               )).then(() => {
                 draggableOne.constraintType = 'boundingClientRectOf';
@@ -1733,6 +1808,7 @@ describe('DBUIDraggable', () => {
                 });
               });
               DBUIDraggable.registerSelf();
+              DBUIRoot.registerSelf();
             }
           });
         });
@@ -1742,16 +1818,19 @@ describe('DBUIDraggable', () => {
         it('returns element in shadow DOM', (done) => {
           inIframe({
             bodyHTML: `
-              <dummy-draggable-comp></dummy-draggable-comp>
+            <dbui-web-component-root id="dbui-web-component-root">
+              <dbui-dummy-draggable-comp></dbui-dummy-draggable-comp>
+            </dbui-web-component-root>
             `,
             onLoad: ({ contentWindow, iframe }) => {
+              const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
               const DummyDraggableComp = getDummyDraggableComp(contentWindow);
 
               Promise.all([
-                DummyDraggableComp.registrationName,
+                DBUIRoot.registrationName,
               ].map((localName) => contentWindow.customElements.whenDefined(localName)
               )).then(() => {
-                const dummyDraggable = contentWindow.document.querySelector('dummy-draggable-comp');
+                const dummyDraggable = contentWindow.document.querySelector('dbui-dummy-draggable-comp');
                 const dummyDraggableShadowDraggable = dummyDraggable.shadowRoot.querySelector('dbui-draggable');
                 const dummyDraggableShadowContainer = dummyDraggable.shadowRoot.querySelector('#container');
                 const dummyDraggableShadowTwo = dummyDraggable.shadowRoot.querySelector('#two');
@@ -1830,6 +1909,7 @@ describe('DBUIDraggable', () => {
                 });
               });
               DummyDraggableComp.registerSelf();
+              DBUIRoot.registerSelf();
             }
           });
         });
@@ -1853,19 +1933,22 @@ describe('DBUIDraggable', () => {
           }
           `,
           bodyHTML: `
-          <div id="one"></div>
-          <dbui-draggable id="draggable-one"
-          constraint-type="boundingClientRectOf"
-          constraint-selector="#one"
-          >
-          </dbui-draggable>
+          <dbui-web-component-root id="dbui-web-component-root">
+            <div id="one"></div>
+            <dbui-draggable id="draggable-one"
+            constraint-type="boundingClientRectOf"
+            constraint-selector="#one"
+            >
+            </dbui-draggable>
+          </dbui-web-component-root>
           `,
           onLoad: ({ contentWindow, iframe }) => {
+            const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
             const DBUIDraggable = getDBUIDraggable(contentWindow);
             const draggableOne = contentWindow.document.querySelector('#draggable-one');
 
             Promise.all([
-              DBUIDraggable.registrationName,
+              DBUIRoot.registrationName,
             ].map((localName) => contentWindow.customElements.whenDefined(localName)
             )).then(() => {
               let evtDetail = null;
@@ -1903,6 +1986,7 @@ describe('DBUIDraggable', () => {
               });
             });
             DBUIDraggable.registerSelf();
+            DBUIRoot.registerSelf();
           }
         });
       });
@@ -1925,21 +2009,24 @@ describe('DBUIDraggable', () => {
           }
           `,
           bodyHTML: `
-          <div id="one"></div>
-          <dbui-draggable id="draggable-one"
-          constraint-type="boundingClientRectOf"
-          constraint-selector="#one"
-          constraint-steps-x="3"
-          constraint-steps-y="3"
-          >
-          </dbui-draggable>
+          <dbui-web-component-root id="dbui-web-component-root">
+            <div id="one"></div>
+            <dbui-draggable id="draggable-one"
+            constraint-type="boundingClientRectOf"
+            constraint-selector="#one"
+            constraint-steps-x="3"
+            constraint-steps-y="3"
+            >
+            </dbui-draggable>
+          </dbui-web-component-root>
           `,
           onLoad: ({ contentWindow, iframe }) => {
+            const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
             const DBUIDraggable = getDBUIDraggable(contentWindow);
             const draggableOne = contentWindow.document.querySelector('#draggable-one');
 
             Promise.all([
-              DBUIDraggable.registrationName,
+              DBUIRoot.registrationName,
             ].map((localName) => contentWindow.customElements.whenDefined(localName)
             )).then(() => {
               const evtDetails = [];
@@ -1993,6 +2080,7 @@ describe('DBUIDraggable', () => {
               });
             });
             DBUIDraggable.registerSelf();
+            DBUIRoot.registerSelf();
           }
         });
       });
@@ -2019,21 +2107,24 @@ describe('DBUIDraggable', () => {
           }
           `,
           bodyHTML: `
-          <div id="one"></div>
-          <dbui-draggable id="draggable-one"
-          constraint-type="circle"
-          constraint-cx="200"
-          constraint-cy="200"
-          constraint-radius="100"
-          >
-          </dbui-draggable>
+          <dbui-web-component-root id="dbui-web-component-root">
+            <div id="one"></div>
+            <dbui-draggable id="draggable-one"
+            constraint-type="circle"
+            constraint-cx="200"
+            constraint-cy="200"
+            constraint-radius="100"
+            >
+            </dbui-draggable>
+          </dbui-web-component-root>
           `,
           onLoad: ({ contentWindow, iframe }) => {
+            const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
             const DBUIDraggable = getDBUIDraggable(contentWindow);
             const draggableOne = contentWindow.document.querySelector('#draggable-one');
 
             Promise.all([
-              DBUIDraggable.registrationName,
+              DBUIRoot.registrationName,
             ].map((localName) => contentWindow.customElements.whenDefined(localName)
             )).then(() => {
               let evtDetail = null;
@@ -2071,6 +2162,7 @@ describe('DBUIDraggable', () => {
               });
             });
             DBUIDraggable.registerSelf();
+            DBUIRoot.registerSelf();
           }
         });
       });
@@ -2097,22 +2189,25 @@ describe('DBUIDraggable', () => {
           }
           `,
           bodyHTML: `
-          <div id="one"></div>
-          <dbui-draggable id="draggable-one"
-          constraint-type="circle"
-          constraint-cx="200"
-          constraint-cy="200"
-          constraint-radius="100"
-          constraint-steps="4"
-          >
-          </dbui-draggable>
+          <dbui-web-component-root id="dbui-web-component-root">
+            <div id="one"></div>
+            <dbui-draggable id="draggable-one"
+            constraint-type="circle"
+            constraint-cx="200"
+            constraint-cy="200"
+            constraint-radius="100"
+            constraint-steps="4"
+            >
+            </dbui-draggable>
+          </dbui-web-component-root>
           `,
           onLoad: ({ contentWindow, iframe }) => {
+            const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
             const DBUIDraggable = getDBUIDraggable(contentWindow);
             const draggableOne = contentWindow.document.querySelector('#draggable-one');
 
             Promise.all([
-              DBUIDraggable.registrationName,
+              DBUIRoot.registrationName,
             ].map((localName) => contentWindow.customElements.whenDefined(localName)
             )).then(() => {
               const evtDetails = [];
@@ -2186,6 +2281,7 @@ describe('DBUIDraggable', () => {
               });
             });
             DBUIDraggable.registerSelf();
+            DBUIRoot.registerSelf();
           }
         });
       });
@@ -2212,21 +2308,24 @@ describe('DBUIDraggable', () => {
           }
           `,
           bodyHTML: `
-          <div id="one"></div>
-          <dbui-draggable id="draggable-one"
-          constraint-type="boundingClientRectOf"
-          constraint-selector="none"
-          >
-          </dbui-draggable>
+          <dbui-web-component-root id="dbui-web-component-root">
+            <div id="one"></div>
+            <dbui-draggable id="draggable-one"
+            constraint-type="boundingClientRectOf"
+            constraint-selector="none"
+            >
+            </dbui-draggable>
+          </dbui-web-component-root>
           `,
           onLoad: ({ contentWindow, iframe }) => {
+            const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
             const DBUIDraggable = getDBUIDraggable(contentWindow);
             const draggableOne = contentWindow.document.querySelector('#draggable-one');
             const consoleError = contentWindow.console.error;
             let errMsg = null;
 
             Promise.all([
-              DBUIDraggable.registrationName,
+              DBUIRoot.registrationName,
             ].map((localName) => contentWindow.customElements.whenDefined(localName)
             )).then(() => {
               contentWindow.requestAnimationFrame(() => {
@@ -2258,6 +2357,7 @@ describe('DBUIDraggable', () => {
               });
             });
             DBUIDraggable.registerSelf();
+            DBUIRoot.registerSelf();
           }
         });
       });
@@ -2284,16 +2384,19 @@ describe('DBUIDraggable', () => {
           }
           `,
           bodyHTML: `
-          <div id="one"></div>
-          <dbui-draggable id="draggable-one">
-          </dbui-draggable>
+          <dbui-web-component-root id="dbui-web-component-root">
+            <div id="one"></div>
+            <dbui-draggable id="draggable-one">
+            </dbui-draggable>
+          </dbui-web-component-root>
           `,
           onLoad: ({ contentWindow, iframe }) => {
+            const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
             const DBUIDraggable = getDBUIDraggable(contentWindow);
             const draggableOne = contentWindow.document.querySelector('#draggable-one');
 
             Promise.all([
-              DBUIDraggable.registrationName,
+              DBUIRoot.registrationName,
             ].map((localName) => contentWindow.customElements.whenDefined(localName)
             )).then(() => {
               contentWindow.requestAnimationFrame(() => {
@@ -2323,6 +2426,7 @@ describe('DBUIDraggable', () => {
               });
             });
             DBUIDraggable.registerSelf();
+            DBUIRoot.registerSelf();
           }
         });
       });
@@ -2336,8 +2440,10 @@ describe('DBUIDraggable', () => {
           headStyle: `
           `,
           bodyHTML: `
-          <div id="other"></div>
-          <dbui-draggable id="draggable-one"></dbui-draggable>
+          <dbui-web-component-root id="dbui-web-component-root">
+            <div id="other"></div>
+            <dbui-draggable id="draggable-one"></dbui-draggable>
+          </dbui-web-component-root>
           `,
           onLoad: ({ contentWindow, iframe }) => {
             if (!contentWindow.TouchEvent) {
@@ -2346,6 +2452,7 @@ describe('DBUIDraggable', () => {
               return;
             }
 
+            const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
             const DBUIDraggable = getDBUIDraggable(contentWindow);
             const other = contentWindow.document.querySelector('#other');
             const draggableOne = contentWindow.document.querySelector('#draggable-one');
@@ -2369,7 +2476,7 @@ describe('DBUIDraggable', () => {
             });
 
             Promise.all([
-              DBUIDraggable.registrationName,
+              DBUIRoot.registrationName,
             ].map((localName) => contentWindow.customElements.whenDefined(localName)
             )).then(() => {
               draggableOne.dispatchEvent(event);
@@ -2380,6 +2487,7 @@ describe('DBUIDraggable', () => {
               done();
             });
             DBUIDraggable.registerSelf();
+            DBUIRoot.registerSelf();
           }
         });
       });
@@ -2391,8 +2499,10 @@ describe('DBUIDraggable', () => {
           headStyle: `
           `,
           bodyHTML: `
-          <div id="other"></div>
-          <dbui-draggable id="draggable-one"></dbui-draggable>
+          <dbui-web-component-root id="dbui-web-component-root">
+            <div id="other"></div>
+            <dbui-draggable id="draggable-one"></dbui-draggable>
+          </dbui-web-component-root>
           `,
           onLoad: ({ contentWindow, iframe }) => {
             if (!contentWindow.TouchEvent) {
@@ -2401,6 +2511,7 @@ describe('DBUIDraggable', () => {
               return;
             }
 
+            const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
             const DBUIDraggable = getDBUIDraggable(contentWindow);
             const other = contentWindow.document.querySelector('#other');
             const draggableOne = contentWindow.document.querySelector('#draggable-one');
@@ -2420,7 +2531,7 @@ describe('DBUIDraggable', () => {
             });
 
             Promise.all([
-              DBUIDraggable.registrationName,
+              DBUIRoot.registrationName,
             ].map((localName) => contentWindow.customElements.whenDefined(localName)
             )).then(() => {
               draggableOne.dispatchEvent(event);
@@ -2430,6 +2541,7 @@ describe('DBUIDraggable', () => {
               done();
             });
             DBUIDraggable.registerSelf();
+            DBUIRoot.registerSelf();
           }
         });
       });
@@ -2441,8 +2553,10 @@ describe('DBUIDraggable', () => {
           headStyle: `
           `,
           bodyHTML: `
-          <div id="other"></div>
-          <dbui-draggable id="draggable-one"></dbui-draggable>
+          <dbui-web-component-root id="dbui-web-component-root">
+            <div id="other"></div>
+            <dbui-draggable id="draggable-one"></dbui-draggable>
+          </dbui-web-component-root>
           `,
           onLoad: ({ contentWindow, iframe }) => {
             if (!contentWindow.MouseEvent) {
@@ -2451,6 +2565,7 @@ describe('DBUIDraggable', () => {
               return;
             }
 
+            const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
             const DBUIDraggable = getDBUIDraggable(contentWindow);
             const draggableOne = contentWindow.document.querySelector('#draggable-one');
             const event = new contentWindow.MouseEvent('mousemove', {});
@@ -2461,7 +2576,7 @@ describe('DBUIDraggable', () => {
             });
 
             Promise.all([
-              DBUIDraggable.registrationName,
+              DBUIRoot.registrationName,
             ].map((localName) => contentWindow.customElements.whenDefined(localName)
             )).then(() => {
               draggableOne.dispatchEvent(event);
@@ -2472,6 +2587,7 @@ describe('DBUIDraggable', () => {
               done();
             });
             DBUIDraggable.registerSelf();
+            DBUIRoot.registerSelf();
           }
         });
       });
@@ -2485,8 +2601,10 @@ describe('DBUIDraggable', () => {
           headStyle: `
           `,
           bodyHTML: `
-          <div id="other"></div>
-          <dbui-draggable id="draggable-one"></dbui-draggable>
+          <dbui-web-component-root id="dbui-web-component-root">
+            <div id="other"></div>
+            <dbui-draggable id="draggable-one"></dbui-draggable>
+          </dbui-web-component-root>
           `,
           onLoad: ({ contentWindow, iframe }) => {
             if (!contentWindow.MouseEvent) {
@@ -2495,6 +2613,7 @@ describe('DBUIDraggable', () => {
               return;
             }
 
+            const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
             const DBUIDraggable = getDBUIDraggable(contentWindow);
             const draggableOne = contentWindow.document.querySelector('#draggable-one');
             const event = new contentWindow.MouseEvent('mousemove', {});
@@ -2507,7 +2626,7 @@ describe('DBUIDraggable', () => {
             });
 
             Promise.all([
-              DBUIDraggable.registrationName,
+              DBUIRoot.registrationName,
             ].map((localName) => contentWindow.customElements.whenDefined(localName)
             )).then(() => {
               doc.dispatchEvent(event);
@@ -2517,6 +2636,7 @@ describe('DBUIDraggable', () => {
               done();
             });
             DBUIDraggable.registerSelf();
+            DBUIRoot.registerSelf();
           }
         });
       });
@@ -2528,8 +2648,10 @@ describe('DBUIDraggable', () => {
           headStyle: `
           `,
           bodyHTML: `
-          <div id="other"></div>
-          <dbui-draggable id="draggable-one"></dbui-draggable>
+          <dbui-web-component-root id="dbui-web-component-root">
+            <div id="other"></div>
+            <dbui-draggable id="draggable-one"></dbui-draggable>
+          </dbui-web-component-root>
           `,
           onLoad: ({ contentWindow, iframe }) => {
             if (!contentWindow.TouchEvent) {
@@ -2538,6 +2660,7 @@ describe('DBUIDraggable', () => {
               return;
             }
 
+            const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
             const DBUIDraggable = getDBUIDraggable(contentWindow);
             const draggableOne = contentWindow.document.querySelector('#draggable-one');
             const touchObj1 = new contentWindow.Touch({
@@ -2556,7 +2679,7 @@ describe('DBUIDraggable', () => {
             });
 
             Promise.all([
-              DBUIDraggable.registrationName,
+              DBUIRoot.registrationName,
             ].map((localName) => contentWindow.customElements.whenDefined(localName)
             )).then(() => {
               draggableOne.dispatchEvent(event);
@@ -2567,6 +2690,7 @@ describe('DBUIDraggable', () => {
               done();
             });
             DBUIDraggable.registerSelf();
+            DBUIRoot.registerSelf();
           }
         });
       });
@@ -2578,12 +2702,14 @@ describe('DBUIDraggable', () => {
           headStyle: `
           `,
           bodyHTML: `
-          <div id="other"></div>
-          <dbui-draggable id="draggable-one">
-            <div>
-              <span id="draggable-ancestor"></span>
-            </div>
-          </dbui-draggable>
+          <dbui-web-component-root id="dbui-web-component-root">
+            <div id="other"></div>
+            <dbui-draggable id="draggable-one">
+              <div>
+                <span id="draggable-ancestor"></span>
+              </div>
+            </dbui-draggable>
+          </dbui-web-component-root>
           `,
           onLoad: ({ contentWindow, iframe }) => {
             if (!contentWindow.TouchEvent) {
@@ -2592,6 +2718,7 @@ describe('DBUIDraggable', () => {
               return;
             }
 
+            const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
             const DBUIDraggable = getDBUIDraggable(contentWindow);
             const draggableAncestor = contentWindow.document.querySelector('#draggable-ancestor');
             const draggableOne = contentWindow.document.querySelector('#draggable-one');
@@ -2611,7 +2738,7 @@ describe('DBUIDraggable', () => {
             });
 
             Promise.all([
-              DBUIDraggable.registrationName,
+              DBUIRoot.registrationName,
             ].map((localName) => contentWindow.customElements.whenDefined(localName)
             )).then(() => {
               draggableAncestor.dispatchEvent(event);
@@ -2622,6 +2749,7 @@ describe('DBUIDraggable', () => {
               done();
             });
             DBUIDraggable.registerSelf();
+            DBUIRoot.registerSelf();
           }
         });
       });
@@ -2633,12 +2761,14 @@ describe('DBUIDraggable', () => {
           headStyle: `
           `,
           bodyHTML: `
-          <div id="other"></div>
-          <dbui-draggable id="draggable-one">
-            <div>
-              <span id="draggable-ancestor"></span>
-            </div>
-          </dbui-draggable>
+          <dbui-web-component-root id="dbui-web-component-root">
+            <div id="other"></div>
+            <dbui-draggable id="draggable-one">
+              <div>
+                <span id="draggable-ancestor"></span>
+              </div>
+            </dbui-draggable>
+          </dbui-web-component-root>
           `,
           onLoad: ({ contentWindow, iframe }) => {
             if (!contentWindow.TouchEvent) {
@@ -2647,6 +2777,7 @@ describe('DBUIDraggable', () => {
               return;
             }
 
+            const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
             const DBUIDraggable = getDBUIDraggable(contentWindow);
             const other = contentWindow.document.querySelector('#other');
             const draggableOne = contentWindow.document.querySelector('#draggable-one');
@@ -2666,7 +2797,7 @@ describe('DBUIDraggable', () => {
             });
 
             Promise.all([
-              DBUIDraggable.registrationName,
+              DBUIRoot.registrationName,
             ].map((localName) => contentWindow.customElements.whenDefined(localName)
             )).then(() => {
               draggableOne.dispatchEvent(event);
@@ -2676,6 +2807,7 @@ describe('DBUIDraggable', () => {
               done();
             });
             DBUIDraggable.registerSelf();
+            DBUIRoot.registerSelf();
           }
         });
       });
@@ -2693,10 +2825,11 @@ describe('DBUIDraggable', () => {
             headStyle: style_2,
             bodyHTML: html_2,
             onLoad: ({ contentWindow, iframe }) => {
+              const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
               const DBUIDraggable = getDBUIDraggable(contentWindow);
 
               Promise.all([
-                DBUIDraggable.registrationName,
+                DBUIRoot.registrationName,
               ].map((localName) => contentWindow.customElements.whenDefined(localName)
               )).then(() => {
 
@@ -2754,6 +2887,7 @@ describe('DBUIDraggable', () => {
               });
 
               DBUIDraggable.registerSelf();
+              DBUIRoot.registerSelf();
             }
           });
         });
@@ -2769,15 +2903,18 @@ describe('DBUIDraggable', () => {
             body, html { padding: 0px; margin: 0px; }
             `,
             bodyHTML: `
-            <div id="container">
-              <dummy-draggable-outer></dummy-draggable-outer>
-            </div>
+            <dbui-web-component-root id="dbui-web-component-root">
+              <div id="container">
+                <dbui-dummy-draggable-outer></dbui-dummy-draggable-outer>
+              </div>
+            </dbui-web-component-root>
             `,
             onLoad: ({ contentWindow, iframe }) => {
+              const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
               const DummyDraggableOuter = getDummyDraggableOuter(contentWindow);
 
               Promise.all([
-                DummyDraggableOuter.registrationName,
+                DBUIRoot.registrationName,
               ].map((localName) => contentWindow.customElements.whenDefined(localName)
               )).then(() => {
 
@@ -2788,9 +2925,9 @@ describe('DBUIDraggable', () => {
                 }
 
                 const doc = contentWindow.document;
-                const dummyDraggableOuter = doc.querySelector('dummy-draggable-outer');
-                const dummyDraggableMiddle = dummyDraggableOuter.shadowRoot.querySelector('dummy-draggable-middle');
-                const dummyDraggableInner = dummyDraggableMiddle.shadowRoot.querySelector('dummy-draggable-inner');
+                const dummyDraggableOuter = doc.querySelector('dbui-dummy-draggable-outer');
+                const dummyDraggableMiddle = dummyDraggableOuter.shadowRoot.querySelector('dbui-dummy-draggable-middle');
+                const dummyDraggableInner = dummyDraggableMiddle.shadowRoot.querySelector('dbui-dummy-draggable-inner');
                 const dummyDraggableInnerDbuiDraggable = dummyDraggableInner.shadowRoot.querySelector('dbui-draggable');
                 const dummyDraggableInnerDbuiDraggablePContent = dummyDraggableInner.shadowRoot.querySelector('p');
 
@@ -2838,6 +2975,7 @@ describe('DBUIDraggable', () => {
               });
 
               DummyDraggableOuter.registerSelf();
+              DBUIRoot.registerSelf();
             }
           });
         });
@@ -2855,10 +2993,11 @@ describe('DBUIDraggable', () => {
             bodyHTML: html_2,
             onLoad: ({ contentWindow, iframe }) => {
               // onScreenConsole({ win: contentWindow });
+              const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
               const DBUIDraggable = getDBUIDraggable(contentWindow);
 
               Promise.all([
-                DBUIDraggable.registrationName,
+                DBUIRoot.registrationName,
               ].map((localName) => contentWindow.customElements.whenDefined(localName)
               )).then(() => {
 
@@ -2955,6 +3094,7 @@ describe('DBUIDraggable', () => {
               });
 
               DBUIDraggable.registerSelf();
+              DBUIRoot.registerSelf();
             }
           });
         });
@@ -2970,15 +3110,18 @@ describe('DBUIDraggable', () => {
             body, html { padding: 0px; margin: 0px; }
             `,
             bodyHTML: `
-            <div id="container">
-              <dummy-draggable-outer></dummy-draggable-outer>
-            </div>
+            <dbui-web-component-root id="dbui-web-component-root">
+              <div id="container">
+                <dbui-dummy-draggable-outer></dbui-dummy-draggable-outer>
+              </div>
+            </dbui-web-component-root>
             `,
             onLoad: ({ contentWindow, iframe }) => {
+              const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
               const DummyDraggableOuter = getDummyDraggableOuter(contentWindow);
 
               Promise.all([
-                DummyDraggableOuter.registrationName,
+                DBUIRoot.registrationName,
               ].map((localName) => contentWindow.customElements.whenDefined(localName)
               )).then(() => {
 
@@ -2989,9 +3132,9 @@ describe('DBUIDraggable', () => {
                 }
 
                 const doc = contentWindow.document;
-                const dummyDraggableOuter = doc.querySelector('dummy-draggable-outer');
-                const dummyDraggableMiddle = dummyDraggableOuter.shadowRoot.querySelector('dummy-draggable-middle');
-                const dummyDraggableInner = dummyDraggableMiddle.shadowRoot.querySelector('dummy-draggable-inner');
+                const dummyDraggableOuter = doc.querySelector('dbui-dummy-draggable-outer');
+                const dummyDraggableMiddle = dummyDraggableOuter.shadowRoot.querySelector('dbui-dummy-draggable-middle');
+                const dummyDraggableInner = dummyDraggableMiddle.shadowRoot.querySelector('dbui-dummy-draggable-inner');
                 const dbuiDraggable1 = dummyDraggableInner.shadowRoot.querySelector('#draggable-inner-1');
                 const dbuiDraggable2 = dummyDraggableInner.shadowRoot.querySelector('#draggable-inner-2');
                 const dbuiDraggable1Content = dummyDraggableInner.shadowRoot.querySelector('#content-1');
@@ -3078,6 +3221,7 @@ describe('DBUIDraggable', () => {
               });
 
               DummyDraggableOuter.registerSelf();
+              DBUIRoot.registerSelf();
             }
           });
         });
@@ -3102,24 +3246,26 @@ describe('DBUIDraggable', () => {
         }
         `,
         bodyHTML: `
-        <dbui-resize-sensor id="resize-sensor">
-          <dbui-draggable id="draggable-one"
-          constraint-type="boundingClientRectOf"
-          constraint-selector="#resize-sensor"
-          target-translate-x="100"
-          target-translate-y="100"
-          ></dbui-draggable>
-        </dbui-resize-sensor>
-
+        <dbui-web-component-root id="dbui-web-component-root">
+          <dbui-resize-sensor id="resize-sensor">
+            <dbui-draggable id="draggable-one"
+            constraint-type="boundingClientRectOf"
+            constraint-selector="#resize-sensor"
+            target-translate-x="100"
+            target-translate-y="100"
+            ></dbui-draggable>
+          </dbui-resize-sensor>
+        </dbui-web-component-root>
         `,
         onLoad: ({ contentWindow, iframe }) => {
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DBUIDraggable = getDBUIDraggable(contentWindow);
           const DBUIResizeSensor = getDBUIResizeSensor(contentWindow);
           const resizeSensor = contentWindow.document.querySelector('#resize-sensor');
           const draggableOne = contentWindow.document.querySelector('#draggable-one');
 
           Promise.all([
-            DBUIDraggable.registrationName,
+            DBUIRoot.registrationName,
           ].map((localName) => contentWindow.customElements.whenDefined(localName)
           )).then(() => {
 
@@ -3218,6 +3364,7 @@ describe('DBUIDraggable', () => {
           });
           DBUIResizeSensor.registerSelf();
           DBUIDraggable.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });

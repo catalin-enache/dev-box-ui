@@ -117,6 +117,7 @@ export default function getDBUIResizeSensor(win) {
       _onScroll() {
         const size = this.dimensionsAndCoordinates;
         const dirty = size.width !== this._lastWidth || size.height !== this._lastHeight;
+
         if (dirty) {
           dispatchResizeEvent(this);
         }

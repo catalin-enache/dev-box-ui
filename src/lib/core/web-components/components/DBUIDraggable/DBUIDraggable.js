@@ -940,12 +940,11 @@ export default function getDBUIDraggable(win) {
       }
 
       onConnectedCallback() {
+        super.onConnectedCallback();
         this.setAttribute('unselectable', '');
         this.addEventListener('mousedown', handleMouseDown, eventOptions.mouse);
         this.addEventListener('touchstart', handleTouchStart, eventOptions.touch);
         this._initializeTargetToDrag();
-        this._constraintNode &&
-          this._constraintNode.addEventListener('resize', this._onConstraintNodeResize);
       }
 
       onDisconnectedCallback() {
@@ -960,7 +959,6 @@ export default function getDBUIDraggable(win) {
 
       // eslint-disable-next-line
       onAttributeChangedCallback(name, oldValue, newValue) {
-        if (!this.isMounted) return;
         switch (name) {
           // position adjusters attributes
           case 'target-translate-x':
@@ -976,6 +974,8 @@ export default function getDBUIDraggable(win) {
             this._constraintNode &&
               this._constraintNode.removeEventListener('resize', this._onConstraintNodeResize);
             this._cachedConstraintNode = null;
+            this._constraintNode &&
+              this._constraintNode.addEventListener('resize', this._onConstraintNodeResize);
             break;
           case 'constraint-type':
           case 'constraint-cx':

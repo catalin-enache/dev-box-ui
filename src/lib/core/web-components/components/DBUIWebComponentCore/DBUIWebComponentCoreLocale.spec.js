@@ -11,36 +11,40 @@ import {
   getDummyE,
   treeOne,
   treeOneGetDbuiNodes,
+  getDBUIWebComponentRoot,
   treeStyle
 } from './DBUITestTreeSetup.forSpec';
+import monkeyPatch from '../../../../../../testUtils/monkeyPatch';
 
 const treeWithLocale = `
+<dbui-web-component-root id="dbui-web-component-root">
 <div id="container">
-  <dummy-d dir="rtl" lang="it" id="light-dummy-d-one-root">
+  <dbui-dummy-d dir="rtl" lang="it" id="light-dummy-d-one-root">
     <ul slot="named-slot" id="ul1">
       <li id="ul1-li1">
-        <dummy-e id="light-dummy-e-in-named-slot"></dummy-e>
+        <dbui-dummy-e id="light-dummy-e-in-named-slot"></dbui-dummy-e>
       </li>
     </ul>
     <ul id="ul2">
       <li id="ul2-li1">
-        <dummy-d id="light-dummy-d-two-in-default-slot">
+        <dbui-dummy-d id="light-dummy-d-two-in-default-slot">
           <ul id="ul2-li1-ul1">
             <li id="ul2-li1-ul1-li1">
-              <dummy-d dir="xyz" lang="de" id="light-dummy-d-three-in-default-slot">
+              <dbui-dummy-d dir="xyz" lang="de" id="light-dummy-d-three-in-default-slot">
                 <ul id="ul2-li1-ul1-li1-ul1">
                   <li id="ul2-li1-ul1-li1-ul1-li1">
-                    <dummy-e id="light-dummy-e-in-default-slot"></dummy-e>
+                    <dbui-dummy-e id="light-dummy-e-in-default-slot"></dbui-dummy-e>
                   </li>
                 </ul>
-              </dummy-d>
+              </dbui-dummy-d>
             </li>
           </ul>
-        </dummy-d>
+        </dbui-dummy-d>
       </li>
     </ul>
-  </dummy-d>
+  </dbui-dummy-d>
 </div>
+</dbui-web-component-root>
 `;
 
 /* eslint camelcase: 0 */
@@ -56,6 +60,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
       </div>
       `,
       onLoad: ({ contentWindow, iframe }) => {
+        const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
         const DummyA = getDummyA(contentWindow);
         const DummyB = getDummyB(contentWindow);
         const DummyC = getDummyC(contentWindow);
@@ -70,12 +75,14 @@ describe('DBUIWebComponentBase locale behaviour', () => {
           DummyC.registrationName,
           DummyD.registrationName,
           DummyE.registrationName,
+          DBUIRoot.registrationName,
         ].map((localName) => contentWindow.customElements.whenDefined(localName)
         )).then(() => {
 
           container.innerHTML = treeOne;
 
-          const dbuiNodes = treeOneGetDbuiNodes(contentWindow);
+          const allDbuiNodes = treeOneGetDbuiNodes(contentWindow);
+          const { dbuiWebComponentRoot: _, ...dbuiNodes } = allDbuiNodes;
           // the default
           Object.keys(dbuiNodes).forEach((key) => {
             const node = dbuiNodes[key];
@@ -129,6 +136,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
         });
 
         DummyE.registerSelf();
+        DBUIRoot.registerSelf();
       }
     });
   });
@@ -141,20 +149,20 @@ describe('DBUIWebComponentBase locale behaviour', () => {
     inIframe({
       headStyle: treeStyle,
       bodyHTML: `
-      <div id="container">
-        <dummy-d id="dummy-d-one" dir="rtl" lang="sp"></dummy-d>
-      </div>
+      <dbui-web-component-root id="dbui-web-component-root">
+        <div id="container">
+          <dbui-dummy-d id="dummy-d-one" dir="rtl" lang="sp"></dbui-dummy-d>
+        </div>
+      </dbui-web-component-root>
       `,
       onLoad: ({ contentWindow, iframe }) => {
-        const DummyA = getDummyA(contentWindow);
-        const DummyB = getDummyB(contentWindow);
-        const DummyC = getDummyC(contentWindow);
+        const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
         const DummyD = getDummyD(contentWindow);
         const DummyE = getDummyE(contentWindow);
 
         const container = contentWindow.document.querySelector('#container');
         const dummyDOne = contentWindow.document.querySelector('#dummy-d-one');
-        const dummyDTwo = contentWindow.document.createElement('dummy-d');
+        const dummyDTwo = contentWindow.document.createElement('dbui-dummy-d');
 
         dummyDTwo.id = 'dummy-d-two';
         dummyDTwo.dir = 'rtl';
@@ -196,11 +204,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
         expect(dummyDTwo.getAttribute('dbui-lang')).to.equal(null);
 
         Promise.all([
-          DummyA.registrationName,
-          DummyB.registrationName,
-          DummyC.registrationName,
-          DummyD.registrationName,
-          DummyE.registrationName,
+          DBUIRoot.registrationName
         ].map((localName) => contentWindow.customElements.whenDefined(localName)
         )).then(() => {
 
@@ -245,6 +249,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
         });
 
         DummyE.registerSelf();
+        DBUIRoot.registerSelf();
       }
     });
   });
@@ -257,19 +262,13 @@ describe('DBUIWebComponentBase locale behaviour', () => {
       bodyHTML: treeWithLocale,
       onLoad: ({ contentWindow, iframe }) => {
 
+        const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
         const Base = getBase(contentWindow);
-        const DummyA = getDummyA(contentWindow);
-        const DummyB = getDummyB(contentWindow);
-        const DummyC = getDummyC(contentWindow);
         const DummyD = getDummyD(contentWindow);
         const DummyE = getDummyE(contentWindow);
 
         Promise.all([
-          DummyA.registrationName,
-          DummyB.registrationName,
-          DummyC.registrationName,
-          DummyD.registrationName,
-          DummyE.registrationName,
+          DBUIRoot.registrationName
         ].map((localName) => contentWindow.customElements.whenDefined(localName)
         )).then(() => {
 
@@ -398,6 +397,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
 
         DummyD.registerSelf();
         DummyE.registerSelf();
+        DBUIRoot.registerSelf();
       }
     });
   });
@@ -409,39 +409,42 @@ describe('DBUIWebComponentBase locale behaviour', () => {
     inIframe({
       headStyle: treeStyle,
       bodyHTML: `
-      <div id="container">
-        <dummy-d id="dummy-d-outer" lang="it">
-          <div dir="rtl" lang="fr">
-            <dummy-d id="dummy-d-inner"></dummy-d>
-          </div>
-        </dummy-d>
-      </div>
+      <dbui-web-component-root id="dbui-web-component-root" dir="aaa" lang="bb">
+        <div id="container">
+          <dbui-dummy-d id="dummy-d-outer" lang="it">
+            <div dir="rtl" lang="fr">
+              <dbui-dummy-d id="dummy-d-inner"></dbui-dummy-d>
+            </div>
+          </dbui-dummy-d>
+        </div>
+      </dbui-web-component-root>
       `,
       onLoad: ({ contentWindow, iframe }) => {
+        const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
         const DummyD = getDummyD(contentWindow);
 
         const dummyDOuter = contentWindow.document.querySelector('#dummy-d-outer');
         const dummyDInner = contentWindow.document.querySelector('#dummy-d-inner');
 
         Promise.all([
-          DummyD.registrationName,
+          DBUIRoot.registrationName,
         ].map((localName) => contentWindow.customElements.whenDefined(localName)
         )).then(() => {
 
-          expect(dummyDOuter.getAttribute('dbui-dir')).to.equal('ltr');
+          expect(dummyDOuter.getAttribute('dbui-dir')).to.equal('aaa');
           expect(dummyDOuter.getAttribute('dbui-lang')).to.equal('it');
           // dummyDInner is NOT top most ancestor so it does not look for surrounding locale
           // but it gets it via context from closetDbuiParent.
-          expect(dummyDInner.getAttribute('dbui-dir')).to.equal('ltr');
+          expect(dummyDInner.getAttribute('dbui-dir')).to.equal('aaa');
           expect(dummyDInner.getAttribute('dbui-lang')).to.equal('it');
-          expect(dummyDOuter.__newDir).to.equal('ltr');
+          expect(dummyDOuter.__newDir).to.equal('aaa');
           expect(dummyDOuter.__prevDir).to.equal(null);
           expect(dummyDOuter.__newLang).to.equal('it');
           expect(dummyDOuter.__prevLang).to.equal(null);
-          expect(dummyDInner.__newDir).to.equal('ltr');
+          expect(dummyDInner.__newDir).to.equal('aaa');
           expect(dummyDInner.__prevDir).to.equal(null);
           expect(dummyDInner.__newLang).to.equal('it');
-          expect(dummyDInner.__prevLang).to.equal(null);
+          expect(dummyDInner.__prevLang).to.equal('bb');
 
 
           dummyDInner.setAttribute('dir', 'abc');
@@ -450,7 +453,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
           expect(dummyDInner.getAttribute('dbui-dir')).to.equal('abc');
           expect(dummyDInner.getAttribute('dbui-lang')).to.equal('de');
           expect(dummyDInner.__newDir).to.equal('abc');
-          expect(dummyDInner.__prevDir).to.equal('ltr');
+          expect(dummyDInner.__prevDir).to.equal('aaa');
           expect(dummyDInner.__newLang).to.equal('de');
           expect(dummyDInner.__prevLang).to.equal('it');
 
@@ -459,9 +462,9 @@ describe('DBUIWebComponentBase locale behaviour', () => {
           // expect locale to be re-read from from closetDbuiParent
           // and not from closest surrounding locale
 
-          expect(dummyDInner.getAttribute('dbui-dir')).to.equal('ltr');
+          expect(dummyDInner.getAttribute('dbui-dir')).to.equal('aaa');
           // expect(dummyDInner.getAttribute('dbui-lang')).to.equal('it');
-          expect(dummyDInner.__newDir).to.equal('ltr');
+          expect(dummyDInner.__newDir).to.equal('aaa');
           expect(dummyDInner.__prevDir).to.equal('abc');
           expect(dummyDInner.__newLang).to.equal('it');
           expect(dummyDInner.__prevLang).to.equal('de');
@@ -473,6 +476,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
         });
 
         DummyD.registerSelf();
+        DBUIRoot.registerSelf();
       }
     });
   });
@@ -486,13 +490,16 @@ describe('DBUIWebComponentBase locale behaviour', () => {
       inIframe({
         headStyle: treeStyle,
         bodyHTML: `
-        <div id="container">
-          <div id="locale-provider"></div>
-          <dummy-d id="dummy-d-one" sync-locale-with="#locale-provider"></dummy-d>
-          <dummy-d id="dummy-d-two"></dummy-d>
-        </div>
+        <dbui-web-component-root id="dbui-web-component-root">
+          <div id="container">
+            <div id="locale-provider"></div>
+            <dbui-dummy-d id="dummy-d-one" sync-locale-with="#locale-provider"></dbui-dummy-d>
+            <dbui-dummy-d id="dummy-d-two"></dbui-dummy-d>
+          </div>
+        </dbui-web-component-root>
         `,
         onLoad: ({ contentWindow, iframe }) => {
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DummyD = getDummyD(contentWindow);
 
           const html = contentWindow.document.querySelector('html');
@@ -501,7 +508,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
           const dummyDTwo = contentWindow.document.querySelector('#dummy-d-two');
 
           Promise.all([
-            DummyD.registrationName,
+            DBUIRoot.registrationName,
           ].map((localName) => contentWindow.customElements.whenDefined(localName)
           )).then(() => {
 
@@ -515,6 +522,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
           });
 
           DummyD.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });
@@ -529,13 +537,16 @@ describe('DBUIWebComponentBase locale behaviour', () => {
       inIframe({
         headStyle: treeStyle,
         bodyHTML: `
-        <div id="container">
-          <div id="locale-provider"></div>
-          <dummy-d id="dummy-d-one" sync-locale-with="#locale-provider"></dummy-d>
-          <dummy-d id="dummy-d-two"></dummy-d>
-        </div>
+        <dbui-web-component-root id="dbui-web-component-root">
+          <div id="container">
+            <div id="locale-provider"></div>
+            <dbui-dummy-d id="dummy-d-one" sync-locale-with="#locale-provider"></dbui-dummy-d>
+            <dbui-dummy-d id="dummy-d-two"></dbui-dummy-d>
+          </div>
+        </dbui-web-component-root>
         `,
         onLoad: ({ contentWindow, iframe }) => {
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DummyD = getDummyD(contentWindow);
 
           const html = contentWindow.document.querySelector('html');
@@ -545,7 +556,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
           const dummyDTwo = contentWindow.document.querySelector('#dummy-d-two');
 
           Promise.all([
-            DummyD.registrationName,
+            DBUIRoot.registrationName,
           ].map((localName) => contentWindow.customElements.whenDefined(localName)
           )).then(() => {
 
@@ -559,6 +570,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
           });
 
           DummyD.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });
@@ -576,12 +588,15 @@ describe('DBUIWebComponentBase locale behaviour', () => {
         inIframe({
           headStyle: treeStyle,
           bodyHTML: `
-          <div id="container">
-            <div id="locale-provider" dir="abc" lang="de"></div>
-            <dummy-d id="dummy-d-one" dir="rtl" lang="it" sync-locale-with="#locale-provider"></dummy-d>
-          </div>
+          <dbui-web-component-root id="dbui-web-component-root">
+            <div id="container">
+              <div id="locale-provider" dir="abc" lang="de"></div>
+              <dbui-dummy-d id="dummy-d-one" dir="rtl" lang="it" sync-locale-with="#locale-provider"></dbui-dummy-d>
+            </div>
+          </dbui-web-component-root>
           `,
           onLoad: ({ contentWindow, iframe }) => {
+            const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
             const DummyD = getDummyD(contentWindow);
 
             const container = contentWindow.document.querySelector('#container');
@@ -589,7 +604,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
             const dummyDOne = contentWindow.document.querySelector('#dummy-d-one');
 
             Promise.all([
-              DummyD.registrationName,
+              DBUIRoot.registrationName,
             ].map((localName) => contentWindow.customElements.whenDefined(localName)
             )).then(() => {
 
@@ -629,6 +644,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
             });
 
             DummyD.registerSelf();
+            DBUIRoot.registerSelf();
           }
         });
       });
@@ -643,12 +659,15 @@ describe('DBUIWebComponentBase locale behaviour', () => {
         inIframe({
           headStyle: treeStyle,
           bodyHTML: `
-          <div id="container">
-            <div id="locale-provider" dir="rtl" lang="it"></div>
-            <dummy-d id="dummy-d-one" sync-locale-with="#locale-provider"></dummy-d>
-          </div>
+          <dbui-web-component-root id="dbui-web-component-root">
+            <div id="container">
+              <div id="locale-provider" dir="rtl" lang="it"></div>
+              <dbui-dummy-d id="dummy-d-one" sync-locale-with="#locale-provider"></dbui-dummy-d>
+            </div>
+          </dbui-web-component-root>
           `,
           onLoad: ({ contentWindow, iframe }) => {
+            const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
             const DummyD = getDummyD(contentWindow);
 
             const container = contentWindow.document.querySelector('#container');
@@ -656,16 +675,16 @@ describe('DBUIWebComponentBase locale behaviour', () => {
             const dummyDOne = contentWindow.document.querySelector('#dummy-d-one');
 
             Promise.all([
-              DummyD.registrationName,
+              DBUIRoot.registrationName,
             ].map((localName) => contentWindow.customElements.whenDefined(localName)
             )).then(() => {
 
               expect(dummyDOne.getAttribute('dbui-dir')).to.equal('rtl');
               expect(dummyDOne.getAttribute('dbui-lang')).to.equal('it');
               expect(dummyDOne.__newDir).to.equal('rtl');
-              expect(dummyDOne.__prevDir).to.equal(null);
+              expect(dummyDOne.__prevDir).to.equal('ltr');
               expect(dummyDOne.__newLang).to.equal('it');
-              expect(dummyDOne.__prevLang).to.equal(null);
+              expect(dummyDOne.__prevLang).to.equal('en');
               expect(dummyDOne._providingContext).to.deep.equal({ dbuiDir: 'rtl', dbuiLang: 'it' });
 
               dummyDOne.remove();
@@ -684,9 +703,9 @@ describe('DBUIWebComponentBase locale behaviour', () => {
               expect(dummyDOne.getAttribute('dbui-dir')).to.equal('rtl');
               expect(dummyDOne.getAttribute('dbui-lang')).to.equal('de');
               expect(dummyDOne.__newDir).to.equal('rtl');
-              expect(dummyDOne.__prevDir).to.equal(null);
+              expect(dummyDOne.__prevDir).to.equal('ltr');
               expect(dummyDOne.__newLang).to.equal('de');
-              expect(dummyDOne.__prevLang).to.equal(null);
+              expect(dummyDOne.__prevLang).to.equal('en');
               expect(dummyDOne._providingContext).to.deep.equal({ dbuiDir: 'rtl', dbuiLang: 'de' });
 
               setTimeout(() => {
@@ -696,6 +715,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
             });
 
             DummyD.registerSelf();
+            DBUIRoot.registerSelf();
           }
         });
       });
@@ -707,19 +727,22 @@ describe('DBUIWebComponentBase locale behaviour', () => {
       inIframe({
         headStyle: treeStyle,
         bodyHTML: `
-        <div id="container">
-          <div id="locale-provider" dir="rtl" lang="it"></div>
-          <dummy-d id="dummy-d-one" sync-locale-with="#locale-provider"></dummy-d>
-        </div>
+        <dbui-web-component-root id="dbui-web-component-root">
+          <div id="container">
+            <div id="locale-provider" dir="rtl" lang="it"></div>
+            <dbui-dummy-d id="dummy-d-one" sync-locale-with="#locale-provider"></dbui-dummy-d>
+          </div>
+        </dbui-web-component-root>
         `,
         onLoad: ({ contentWindow, iframe }) => {
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DummyD = getDummyD(contentWindow);
 
           const container = contentWindow.document.querySelector('#container');
           const dummyDOne = contentWindow.document.querySelector('#dummy-d-one');
 
           Promise.all([
-            DummyD.registrationName,
+            DBUIRoot.registrationName,
           ].map((localName) => contentWindow.customElements.whenDefined(localName)
           )).then(() => {
 
@@ -753,6 +776,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
           });
 
           DummyD.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });
@@ -770,19 +794,22 @@ describe('DBUIWebComponentBase locale behaviour', () => {
         inIframe({
           headStyle: treeStyle,
           bodyHTML: `
-          <div id="container">
-            <div id="locale-provider" dir="rtl" lang="it"></div>
-            <dummy-d id="dummy-d-one" sync-locale-with="#locale-provider"></dummy-d>
-          </div>
+          <dbui-web-component-root id="dbui-web-component-root">
+            <div id="container">
+              <div id="locale-provider" dir="rtl" lang="it"></div>
+              <dbui-dummy-d id="dummy-d-one" sync-locale-with="#locale-provider"></dbui-dummy-d>
+            </div>
+          </dbui-web-component-root>
           `,
           onLoad: ({ contentWindow, iframe }) => {
+            const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
             const DummyD = getDummyD(contentWindow);
 
             const container = contentWindow.document.querySelector('#container');
             const dummyDOne = contentWindow.document.querySelector('#dummy-d-one');
 
             Promise.all([
-              DummyD.registrationName,
+              DBUIRoot.registrationName,
             ].map((localName) => contentWindow.customElements.whenDefined(localName)
             )).then(() => {
 
@@ -791,9 +818,9 @@ describe('DBUIWebComponentBase locale behaviour', () => {
               expect(dummyDOne._providingContext.dbuiDir).to.equal('rtl');
               expect(dummyDOne._providingContext.dbuiLang).to.equal('it');
               expect(dummyDOne.__newDir).to.equal('rtl');
-              expect(dummyDOne.__prevDir).to.equal(null);
+              expect(dummyDOne.__prevDir).to.equal('ltr');
               expect(dummyDOne.__newLang).to.equal('it');
-              expect(dummyDOne.__prevLang).to.equal(null);
+              expect(dummyDOne.__prevLang).to.equal('en');
 
               dummyDOne.remove();
 
@@ -813,9 +840,9 @@ describe('DBUIWebComponentBase locale behaviour', () => {
               expect(dummyDOne._providingContext.dbuiDir).to.equal('rtl');
               expect(dummyDOne._providingContext.dbuiLang).to.equal('it');
               expect(dummyDOne.__newDir).to.equal('rtl');
-              expect(dummyDOne.__prevDir).to.equal(null);
+              expect(dummyDOne.__prevDir).to.equal('ltr');
               expect(dummyDOne.__newLang).to.equal('it');
-              expect(dummyDOne.__prevLang).to.equal(null);
+              expect(dummyDOne.__prevLang).to.equal('en');
 
               setTimeout(() => {
                 iframe.remove();
@@ -824,6 +851,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
             });
 
             DummyD.registerSelf();
+            DBUIRoot.registerSelf();
           }
         });
       });
@@ -838,19 +866,22 @@ describe('DBUIWebComponentBase locale behaviour', () => {
         inIframe({
           headStyle: treeStyle,
           bodyHTML: `
-          <div id="container">
-            <div id="locale-provider1" dir="rtl" lang="it"></div>
-            <div id="locale-provider2" dir="abc" lang="ab"></div>
-            <dummy-d id="dummy-d-one" sync-locale-with="#locale-provider1"></dummy-d>
-          </div>
+          <dbui-web-component-root id="dbui-web-component-root">
+            <div id="container">
+              <div id="locale-provider1" dir="rtl" lang="it"></div>
+              <div id="locale-provider2" dir="abc" lang="ab"></div>
+              <dbui-dummy-d id="dummy-d-one" sync-locale-with="#locale-provider1"></dbui-dummy-d>
+            </div>
+          </dbui-web-component-root>
           `,
           onLoad: ({ contentWindow, iframe }) => {
+            const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
             const DummyD = getDummyD(contentWindow);
 
             const dummyDOne = contentWindow.document.querySelector('#dummy-d-one');
 
             Promise.all([
-              DummyD.registrationName,
+              DBUIRoot.registrationName,
             ].map((localName) => contentWindow.customElements.whenDefined(localName)
             )).then(() => {
 
@@ -859,9 +890,9 @@ describe('DBUIWebComponentBase locale behaviour', () => {
               expect(dummyDOne._providingContext.dbuiDir).to.equal('rtl');
               expect(dummyDOne._providingContext.dbuiLang).to.equal('it');
               expect(dummyDOne.__newDir).to.equal('rtl');
-              expect(dummyDOne.__prevDir).to.equal(null);
+              expect(dummyDOne.__prevDir).to.equal('ltr');
               expect(dummyDOne.__newLang).to.equal('it');
-              expect(dummyDOne.__prevLang).to.equal(null);
+              expect(dummyDOne.__prevLang).to.equal('en');
 
               dummyDOne.setAttribute('sync-locale-with', '#locale-provider2');
 
@@ -881,6 +912,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
             });
 
             DummyD.registerSelf();
+            DBUIRoot.registerSelf();
           }
         });
       });
@@ -898,54 +930,78 @@ describe('DBUIWebComponentBase locale behaviour', () => {
             bodyHTML: `
             <div id="container">
               <div id="locale-provider1" dir="rtl" lang="it"></div>
-              <dummy-d id="dummy-d-one" sync-locale-with="#non-existing"></dummy-d>
+              <dbui-web-component-root id="dbui-web-component-root" sync-locale-with="#non-existing">
+              </dbui-web-component-root>
             </div>
             `,
             onLoad: ({ contentWindow, iframe }) => {
+              const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
               const DummyD = getDummyD(contentWindow);
 
-              const dummyDOne = contentWindow.document.querySelector('#dummy-d-one');
+              monkeyPatch(DBUIRoot).proto.set('onLocaleDirChanged', (getSuperDescriptor) => {
+                return {
+                  writable: true,
+                  value(newDir, prevDir) {
+                    getSuperDescriptor().value.call(this, newDir, prevDir);
+                    this.__newDir = newDir;
+                    this.__prevDir = prevDir;
+                  }
+                };
+              });
+
+              monkeyPatch(DBUIRoot).proto.set('onLocaleLangChanged', (getSuperDescriptor) => {
+                return {
+                  writable: true,
+                  value(newLang, prevLang) {
+                    getSuperDescriptor().value.call(this, newLang, prevLang);
+                    this.__newLang = newLang;
+                    this.__prevLang = prevLang;
+                  }
+                };
+              });
+
+              const dbuiRoot = contentWindow.document.querySelector('#dbui-web-component-root');
               const html = contentWindow.document.querySelector('html');
               html.dir = 'abc';
               html.lang = 'bc';
 
               Promise.all([
-                DummyD.registrationName,
+                DBUIRoot.registrationName,
               ].map((localName) => contentWindow.customElements.whenDefined(localName)
               )).then(() => {
 
-                expect(dummyDOne.getAttribute('dbui-dir')).to.equal('abc');
-                expect(dummyDOne.getAttribute('dbui-lang')).to.equal('bc');
-                expect(dummyDOne._providingContext.dbuiDir).to.equal('abc');
-                expect(dummyDOne._providingContext.dbuiLang).to.equal('bc');
-                expect(dummyDOne.__newDir).to.equal('abc');
-                expect(dummyDOne.__prevDir).to.equal(null);
-                expect(dummyDOne.__newLang).to.equal('bc');
-                expect(dummyDOne.__prevLang).to.equal(null);
+                expect(dbuiRoot.getAttribute('dbui-dir')).to.equal('abc');
+                expect(dbuiRoot.getAttribute('dbui-lang')).to.equal('bc');
+                expect(dbuiRoot._providingContext.dbuiDir).to.equal('abc');
+                expect(dbuiRoot._providingContext.dbuiLang).to.equal('bc');
+                expect(dbuiRoot.__newDir).to.equal('abc');
+                expect(dbuiRoot.__prevDir).to.equal(null);
+                expect(dbuiRoot.__newLang).to.equal('bc');
+                expect(dbuiRoot.__prevLang).to.equal(null);
 
-                dummyDOne.setAttribute('sync-locale-with', '#locale-provider1');
+                dbuiRoot.setAttribute('sync-locale-with', '#locale-provider1');
 
-                expect(dummyDOne.getAttribute('dbui-dir')).to.equal('rtl');
-                expect(dummyDOne.getAttribute('dbui-lang')).to.equal('it');
-                expect(dummyDOne._providingContext.dbuiDir).to.equal('rtl');
-                expect(dummyDOne._providingContext.dbuiLang).to.equal('it');
-                expect(dummyDOne.__newDir).to.equal('rtl');
-                expect(dummyDOne.__prevDir).to.equal('abc');
-                expect(dummyDOne.__newLang).to.equal('it');
-                expect(dummyDOne.__prevLang).to.equal('bc');
+                expect(dbuiRoot.getAttribute('dbui-dir')).to.equal('rtl');
+                expect(dbuiRoot.getAttribute('dbui-lang')).to.equal('it');
+                expect(dbuiRoot._providingContext.dbuiDir).to.equal('rtl');
+                expect(dbuiRoot._providingContext.dbuiLang).to.equal('it');
+                expect(dbuiRoot.__newDir).to.equal('rtl');
+                expect(dbuiRoot.__prevDir).to.equal('abc');
+                expect(dbuiRoot.__newLang).to.equal('it');
+                expect(dbuiRoot.__prevLang).to.equal('bc');
 
                 html.dir = 'bcd';
                 html.lang = 'cd';
-                dummyDOne.setAttribute('sync-locale-with', '#not-existing');
+                dbuiRoot.setAttribute('sync-locale-with', '#not-existing');
 
-                expect(dummyDOne.getAttribute('dbui-dir')).to.equal('bcd');
-                expect(dummyDOne.getAttribute('dbui-lang')).to.equal('cd');
-                expect(dummyDOne._providingContext.dbuiDir).to.equal('bcd');
-                expect(dummyDOne._providingContext.dbuiLang).to.equal('cd');
-                expect(dummyDOne.__newDir).to.equal('bcd');
-                expect(dummyDOne.__prevDir).to.equal('rtl');
-                expect(dummyDOne.__newLang).to.equal('cd');
-                expect(dummyDOne.__prevLang).to.equal('it');
+                expect(dbuiRoot.getAttribute('dbui-dir')).to.equal('bcd');
+                expect(dbuiRoot.getAttribute('dbui-lang')).to.equal('cd');
+                expect(dbuiRoot._providingContext.dbuiDir).to.equal('bcd');
+                expect(dbuiRoot._providingContext.dbuiLang).to.equal('cd');
+                expect(dbuiRoot.__newDir).to.equal('bcd');
+                expect(dbuiRoot.__prevDir).to.equal('rtl');
+                expect(dbuiRoot.__newLang).to.equal('cd');
+                expect(dbuiRoot.__prevLang).to.equal('it');
 
                 setTimeout(() => {
                   iframe.remove();
@@ -954,6 +1010,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
               });
 
               DummyD.registerSelf();
+              DBUIRoot.registerSelf();
             }
           });
 
@@ -967,16 +1024,20 @@ describe('DBUIWebComponentBase locale behaviour', () => {
           inIframe({
             headStyle: treeStyle,
             bodyHTML: `
-            <div id="container">
-              <div id="locale-provider1" dir="rtl" lang="it"></div>
-              <dummy-d id="dummy-d-outer" sync-locale-with="#non-existing">
-                <dummy-d id="dummy-d-one" sync-locale-with="#non-existing"></dummy-d>
-              </dummy-d>
-            </div>
+            <dbui-web-component-root id="dbui-web-component-root">
+              <div id="container">
+                <div id="locale-provider1" dir="rtl" lang="it"></div>
+                <dbui-dummy-d id="dummy-d-outer" sync-locale-with="#non-existing">
+                  <dbui-dummy-d id="dummy-d-one" sync-locale-with="#non-existing"></dbui-dummy-d>
+                </dbui-dummy-d>
+              </div>
+            </dbui-web-component-root>
             `,
             onLoad: ({ contentWindow, iframe }) => {
+              const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
               const DummyD = getDummyD(contentWindow);
 
+              const dummyRoot = contentWindow.document.querySelector('#dbui-web-component-root');
               const dummyDOne = contentWindow.document.querySelector('#dummy-d-one');
               const dummyDOuter = contentWindow.document.querySelector('#dummy-d-outer');
               const html = contentWindow.document.querySelector('html');
@@ -984,10 +1045,12 @@ describe('DBUIWebComponentBase locale behaviour', () => {
               html.lang = 'bc';
 
               Promise.all([
-                DummyD.registrationName,
+                DBUIRoot.registrationName,
               ].map((localName) => contentWindow.customElements.whenDefined(localName)
               )).then(() => {
 
+                expect(dummyRoot._localeTarget).to.equal(html);
+                expect(dummyDOne._localeTarget).to.equal(html);
                 expect(dummyDOuter._localeTarget).to.equal(html);
 
                 expect(dummyDOuter.getAttribute('dbui-dir')).to.equal('abc');
@@ -1038,6 +1101,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
               });
 
               DummyD.registerSelf();
+              DBUIRoot.registerSelf();
             }
           });
         });
@@ -1057,16 +1121,19 @@ describe('DBUIWebComponentBase locale behaviour', () => {
         inIframe({
           headStyle: treeStyle,
           bodyHTML: `
-          <div id="container">
-            <div id="locale-provider" dir="rtl" lang="it"></div>
-            <dummy-d id="dummy-d-one" dir="abc" lang="ab">
-              <dummy-d id="dummy-d-two" sync-locale-with="#locale-provider">
-                <dummy-d id="dummy-d-three"></dummy-d>
-              </dummy-d>
-            </dummy-d>
-          </div>
+          <dbui-web-component-root id="dbui-web-component-root">
+            <div id="container">
+              <div id="locale-provider" dir="rtl" lang="it"></div>
+              <dbui-dummy-d id="dummy-d-one" dir="abc" lang="ab">
+                <dbui-dummy-d id="dummy-d-two" sync-locale-with="#locale-provider">
+                  <dbui-dummy-d id="dummy-d-three"></dbui-dummy-d>
+                </dbui-dummy-d>
+              </dbui-dummy-d>
+            </div>
+          </dbui-web-component-root>
           `,
           onLoad: ({ contentWindow, iframe }) => {
+            const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
             const DummyD = getDummyD(contentWindow);
 
             const dummyDOne = contentWindow.document.querySelector('#dummy-d-one');
@@ -1074,7 +1141,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
             const dummyDThree = contentWindow.document.querySelector('#dummy-d-three');
 
             Promise.all([
-              DummyD.registrationName,
+              DBUIRoot.registrationName,
             ].map((localName) => contentWindow.customElements.whenDefined(localName)
             )).then(() => {
 
@@ -1092,9 +1159,9 @@ describe('DBUIWebComponentBase locale behaviour', () => {
               expect(dummyDTwo._providingContext.dbuiDir).to.equal('rtl');
               expect(dummyDTwo._providingContext.dbuiLang).to.equal('it');
               expect(dummyDTwo.__newDir).to.equal('rtl');
-              expect(dummyDTwo.__prevDir).to.equal(null);
+              expect(dummyDTwo.__prevDir).to.equal('ltr');
               expect(dummyDTwo.__newLang).to.equal('it');
-              expect(dummyDTwo.__prevLang).to.equal(null);
+              expect(dummyDTwo.__prevLang).to.equal('en');
 
               expect(dummyDThree.getAttribute('dbui-dir')).to.equal('rtl');
               expect(dummyDThree.getAttribute('dbui-lang')).to.equal('it');
@@ -1122,9 +1189,9 @@ describe('DBUIWebComponentBase locale behaviour', () => {
               expect(dummyDTwo._providingContext.dbuiDir).to.equal('rtl');
               expect(dummyDTwo._providingContext.dbuiLang).to.equal('it');
               expect(dummyDTwo.__newDir).to.equal('rtl');
-              expect(dummyDTwo.__prevDir).to.equal(null); // due to no actual change
+              expect(dummyDTwo.__prevDir).to.equal('ltr'); // due to no actual change
               expect(dummyDTwo.__newLang).to.equal('it');
-              expect(dummyDTwo.__prevLang).to.equal(null);
+              expect(dummyDTwo.__prevLang).to.equal('en');
 
               expect(dummyDThree.getAttribute('dbui-dir')).to.equal('rtl');
               expect(dummyDThree.getAttribute('dbui-lang')).to.equal('it');
@@ -1142,6 +1209,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
             });
 
             DummyD.registerSelf();
+            DBUIRoot.registerSelf();
           }
         });
       });
@@ -1156,15 +1224,18 @@ describe('DBUIWebComponentBase locale behaviour', () => {
         inIframe({
           headStyle: treeStyle,
           bodyHTML: `
-          <div id="container">
-            <dummy-d id="dummy-d-one" dir="abc" lang="ab">
-              <dummy-d id="dummy-d-two" dir="bcd">
-                <dummy-d id="dummy-d-three"></dummy-d>
-              </dummy-d>
-            </dummy-d>
-          </div>
+          <dbui-web-component-root id="dbui-web-component-root">
+            <div id="container">
+              <dbui-dummy-d id="dummy-d-one" dir="abc" lang="ab">
+                <dbui-dummy-d id="dummy-d-two" dir="bcd">
+                  <dbui-dummy-d id="dummy-d-three"></dbui-dummy-d>
+                </dbui-dummy-d>
+              </dbui-dummy-d>
+            </div>
+          </dbui-web-component-root>
           `,
           onLoad: ({ contentWindow, iframe }) => {
+            const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
             const DummyD = getDummyD(contentWindow);
 
             const dummyDOne = contentWindow.document.querySelector('#dummy-d-one');
@@ -1172,7 +1243,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
             const dummyDThree = contentWindow.document.querySelector('#dummy-d-three');
 
             Promise.all([
-              DummyD.registrationName,
+              DBUIRoot.registrationName,
             ].map((localName) => contentWindow.customElements.whenDefined(localName)
             )).then(() => {
 
@@ -1193,16 +1264,16 @@ describe('DBUIWebComponentBase locale behaviour', () => {
               expect(dummyDTwo.__newDir).to.equal('bcd');
               expect(dummyDTwo.__prevDir).to.equal(null);
               expect(dummyDTwo.__newLang).to.equal('ab');
-              expect(dummyDTwo.__prevLang).to.equal(null);
+              expect(dummyDTwo.__prevLang).to.equal('en');
 
               expect(dummyDThree.getAttribute('dbui-dir')).to.equal('bcd');
               expect(dummyDThree.getAttribute('dbui-lang')).to.equal('ab');
               expect(dummyDThree._lastReceivedContext.dbuiDir).to.equal('bcd');
               expect(dummyDThree._lastReceivedContext.dbuiLang).to.equal('ab');
               expect(dummyDThree.__newDir).to.equal('bcd');
-              expect(dummyDThree.__prevDir).to.equal(null);
+              expect(dummyDThree.__prevDir).to.equal('ltr');
               expect(dummyDThree.__newLang).to.equal('ab');
-              expect(dummyDThree.__prevLang).to.equal(null);
+              expect(dummyDThree.__prevLang).to.equal('en');
 
               dummyDOne.dir = 'cde';
               dummyDOne.lang = 'de';
@@ -1231,7 +1302,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
               expect(dummyDThree._lastReceivedContext.dbuiDir).to.equal('bcd');
               expect(dummyDThree._lastReceivedContext.dbuiLang).to.equal('de');
               expect(dummyDThree.__newDir).to.equal('bcd');
-              expect(dummyDThree.__prevDir).to.equal(null);
+              expect(dummyDThree.__prevDir).to.equal('ltr');
               expect(dummyDThree.__newLang).to.equal('de');
               expect(dummyDThree.__prevLang).to.equal('ab');
 
@@ -1242,6 +1313,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
             });
 
             DummyD.registerSelf();
+            DBUIRoot.registerSelf();
           }
         });
       });
@@ -1256,15 +1328,18 @@ describe('DBUIWebComponentBase locale behaviour', () => {
         inIframe({
           headStyle: treeStyle,
           bodyHTML: `
-          <div id="container">
-            <dummy-d id="dummy-d-one" dir="abc" lang="ab">
-              <dummy-d id="dummy-d-two">
-                <dummy-d id="dummy-d-three"></dummy-d>
-              </dummy-d>
-            </dummy-d>
-          </div>
+          <dbui-web-component-root id="dbui-web-component-root">
+            <div id="container">
+              <dbui-dummy-d id="dummy-d-one" dir="abc" lang="ab">
+                <dbui-dummy-d id="dummy-d-two">
+                  <dbui-dummy-d id="dummy-d-three"></dbui-dummy-d>
+                </dbui-dummy-d>
+              </dbui-dummy-d>
+            </div>
+          </dbui-web-component-root>
           `,
           onLoad: ({ contentWindow, iframe }) => {
+            const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
             const DummyD = getDummyD(contentWindow);
 
             const dummyDOne = contentWindow.document.querySelector('#dummy-d-one');
@@ -1272,7 +1347,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
             const dummyDThree = contentWindow.document.querySelector('#dummy-d-three');
 
             Promise.all([
-              DummyD.registrationName,
+              DBUIRoot.registrationName,
             ].map((localName) => contentWindow.customElements.whenDefined(localName)
             )).then(() => {
 
@@ -1290,18 +1365,18 @@ describe('DBUIWebComponentBase locale behaviour', () => {
               expect(dummyDTwo._lastReceivedContext.dbuiDir).to.equal('abc');
               expect(dummyDTwo._lastReceivedContext.dbuiLang).to.equal('ab');
               expect(dummyDTwo.__newDir).to.equal('abc');
-              expect(dummyDTwo.__prevDir).to.equal(null);
+              expect(dummyDTwo.__prevDir).to.equal('ltr');
               expect(dummyDTwo.__newLang).to.equal('ab');
-              expect(dummyDTwo.__prevLang).to.equal(null);
+              expect(dummyDTwo.__prevLang).to.equal('en');
 
               expect(dummyDThree.getAttribute('dbui-dir')).to.equal('abc');
               expect(dummyDThree.getAttribute('dbui-lang')).to.equal('ab');
               expect(dummyDThree._lastReceivedContext.dbuiDir).to.equal('abc');
               expect(dummyDThree._lastReceivedContext.dbuiLang).to.equal('ab');
               expect(dummyDThree.__newDir).to.equal('abc');
-              expect(dummyDThree.__prevDir).to.equal(null);
+              expect(dummyDThree.__prevDir).to.equal('ltr');
               expect(dummyDThree.__newLang).to.equal('ab');
-              expect(dummyDThree.__prevLang).to.equal(null);
+              expect(dummyDThree.__prevLang).to.equal('en');
 
               dummyDOne.dir = 'cde';
               dummyDOne.lang = 'de';
@@ -1340,6 +1415,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
             });
 
             DummyD.registerSelf();
+            DBUIRoot.registerSelf();
           }
         });
       });
@@ -1358,21 +1434,24 @@ describe('DBUIWebComponentBase locale behaviour', () => {
         inIframe({
           headStyle: treeStyle,
           bodyHTML: `
-          <div id="container">
-            <div id="locale-provider" dir="abc" lang="ab"></div>
-            <dummy-d id="dummy-d-one">
-              <dummy-d id="dummy-d-two" sync-locale-with="#locale-provider">
-                <dummy-d id="dummy-d-three"></dummy-d>
-              </dummy-d>
-            </dummy-d>
-            <dummy-d id="dummy-d-four" dir="cde" lang="de">
-              <dummy-d id="dummy-d-five">
-                <dummy-d id="dummy-d-six"></dummy-d>
-              </dummy-d>
-            </dummy-d>
-          </div>
+          <dbui-web-component-root id="dbui-web-component-root">
+            <div id="container">
+              <div id="locale-provider" dir="abc" lang="ab"></div>
+              <dbui-dummy-d id="dummy-d-one">
+                <dbui-dummy-d id="dummy-d-two" sync-locale-with="#locale-provider">
+                  <dbui-dummy-d id="dummy-d-three"></dbui-dummy-d>
+                </dbui-dummy-d>
+              </dbui-dummy-d>
+              <dbui-dummy-d id="dummy-d-four" dir="cde" lang="de">
+                <dbui-dummy-d id="dummy-d-five">
+                  <dbui-dummy-d id="dummy-d-six"></dbui-dummy-d>
+                </dbui-dummy-d>
+              </dbui-dummy-d>
+            </div>
+          </dbui-web-component-root>
           `,
           onLoad: ({ contentWindow, iframe }) => {
+            const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
             const DummyD = getDummyD(contentWindow);
 
             const dummyDOne = contentWindow.document.querySelector('#dummy-d-one');
@@ -1383,7 +1462,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
             const dummyDSix = contentWindow.document.querySelector('#dummy-d-six');
 
             Promise.all([
-              DummyD.registrationName,
+              DBUIRoot.registrationName,
             ].map((localName) => contentWindow.customElements.whenDefined(localName)
             )).then(() => {
 
@@ -1442,8 +1521,8 @@ describe('DBUIWebComponentBase locale behaviour', () => {
                 oneDir: 'ltr', oneLang: 'en', twoDir: 'abc', twoLang: 'ab', threeDir: 'abc', threeLang: 'ab',
                 fourDir: 'cde', fourLang: 'de', fiveDir: 'cde', fiveLang: 'de', sixDir: 'cde', sixLang: 'de',
 
-                oneDirPrev: null, oneLangPrev: null, twoDirPrev: null, twoLangPrev: null, threeDirPrev: null, threeLangPrev: null,
-                fourDirPrev: null, fourLangPrev: null, fiveDirPrev: null, fiveLangPrev: null, sixDirPrev: null, sixLangPrev: null,
+                oneDirPrev: null, oneLangPrev: null, twoDirPrev: 'ltr', twoLangPrev: 'en', threeDirPrev: null, threeLangPrev: null,
+                fourDirPrev: null, fourLangPrev: null, fiveDirPrev: 'ltr', fiveLangPrev: 'en', sixDirPrev: 'ltr', sixLangPrev: 'en',
               });
 
               dummyDTwo.dir = 'efg';
@@ -1466,6 +1545,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
             });
 
             DummyD.registerSelf();
+            DBUIRoot.registerSelf();
           }
         });
       });
@@ -1480,16 +1560,19 @@ describe('DBUIWebComponentBase locale behaviour', () => {
         inIframe({
           headStyle: treeStyle,
           bodyHTML: `
-          <div id="container">
-            <div id="locale-provider" dir="abc" lang="ab"></div>
-            <dummy-d id="dummy-d-one">
-              <dummy-d id="dummy-d-two" dir="bcd" lang="bc" sync-locale-with="#locale-provider">
-                <dummy-d id="dummy-d-three"></dummy-d>
-              </dummy-d>
-            </dummy-d>
-          </div>
+          <dbui-web-component-root id="dbui-web-component-root">
+            <div id="container">
+              <div id="locale-provider" dir="abc" lang="ab"></div>
+              <dbui-dummy-d id="dummy-d-one">
+                <dbui-dummy-d id="dummy-d-two" dir="bcd" lang="bc" sync-locale-with="#locale-provider">
+                  <dbui-dummy-d id="dummy-d-three"></dbui-dummy-d>
+                </dbui-dummy-d>
+              </dbui-dummy-d>
+            </div>
+          </dbui-web-component-root>
           `,
           onLoad: ({ contentWindow, iframe }) => {
+            const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
             const DummyD = getDummyD(contentWindow);
 
             const localeProvider = contentWindow.document.querySelector('#locale-provider');
@@ -1498,7 +1581,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
             const dummyDThree = contentWindow.document.querySelector('#dummy-d-three');
 
             Promise.all([
-              DummyD.registrationName,
+              DBUIRoot.registrationName,
             ].map((localName) => contentWindow.customElements.whenDefined(localName)
             )).then(() => {
 
@@ -1556,6 +1639,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
             });
 
             DummyD.registerSelf();
+            DBUIRoot.registerSelf();
           }
         });
       });
@@ -1571,15 +1655,18 @@ describe('DBUIWebComponentBase locale behaviour', () => {
         inIframe({
           headStyle: treeStyle,
           bodyHTML: `
-          <div id="container">
-            <dummy-d id="dummy-d-one" dir="bcd" lang="bc">
-              <dummy-d id="dummy-d-two" dir="cde" lang="cd">
-                <dummy-d id="dummy-d-three"></dummy-d>
-              </dummy-d>
-            </dummy-d>
-          </div>
+          <dbui-web-component-root id="dbui-web-component-root">
+            <div id="container">
+              <dbui-dummy-d id="dummy-d-one" dir="bcd" lang="bc">
+                <dbui-dummy-d id="dummy-d-two" dir="cde" lang="cd">
+                  <dbui-dummy-d id="dummy-d-three"></dbui-dummy-d>
+                </dbui-dummy-d>
+              </dbui-dummy-d>
+            </div>
+          </dbui-web-component-root>
           `,
           onLoad: ({ contentWindow, iframe }) => {
+            const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
             const DummyD = getDummyD(contentWindow);
 
             const dummyDOne = contentWindow.document.querySelector('#dummy-d-one');
@@ -1587,7 +1674,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
             const dummyDThree = contentWindow.document.querySelector('#dummy-d-three');
 
             Promise.all([
-              DummyD.registrationName,
+              DBUIRoot.registrationName,
             ].map((localName) => contentWindow.customElements.whenDefined(localName)
             )).then(() => {
 
@@ -1642,6 +1729,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
             });
 
             DummyD.registerSelf();
+            DBUIRoot.registerSelf();
           }
         });
       });
@@ -1655,14 +1743,17 @@ describe('DBUIWebComponentBase locale behaviour', () => {
           inIframe({
             headStyle: treeStyle,
             bodyHTML: `
-            <div id="container">
-              <div id="locale-provider" dir="abc" lang="ab"></div>
-              <dummy-d id="dummy-d-one" sync-locale-with="#locale-provider">
-                <dummy-d id="dummy-d-two"></dummy-d>
-              </dummy-d>
-            </div>
+            <dbui-web-component-root id="dbui-web-component-root">
+              <div id="container">
+                <div id="locale-provider" dir="abc" lang="ab"></div>
+                <dbui-dummy-d id="dummy-d-one" sync-locale-with="#locale-provider">
+                  <dbui-dummy-d id="dummy-d-two"></dbui-dummy-d>
+                </dbui-dummy-d>
+              </div>
+            </dbui-web-component-root>
             `,
             onLoad: ({ contentWindow, iframe }) => {
+              const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
               const DummyD = getDummyD(contentWindow);
 
               const localeProvider = contentWindow.document.querySelector('#locale-provider');
@@ -1670,7 +1761,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
               const dummyDTwo = contentWindow.document.querySelector('#dummy-d-two');
 
               Promise.all([
-                DummyD.registrationName,
+                DBUIRoot.registrationName,
               ].map((localName) => contentWindow.customElements.whenDefined(localName)
               )).then(() => {
 
@@ -1701,6 +1792,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
               });
 
               DummyD.registerSelf();
+              DBUIRoot.registerSelf();
             }
           });
         });
@@ -1711,27 +1803,35 @@ describe('DBUIWebComponentBase locale behaviour', () => {
           inIframe({
             headStyle: treeStyle,
             bodyHTML: `
-            <div id="container">
-              <dummy-d id="dummy-d-one">
-                <dummy-d id="dummy-d-two"></dummy-d>
-              </dummy-d>
-            </div>
+            <dbui-web-component-root id="dbui-web-component-root">
+              <div id="container">
+                <dbui-dummy-d id="dummy-d-one">
+                  <dbui-dummy-d id="dummy-d-two"></dbui-dummy-d>
+                </dbui-dummy-d>
+              </div>
+            </dbui-web-component-root>
             `,
             onLoad: ({ contentWindow, iframe }) => {
+              const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
               const DummyD = getDummyD(contentWindow);
 
               const html = contentWindow.document.querySelector('html');
+              const dummyRoot = contentWindow.document.querySelector('#dbui-web-component-root');
               const dummyDOne = contentWindow.document.querySelector('#dummy-d-one');
               const dummyDTwo = contentWindow.document.querySelector('#dummy-d-two');
 
               Promise.all([
-                DummyD.registrationName,
+                DBUIRoot.registrationName,
               ].map((localName) => contentWindow.customElements.whenDefined(localName)
               )).then(() => {
 
                 const test = ({
                   oneDir, oneLang, twoDir, twoLang
                 }) => {
+                  expect(dummyRoot.getAttribute('dbui-dir')).to.equal(oneDir);
+                  expect(dummyRoot.getAttribute('dbui-lang')).to.equal(oneLang);
+                  expect(dummyRoot.getAttribute('dbui-dir')).to.equal(twoDir);
+                  expect(dummyRoot.getAttribute('dbui-lang')).to.equal(twoLang);
                   expect(dummyDOne.getAttribute('dbui-dir')).to.equal(oneDir);
                   expect(dummyDOne.getAttribute('dbui-lang')).to.equal(oneLang);
                   expect(dummyDTwo.getAttribute('dbui-dir')).to.equal(twoDir);
@@ -1756,6 +1856,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
               });
 
               DummyD.registerSelf();
+              DBUIRoot.registerSelf();
             }
           });
         });
@@ -1768,16 +1869,19 @@ describe('DBUIWebComponentBase locale behaviour', () => {
           inIframe({
             headStyle: treeStyle,
             bodyHTML: `
-            <div id="container">
-              <div id="locale-provider" dir="abc" lang="ab"></div>
-              <dummy-d id="dummy-d-one" dir="bcd" lang="bc">
-                <dummy-d id="dummy-d-two" sync-locale-with="#locale-provider">
-                  <dummy-d id="dummy-d-three"></dummy-d>
-                </dummy-d>
-              </dummy-d>
-            </div>
+            <dbui-web-component-root id="dbui-web-component-root">
+              <div id="container">
+                <div id="locale-provider" dir="abc" lang="ab"></div>
+                <dbui-dummy-d id="dummy-d-one" dir="bcd" lang="bc">
+                  <dbui-dummy-d id="dummy-d-two" sync-locale-with="#locale-provider">
+                    <dbui-dummy-d id="dummy-d-three"></dbui-dummy-d>
+                  </dbui-dummy-d>
+                </dbui-dummy-d>
+              </div>
+            </dbui-web-component-root>
             `,
             onLoad: ({ contentWindow, iframe }) => {
+              const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
               const DummyD = getDummyD(contentWindow);
 
               const localeProvider = contentWindow.document.querySelector('#locale-provider');
@@ -1786,7 +1890,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
               const dummyDThree = contentWindow.document.querySelector('#dummy-d-three');
 
               Promise.all([
-                DummyD.registrationName,
+                DBUIRoot.registrationName,
               ].map((localName) => contentWindow.customElements.whenDefined(localName)
               )).then(() => {
 
@@ -1819,6 +1923,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
               });
 
               DummyD.registerSelf();
+              DBUIRoot.registerSelf();
             }
           });
         });
@@ -1829,15 +1934,18 @@ describe('DBUIWebComponentBase locale behaviour', () => {
           inIframe({
             headStyle: treeStyle,
             bodyHTML: `
-            <div id="container">
-              <dummy-d id="dummy-d-one" dir="bcd" lang="bc">
-                <dummy-d id="dummy-d-two">
-                  <dummy-d id="dummy-d-three"></dummy-d>
-                </dummy-d>
-              </dummy-d>
-            </div>
+            <dbui-web-component-root id="dbui-web-component-root">
+              <div id="container">
+                <dbui-dummy-d id="dummy-d-one" dir="bcd" lang="bc">
+                  <dbui-dummy-d id="dummy-d-two">
+                    <dbui-dummy-d id="dummy-d-three"></dbui-dummy-d>
+                  </dbui-dummy-d>
+                </dbui-dummy-d>
+              </div>
+            </dbui-web-component-root>
             `,
             onLoad: ({ contentWindow, iframe }) => {
+              const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
               const DummyD = getDummyD(contentWindow);
 
               const dummyDOne = contentWindow.document.querySelector('#dummy-d-one');
@@ -1845,7 +1953,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
               const dummyDThree = contentWindow.document.querySelector('#dummy-d-three');
 
               Promise.all([
-                DummyD.registrationName,
+                DBUIRoot.registrationName,
               ].map((localName) => contentWindow.customElements.whenDefined(localName)
               )).then(() => {
 
@@ -1878,6 +1986,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
               });
 
               DummyD.registerSelf();
+              DBUIRoot.registerSelf();
             }
           });
         });
@@ -1893,15 +2002,18 @@ describe('DBUIWebComponentBase locale behaviour', () => {
       inIframe({
         headStyle: treeStyle,
         bodyHTML: `
-        <div id="container">
-          <div id="locale-provider"></div>
-          <dummy-d id="dummy-d-one" sync-locale-with="#locale-provider">
-            <dummy-d id="dummy-d-two">
-            </dummy-d>
-          </dummy-d>
-        </div>
+        <dbui-web-component-root id="dbui-web-component-root">
+          <div id="container">
+            <div id="locale-provider"></div>
+            <dbui-dummy-d id="dummy-d-one" sync-locale-with="#locale-provider">
+              <dbui-dummy-d id="dummy-d-two">
+              </dbui-dummy-d>
+            </dbui-dummy-d>
+          </div>
+        </dbui-web-component-root>
         `,
         onLoad: ({ contentWindow, iframe }) => {
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DummyD = getDummyD(contentWindow);
 
           const localeProvider = contentWindow.document.querySelector('#locale-provider');
@@ -1909,7 +2021,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
           const dummyDTwo = contentWindow.document.querySelector('#dummy-d-two');
 
           Promise.all([
-            DummyD.registrationName,
+            DBUIRoot.registrationName,
           ].map((localName) => contentWindow.customElements.whenDefined(localName)
           )).then(() => {
 
@@ -1973,6 +2085,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
           });
 
           DummyD.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });
@@ -1983,19 +2096,22 @@ describe('DBUIWebComponentBase locale behaviour', () => {
       inIframe({
         headStyle: treeStyle,
         bodyHTML: `
-        <div id="container">
-          <div id="locale-provider1" dir="abc" lang="ab"></div>
-          <div id="locale-provider2" dir="bcd" lang="bc"></div>
-          <dummy-d id="dummy-d-one" sync-locale-with="#locale-provider1"></dummy-d>
-        </div>
+        <dbui-web-component-root id="dbui-web-component-root">
+          <div id="container">
+            <div id="locale-provider1" dir="abc" lang="ab"></div>
+            <div id="locale-provider2" dir="bcd" lang="bc"></div>
+            <dbui-dummy-d id="dummy-d-one" sync-locale-with="#locale-provider1"></dbui-dummy-d>
+          </div>
+        </dbui-web-component-root>
         `,
         onLoad: ({ contentWindow, iframe }) => {
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DummyD = getDummyD(contentWindow);
 
           const dummyDOne = contentWindow.document.querySelector('#dummy-d-one');
 
           Promise.all([
-            DummyD.registrationName,
+            DBUIRoot.registrationName,
           ].map((localName) => contentWindow.customElements.whenDefined(localName)
           )).then(() => {
 
@@ -2036,51 +2152,58 @@ describe('DBUIWebComponentBase locale behaviour', () => {
           });
 
           DummyD.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });
   });
 
   describe(`
-  when top most dbui ancestor becomes descendant
-  and when dbui descendant becomes top most dbui ancestor
+  when ~top most dbui ancestor becomes descendant
+  and when dbui descendant becomes ~top most dbui ancestor
   `, () => {
     describe(`
     when sync-locale-with is NOT specified
     `, () => {
       it(`
       syncs locale with closest dbui parent when becoming descendant
-      and syncs locale with html root when becoming dbui root
+      and syncs locale with html root when becoming dbui ~root
       `, (done) => {
         inIframe({
           headStyle: treeStyle,
           bodyHTML: `
-          <div id="container">
-            <dummy-d id="dummy-d-one" dir="bcd" lang="bc">
-              <dummy-d id="dummy-d-two">
-                <dummy-d id="dummy-d-three">
-                </dummy-d>
-              </dummy-d>
-            </dummy-d>
-          </div>
+          <dbui-web-component-root id="dbui-web-component-root">
+            <div id="container">
+              <dbui-dummy-d id="dummy-d-one" dir="bcd" lang="bc">
+                <dbui-dummy-d id="dummy-d-two">
+                  <dbui-dummy-d id="dummy-d-three">
+                  </dbui-dummy-d>
+                </dbui-dummy-d>
+              </dbui-dummy-d>
+            </div>
+          </dbui-web-component-root>
           `,
           onLoad: ({ contentWindow, iframe }) => {
+            const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
             const DummyD = getDummyD(contentWindow);
 
             const html = contentWindow.document.querySelector('html');
             const container = contentWindow.document.querySelector('#container');
+            const dummyRoot = contentWindow.document.querySelector('#dbui-web-component-root');
             const dummyDOne = contentWindow.document.querySelector('#dummy-d-one');
             const dummyDTwo = contentWindow.document.querySelector('#dummy-d-two');
             const dummyDThree = contentWindow.document.querySelector('#dummy-d-three');
 
             Promise.all([
-              DummyD.registrationName,
+              DBUIRoot.registrationName,
             ].map((localName) => contentWindow.customElements.whenDefined(localName)
             )).then(() => {
 
               const test = ({
                 oneDir, oneLang, twoDir, twoLang, threeDir, threeLang
               }) => {
+                expect(dummyRoot.getAttribute('dbui-dir')).to.equal('abc');
+                expect(dummyRoot.getAttribute('dbui-lang')).to.equal('ab');
                 expect(dummyDOne.getAttribute('dbui-dir')).to.equal(oneDir);
                 expect(dummyDOne.getAttribute('dbui-lang')).to.equal(oneLang);
                 expect(dummyDTwo.getAttribute('dbui-dir')).to.equal(twoDir);
@@ -2092,30 +2215,32 @@ describe('DBUIWebComponentBase locale behaviour', () => {
               html.dir = 'abc';
               html.lang = 'ab';
 
-              test({
-                oneDir: 'bcd', oneLang: 'bc', twoDir: 'bcd', twoLang: 'bc', threeDir: 'bcd', threeLang: 'bc'
-              });
-
-              container.appendChild(dummyDTwo);
-
-              test({
-                oneDir: 'bcd', oneLang: 'bc', twoDir: 'abc', twoLang: 'ab', threeDir: 'abc', threeLang: 'ab'
-              });
-
-              dummyDOne.appendChild(dummyDTwo);
-
-              test({
-                oneDir: 'bcd', oneLang: 'bc', twoDir: 'bcd', twoLang: 'bc', threeDir: 'bcd', threeLang: 'bc'
-              });
-
               setTimeout(() => {
-                iframe.remove();
-                done();
-              }, 0);
+                test({
+                  oneDir: 'bcd', oneLang: 'bc', twoDir: 'bcd', twoLang: 'bc', threeDir: 'bcd', threeLang: 'bc'
+                });
 
+                container.appendChild(dummyDTwo);
+
+                test({
+                  oneDir: 'bcd', oneLang: 'bc', twoDir: 'abc', twoLang: 'ab', threeDir: 'abc', threeLang: 'ab'
+                });
+
+                dummyDOne.appendChild(dummyDTwo);
+
+                test({
+                  oneDir: 'bcd', oneLang: 'bc', twoDir: 'bcd', twoLang: 'bc', threeDir: 'bcd', threeLang: 'bc'
+                });
+
+                setTimeout(() => {
+                  iframe.remove();
+                  done();
+                }, 0);
+              }, 0);
             });
 
             DummyD.registerSelf();
+            DBUIRoot.registerSelf();
           }
         });
       });
@@ -2130,17 +2255,20 @@ describe('DBUIWebComponentBase locale behaviour', () => {
         inIframe({
           headStyle: treeStyle,
           bodyHTML: `
-          <div id="container">
-            <div id="locale-provider" dir="abc" lang="ab"></div>
-            <dummy-d id="dummy-d-one" dir="bcd" lang="bc">
-              <dummy-d id="dummy-d-two" sync-locale-with="#locale-provider">
-                <dummy-d id="dummy-d-three">
-                </dummy-d>
-              </dummy-d>
-            </dummy-d>
-          </div>
+          <dbui-web-component-root id="dbui-web-component-root">
+            <div id="container">
+              <div id="locale-provider" dir="abc" lang="ab"></div>
+              <dbui-dummy-d id="dummy-d-one" dir="bcd" lang="bc">
+                <dbui-dummy-d id="dummy-d-two" sync-locale-with="#locale-provider">
+                  <dbui-dummy-d id="dummy-d-three">
+                  </dbui-dummy-d>
+                </dbui-dummy-d>
+              </dbui-dummy-d>
+            </div>
+          </dbui-web-component-root>
           `,
           onLoad: ({ contentWindow, iframe }) => {
+            const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
             const DummyD = getDummyD(contentWindow);
 
             const container = contentWindow.document.querySelector('#container');
@@ -2149,7 +2277,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
             const dummyDThree = contentWindow.document.querySelector('#dummy-d-three');
 
             Promise.all([
-              DummyD.registrationName,
+              DBUIRoot.registrationName,
             ].map((localName) => contentWindow.customElements.whenDefined(localName)
             )).then(() => {
 
@@ -2188,6 +2316,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
             });
 
             DummyD.registerSelf();
+            DBUIRoot.registerSelf();
           }
         });
       });

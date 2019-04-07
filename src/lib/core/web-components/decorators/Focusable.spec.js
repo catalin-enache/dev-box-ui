@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import getDBUIWebComponentCore from '../components/DBUIWebComponentCore/DBUIWebComponentCore';
+import getDBUIWebComponentRoot from '../../web-components/components/DBUIWebComponentRoot/DBUIWebComponentRoot';
 import ensureSingleRegistration from '../../internals/ensureSingleRegistration';
 import inIframe from '../../../../../testUtils/inIframe';
 import Focusable from '../decorators/Focusable';
@@ -9,7 +10,7 @@ import { sendTapEvent } from '../../../../../testUtils/simulateEvents';
 /* eslint camelcase: 0 */
 /* eslint max-len: 0 */
 
-const dummyOneRegistrationName = 'dummy-one';
+const dummyOneRegistrationName = 'dbui-dummy-one';
 function getDummyOne(win) {
   return ensureSingleRegistration(win, dummyOneRegistrationName, () => {
     const {
@@ -105,7 +106,7 @@ describe('Focusable', () => {
   it('can be styled with [focused] or :focus-within', (done) => {
     inIframe({
       headStyle: `
-        dummy-one {
+        dbui-dummy-one {
           border: 1px solid rgba(0, 0, 0, 0);
         }
         #one:focus-within {
@@ -119,9 +120,11 @@ describe('Focusable', () => {
         }
       `,
       bodyHTML: `
-      <dummy-one id="one"></dummy-one>
-      <dummy-one id="two"></dummy-one>
-      <dummy-one id="three" disabled></dummy-one>
+      <dbui-web-component-root id="dbui-web-component-root">
+        <dbui-dummy-one id="one"></dbui-dummy-one>
+        <dbui-dummy-one id="two"></dbui-dummy-one>
+        <dbui-dummy-one id="three" disabled></dbui-dummy-one>
+      </dbui-web-component-root>
       `,
       onLoad: ({ contentWindow, iframe }) => {
         let activeElement = null;
@@ -136,8 +139,9 @@ describe('Focusable', () => {
         const dummyTwo = contentWindow.document.querySelector('#two');
         const dummyThree = contentWindow.document.querySelector('#three');
 
+        const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
         const DummyOne = getDummyOne(contentWindow);
-        contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+        contentWindow.customElements.whenDefined(DBUIRoot.registrationName).then(() => {
 
           expect(activeElement).to.equal(null);
           expect(contentWindow.getComputedStyle(dummyOne).borderLeftColor).to.equal('rgba(0, 0, 0, 0)');
@@ -180,6 +184,7 @@ describe('Focusable', () => {
         });
 
         DummyOne.registerSelf();
+        DBUIRoot.registerSelf();
       }
     });
   });
@@ -189,16 +194,19 @@ describe('Focusable', () => {
       headStyle: `
       `,
       bodyHTML: `
-      <dummy-one id="one"></dummy-one>
-      <dummy-one id="two" tabindex="-1"></dummy-one>
+      <dbui-web-component-root id="dbui-web-component-root">
+        <dbui-dummy-one id="one"></dbui-dummy-one>
+        <dbui-dummy-one id="two" tabindex="-1"></dbui-dummy-one>
+      </dbui-web-component-root>
       `,
       onLoad: ({ contentWindow, iframe }) => {
 
         const dummyOne = contentWindow.document.querySelector('#one');
         const dummyTwo = contentWindow.document.querySelector('#two');
 
+        const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
         const DummyOne = getDummyOne(contentWindow);
-        contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+        contentWindow.customElements.whenDefined(DBUIRoot.registrationName).then(() => {
 
           expect(dummyOne.tabIndex).to.equal(0);
           expect(dummyOne.getAttribute('tabindex')).to.equal('0');
@@ -212,6 +220,7 @@ describe('Focusable', () => {
         });
 
         DummyOne.registerSelf();
+        DBUIRoot.registerSelf();
       }
     });
   });
@@ -225,16 +234,18 @@ describe('Focusable', () => {
         headStyle: `
         `,
         bodyHTML: `
-        <dummy-one id="one"></dummy-one>
-        <dummy-one id="two" disabled></dummy-one>
-        
+        <dbui-web-component-root id="dbui-web-component-root">
+          <dbui-dummy-one id="one"></dbui-dummy-one>
+          <dbui-dummy-one id="two" disabled></dbui-dummy-one>
+        </dbui-web-component-root>
         `,
         onLoad: ({ contentWindow, iframe }) => {
           const dummyOne = contentWindow.document.querySelector('#one');
           const dummyTwo = contentWindow.document.querySelector('#two');
 
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DummyOne = getDummyOne(contentWindow);
-          contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+          contentWindow.customElements.whenDefined(DBUIRoot.registrationName).then(() => {
 
             const dummyOneFirstInnerFocusable = dummyOne._firstInnerFocusable;
             const dummyTwoFirstInnerFocusable = dummyTwo._firstInnerFocusable;
@@ -272,6 +283,7 @@ describe('Focusable', () => {
           });
 
           DummyOne.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });
@@ -285,9 +297,11 @@ describe('Focusable', () => {
         headStyle: `
         `,
         bodyHTML: `
-        <dummy-one id="one" tabindex="-1"></dummy-one>
-        <dummy-one id="two"></dummy-one>
-        <dummy-one id="three" tabindex="1" disabled></dummy-one>
+        <dbui-web-component-root id="dbui-web-component-root">
+          <dbui-dummy-one id="one" tabindex="-1"></dbui-dummy-one>
+          <dbui-dummy-one id="two"></dbui-dummy-one>
+          <dbui-dummy-one id="three" tabindex="1" disabled></dbui-dummy-one>
+        </dbui-web-component-root>
         `,
         onLoad: ({ contentWindow, iframe }) => {
 
@@ -297,8 +311,9 @@ describe('Focusable', () => {
           dummyOne.disabled = true;
           dummyTwo.tabIndex = 1;
 
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DummyOne = getDummyOne(contentWindow);
-          contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+          contentWindow.customElements.whenDefined(DBUIRoot.registrationName).then(() => {
 
             expect(dummyOne.getAttribute('tabindex')).to.equal(null);
             expect(dummyTwo.getAttribute('tabindex')).to.equal('1');
@@ -325,6 +340,7 @@ describe('Focusable', () => {
           });
 
           DummyOne.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });
@@ -336,10 +352,12 @@ describe('Focusable', () => {
         headStyle: `
         `,
         bodyHTML: `
-        <div id="wrapper"></div>
-        <dummy-one id="one" tabindex="-1"></dummy-one>
-        <dummy-one id="two" tabindex="1"></dummy-one>
-        <dummy-one id="three" tabindex="1" disabled></dummy-one>
+        <dbui-web-component-root id="dbui-web-component-root">
+          <div id="wrapper"></div>
+          <dbui-dummy-one id="one" tabindex="-1"></dbui-dummy-one>
+          <dbui-dummy-one id="two" tabindex="1"></dbui-dummy-one>
+          <dbui-dummy-one id="three" tabindex="1" disabled></dbui-dummy-one>
+        </dbui-web-component-root>
         `,
         onLoad: ({ contentWindow, iframe }) => {
 
@@ -348,8 +366,9 @@ describe('Focusable', () => {
           const dummyTwo = contentWindow.document.querySelector('#two');
           const dummyThree = contentWindow.document.querySelector('#three');
 
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DummyOne = getDummyOne(contentWindow);
-          contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+          contentWindow.customElements.whenDefined(DBUIRoot.registrationName).then(() => {
 
             expect(dummyOne.getAttribute('tabindex')).to.equal('-1');
             expect(dummyTwo.getAttribute('tabindex')).to.equal('1');
@@ -370,6 +389,7 @@ describe('Focusable', () => {
           });
 
           DummyOne.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });
@@ -381,16 +401,19 @@ describe('Focusable', () => {
         headStyle: `
         `,
         bodyHTML: `
-        <div id="wrapper"></div>
-        <dummy-one id="one"></dummy-one>
+        <dbui-web-component-root id="dbui-web-component-root">
+          <div id="wrapper"></div>
+          <dbui-dummy-one id="one"></dbui-dummy-one>
+        </dbui-web-component-root>
         `,
         onLoad: ({ contentWindow, iframe }) => {
 
           const wrapper = contentWindow.document.querySelector('#wrapper');
           const dummyOne = contentWindow.document.querySelector('#one');
 
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DummyOne = getDummyOne(contentWindow);
-          contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+          contentWindow.customElements.whenDefined(DBUIRoot.registrationName).then(() => {
 
             expect(dummyOne.focused).to.equal(false);
 
@@ -409,6 +432,7 @@ describe('Focusable', () => {
           });
 
           DummyOne.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });
@@ -420,14 +444,17 @@ describe('Focusable', () => {
         headStyle: `
         `,
         bodyHTML: `
-        <dummy-one id="one" tabindex="2"></dummy-one>
+        <dbui-web-component-root id="dbui-web-component-root">
+          <dbui-dummy-one id="one" tabindex="2"></dbui-dummy-one>
+        </dbui-web-component-root>
         `,
         onLoad: ({ contentWindow, iframe }) => {
 
           const dummyOne = contentWindow.document.querySelector('#one');
 
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DummyOne = getDummyOne(contentWindow);
-          contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+          contentWindow.customElements.whenDefined(DBUIRoot.registrationName).then(() => {
 
             expect(dummyOne.getAttribute('tabindex')).to.equal('2');
             expect(dummyOne.tabIndex).to.equal(2);
@@ -450,6 +477,7 @@ describe('Focusable', () => {
           });
 
           DummyOne.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });
@@ -461,16 +489,19 @@ describe('Focusable', () => {
         headStyle: `
         `,
         bodyHTML: `
-        <div id="wrapper"></div>
-        <dummy-one id="one" tabindex="2"></dummy-one>
+        <dbui-web-component-root id="dbui-web-component-root">
+          <div id="wrapper"></div>
+          <dbui-dummy-one id="one" tabindex="2"></dbui-dummy-one>
+        </dbui-web-component-root>
         `,
         onLoad: ({ contentWindow, iframe }) => {
 
           const wrapper = contentWindow.document.querySelector('#wrapper');
           const dummyOne = contentWindow.document.querySelector('#one');
 
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DummyOne = getDummyOne(contentWindow);
-          contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+          contentWindow.customElements.whenDefined(DBUIRoot.registrationName).then(() => {
 
             expect(dummyOne.getAttribute('tabindex')).to.equal('2');
             expect(dummyOne.tabIndex).to.equal(2);
@@ -498,6 +529,7 @@ describe('Focusable', () => {
           });
 
           DummyOne.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });
@@ -509,14 +541,17 @@ describe('Focusable', () => {
         headStyle: `
         `,
         bodyHTML: `
-        <dummy-one id="one" tabindex="2" disabled></dummy-one>
+        <dbui-web-component-root id="dbui-web-component-root">
+          <dbui-dummy-one id="one" tabindex="2" disabled></dbui-dummy-one>
+        </dbui-web-component-root>
         `,
         onLoad: ({ contentWindow, iframe }) => {
 
           const dummyOne = contentWindow.document.querySelector('#one');
 
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DummyOne = getDummyOne(contentWindow);
-          contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+          contentWindow.customElements.whenDefined(DBUIRoot.registrationName).then(() => {
 
             expect(dummyOne.getAttribute('tabindex')).to.equal(null);
             expect(dummyOne.tabIndex).to.equal(-1);
@@ -534,6 +569,7 @@ describe('Focusable', () => {
           });
 
           DummyOne.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });
@@ -546,14 +582,17 @@ describe('Focusable', () => {
         headStyle: `
         `,
         bodyHTML: `
-        <dummy-one id="one"></dummy-one>
+        <dbui-web-component-root id="dbui-web-component-root">
+          <dbui-dummy-one id="one"></dbui-dummy-one>
+        </dbui-web-component-root>
         `,
         onLoad: ({ contentWindow, iframe }) => {
 
           const dummyOne = contentWindow.document.querySelector('#one');
 
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DummyOne = getDummyOne(contentWindow);
-          contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+          contentWindow.customElements.whenDefined(DBUIRoot.registrationName).then(() => {
 
             const dummyOneFirstInnerFocusable = dummyOne._innerFocusables[0];
             const dummyOneSecondInnerFocusable = dummyOne._innerFocusables[1];
@@ -591,6 +630,7 @@ describe('Focusable', () => {
           });
 
           DummyOne.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });
@@ -626,9 +666,11 @@ describe('Focusable', () => {
         headStyle: `
         `,
         bodyHTML: `
-        <dummy-one id="one" focused></dummy-one>
-        <dummy-one id="two"></dummy-one>
-        <dummy-one id="three"></dummy-one>
+        <dbui-web-component-root id="dbui-web-component-root">
+          <dbui-dummy-one id="one" focused></dbui-dummy-one>
+          <dbui-dummy-one id="two"></dbui-dummy-one>
+          <dbui-dummy-one id="three"></dbui-dummy-one>
+        </dbui-web-component-root>
         `,
         onLoad: ({ contentWindow, iframe }) => {
 
@@ -645,8 +687,9 @@ describe('Focusable', () => {
           dummyTwo.setAttribute('focused', '');
           dummyThree.focused = true;
 
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DummyOne = getDummyOne(contentWindow);
-          contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+          contentWindow.customElements.whenDefined(DBUIRoot.registrationName).then(() => {
 
             expect(dummyOne.getAttribute('focused')).to.equal(null);
             expect(dummyTwo.getAttribute('focused')).to.equal(null);
@@ -663,6 +706,7 @@ describe('Focusable', () => {
           });
 
           DummyOne.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });
@@ -676,14 +720,16 @@ describe('Focusable', () => {
         headStyle: `
         `,
         bodyHTML: `
-        <dummy-one id="one"></dummy-one>
-        
+        <dbui-web-component-root id="dbui-web-component-root">
+          <dbui-dummy-one id="one"></dbui-dummy-one>
+        </dbui-web-component-root>
         `,
         onLoad: ({ contentWindow, iframe }) => {
           const dummyOne = contentWindow.document.querySelector('#one');
 
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DummyOne = getDummyOne(contentWindow);
-          contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+          contentWindow.customElements.whenDefined(DBUIRoot.registrationName).then(() => {
 
             expect(dummyOne.hasAttribute('focused')).to.equal(false);
 
@@ -702,6 +748,7 @@ describe('Focusable', () => {
           });
 
           DummyOne.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });
@@ -715,9 +762,10 @@ describe('Focusable', () => {
         headStyle: `
         `,
         bodyHTML: `
-        <div><input id="input" /></div>
-        <div><dummy-one id="one"></dummy-one></div>
-        
+        <dbui-web-component-root id="dbui-web-component-root">
+          <div><input id="input" /></div>
+          <div><dbui-dummy-one id="one"></dbui-dummy-one></div>
+        </dbui-web-component-root>
         `,
         onLoad: ({ contentWindow, iframe }) => {
           const input = contentWindow.document.querySelector('#input');
@@ -732,8 +780,9 @@ describe('Focusable', () => {
             activeElement = contentWindow.document.activeElement;
           }, true);
 
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
           const DummyOne = getDummyOne(contentWindow);
-          contentWindow.customElements.whenDefined(DummyOne.registrationName).then(() => {
+          contentWindow.customElements.whenDefined(DBUIRoot.registrationName).then(() => {
 
             input.focus();
 
@@ -754,6 +803,7 @@ describe('Focusable', () => {
           });
 
           DummyOne.registerSelf();
+          DBUIRoot.registerSelf();
         }
       });
     });
