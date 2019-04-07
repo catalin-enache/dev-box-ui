@@ -1,7 +1,7 @@
 import { expect } from 'chai';
-import getDBUIWebComponentCore from './DBUIWebComponentCore';
-import inIframe from '../../../../../../testUtils/inIframe';
-import monkeyPatch from '../../../../../../testUtils/monkeyPatch';
+import getDBUIWebComponentCore from '../DBUIWebComponentCore';
+import inIframe from '../../../../../../../testUtils/inIframe';
+import monkeyPatch from '../../../../../../../testUtils/monkeyPatch';
 
 import {
   getDBUIWebComponentRoot,

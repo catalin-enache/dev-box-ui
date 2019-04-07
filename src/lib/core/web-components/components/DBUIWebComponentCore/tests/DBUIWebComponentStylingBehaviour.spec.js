@@ -1,8 +1,8 @@
 import { expect } from 'chai';
-import getDBUIWebComponentRoot from '../DBUIWebComponentRoot/DBUIWebComponentRoot';
-import getDBUIWebComponentCore from './DBUIWebComponentCore';
-import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
-import inIframe from '../../../../../../testUtils/inIframe';
+import getDBUIWebComponentRoot from '../../DBUIWebComponentRoot/DBUIWebComponentRoot';
+import getDBUIWebComponentCore from '../DBUIWebComponentCore';
+import ensureSingleRegistration from '../../../../internals/ensureSingleRegistration';
+import inIframe from '../../../../../../../testUtils/inIframe';
 
 
 const dummyOneRegistrationName = 'dbui-dummy-one';

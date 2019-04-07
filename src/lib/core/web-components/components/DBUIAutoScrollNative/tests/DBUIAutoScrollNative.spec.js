@@ -1,8 +1,8 @@
 import { expect } from 'chai';
-import inIframe from '../../../../../../testUtils/inIframe';
-import getDBUIWebComponentRoot from '../DBUIWebComponentRoot/DBUIWebComponentRoot';
-import getDBUIAutoScrollNative from './DBUIAutoScrollNative';
-import dbuiWebComponentsSetUp from '../../helpers/dbuiWebComponentsSetup';
+import inIframe from '../../../../../../../testUtils/inIframe';
+import getDBUIWebComponentRoot from '../../DBUIWebComponentRoot/DBUIWebComponentRoot';
+import getDBUIAutoScrollNative from '../DBUIAutoScrollNative';
+import dbuiWebComponentsSetUp from '../../../helpers/dbuiWebComponentsSetup';
 
 const content = `
 <p>9aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa9</p>

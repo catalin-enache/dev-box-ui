@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import inIframe from '../../../../../../testUtils/inIframe';
+import inIframe from '../../../../../../../testUtils/inIframe';
 
 import {
   getBase,
@@ -14,7 +14,7 @@ import {
   getDBUIWebComponentRoot,
   treeStyle
 } from './DBUITestTreeSetup.forSpec';
-import monkeyPatch from '../../../../../../testUtils/monkeyPatch';
+import monkeyPatch from '../../../../../../../testUtils/monkeyPatch';
 
 const treeWithLocale = `
 <dbui-web-component-root id="dbui-web-component-root">

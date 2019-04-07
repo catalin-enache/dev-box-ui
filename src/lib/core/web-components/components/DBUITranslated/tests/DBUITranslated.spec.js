@@ -1,9 +1,9 @@
 import { expect } from 'chai';
-import inIframe from '../../../../../../testUtils/inIframe';
-import getDBUIWebComponentRoot from '../DBUIWebComponentRoot/DBUIWebComponentRoot';
-import getDBUITranslated from './DBUITranslated';
-import getDBUII18nService from '../../../services/DBUII18nService';
-import template from '../../../utils/template';
+import inIframe from '../../../../../../../testUtils/inIframe';
+import getDBUIWebComponentRoot from '../../DBUIWebComponentRoot/DBUIWebComponentRoot';
+import getDBUITranslated from '../DBUITranslated';
+import getDBUII18nService from '../../../../services/DBUII18nService';
+import template from '../../../../utils/template';
 
 const translations = {
   en: {

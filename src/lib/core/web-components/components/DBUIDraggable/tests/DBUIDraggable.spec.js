@@ -1,18 +1,18 @@
 import { expect } from 'chai';
-// import onScreenConsole from '../../../utils/onScreenConsole';
-import inIframe from '../../../../../../testUtils/inIframe';
-import getDBUIWebComponentRoot from '../DBUIWebComponentRoot/DBUIWebComponentRoot';
+// import onScreenConsole from '../../../../utils/onScreenConsole';
+import inIframe from '../../../../../../../testUtils/inIframe';
+import getDBUIWebComponentRoot from '../../DBUIWebComponentRoot/DBUIWebComponentRoot';
 import getDBUIDraggable, {
   extractSingleEvent, getElementBeingDragged
-} from './DBUIDraggable';
-import getDBUIResizeSensor from '../DBUIResizeSensor/DBUIResizeSensor';
+} from '../DBUIDraggable';
+import getDBUIResizeSensor from '../../DBUIResizeSensor/DBUIResizeSensor';
 import {
   sendTapEvent,
   sendTouchEvent,
   sendMouseEvent
-} from '../../../../../../testUtils/simulateEvents';
-import getDBUIWebComponentCore from '../DBUIWebComponentCore/DBUIWebComponentCore';
-import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
+} from '../../../../../../../testUtils/simulateEvents';
+import getDBUIWebComponentCore from '../../DBUIWebComponentCore/DBUIWebComponentCore';
+import ensureSingleRegistration from '../../../../internals/ensureSingleRegistration';
 
 const dummyDraggableCompRegistrationName = 'dbui-dummy-draggable-comp';
 function getDummyDraggableComp(win) {

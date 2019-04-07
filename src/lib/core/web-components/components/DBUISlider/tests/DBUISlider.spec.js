@@ -1,15 +1,15 @@
 import { expect } from 'chai';
-import inIframe from '../../../../../../testUtils/inIframe';
-import getDBUISlider from './DBUISlider';
-import dbuiWebComponentsSetUp from '../../helpers/dbuiWebComponentsSetup';
-import getDBUIWebComponentRoot from '../DBUIWebComponentRoot/DBUIWebComponentRoot';
+import inIframe from '../../../../../../../testUtils/inIframe';
+import getDBUISlider from '../DBUISlider';
+import dbuiWebComponentsSetUp from '../../../helpers/dbuiWebComponentsSetup';
+import getDBUIWebComponentRoot from '../../DBUIWebComponentRoot/DBUIWebComponentRoot';
 import {
   sendTapEvent,
   sendTouchEvent,
   sendMouseEvent
-} from '../../../../../../testUtils/simulateEvents';
-import getDBUIWebComponentCore from '../DBUIWebComponentCore/DBUIWebComponentCore';
-import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
+} from '../../../../../../../testUtils/simulateEvents';
+import getDBUIWebComponentCore from '../../DBUIWebComponentCore/DBUIWebComponentCore';
+import ensureSingleRegistration from '../../../../internals/ensureSingleRegistration';
 
 describe('DBUISlider', () => {
   xit('behaves as expected - live testing', (done) => {

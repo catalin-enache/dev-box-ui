@@ -1,18 +1,18 @@
 import { expect } from 'chai';
-import inIframe from '../../../../../../testUtils/inIframe';
-import getDBUIAutoScroll from './DBUIAutoScroll';
-import getDBUIDraggable from '../DBUIDraggable/DBUIDraggable';
-import getDBUISlider from '../DBUISlider/DBUISlider';
-import dbuiWebComponentsSetUp from '../../helpers/dbuiWebComponentsSetup';
-import onScreenConsole from '../../../utils/onScreenConsole';
+import inIframe from '../../../../../../../testUtils/inIframe';
+import getDBUIAutoScroll from '../DBUIAutoScroll';
+import getDBUIDraggable from '../../DBUIDraggable/DBUIDraggable';
+import getDBUISlider from '../../DBUISlider/DBUISlider';
+import dbuiWebComponentsSetUp from '../../../helpers/dbuiWebComponentsSetup';
+import onScreenConsole from '../../../../utils/onScreenConsole';
 import {
   sendTapEvent,
   sendTouchEvent,
   sendMouseEvent
-} from '../../../../../../testUtils/simulateEvents';
-import getDBUIWebComponentCore from '../DBUIWebComponentCore/DBUIWebComponentCore';
-import getDBUIWebComponentRoot from '../DBUIWebComponentRoot/DBUIWebComponentRoot';
-import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
+} from '../../../../../../../testUtils/simulateEvents';
+import getDBUIWebComponentCore from '../../DBUIWebComponentCore/DBUIWebComponentCore';
+import getDBUIWebComponentRoot from '../../DBUIWebComponentRoot/DBUIWebComponentRoot';
+import ensureSingleRegistration from '../../../../internals/ensureSingleRegistration';
 
 const dummyOneRegistrationName = 'dbui-dummy-one';
 function getDummyOne(win) {

@@ -1,10 +1,10 @@
 import { expect } from 'chai';
-import getDBUIWebComponentCore from './DBUIWebComponentCore';
-import getDBUIWebComponentRoot from '../DBUIWebComponentRoot/DBUIWebComponentRoot';
-import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
-import inIframe from '../../../../../../testUtils/inIframe';
-import { isSafari } from '../../../utils/browserDetect';
-import { randomArrayNum } from '../../../utils/math';
+import getDBUIWebComponentCore from '../DBUIWebComponentCore';
+import getDBUIWebComponentRoot from '../../DBUIWebComponentRoot/DBUIWebComponentRoot';
+import ensureSingleRegistration from '../../../../internals/ensureSingleRegistration';
+import inIframe from '../../../../../../../testUtils/inIframe';
+import { isSafari } from '../../../../utils/browserDetect';
+import { randomArrayNum } from '../../../../utils/math';
 
 /* eslint max-len: 0 */
 /* eslint camelcase: 0 */

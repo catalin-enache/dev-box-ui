@@ -1,6 +1,6 @@
-import getDBUIWebComponentCore from './DBUIWebComponentCore';
-import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
-import getDBUIWebComponentRoot from '../DBUIWebComponentRoot/DBUIWebComponentRoot';
+import getDBUIWebComponentCore from '../DBUIWebComponentCore';
+import ensureSingleRegistration from '../../../../internals/ensureSingleRegistration';
+import getDBUIWebComponentRoot from '../../DBUIWebComponentRoot/DBUIWebComponentRoot';
 
 /* eslint max-len: 0 */
 

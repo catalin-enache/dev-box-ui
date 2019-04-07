@@ -49,6 +49,7 @@ TODO:
  - inject global css to handle dbui-web-component (hide when not defined, un hide when defined) ?
  - test a setup like auto-scroll to check the order of registrations and onDomSettled
  - what happens when shadow children are added dynamically later ?
+ - improve onConnectedCallback algorithm performance
 */
 
 /*

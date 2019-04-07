@@ -1,10 +1,10 @@
 import { expect } from 'chai';
 
-import inIframe from '../../../../../../testUtils/inIframe';
+import inIframe from '../../../../../../../testUtils/inIframe';
 
-import monkeyPatch from '../../../../../../testUtils/monkeyPatch';
+import monkeyPatch from '../../../../../../../testUtils/monkeyPatch';
 
-import { isFirefox } from '../../../utils/browserDetect';
+import { isFirefox } from '../../../../utils/browserDetect';
 
 import {
   getDBUIWebComponentRoot,

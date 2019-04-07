@@ -1,14 +1,14 @@
 import { expect, assert } from 'chai';
 import sinon from 'sinon';
-import getDBUIWebComponentCore from './DBUIWebComponentCore';
-import getDBUIWebComponentRoot from '../DBUIWebComponentRoot/DBUIWebComponentRoot';
-import DBUICommonCssVars from './DBUICommonCssVars';
-import DBUICommonCssClasses from './DBUICommonCssClasses';
-import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
-import appendStyles from '../../../internals/appendStyles';
-import inIframe from '../../../../../../testUtils/inIframe';
-import monkeyPatch from '../../../../../../testUtils/monkeyPatch';
-import { sendTapEvent } from '../../../../../../testUtils/simulateEvents';
+import getDBUIWebComponentCore from '../DBUIWebComponentCore';
+import getDBUIWebComponentRoot from '../../DBUIWebComponentRoot/DBUIWebComponentRoot';
+import DBUICommonCssVars from '../DBUICommonCssVars';
+import DBUICommonCssClasses from '../DBUICommonCssClasses';
+import ensureSingleRegistration from '../../../../internals/ensureSingleRegistration';
+import appendStyles from '../../../../internals/appendStyles';
+import inIframe from '../../../../../../../testUtils/inIframe';
+import monkeyPatch from '../../../../../../../testUtils/monkeyPatch';
+import { sendTapEvent } from '../../../../../../../testUtils/simulateEvents';
 
 /* eslint camelcase: 0 */
 
