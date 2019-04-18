@@ -50,8 +50,6 @@ TODO:
  - test a setup like auto-scroll to check the order of registrations and onDomSettled
  - what happens when shadow children are added dynamically later ?
  - improve onConnectedCallback algorithm performance
- - test that onAttributeChangedCallback is called ONLY after component is delivered.
- - test that closestDbuiParent throws when accessed before DOM being settled.
 */
 
 /*

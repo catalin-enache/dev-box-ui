@@ -988,4 +988,223 @@ describe('DBUIWebComponentBase', () => {
       });
     });
   });
+
+  describe('_onAttributeChangedCallback', () => {
+    it('is called after component has been delivered', (done) => {
+      const dummyOneRegistrationName = 'dbui-dummy-one';
+      function getDummyOne(win, {
+        attributeChangedCallback, _onAttributeChangedCallback, onConnectedCallback
+      }) {
+        return ensureSingleRegistration(win, dummyOneRegistrationName, () => {
+          const {
+            DBUIWebComponentBase,
+            defineCommonStaticMethods,
+            Registerable
+          } = getDBUIWebComponentCore(win);
+
+          class DummyOne extends DBUIWebComponentBase {
+
+            static get registrationName() {
+              return dummyOneRegistrationName;
+            }
+
+            static get templateInnerHTML() {
+              return `
+                <div>dbui-dummy-one</div>
+              `;
+            }
+
+            static get observedAttributes() {
+              return [...super.observedAttributes, 'foo'];
+            }
+
+            onConnectedCallback() {
+              onConnectedCallback(this);
+              super.onConnectedCallback();
+            }
+
+            attributeChangedCallback(name, oldValue, newValue) {
+              attributeChangedCallback(this, name, oldValue, newValue);
+              super.attributeChangedCallback(name, oldValue, newValue);
+            }
+
+            _onAttributeChangedCallback(name, oldValue, newValue) {
+              _onAttributeChangedCallback(this, name, oldValue, newValue);
+              super._onAttributeChangedCallback(name, oldValue, newValue);
+            }
+
+          }
+
+          return Registerable(
+            defineCommonStaticMethods(
+              DummyOne
+            )
+          );
+        });
+      }
+      getDummyOne.registrationName = dummyOneRegistrationName;
+
+      const calls = [];
+
+      function attributeChangedCallback(self) {
+        calls.push(['attributeChangedCallback', self._isDelivered, [...self._pendingAttributeChanges]]);
+      }
+
+      function _onAttributeChangedCallback(self) {
+        calls.push(['_onAttributeChangedCallback', self._isDelivered, [...self._pendingAttributeChanges]]);
+      }
+
+      function onConnectedCallback(self) {
+        calls.push(['onConnectedCallback', self._isDelivered, [...self._pendingAttributeChanges]]);
+      }
+
+      inIframe({
+        bodyHTML: `
+        <dbui-web-component-root id="dbui-web-component-root">
+          <div id="container">
+            <dbui-dummy-one foo="123"></dbui-dummy-one>
+          </div>
+        </dbui-web-component-root>
+        `,
+        onLoad: ({ contentWindow, iframe }) => {
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
+          const DummyOne = getDummyOne(contentWindow, {
+            attributeChangedCallback,
+            _onAttributeChangedCallback,
+            onConnectedCallback
+          });
+
+          contentWindow.customElements.whenDefined(DBUIRoot.registrationName).then(() => {
+            expect(calls.length).to.equal(4);
+            expect(calls[0][0]).to.equal('attributeChangedCallback');
+            expect(calls[0][1]).to.equal(false);
+            expect(calls[0][2]).to.deep.equal([]);
+            expect(calls[1][0]).to.equal('onConnectedCallback');
+            expect(calls[1][1]).to.equal(false);
+            expect(calls[1][2]).to.deep.equal([['foo', null, '123']]);
+            expect(calls[2][0]).to.equal('attributeChangedCallback');
+            expect(calls[2][1]).to.equal(true);
+            expect(calls[2][2]).to.deep.equal([]);
+            expect(calls[3][0]).to.equal('_onAttributeChangedCallback');
+            expect(calls[3][1]).to.equal(true);
+            expect(calls[3][2]).to.deep.equal([]);
+            setTimeout(() => {
+              iframe.remove();
+              done();
+            }, 0);
+          });
+
+          DummyOne.registerSelf();
+          DBUIRoot.registerSelf();
+        }
+      });
+    });
+  });
+
+  describe('closestDbuiParent', () => {
+    it('throws when accessed before component is integrated in the tree', (done) => {
+      const dummyOneRegistrationName = 'dbui-dummy-one';
+      function getDummyOne(win, {
+        connectedCallback,
+        onConnectedCallback,
+        _integrateSelfInTheTree
+      }) {
+        return ensureSingleRegistration(win, dummyOneRegistrationName, () => {
+          const {
+            DBUIWebComponentBase,
+            defineCommonStaticMethods,
+            Registerable
+          } = getDBUIWebComponentCore(win);
+
+          class DummyOne extends DBUIWebComponentBase {
+
+            static get registrationName() {
+              return dummyOneRegistrationName;
+            }
+
+            static get templateInnerHTML() {
+              return `
+                <div>dbui-dummy-one</div>
+              `;
+            }
+
+            connectedCallback() {
+              connectedCallback(this);
+              super.connectedCallback();
+            }
+
+            _integrateSelfInTheTree() {
+              super._integrateSelfInTheTree();
+              _integrateSelfInTheTree(this);
+            }
+
+            onConnectedCallback() {
+              onConnectedCallback(this);
+              super.onConnectedCallback();
+            }
+
+          }
+
+          return Registerable(
+            defineCommonStaticMethods(
+              DummyOne
+            )
+          );
+        });
+      }
+      getDummyOne.registrationName = dummyOneRegistrationName;
+
+      const calls = [];
+
+      function connectedCallback(self) {
+        try {
+          self.closestDbuiParent;
+        } catch (err) {
+          calls.push(err.message);
+        }
+      }
+
+      function _integrateSelfInTheTree(self) {
+        calls.push(self.closestDbuiParent.id);
+      }
+
+      function onConnectedCallback(self) {
+        calls.push(self.closestDbuiParent.id);
+      }
+
+      inIframe({
+        bodyHTML: `
+        <dbui-web-component-root id="dbui-web-component-root">
+          <div id="container">
+            <dbui-dummy-one></dbui-dummy-one>
+          </div>
+        </dbui-web-component-root>
+        `,
+        onLoad: ({ contentWindow, iframe }) => {
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
+          const DummyOne = getDummyOne(contentWindow, {
+            connectedCallback,
+            onConnectedCallback,
+            _integrateSelfInTheTree
+          });
+
+          contentWindow.customElements.whenDefined(DBUIRoot.registrationName).then(() => {
+            expect(calls).to.deep.equal([
+              'Do not access closestDbuiParent before DOM is settled!',
+              'dbui-web-component-root',
+              'dbui-web-component-root'
+            ]);
+
+            setTimeout(() => {
+              iframe.remove();
+              done();
+            }, 0);
+          });
+
+          DummyOne.registerSelf();
+          DBUIRoot.registerSelf();
+        }
+      });
+    });
+  });
 });
