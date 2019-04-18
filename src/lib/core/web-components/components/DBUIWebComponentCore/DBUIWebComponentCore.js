@@ -193,7 +193,7 @@ export default function getDBUIWebComponentCore(win) {
         this._providingContext = {};
         this._lastReceivedContext = {};
         this._closestDbuiParent = null;
-        this._closestDbuiChildren = [];
+        this._closestDbuiChildren = new Set();
         this._isMounted = false;
         this._isDisconnected = false;
         this._localeObserver = null;
@@ -1041,7 +1041,7 @@ export default function getDBUIWebComponentCore(win) {
        * @return Array<DBUIWebComponent>
        */
       get closestDbuiChildren() {
-        return this._closestDbuiChildren;
+        return [...this._closestDbuiChildren];
       }
 
       _registerSelfToClosestDbuiParent() {
@@ -1062,8 +1062,7 @@ export default function getDBUIWebComponentCore(win) {
        * @private
        */
       _registerChild(child) {
-        // TODO: make _closestDbuiChildren a Map
-        this._closestDbuiChildren.push(child);
+        this._closestDbuiChildren.add(child);
       }
 
       /**
@@ -1072,8 +1071,7 @@ export default function getDBUIWebComponentCore(win) {
        * @private
        */
       _unregisterChild(child) {
-        this._closestDbuiChildren =
-          this._closestDbuiChildren.filter((_child) => _child !== child);
+        this._closestDbuiChildren.delete(child);
       }
 
       // ============================ << [Descendants/Ancestors and registrations] =============================================
