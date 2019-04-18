@@ -203,8 +203,8 @@ function getBase(win) {
 
     class Base extends DBUIWebComponentBase {
 
-      connectedCallback() {
-        super.connectedCallback();
+      onConnectedCallback() {
+        super.onConnectedCallback();
         this.shadowRoot.querySelector('#id-holder').innerText = getId(this);
       }
 

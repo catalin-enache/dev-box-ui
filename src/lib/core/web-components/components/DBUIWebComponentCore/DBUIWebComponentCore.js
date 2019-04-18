@@ -50,6 +50,8 @@ TODO:
  - test a setup like auto-scroll to check the order of registrations and onDomSettled
  - what happens when shadow children are added dynamically later ?
  - improve onConnectedCallback algorithm performance
+ - test that onAttributeChangedCallback is called ONLY after component is delivered.
+ - test that closestDbuiParent throws when accessed before DOM being settled.
 */
 
 /*
@@ -209,6 +211,8 @@ export default function getDBUIWebComponentCore(win) {
         this._isDelivered = false;
 
         this._pendingAttributeChanges = [];
+        this._isSafeToAccessClosestDbuiParent = false;
+        this._shadowDescendantsNotConnectedDeepCache = null;
 
         this._insertTemplate();
 
@@ -833,6 +837,9 @@ export default function getDBUIWebComponentCore(win) {
           return this._closestDbuiParent;
         }
         if (this.isDisconnected) return null;
+        if (!this._isSafeToAccessClosestDbuiParent) {
+          throw new Error('Do not access closestDbuiParent before DOM is settled!');
+        }
         this._closestDbuiParent = this.closestDbuiParentLiveQuery;
         return this._closestDbuiParent;
       }
@@ -1005,10 +1012,30 @@ export default function getDBUIWebComponentCore(win) {
         const dbuiChildrenNotUpgraded = dbuiChildren.filter((descendant) => (
           !(descendant instanceof DBUIWebComponentBase)
         ));
-        return [...dbuiChildrenNotUpgraded, ...dbuiChildrenUpgradedButNotConnected,
+        const shadowDescendantsNotConnectedDeep = [...dbuiChildrenNotUpgraded, ...dbuiChildrenUpgradedButNotConnected,
           ...dbuiChildrenUpgraded.map((descendant) => (
             descendant.shadowDescendantsNotConnectedDeepLiveQuery
           )).flat()];
+        return shadowDescendantsNotConnectedDeep;
+      }
+
+      get _shadowDescendantsNotConnectedDeepCached() {
+        if (this._shadowDescendantsNotConnectedDeepCache) {
+          return this._shadowDescendantsNotConnectedDeepCache;
+        }
+        this._shadowDescendantsNotConnectedDeepCache =
+          new Set(this.shadowDescendantsNotConnectedDeepLiveQuery);
+        return this._shadowDescendantsNotConnectedDeepCache;
+      }
+
+      _removeSelfFromAncestorsCachedCollectionOfShadowDescendantsNotConnected() {
+        let parentElement = this.closestDbuiParentLiveQuery;
+        while (parentElement) {
+          if (parentElement._shadowDescendantsNotConnectedDeepCache) {
+            parentElement._shadowDescendantsNotConnectedDeepCache.delete(this);
+          }
+          parentElement = parentElement.closestDbuiParentLiveQuery;
+        }
       }
 
       /**
@@ -1284,21 +1311,21 @@ export default function getDBUIWebComponentCore(win) {
           this.dbuiWebComponentRoot._pendingConnectionsDuringDisconnectFlow.push(this);
           return;
         }
+
+        this._removeSelfFromAncestorsCachedCollectionOfShadowDescendantsNotConnected();
         this._wasOnConnectedCallbackFired = true;
-        const shadowDescendants = this.shadowDescendantsLiveQuery;
-        const shadowDescendantsNotConnected = shadowDescendants.filter((descendant) => (
-          !descendant.isMounted || descendant.shadowDescendantsNotConnectedDeepLiveQuery.length
-        ));
+        const shadowDescendantsNotConnected = this._shadowDescendantsNotConnectedDeepCached;
+        const anyShadowDescendantsNotConnected = shadowDescendantsNotConnected.size;
         this._initSelf();
 
-        if (!this.shadowDomDbuiParent && !shadowDescendantsNotConnected.length) {
+        if (!this.shadowDomDbuiParent && !anyShadowDescendantsNotConnected) {
           // Connecting light DOM node, no shadow.
           this._doLightDomSetup();
-        } else if (this.shadowDomDbuiParent && !shadowDescendantsNotConnected.length) {
+        } else if (this.shadowDomDbuiParent && !anyShadowDescendantsNotConnected) {
           // Connecting shadow DOM node, no shadow,
           // but parent (which was actually added) setup was delayed due to self.
           if (!this.shadowDomDbuiParent._isDelivered) {
-            if (!shadowDescendantsNotConnected.length) {
+            if (!anyShadowDescendantsNotConnected) {
               this.shadowDomDbuiParent._onShadowDomChildConnected();
             }
           } else {
@@ -1313,10 +1340,12 @@ export default function getDBUIWebComponentCore(win) {
       // so that their ancestors can do their setup.
       // Recursively propagating up-tree.
       _onShadowDomChildConnected() {
-        const shadowDescendantsNotConnected = this.shadowDescendantsNotConnectedDeepLiveQuery;
-        if (shadowDescendantsNotConnected.length || !this._wasOnConnectedCallbackFired) {
+        const shadowDescendantsNotConnected = this._shadowDescendantsNotConnectedDeepCached;
+        const anyShadowDescendantsNotConnected = shadowDescendantsNotConnected.size;
+        if (anyShadowDescendantsNotConnected || !this._wasOnConnectedCallbackFired) {
           return;
         }
+        this._removeSelfFromAncestorsCachedCollectionOfShadowDescendantsNotConnected();
         if (!this.shadowDomDbuiParent && !this._isDelivered) {
           // light node added at runtime (setup was delayed)
           this._doLightDomSetup();
@@ -1496,6 +1525,7 @@ export default function getDBUIWebComponentCore(win) {
       }
 
       _integrateSelfInTheTree() {
+        this._isSafeToAccessClosestDbuiParent = true;
         this._registerSelfToClosestDbuiParent();
         this._checkContext(); // is ignored by top most dbui ancestors
         // makes top most ancestors or dbui components having localeTarget specified
@@ -1505,6 +1535,7 @@ export default function getDBUIWebComponentCore(win) {
       }
 
       _deliverSelf() {
+        this._shadowDescendantsNotConnectedDeepCache = null;
         // Call public hook.
         this.onConnectedCallback();
         this._isDelivered = true;
@@ -1548,6 +1579,7 @@ export default function getDBUIWebComponentCore(win) {
         win.removeEventListener('beforeunload', this.disconnectedCallback, false);
 
         this._closestDbuiParent = null;
+        this._isSafeToAccessClosestDbuiParent = false;
 
         // delivery flags
         this._wasOnConnectedCallbackFired = false;
@@ -1588,6 +1620,7 @@ export default function getDBUIWebComponentCore(win) {
             child.setAttribute('id', `${idPrefix}${child.getAttribute('id')}${idSuffix}`);
           }
         });
+        clone._isSafeToAccessClosestDbuiParent = this._isSafeToAccessClosestDbuiParent;
         return clone;
       }
 
@@ -1599,7 +1632,7 @@ export default function getDBUIWebComponentCore(win) {
        * @param newValue String
        */
       attributeChangedCallback(name, oldValue, newValue) {
-        if (!this.isMounted) {
+        if (!this._isDelivered) {
           this._pendingAttributeChanges.push([name, oldValue, newValue]);
           return;
         }

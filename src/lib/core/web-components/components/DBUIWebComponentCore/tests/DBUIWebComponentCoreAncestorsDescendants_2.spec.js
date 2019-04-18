@@ -285,6 +285,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
                 'dbui-dummy-f', 'dbui-dummy-e', 'dbui-dummy-d',
                 'dbui-dummy-c', 'dbui-dummy-b', 'dbui-dummy-a'
               ]);
+              expect(self._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(self._shadowDescendantsNotConnectedDeepCache).to.equal(null);
               expect(self.closestDbuiParent.id).to.equal('dbui-web-component-root');
               expect(self.closestDbuiParent.isMounted).to.equal(true);
               expect(self.topDbuiAncestor.id).to.equal('dbui-web-component-root');
@@ -300,6 +302,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
               expect(connectedComponents).to.deep.equal([
                 'dbui-dummy-f', 'dbui-dummy-e', 'dbui-dummy-d', 'dbui-dummy-c', 'dbui-dummy-b'
               ]);
+              expect(self._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(self._shadowDescendantsNotConnectedDeepCache).to.equal(null);
               expect(self.closestDbuiParent.id).to.equal('dbui-dummy-0');
               expect(self.closestDbuiParent.isMounted).to.equal(true);
               expect(self.topDbuiAncestor.id).to.equal('dbui-web-component-root');
@@ -315,6 +319,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
               expect(connectedComponents).to.deep.equal([
                 'dbui-dummy-f', 'dbui-dummy-e', 'dbui-dummy-d', 'dbui-dummy-c'
               ]);
+              expect(self._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(self._shadowDescendantsNotConnectedDeepCache).to.equal(null);
               expect(self.closestDbuiParent.id).to.equal('dbui-dummy-a');
               expect(self.closestDbuiParent.isMounted).to.equal(true);
               expect(self.topDbuiAncestor.id).to.equal('dbui-web-component-root');
@@ -330,6 +336,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
               expect(connectedComponents).to.deep.equal([
                 'dbui-dummy-f', 'dbui-dummy-e', 'dbui-dummy-d'
               ]);
+              expect(self._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(self._shadowDescendantsNotConnectedDeepCache).to.equal(null);
               expect(self.closestDbuiParent.id).to.equal('dbui-dummy-b');
               expect(self.closestDbuiParent.isMounted).to.equal(true);
               expect(self.topDbuiAncestor.id).to.equal('dbui-web-component-root');
@@ -341,6 +349,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
               expect(connectedComponents).to.deep.equal([
                 'dbui-dummy-f', 'dbui-dummy-e'
               ]);
+              expect(self._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(self._shadowDescendantsNotConnectedDeepCache).to.equal(null);
               expect(self.closestDbuiParent.id).to.equal('dbui-dummy-0');
               expect(self.closestDbuiParent.isMounted).to.equal(true);
               expect(self.topDbuiAncestor.id).to.equal('dbui-web-component-root');
@@ -354,6 +364,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
 
             function onConnectedCallbackDummyE(self) {
               expect(connectedComponents).to.deep.equal(['dbui-dummy-f']);
+              expect(self._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(self._shadowDescendantsNotConnectedDeepCache).to.equal(null);
               expect(self.closestDbuiParent.id).to.equal('dbui-dummy-d');
               expect(self.closestDbuiParent.isMounted).to.equal(true);
               expect(self.topDbuiAncestor.id).to.equal('dbui-web-component-root');
@@ -367,6 +379,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
 
             function onConnectedCallbackDummyF(self) {
               expect(connectedComponents).to.deep.equal([]);
+              expect(self._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(self._shadowDescendantsNotConnectedDeepCache).to.equal(null);
               expect(self.closestDbuiParent.id).to.equal('dbui-dummy-e');
               expect(self.closestDbuiParent.isMounted).to.equal(true);
               expect(self.topDbuiAncestor.id).to.equal('dbui-web-component-root');
@@ -375,6 +389,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
             }
 
             function onConnectedCallbackDummyG(self) {
+              expect(self._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(self._shadowDescendantsNotConnectedDeepCache).to.equal(null);
               expect(self.topDbuiAncestor.id).to.equal('dbui-web-component-root');
               expect(self.topDbuiAncestor.isMounted).to.equal(true);
               connectedComponents.push(self.id);
@@ -429,6 +445,10 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
               expect(dbuiRoot.closestDbuiChildren).to.deep.equal([dbuiDummy0]);
               expect(dbuiDummy0.closestDbuiChildren).to.deep.equal([dbuiDummyA, dbuiDummyD]);
               expect(dbuiRoot._descendantsQueueLightDom.length).to.equal(0);
+              expect(dbuiRoot._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(dbuiRoot._shadowDescendantsNotConnectedDeepCache).to.equal(null);
+              expect(dbuiDummy0._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(dbuiDummy0._shadowDescendantsNotConnectedDeepCache).to.equal(null);
 
               // --------------- test 3: rewriting dbuiRoot innerHTML
               connectedComponents = [];
@@ -461,10 +481,17 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
               expect(dbuiRoot.closestDbuiChildren).to.deep.equal([dbuiDummy0]);
               expect(dbuiDummy0.closestDbuiChildren).to.deep.equal([dbuiDummyA, dbuiDummyD]);
               expect(dbuiRoot._descendantsQueueLightDom.length).to.equal(0);
+              expect(dbuiRoot._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(dbuiRoot._shadowDescendantsNotConnectedDeepCache).to.equal(null);
+              expect(dbuiDummy0._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(dbuiDummy0._shadowDescendantsNotConnectedDeepCache).to.equal(null);
 
               // --------------- test 4: mounting all nodes in dbuiRoot
               connectedComponents = [];
               dbuiRoot.innerHTML = '';
+
+              expect(dbuiDummy0._isSafeToAccessClosestDbuiParent).to.equal(false);
+              expect(dbuiDummy0._shadowDescendantsNotConnectedDeepCache).to.equal(null);
 
               const dummy0 = contentWindow.document.createElement('dbui-dummy-0');
               dummy0.id = 'dbui-dummy-0';
@@ -496,6 +523,10 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
               expect(dbuiRoot.closestDbuiChildren).to.deep.equal([dummy0]);
               expect(dummy0.closestDbuiChildren).to.deep.equal([dummyA2, dummyD2]);
               expect(dbuiRoot._descendantsQueueLightDom.length).to.equal(0);
+              expect(dbuiRoot._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(dbuiRoot._shadowDescendantsNotConnectedDeepCache).to.equal(null);
+              expect(dummy0._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(dummy0._shadowDescendantsNotConnectedDeepCache).to.equal(null);
 
               // --------------- test 5: re-mounting all nodes in dbuiRoot
               connectedComponents = [];
@@ -504,6 +535,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
               expect(dbuiRoot.closestDbuiChildren).to.deep.equal([dummy0]);
               expect(dummy0.closestDbuiChildren).to.deep.equal([dummyA2, dummyD2]);
               expect(dbuiRoot._descendantsQueueLightDom.length).to.equal(0);
+              expect(dbuiRoot._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(dbuiRoot._shadowDescendantsNotConnectedDeepCache).to.equal(null);
               expect(connectedComponents.length).to.equal(7);
 
               // --------------- test 6: re-mounting dbuiRoot
@@ -511,11 +544,15 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
               dbuiRoot.remove();
               wrapper.appendChild(dbuiRoot);
               expect(dbuiRoot._descendantsQueueLightDom.length).to.equal(0);
+              expect(dbuiRoot._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(dbuiRoot._shadowDescendantsNotConnectedDeepCache).to.equal(null);
               expect(connectedComponents.length).to.equal(7);
 
               // --------------- test 7: mounting new node in some leaf node
               dummyF2.appendChild(dummyG);
               expect(dbuiRoot._descendantsQueueLightDom.length).to.equal(0);
+              expect(dbuiRoot._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(dbuiRoot._shadowDescendantsNotConnectedDeepCache).to.equal(null);
               expect(connectedComponents.length).to.equal(8);
               expect(dummyF2.closestDbuiChildren[0]).to.equal(dummyG);
               expect(dummyG.closestDbuiParent).to.equal(dummyF2);
@@ -523,6 +560,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
               // --------------- test 8: mounting new node in dbuiRoot
               dbuiRoot.appendChild(dummyG);
               expect(dbuiRoot._descendantsQueueLightDom.length).to.equal(0);
+              expect(dbuiRoot._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(dbuiRoot._shadowDescendantsNotConnectedDeepCache).to.equal(null);
               expect(dummyG.closestDbuiParent).to.equal(dbuiRoot);
               expect(dbuiRoot.closestDbuiChildren.includes(dummyG)).to.equal(true);
               expect(dummyF2.closestDbuiChildren[0]).to.equal(undefined);
@@ -593,6 +632,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
 
             function onConnectedCallbackDummyA(self) {
               expect(connectedComponents).to.deep.equal(['dbui-dummy-c-shadow', 'dbui-dummy-b-shadow']);
+              expect(self._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(self._shadowDescendantsNotConnectedDeepCache).to.equal(null);
               expect(self.closestDbuiParent.id).to.equal('dbui-web-component-root');
               expect(self.closestDbuiParent.isMounted).to.equal(true);
               expect(self.topDbuiAncestor.id).to.equal('dbui-web-component-root');
@@ -606,6 +647,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
 
             function onConnectedCallbackDummyB(self) {
               expect(connectedComponents).to.deep.equal(['dbui-dummy-c-shadow']);
+              expect(self._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(self._shadowDescendantsNotConnectedDeepCache).to.equal(null);
               expect(self.closestDbuiParent.id).to.equal('dbui-dummy-a');
               expect(self.closestDbuiParent.isMounted).to.equal(true);
               expect(self.topDbuiAncestor.id).to.equal('dbui-web-component-root');
@@ -619,6 +662,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
 
             function onConnectedCallbackDummyC(self) {
               expect(connectedComponents).to.deep.equal([]);
+              expect(self._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(self._shadowDescendantsNotConnectedDeepCache).to.equal(null);
               expect(self.closestDbuiParent.id).to.equal('dbui-dummy-b-shadow');
               expect(self.closestDbuiParent.isMounted).to.equal(true);
               expect(self.topDbuiAncestor.id).to.equal('dbui-web-component-root');
@@ -878,6 +923,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
 
             function onConnectedCallbackDummyG(self) {
               expect(connectedComponents).to.deep.equal([]);
+              expect(self._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(self._shadowDescendantsNotConnectedDeepCache).to.equal(null);
               expect(self.topDbuiAncestor.id).to.equal('dbui-web-component-root');
               expect(self.topDbuiAncestor.isMounted).to.equal(true);
               expect(self.closestDbuiParent.id).to.equal('dbui-dummy-f-shadow');
@@ -890,6 +937,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
               expect(connectedComponents).to.deep.equal([
                 'dbui-dummy-g-shadow'
               ]);
+              expect(self._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(self._shadowDescendantsNotConnectedDeepCache).to.equal(null);
               expect(self.topDbuiAncestor.id).to.equal('dbui-web-component-root');
               expect(self.topDbuiAncestor.isMounted).to.equal(true);
               expect(self.closestDbuiParent.id).to.equal('dbui-dummy-e-shadow');
@@ -903,6 +952,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
               expect(connectedComponents).to.deep.equal([
                 'dbui-dummy-g-shadow', 'dbui-dummy-f-shadow'
               ]);
+              expect(self._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(self._shadowDescendantsNotConnectedDeepCache).to.equal(null);
               expect(self.topDbuiAncestor.id).to.equal('dbui-web-component-root');
               expect(self.topDbuiAncestor.isMounted).to.equal(true);
               expect(self.closestDbuiParent.id).to.equal('dbui-dummy-d-shadow');
@@ -916,6 +967,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
               expect(connectedComponents).to.deep.equal([
                 'dbui-dummy-g-shadow', 'dbui-dummy-f-shadow', 'dbui-dummy-e-shadow'
               ]);
+              expect(self._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(self._shadowDescendantsNotConnectedDeepCache).to.equal(null);
               expect(self.topDbuiAncestor.id).to.equal('dbui-web-component-root');
               expect(self.topDbuiAncestor.isMounted).to.equal(true);
               expect(self.closestDbuiParent.id).to.equal('dbui-dummy-c-shadow');
@@ -930,6 +983,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
                 'dbui-dummy-g-shadow', 'dbui-dummy-f-shadow', 'dbui-dummy-e-shadow',
                 'dbui-dummy-d-shadow', 'dbui-dummy-c-shadow', 'dbui-dummy-b-shadow'
               ]);
+              expect(self._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(self._shadowDescendantsNotConnectedDeepCache).to.equal(null);
               expect(self.topDbuiAncestor.id).to.equal('dbui-web-component-root');
               expect(self.topDbuiAncestor.isMounted).to.equal(true);
               expect(self.closestDbuiParent.id).to.equal('dbui-dummy-cc-shadow');
@@ -943,6 +998,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
                 'dbui-dummy-g-shadow', 'dbui-dummy-f-shadow', 'dbui-dummy-e-shadow',
                 'dbui-dummy-d-shadow'
               ]);
+              expect(self._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(self._shadowDescendantsNotConnectedDeepCache).to.equal(null);
               expect(self.topDbuiAncestor.id).to.equal('dbui-web-component-root');
               expect(self.topDbuiAncestor.isMounted).to.equal(true);
               expect(self.closestDbuiParent.id).to.equal('dbui-dummy-b-shadow');
@@ -958,6 +1015,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
                 'dbui-dummy-d-shadow', 'dbui-dummy-c-shadow', 'dbui-dummy-b-shadow',
                 'dbui-dummy-dd-shadow'
               ]);
+              expect(self._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(self._shadowDescendantsNotConnectedDeepCache).to.equal(null);
               expect(self.topDbuiAncestor.id).to.equal('dbui-web-component-root');
               expect(self.topDbuiAncestor.isMounted).to.equal(true);
               expect(self.closestDbuiParent.id).to.equal('dbui-dummy-bb-shadow');
@@ -972,6 +1031,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
                 'dbui-dummy-g-shadow', 'dbui-dummy-f-shadow', 'dbui-dummy-e-shadow',
                 'dbui-dummy-d-shadow', 'dbui-dummy-c-shadow'
               ]);
+              expect(self._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(self._shadowDescendantsNotConnectedDeepCache).to.equal(null);
               expect(self.topDbuiAncestor.id).to.equal('dbui-web-component-root');
               expect(self.topDbuiAncestor.isMounted).to.equal(true);
               expect(self.closestDbuiParent.id).to.equal('dbui-dummy-a');
@@ -987,6 +1048,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
                 'dbui-dummy-d-shadow', 'dbui-dummy-c-shadow', 'dbui-dummy-b-shadow',
                 'dbui-dummy-dd-shadow', 'dbui-dummy-cc-shadow'
               ]);
+              expect(self._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(self._shadowDescendantsNotConnectedDeepCache).to.equal(null);
               expect(self.topDbuiAncestor.id).to.equal('dbui-web-component-root');
               expect(self.topDbuiAncestor.isMounted).to.equal(true);
               expect(self.closestDbuiParent.id).to.equal('dbui-dummy-aa');
@@ -1003,6 +1066,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
                 'dbui-dummy-dd-shadow', 'dbui-dummy-cc-shadow', 'dbui-dummy-bb-shadow',
                 'dbui-dummy-aa'
               ]);
+              expect(self._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(self._shadowDescendantsNotConnectedDeepCache).to.equal(null);
               expect(self.topDbuiAncestor.id).to.equal('dbui-web-component-root');
               expect(self.topDbuiAncestor.isMounted).to.equal(true);
               expect(self.closestDbuiParent.id).to.equal('dbui-dummy-0');
@@ -1018,6 +1083,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
                 'dbui-dummy-d-shadow', 'dbui-dummy-c-shadow', 'dbui-dummy-b-shadow',
                 'dbui-dummy-dd-shadow', 'dbui-dummy-cc-shadow', 'dbui-dummy-bb-shadow'
               ]);
+              expect(self._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(self._shadowDescendantsNotConnectedDeepCache).to.equal(null);
               expect(self.topDbuiAncestor.id).to.equal('dbui-web-component-root');
               expect(self.topDbuiAncestor.isMounted).to.equal(true);
               expect(self.closestDbuiParent.id).to.equal('dbui-dummy-0');
@@ -1034,6 +1101,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
                 'dbui-dummy-dd-shadow', 'dbui-dummy-cc-shadow', 'dbui-dummy-bb-shadow',
                 'dbui-dummy-aa', 'dbui-dummy-a'
               ]);
+              expect(self._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(self._shadowDescendantsNotConnectedDeepCache).to.equal(null);
               expect(self.topDbuiAncestor.id).to.equal('dbui-web-component-root');
               expect(self.topDbuiAncestor.isMounted).to.equal(true);
               expect(self.closestDbuiParent.id).to.equal('dbui-web-component-root');
@@ -1327,6 +1396,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
                 'dbui-dummy-f-shadow', 'dbui-dummy-e-shadow', 'dbui-dummy-d-shadow',
                 'dbui-dummy-c-shadow-1', 'dbui-dummy-b-shadow', 'dbui-dummy-n', 'dbui-dummy-a'
               ]);
+              expect(self._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(self._shadowDescendantsNotConnectedDeepCache).to.equal(null);
               expect(self.topDbuiAncestor.id).to.equal('dbui-web-component-root');
               expect(self.topDbuiAncestor.isMounted).to.equal(true);
               expect(self.closestDbuiParent.id).to.equal('dbui-web-component-root');
@@ -1341,6 +1412,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
                 'dbui-dummy-f-shadow', 'dbui-dummy-e-shadow', 'dbui-dummy-d-shadow',
                 'dbui-dummy-c-shadow-1', 'dbui-dummy-b-shadow'
               ]);
+              expect(self._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(self._shadowDescendantsNotConnectedDeepCache).to.equal(null);
               expect(self.topDbuiAncestor.id).to.equal('dbui-web-component-root');
               expect(self.topDbuiAncestor.isMounted).to.equal(true);
               expect(self.closestDbuiParent.id).to.equal('dbui-dummy-0');
@@ -1354,6 +1427,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
                 'dbui-dummy-f-shadow', 'dbui-dummy-e-shadow', 'dbui-dummy-d-shadow',
                 'dbui-dummy-c-shadow-1', 'dbui-dummy-b-shadow', 'dbui-dummy-n'
               ]);
+              expect(self._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(self._shadowDescendantsNotConnectedDeepCache).to.equal(null);
               expect(self.topDbuiAncestor.id).to.equal('dbui-web-component-root');
               expect(self.topDbuiAncestor.isMounted).to.equal(true);
               expect(self.closestDbuiParent.id).to.equal('dbui-dummy-0');
@@ -1368,6 +1443,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
                 'dbui-dummy-f-shadow', 'dbui-dummy-e-shadow', 'dbui-dummy-d-shadow',
                 'dbui-dummy-c-shadow-1'
               ]);
+              expect(self._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(self._shadowDescendantsNotConnectedDeepCache).to.equal(null);
               expect(self.topDbuiAncestor.id).to.equal('dbui-web-component-root');
               expect(self.topDbuiAncestor.isMounted).to.equal(true);
               expect(self.closestDbuiParent.id).to.equal('dbui-dummy-a');
@@ -1381,6 +1458,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
               expect(connectedComponents).to.deep.equal([
                 'dbui-dummy-f-shadow', 'dbui-dummy-e-shadow', 'dbui-dummy-d-shadow'
               ]);
+              expect(self._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(self._shadowDescendantsNotConnectedDeepCache).to.equal(null);
               expect(self.topDbuiAncestor.id).to.equal('dbui-web-component-root');
               expect(self.topDbuiAncestor.isMounted).to.equal(true);
               expect(self.closestDbuiParent.isMounted).to.equal(true);
@@ -1395,6 +1474,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
               ]);
               const dummyE = self.shadowRoot.querySelector('dbui-dummy-e');
               expect(dummyE.constructor.name).to.equal('DummyE');
+              expect(self._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(self._shadowDescendantsNotConnectedDeepCache).to.equal(null);
               expect(self.topDbuiAncestor.id).to.equal('dbui-web-component-root');
               expect(self.topDbuiAncestor.isMounted).to.equal(true);
               expect(self.closestDbuiParent.constructor.name).to.equal('DummyC');
@@ -1406,6 +1487,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
 
             function onConnectedCallbackDummyE(self) {
               expect(connectedComponents).to.deep.equal(['dbui-dummy-f-shadow']);
+              expect(self._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(self._shadowDescendantsNotConnectedDeepCache).to.equal(null);
               expect(self.topDbuiAncestor.id).to.equal('dbui-web-component-root');
               expect(self.topDbuiAncestor.isMounted).to.equal(true);
               expect(self.closestDbuiParent.id).to.equal('dbui-dummy-d-shadow');
@@ -1417,6 +1500,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
 
             function onConnectedCallbackDummyF(self) {
               expect(connectedComponents).to.deep.equal([]);
+              expect(self._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(self._shadowDescendantsNotConnectedDeepCache).to.equal(null);
               expect(self.topDbuiAncestor.id).to.equal('dbui-web-component-root');
               expect(self.topDbuiAncestor.isMounted).to.equal(true);
               expect(self.closestDbuiParent.id).to.equal('dbui-dummy-e-shadow');
@@ -1426,6 +1511,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
             }
 
             function onConnectedCallbackDummyG(self) {
+              expect(self._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(self._shadowDescendantsNotConnectedDeepCache).to.equal(null);
               expect(self.topDbuiAncestor.id).to.equal('dbui-web-component-root');
               expect(self.topDbuiAncestor.isMounted).to.equal(true);
               expect(self.closestDbuiParent.id).to.equal('dbui-dummy-b-shadow');
@@ -1435,6 +1522,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
             }
 
             function onConnectedCallbackDummyH(self) {
+              expect(self._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(self._shadowDescendantsNotConnectedDeepCache).to.equal(null);
               expect(self.topDbuiAncestor.id).to.equal('dbui-web-component-root');
               expect(self.topDbuiAncestor.isMounted).to.equal(true);
               expect(self.closestDbuiParent.id).to.equal('dbui-dummy-n');
@@ -1854,6 +1943,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
                   contentWindow.JSON.parse(self.getAttribute('_closestDbuiParent'))) ||
                   closestDbuiParent;
 
+              expect(self._isSafeToAccessClosestDbuiParent).to.equal(true);
+              expect(self._shadowDescendantsNotConnectedDeepCache).to.equal(null);
               expect(self.closestDbuiParent.id).to.equal(_closestDbuiParent);
               expect(self.closestDbuiChildren.map((c) => c.id)).to.deep.equal(_closestDbuiChildren);
               expect(self.isMounted).to.equal(true);
@@ -1869,6 +1960,8 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
               expect(self.closestDbuiChildren.every((child) => child.isMounted)).to.equal(true);
 
               const descendantTest = (node) => {
+                expect(node._isSafeToAccessClosestDbuiParent).to.equal(true);
+                expect(node._shadowDescendantsNotConnectedDeepCache).to.equal(null);
                 expect(node.isMounted).to.equal(true);
                 expect(node._isDelivered).to.equal(true);
                 expect(node._wasOnConnectedCallbackFired).to.equal(true);
