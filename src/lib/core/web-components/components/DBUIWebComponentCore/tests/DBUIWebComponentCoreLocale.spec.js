@@ -444,7 +444,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
           expect(dummyDInner.__newDir).to.equal('aaa');
           expect(dummyDInner.__prevDir).to.equal(null);
           expect(dummyDInner.__newLang).to.equal('it');
-          expect(dummyDInner.__prevLang).to.equal('bb');
+          expect(dummyDInner.__prevLang).to.equal(null);
 
 
           dummyDInner.setAttribute('dir', 'abc');
@@ -682,9 +682,9 @@ describe('DBUIWebComponentBase locale behaviour', () => {
               expect(dummyDOne.getAttribute('dbui-dir')).to.equal('rtl');
               expect(dummyDOne.getAttribute('dbui-lang')).to.equal('it');
               expect(dummyDOne.__newDir).to.equal('rtl');
-              expect(dummyDOne.__prevDir).to.equal('ltr');
+              expect(dummyDOne.__prevDir).to.equal(null);
               expect(dummyDOne.__newLang).to.equal('it');
-              expect(dummyDOne.__prevLang).to.equal('en');
+              expect(dummyDOne.__prevLang).to.equal(null);
               expect(dummyDOne._providingContext).to.deep.equal({ dbuiDir: 'rtl', dbuiLang: 'it' });
 
               dummyDOne.remove();
@@ -818,9 +818,9 @@ describe('DBUIWebComponentBase locale behaviour', () => {
               expect(dummyDOne._providingContext.dbuiDir).to.equal('rtl');
               expect(dummyDOne._providingContext.dbuiLang).to.equal('it');
               expect(dummyDOne.__newDir).to.equal('rtl');
-              expect(dummyDOne.__prevDir).to.equal('ltr');
+              expect(dummyDOne.__prevDir).to.equal(null);
               expect(dummyDOne.__newLang).to.equal('it');
-              expect(dummyDOne.__prevLang).to.equal('en');
+              expect(dummyDOne.__prevLang).to.equal(null);
 
               dummyDOne.remove();
 
@@ -890,9 +890,9 @@ describe('DBUIWebComponentBase locale behaviour', () => {
               expect(dummyDOne._providingContext.dbuiDir).to.equal('rtl');
               expect(dummyDOne._providingContext.dbuiLang).to.equal('it');
               expect(dummyDOne.__newDir).to.equal('rtl');
-              expect(dummyDOne.__prevDir).to.equal('ltr');
+              expect(dummyDOne.__prevDir).to.equal(null);
               expect(dummyDOne.__newLang).to.equal('it');
-              expect(dummyDOne.__prevLang).to.equal('en');
+              expect(dummyDOne.__prevLang).to.equal(null);
 
               dummyDOne.setAttribute('sync-locale-with', '#locale-provider2');
 
@@ -1159,9 +1159,9 @@ describe('DBUIWebComponentBase locale behaviour', () => {
               expect(dummyDTwo._providingContext.dbuiDir).to.equal('rtl');
               expect(dummyDTwo._providingContext.dbuiLang).to.equal('it');
               expect(dummyDTwo.__newDir).to.equal('rtl');
-              expect(dummyDTwo.__prevDir).to.equal('ltr');
+              expect(dummyDTwo.__prevDir).to.equal(null);
               expect(dummyDTwo.__newLang).to.equal('it');
-              expect(dummyDTwo.__prevLang).to.equal('en');
+              expect(dummyDTwo.__prevLang).to.equal(null);
 
               expect(dummyDThree.getAttribute('dbui-dir')).to.equal('rtl');
               expect(dummyDThree.getAttribute('dbui-lang')).to.equal('it');
@@ -1189,9 +1189,9 @@ describe('DBUIWebComponentBase locale behaviour', () => {
               expect(dummyDTwo._providingContext.dbuiDir).to.equal('rtl');
               expect(dummyDTwo._providingContext.dbuiLang).to.equal('it');
               expect(dummyDTwo.__newDir).to.equal('rtl');
-              expect(dummyDTwo.__prevDir).to.equal('ltr'); // due to no actual change
+              expect(dummyDTwo.__prevDir).to.equal(null); // due to no actual change
               expect(dummyDTwo.__newLang).to.equal('it');
-              expect(dummyDTwo.__prevLang).to.equal('en');
+              expect(dummyDTwo.__prevLang).to.equal(null);
 
               expect(dummyDThree.getAttribute('dbui-dir')).to.equal('rtl');
               expect(dummyDThree.getAttribute('dbui-lang')).to.equal('it');
@@ -1264,16 +1264,16 @@ describe('DBUIWebComponentBase locale behaviour', () => {
               expect(dummyDTwo.__newDir).to.equal('bcd');
               expect(dummyDTwo.__prevDir).to.equal(null);
               expect(dummyDTwo.__newLang).to.equal('ab');
-              expect(dummyDTwo.__prevLang).to.equal('en');
+              expect(dummyDTwo.__prevLang).to.equal(null);
 
               expect(dummyDThree.getAttribute('dbui-dir')).to.equal('bcd');
               expect(dummyDThree.getAttribute('dbui-lang')).to.equal('ab');
               expect(dummyDThree._lastReceivedContext.dbuiDir).to.equal('bcd');
               expect(dummyDThree._lastReceivedContext.dbuiLang).to.equal('ab');
               expect(dummyDThree.__newDir).to.equal('bcd');
-              expect(dummyDThree.__prevDir).to.equal('ltr');
+              expect(dummyDThree.__prevDir).to.equal(null);
               expect(dummyDThree.__newLang).to.equal('ab');
-              expect(dummyDThree.__prevLang).to.equal('en');
+              expect(dummyDThree.__prevLang).to.equal(null);
 
               dummyDOne.dir = 'cde';
               dummyDOne.lang = 'de';
@@ -1302,7 +1302,7 @@ describe('DBUIWebComponentBase locale behaviour', () => {
               expect(dummyDThree._lastReceivedContext.dbuiDir).to.equal('bcd');
               expect(dummyDThree._lastReceivedContext.dbuiLang).to.equal('de');
               expect(dummyDThree.__newDir).to.equal('bcd');
-              expect(dummyDThree.__prevDir).to.equal('ltr');
+              expect(dummyDThree.__prevDir).to.equal(null);
               expect(dummyDThree.__newLang).to.equal('de');
               expect(dummyDThree.__prevLang).to.equal('ab');
 
@@ -1365,18 +1365,18 @@ describe('DBUIWebComponentBase locale behaviour', () => {
               expect(dummyDTwo._lastReceivedContext.dbuiDir).to.equal('abc');
               expect(dummyDTwo._lastReceivedContext.dbuiLang).to.equal('ab');
               expect(dummyDTwo.__newDir).to.equal('abc');
-              expect(dummyDTwo.__prevDir).to.equal('ltr');
+              expect(dummyDTwo.__prevDir).to.equal(null);
               expect(dummyDTwo.__newLang).to.equal('ab');
-              expect(dummyDTwo.__prevLang).to.equal('en');
+              expect(dummyDTwo.__prevLang).to.equal(null);
 
               expect(dummyDThree.getAttribute('dbui-dir')).to.equal('abc');
               expect(dummyDThree.getAttribute('dbui-lang')).to.equal('ab');
               expect(dummyDThree._lastReceivedContext.dbuiDir).to.equal('abc');
               expect(dummyDThree._lastReceivedContext.dbuiLang).to.equal('ab');
               expect(dummyDThree.__newDir).to.equal('abc');
-              expect(dummyDThree.__prevDir).to.equal('ltr');
+              expect(dummyDThree.__prevDir).to.equal(null);
               expect(dummyDThree.__newLang).to.equal('ab');
-              expect(dummyDThree.__prevLang).to.equal('en');
+              expect(dummyDThree.__prevLang).to.equal(null);
 
               dummyDOne.dir = 'cde';
               dummyDOne.lang = 'de';
@@ -1521,8 +1521,8 @@ describe('DBUIWebComponentBase locale behaviour', () => {
                 oneDir: 'ltr', oneLang: 'en', twoDir: 'abc', twoLang: 'ab', threeDir: 'abc', threeLang: 'ab',
                 fourDir: 'cde', fourLang: 'de', fiveDir: 'cde', fiveLang: 'de', sixDir: 'cde', sixLang: 'de',
 
-                oneDirPrev: null, oneLangPrev: null, twoDirPrev: 'ltr', twoLangPrev: 'en', threeDirPrev: null, threeLangPrev: null,
-                fourDirPrev: null, fourLangPrev: null, fiveDirPrev: 'ltr', fiveLangPrev: 'en', sixDirPrev: 'ltr', sixLangPrev: 'en',
+                oneDirPrev: null, oneLangPrev: null, twoDirPrev: null, twoLangPrev: null, threeDirPrev: null, threeLangPrev: null,
+                fourDirPrev: null, fourLangPrev: null, fiveDirPrev: null, fiveLangPrev: null, sixDirPrev: null, sixLangPrev: null,
               });
 
               dummyDTwo.dir = 'efg';

@@ -1523,11 +1523,6 @@ export default function getDBUIWebComponentCore(win) {
       _integrateSelfInTheTree() {
         this._isSafeToAccessClosestDbuiParent = true;
         this._registerSelfToClosestDbuiParent();
-        this._checkContext(); // is ignored by top most dbui ancestors
-        // makes top most ancestors or dbui components having localeTarget specified
-        // to set dbuiDir/Locale on context
-        this._syncLocaleAndMonitorChanges();
-        this._initializeDynamicAttributesObserver();
       }
 
       _deliverSelf() {
@@ -1535,6 +1530,11 @@ export default function getDBUIWebComponentCore(win) {
         // Call public hook.
         this.onConnectedCallback();
         this._isDelivered = true;
+        this._checkContext(); // is ignored by top most dbui ancestors
+        // makes top most ancestors or dbui components having localeTarget specified
+        // to set dbuiDir/Locale on context
+        this._syncLocaleAndMonitorChanges();
+        this._initializeDynamicAttributesObserver();
         while (this._pendingAttributeChanges.length) {
           this.attributeChangedCallback(...this._pendingAttributeChanges.pop());
         }

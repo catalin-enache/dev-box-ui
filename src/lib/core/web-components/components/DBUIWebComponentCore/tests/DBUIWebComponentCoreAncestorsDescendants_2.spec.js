@@ -1,92 +1,15 @@
 import { expect } from 'chai';
-import getDBUIWebComponentCore from '../DBUIWebComponentCore';
 import getDBUIWebComponentRoot from '../../DBUIWebComponentRoot/DBUIWebComponentRoot';
-import ensureSingleRegistration from '../../../../internals/ensureSingleRegistration';
 import inIframe from '../../../../../../../testUtils/inIframe';
 import { isSafari } from '../../../../utils/browserDetect';
 import { randomArrayNum } from '../../../../utils/math';
+import { getDummyX } from '../tests/DBUITestTreeSetup.forSpec';
 
 /* eslint max-len: 0 */
 /* eslint camelcase: 0 */
 /* eslint prefer-const: 0 */
 /* eslint one-var-declaration-per-line: 0 */
 /* eslint one-var: 0 */
-
-function getDummyX(
-  registrationName, className,
-  {
-    style = 'host: { display: block; } div { padding-left: 10px; }',
-    dependentClasses = [], dependentHTML = '',
-    contextSubscribe = [], contextProvide = [],
-    callbacks = {
-      // onConnectedCallback
-    }
-  } = {}
-) {
-  function factory(win) {
-    return ensureSingleRegistration(win, registrationName, () => {
-      const {
-        DBUIWebComponentBase,
-        defineCommonStaticMethods,
-        Registerable
-      } = getDBUIWebComponentCore(win);
-
-      const klass = class extends DBUIWebComponentBase {
-        static get registrationName() {
-          return registrationName;
-        }
-
-        static get name() {
-          return className;
-        }
-
-        static get dependencies() {
-          return [...super.dependencies, ...dependentClasses];
-        }
-
-        static get contextProvide() {
-          return [...super.contextProvide, ...contextProvide];
-        }
-
-        static get contextSubscribe() {
-          return [...super.contextSubscribe, ...contextSubscribe];
-        }
-
-        static get templateInnerHTML() {
-          return `
-            <style>${style}</style>
-            <div>
-              <b>${registrationName}</b>
-              ${dependentHTML}
-              ${dependentHTML.includes('<slot></slot>') ? '' : '<slot></slot>'}
-            </div>
-          `;
-        }
-
-        connectedCallback() {
-          super.connectedCallback();
-        }
-
-        onConnectedCallback() {
-          super.onConnectedCallback();
-          callbacks.onConnectedCallback && callbacks.onConnectedCallback(this);
-        }
-
-        onDisconnectedCallback() {
-          super.onDisconnectedCallback();
-          callbacks.onDisconnectedCallback && callbacks.onDisconnectedCallback(this);
-        }
-      };
-
-      return Registerable(
-        defineCommonStaticMethods(
-          klass
-        )
-      );
-    });
-  }
-  return factory;
-}
 
 describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () => {
   xit('live testing', (done) => {

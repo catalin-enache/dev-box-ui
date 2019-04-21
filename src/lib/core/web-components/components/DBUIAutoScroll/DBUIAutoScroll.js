@@ -439,6 +439,7 @@ export default function getDBUIAutoScroll(win) {
           .addEventListener('dbui-event-slidemove', this._onVerticalSliderMove);
         this._setPercentPrecision();
         setTimeout(() => {
+          console.log(this.hRatio, this.vRatio);
           getElement(this, 'horizontal-slider').ratio = this.hRatio;
           getElement(this, 'vertical-slider').ratio = this.vRatio;
           this._applyHVScrollPercentage();

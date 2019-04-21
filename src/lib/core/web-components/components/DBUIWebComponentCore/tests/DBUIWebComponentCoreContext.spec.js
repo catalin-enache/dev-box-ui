@@ -11,6 +11,7 @@ import {
   getDummyC,
   getDummyD,
   getDummyE,
+  getDummyX,
   treeOne, treeOneNoDbuiRoot,
   treeOneGetDbuiNodes,
   treeStyle
@@ -37,8 +38,196 @@ const localeContext = { dbuiDir: 'ltr', dbuiLang: 'en' };
 /* eslint camelcase: 0 */
 
 describe('DBUIWebComponentBase context passing', () => {
-  describe('general behaviour', () => {
-    it('behaves as expected', (done) => {
+  xit('live testing', (done) => {
+    inIframe({
+      bodyHTML: `
+      <dbui-web-component-root id="dbui-web-component-root">
+        <dbui-dummy-a id="dbui-dummy-a-light-1" dir="rtl">
+          <dbui-dummy-b id="dbui-dummy-b-light-1-1">
+            <dbui-dummy-b id="dbui-dummy-b-light-1-2">
+            </dbui-dummy-b>
+          </dbui-dummy-b>   
+        </dbui-dummy-a>
+        <dbui-dummy-a id="dbui-dummy-a-light-2"> 
+        </dbui-dummy-a>
+      </dbui-web-component-root>
+      `,
+      onLoad: ({ contentWindow, iframe }) => {
+        const DummyA = getDummyX('dbui-dummy-a', 'DummyA', {
+          dependentClasses: [],
+          dependentHTML: `
+          `,
+          contextSubscribe: [], contextProvide: ['aaa'],
+          callbacks: {
+            onConnectedCallback: (self) => {
+              // console.log('onConnectedCallback', self.id);
+              self.setContext({ aaa: 111 });
+            },
+            // eslint-disable-next-line
+            onContextChanged: (self, newContext, prevContext) => {
+              // console.log('onContextChanged', self.id, { newContext, prevContext });
+            },
+            // eslint-disable-next-line
+            onLocaleDirChanged: (self, newDir, prevDir) => {
+              // console.log('onLocaleDirChanged', self.id, { newDir, prevDir });
+            }
+          },
+        })(contentWindow);
+
+        const DummyB = getDummyX('dbui-dummy-b', 'DummyA', {
+          dependentClasses: [],
+          dependentHTML: `
+          `,
+          contextSubscribe: ['aaa'], contextProvide: [],
+          callbacks: {
+            // eslint-disable-next-line
+            onConnectedCallback: (self) => {
+              // console.log('onConnectedCallback', self.id);
+            },
+            // eslint-disable-next-line
+            onContextChanged: (self, newContext, prevContext) => {
+              // console.log('onContextChanged', self.id, { newContext, prevContext });
+            },
+            // eslint-disable-next-line
+            onLocaleDirChanged: (self, newDir, prevDir) => {
+              // console.log('onLocaleDirChanged', self.id, { newDir, prevDir });
+            }
+          },
+        })(contentWindow);
+
+        const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
+
+        Promise.all([
+          DBUIRoot.registrationName
+        ].map((localName) => contentWindow.customElements.whenDefined(localName)
+        )).then(() => {
+
+          const dummyA1 = contentWindow.document.querySelector('#dbui-dummy-a-light-1');
+          const dummyA2 = contentWindow.document.querySelector('#dbui-dummy-a-light-2');
+          const dummyB1 = contentWindow.document.querySelector('#dbui-dummy-b-light-1-1');
+
+          // ------------------------ test 2
+          dummyA2.appendChild(dummyB1);
+          dummyA1.setContext({ aaa: 222 });
+
+          // ------------------------ test 3
+          dummyA1.appendChild(dummyB1);
+
+          setTimeout(() => {
+            iframe.remove();
+            done();
+          }, 55000);
+        });
+
+        DummyA.registerSelf();
+        DummyB.registerSelf();
+        DBUIRoot.registerSelf();
+      }
+    });
+  });
+
+  describe('general behavior 1', () => {
+    it('behaves as expected 1', (done) => {
+      inIframe({
+        bodyHTML: `
+        <dbui-web-component-root id="dbui-web-component-root">
+          <dbui-dummy-a id="dbui-dummy-a-light-1" dir="rtl">
+            <dbui-dummy-b id="dbui-dummy-b-light-1-1">
+              <dbui-dummy-b id="dbui-dummy-b-light-1-2">
+              </dbui-dummy-b>
+            </dbui-dummy-b>   
+          </dbui-dummy-a>
+          <dbui-dummy-a id="dbui-dummy-a-light-2"> 
+          </dbui-dummy-a>
+        </dbui-web-component-root>
+        `,
+        onLoad: ({ contentWindow, iframe }) => {
+          const DummyA = getDummyX('dbui-dummy-a', 'DummyA', {
+            dependentClasses: [],
+            dependentHTML: `
+            `,
+            contextSubscribe: [], contextProvide: ['aaa'],
+            callbacks: {
+              onConnectedCallback: (self) => {
+                // console.log('onConnectedCallback', self.id);
+                self.setContext({ aaa: 111 });
+              },
+              // eslint-disable-next-line
+              onContextChanged: (self, newContext, prevContext) => {
+                // console.log('onContextChanged', self.id, { newContext, prevContext });
+              },
+              // eslint-disable-next-line
+              onLocaleDirChanged: (self, newDir, prevDir) => {
+                // console.log('onLocaleDirChanged', self.id, { newDir, prevDir });
+              }
+            },
+          })(contentWindow);
+
+          const DummyB = getDummyX('dbui-dummy-b', 'DummyA', {
+            dependentClasses: [],
+            dependentHTML: `
+            `,
+            contextSubscribe: ['aaa'], contextProvide: [],
+            callbacks: {
+              // eslint-disable-next-line
+              onConnectedCallback: (self) => {
+                // console.log('onConnectedCallback', self.id);
+              },
+              // eslint-disable-next-line
+              onContextChanged: (self, newContext, prevContext) => {
+                // console.log('onContextChanged', self.id, { newContext, prevContext });
+              },
+              // eslint-disable-next-line
+              onLocaleDirChanged: (self, newDir, prevDir) => {
+                // console.log('onLocaleDirChanged', self.id, { newDir, prevDir });
+              }
+            },
+          })(contentWindow);
+
+          const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
+
+          Promise.all([
+            DBUIRoot.registrationName
+          ].map((localName) => contentWindow.customElements.whenDefined(localName)
+          )).then(() => {
+
+            const dummyA1 = contentWindow.document.querySelector('#dbui-dummy-a-light-1');
+            const dummyA2 = contentWindow.document.querySelector('#dbui-dummy-a-light-2');
+            const dummyB1 = contentWindow.document.querySelector('#dbui-dummy-b-light-1-1');
+            const dummyB2 = contentWindow.document.querySelector('#dbui-dummy-b-light-1-2');
+
+            expect(dummyB1._lastReceivedContext).to.deep.equal({ aaa: 111, dbuiDir: 'rtl', dbuiLang: 'en' });
+            expect(dummyB2._lastReceivedContext).to.deep.equal({ aaa: 111, dbuiDir: 'rtl', dbuiLang: 'en' });
+
+            // ------------------------ test 2
+            dummyA2.appendChild(dummyB1);
+            dummyA1.setContext({ aaa: 222 });
+            expect(dummyB1._lastReceivedContext).to.deep.equal({ aaa: 111, dbuiDir: 'ltr', dbuiLang: 'en' });
+            expect(dummyB2._lastReceivedContext).to.deep.equal({ aaa: 111, dbuiDir: 'ltr', dbuiLang: 'en' });
+
+            // ------------------------ test 3
+            dummyA1.appendChild(dummyB1);
+
+            expect(dummyB1._lastReceivedContext).to.deep.equal({ aaa: 222, dbuiDir: 'rtl', dbuiLang: 'en' });
+            expect(dummyB2._lastReceivedContext).to.deep.equal({ aaa: 222, dbuiDir: 'rtl', dbuiLang: 'en' });
+
+
+            setTimeout(() => {
+              iframe.remove();
+              done();
+            }, 0);
+          });
+
+          DummyA.registerSelf();
+          DummyB.registerSelf();
+          DBUIRoot.registerSelf();
+        }
+      });
+    });
+  });
+
+  describe('general behaviour 2', () => {
+    it('behaves as expected 2', (done) => {
       inIframe({
         headStyle: treeStyle,
         bodyHTML: `

@@ -505,6 +505,103 @@ function getDummyE(win) {
 }
 getDummyE.registrationName = dummyERegistrationName;
 
+function getDummyX(
+  registrationName, className,
+  {
+    style = 'host: { display: block; } div { padding-left: 10px; }',
+    dependentClasses = [], dependentHTML = '',
+    contextSubscribe = [], contextProvide = [],
+    callbacks = {
+      // onConnectedCallback
+    }
+  } = {}
+) {
+  function factory(win) {
+    return ensureSingleRegistration(win, registrationName, () => {
+      const {
+        DBUIWebComponentBase,
+        defineCommonStaticMethods,
+        Registerable
+      } = getDBUIWebComponentCore(win);
+
+      const klass = class extends DBUIWebComponentBase {
+        static get registrationName() {
+          return registrationName;
+        }
+
+        static get name() {
+          return className;
+        }
+
+        static get dependencies() {
+          return [...super.dependencies, ...dependentClasses];
+        }
+
+        static get contextProvide() {
+          return [...super.contextProvide, ...contextProvide];
+        }
+
+        static get contextSubscribe() {
+          return [...super.contextSubscribe, ...contextSubscribe];
+        }
+
+        static get templateInnerHTML() {
+          return `
+            <style>${style}</style>
+            <div>
+              <b>${registrationName}</b>
+              ${dependentHTML}
+              ${dependentHTML.includes('<slot></slot>') ? '' : '<slot></slot>'}
+            </div>
+          `;
+        }
+
+        connectedCallback() {
+          super.connectedCallback();
+        }
+
+        onConnectedCallback() {
+          super.onConnectedCallback();
+          callbacks.onConnectedCallback && callbacks.onConnectedCallback(this);
+        }
+
+        onDisconnectedCallback() {
+          super.onDisconnectedCallback();
+          callbacks.onDisconnectedCallback && callbacks.onDisconnectedCallback(this);
+        }
+
+        onContextChanged(newContext, prevContext) {
+          super.onContextChanged(newContext, prevContext);
+          callbacks.onContextChanged && callbacks.onContextChanged(this, newContext, prevContext);
+        }
+
+        onLocaleDirChanged(newDir, prevDir) {
+          super.onLocaleDirChanged(newDir, prevDir);
+          callbacks.onLocaleDirChanged && callbacks.onLocaleDirChanged(this, newDir, prevDir);
+        }
+
+        onLocaleLangChanged(newLang, prevLang) {
+          super.onLocaleLangChanged(newLang, prevLang);
+          callbacks.onLocaleLangChanged && callbacks.onLocaleLangChanged(this, newLang, prevLang);
+        }
+
+        onAttributeChangedCallback(name, oldValue, newValue) {
+          super.onAttributeChangedCallback(name, oldValue, newValue);
+          callbacks.onAttributeChangedCallback &&
+            callbacks.onAttributeChangedCallback(this, name, oldValue, newValue);
+        }
+      };
+
+      return Registerable(
+        defineCommonStaticMethods(
+          klass
+        )
+      );
+    });
+  }
+  return factory;
+}
+
 export {
   getDBUIWebComponentRoot,
   getBase,
@@ -513,6 +610,7 @@ export {
   getDummyC,
   getDummyD,
   getDummyE,
+  getDummyX,
   treeOne, treeOneNoDbuiRoot,
   treeOneGetDbuiNodes,
   treeStyle
