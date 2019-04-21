@@ -422,11 +422,12 @@ export default function getDBUIAutoScroll(win) {
 
       onLocaleDirChanged(newDir, oldDir) {
         super.onLocaleDirChanged(newDir, oldDir);
-        console.log('-----------------DBUIAutoScroll', this.id, 'onLocaleDirChanged', newDir);
+        console.log('DBUIAutoScroll', this.id, 'onLocaleDirChanged', newDir);
         this._nativeSetupOnOff();
       }
 
       onConnectedCallback() {
+        console.log('DBUIAutoScroll', this.id, 'onConnectedCallback');
         super.onConnectedCallback();
         this._nativeSetupOnOff();
         getElement(this, 'auto-scroll-native')
