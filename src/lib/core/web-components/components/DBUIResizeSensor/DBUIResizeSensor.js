@@ -36,12 +36,6 @@ const reset = (self) => {
   self._lastHeight = size.height;
 };
 
-// TODO: move this into core as a method
-const dispatchResizeEvent = (self) => {
-  const win = self.ownerDocument.defaultView;
-  self.dispatchEvent(new win.CustomEvent('dbui-event-resize'));
-};
-
 /*
 TODO: add Behavior Extras
 */
@@ -118,7 +112,7 @@ export default function getDBUIResizeSensor(win) {
         const dirty = size.width !== this._lastWidth || size.height !== this._lastHeight;
 
         if (dirty) {
-          dispatchResizeEvent(this);
+          this.dispatchDbuiEvent('dbui-event-resize');
         }
         reset(this);
       }

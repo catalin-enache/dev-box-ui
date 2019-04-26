@@ -28,20 +28,6 @@ const getResizeSensorContent = (self) => {
   return self._resizeSensorContent;
 };
 
-const dispatchResizeEvent = (self) => {
-  const win = self.ownerDocument.defaultView;
-  self.dispatchEvent(new win.CustomEvent('dbui-event-resize', {
-    detail: self._resizeEventDetails
-  }));
-};
-
-const dispatchScrollEvent = (self) => {
-  const win = self.ownerDocument.defaultView;
-  self.dispatchEvent(new win.CustomEvent('dbui-event-scroll', {
-    detail: {}
-  }));
-};
-
 /*
 TODO:
 Finish userControlled behavior and do related unittests.
@@ -369,11 +355,15 @@ export default function getDBUIAutoScrollNative(win) {
       }
 
       _onResizeOuter() {
-        dispatchResizeEvent(this);
+        this.dispatchDbuiEvent('dbui-event-resize', {
+          detail: this._resizeEventDetails
+        });
       }
 
       _onResizeContent() {
-        dispatchResizeEvent(this);
+        this.dispatchDbuiEvent('dbui-event-resize', {
+          detail: this._resizeEventDetails
+        });
       }
 
       _onScroll() {
@@ -382,7 +372,7 @@ export default function getDBUIAutoScrollNative(win) {
         if (!this._hasNativeScrollControl) return;
         this.hScroll = this._convertHScrollPxToPercentage(this.scrollLeft);
         this.vScroll = this._convertVScrollPxToPercentage(this.scrollTop);
-        dispatchScrollEvent(this);
+        this.dispatchDbuiEvent('dbui-event-scroll', { detail: {} });
       }
 
       // =========== controlling the dispatch of scroll event only when _hasNativeScrollControl >> =======

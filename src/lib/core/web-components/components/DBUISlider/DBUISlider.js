@@ -212,10 +212,9 @@ const forwardSteps = (self) => {
 };
 
 const dispatchSlideEvent = (self) => {
-  const win = self.ownerDocument.defaultView;
-  self.dispatchEvent(new win.CustomEvent('dbui-event-slidemove', {
+  self.dispatchDbuiEvent('dbui-event-slidemove', {
     detail: {}
-  }));
+  });
 };
 
 export default function getDBUISlider(win) {

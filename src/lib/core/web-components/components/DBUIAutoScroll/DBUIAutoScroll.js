@@ -28,12 +28,8 @@ const getElement = (self, id) => {
   return self[`_${id}`];
 };
 
-// TODO: move this into core
 const dispatchScrollEvent = (self) => {
-  const win = self.ownerDocument.defaultView;
-  self.dispatchEvent(new win.CustomEvent('dbui-event-scroll', {
-    detail: {}
-  }));
+  self.dispatchDbuiEvent('dbui-event-scroll', { detail: {} });
 };
 
 const registrationName = 'dbui-auto-scroll';

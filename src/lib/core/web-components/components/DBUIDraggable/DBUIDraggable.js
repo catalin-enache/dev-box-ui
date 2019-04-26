@@ -131,9 +131,9 @@ function cancelDragging(self) {
   self._lastEvent = null;
   win._dbuiCurrentElementBeingDragged = null;
   dbuiDraggableRegisteredEvents.delete(self);
-  self.dispatchEvent(new win.CustomEvent('dbui-event-dragend', {
+  self.dispatchDbuiEvent('dbui-event-dragend', {
     detail: {}
-  }));
+  });
 }
 
 /**
@@ -280,16 +280,15 @@ function onPointerDown(evt) {
   self._cachedConstraintPreset = null;
   self._measurements = getMeasurements(evt);
   registerRootEvents(evt);
-  const { win } = getRootDocAndWin(evt);
   const extractedEvent = extractSingleEvent(evt);
   const {
     clientX, clientY
   } = extractedEvent;
-  self.dispatchEvent(new win.CustomEvent('dbui-event-dragstart', {
+  self.dispatchDbuiEvent('dbui-event-dragstart', {
     detail: {
       clientX, clientY
     }
-  }));
+  });
 }
 
 /**
@@ -374,7 +373,7 @@ function doMove(_evt, { forceDispatch = false } = {}) {
     self.targetTranslateY = newTargetTranslateY;
 
     if (forceDispatch || newTargetTranslateX !== prevTargetTranslateX || newTargetTranslateY !== prevTargetTranslateY) {
-      self.dispatchEvent(new win.CustomEvent('dbui-event-dragmove', {
+      self.dispatchDbuiEvent('dbui-event-dragmove', {
         detail: {
           targetWidthOnStart, targetHeightOnStart,
           targetXOnStart, targetYOnStart,
@@ -387,7 +386,7 @@ function doMove(_evt, { forceDispatch = false } = {}) {
           pointerX, pointerY,
           ...rest
         }
-      }));
+      });
     }
 
     self._dragRunning = false;
@@ -960,7 +959,7 @@ export default function getDBUIDraggable(win) {
       // eslint-disable-next-line
       onAttributeChangedCallback(name, oldValue, newValue) {
         switch (name) {
-          // position adjusters attributes
+          // position adjuster attributes
           case 'target-translate-x':
           case 'target-translate-y':
             this._adjustPosition(name);

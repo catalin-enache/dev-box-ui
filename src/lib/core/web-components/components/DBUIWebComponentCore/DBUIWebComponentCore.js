@@ -220,6 +220,10 @@ export default function getDBUIWebComponentCore(win) {
         this.adoptedCallback = this.adoptedCallback.bind(this);
       }
 
+      dispatchDbuiEvent(name, options) {
+        this.dispatchEvent(new win.CustomEvent(name, options));
+      }
+
       // ============================ [Observe Dynamic Attributes] >> =============================================
 
       _initializeDynamicAttributesObserver() {
