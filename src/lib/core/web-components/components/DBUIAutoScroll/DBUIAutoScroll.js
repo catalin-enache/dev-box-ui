@@ -431,9 +431,9 @@ export default function getDBUIAutoScroll(win) {
         super.onConnectedCallback();
         this._nativeSetupOnOff();
         getElement(this, 'auto-scroll-native')
-          .addEventListener('resize', this._onDBUIAutoScrollNativeResize);
+          .addEventListener('dbui-event-resize', this._onDBUIAutoScrollNativeResize);
         getElement(this, 'auto-scroll-native')
-          .addEventListener('scroll', this._onDBUIAutoScrollNativeScroll);
+          .addEventListener('dbui-event-scroll', this._onDBUIAutoScrollNativeScroll);
         getElement(this, 'horizontal-slider')
           .addEventListener('dbui-event-slidemove', this._onHorizontalSliderMove);
         getElement(this, 'vertical-slider')
@@ -450,9 +450,9 @@ export default function getDBUIAutoScroll(win) {
       onDisconnectedCallback() {
         super.onDisconnectedCallback();
         getElement(this, 'auto-scroll-native')
-          .removeEventListener('resize', this._onDBUIAutoScrollNativeResize);
+          .removeEventListener('dbui-event-resize', this._onDBUIAutoScrollNativeResize);
         getElement(this, 'auto-scroll-native')
-          .removeEventListener('scroll', this._onDBUIAutoScrollNativeScroll);
+          .removeEventListener('dbui-event-scroll', this._onDBUIAutoScrollNativeScroll);
         getElement(this, 'horizontal-slider')
           .removeEventListener('dbui-event-slidemove', this._onHorizontalSliderMove);
         getElement(this, 'vertical-slider')

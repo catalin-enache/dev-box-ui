@@ -76,7 +76,7 @@ describe('DBUIAutoScrollNative', () => {
           // const localeProvider = contentWindow.document.querySelector('#locale-provider');
           const scrollableContent = contentWindow.document.querySelector('#scrollable-content');
 
-          autoScrollNative.addEventListener('scroll', (evt) => {
+          autoScrollNative.addEventListener('dbui-event-scroll', (evt) => {
             console.log('test autoScrollNative scroll', {
               hScroll: evt.target.hScroll,
               vScroll: evt.target.vScroll
@@ -304,7 +304,7 @@ describe('DBUIAutoScrollNative', () => {
           const resizeOuter = autoScrollNative.shadowRoot.querySelector('#resize-sensor-outer');
 
           setTimeout(() => {
-            autoScrollNative.addEventListener('scroll', () => {
+            autoScrollNative.addEventListener('dbui-event-scroll', () => {
               expect(resizeOuter.scrollTop).to.equal(100 + autoScrollNative.vNativeScrollbarThickness);
               expect(resizeOuter.scrollLeft).to.equal(100 + autoScrollNative.hNativeScrollbarThickness);
               iframe.remove();
@@ -358,7 +358,7 @@ describe('DBUIAutoScrollNative', () => {
           const resizeOuter = autoScrollNative.shadowRoot.querySelector('#resize-sensor-outer');
 
           setTimeout(() => {
-            autoScrollNative.addEventListener('scroll', () => {
+            autoScrollNative.addEventListener('dbui-event-scroll', () => {
               if (autoScrollNative.hasNegativeRTLScroll) {
                 expect(resizeOuter.scrollLeft).to.equal(-(100 + autoScrollNative.hNativeScrollbarThickness));
               } else {
@@ -468,10 +468,10 @@ describe('DBUIAutoScrollNative', () => {
               expect(height).to.equal(199);
               expect(contentWidth).to.equal(50);
               expect(contentHeight).to.equal(50);
-              autoScrollNative.removeEventListener('resize', onAutoScrollExpand);
+              autoScrollNative.removeEventListener('dbui-event-resize', onAutoScrollExpand);
               // AutoScrollShrink
               setTimeout(() => {
-                autoScrollNative.addEventListener('resize', onAutoScrollShrink);
+                autoScrollNative.addEventListener('dbui-event-resize', onAutoScrollShrink);
                 wrapperAutoScrollNative.style.width = '95px';
                 wrapperAutoScrollNative.style.height = '94px';
               }, 0);
@@ -483,10 +483,10 @@ describe('DBUIAutoScrollNative', () => {
               expect(height).to.equal(94);
               expect(contentWidth).to.equal(50);
               expect(contentHeight).to.equal(50);
-              autoScrollNative.removeEventListener('resize', onAutoScrollShrink);
+              autoScrollNative.removeEventListener('dbui-event-resize', onAutoScrollShrink);
               // ContentExpand
               setTimeout(() => {
-                autoScrollNative.addEventListener('resize', onContentExpand);
+                autoScrollNative.addEventListener('dbui-event-resize', onContentExpand);
                 scrollableContent.style.width = '102px';
                 scrollableContent.style.height = '101px';
               }, 0);
@@ -498,10 +498,10 @@ describe('DBUIAutoScrollNative', () => {
               expect(height).to.equal(94);
               expect(contentWidth).to.equal(102);
               expect(contentHeight).to.equal(101);
-              autoScrollNative.removeEventListener('resize', onContentExpand);
+              autoScrollNative.removeEventListener('dbui-event-resize', onContentExpand);
               // ContentShrink
               setTimeout(() => {
-                autoScrollNative.addEventListener('resize', onContentShrink);
+                autoScrollNative.addEventListener('dbui-event-resize', onContentShrink);
                 scrollableContent.style.width = '50px';
                 scrollableContent.style.height = '49px';
               }, 0);
@@ -513,7 +513,7 @@ describe('DBUIAutoScrollNative', () => {
               expect(height).to.equal(94);
               expect(contentWidth).to.equal(50);
               expect(contentHeight).to.equal(49);
-              autoScrollNative.removeEventListener('resize', onContentShrink);
+              autoScrollNative.removeEventListener('dbui-event-resize', onContentShrink);
               setTimeout(() => {
                 autoScrollNative.remove();
                 iframe.remove();
@@ -522,7 +522,7 @@ describe('DBUIAutoScrollNative', () => {
             }
 
             // AutoScrollExpand
-            autoScrollNative.addEventListener('resize', onAutoScrollExpand);
+            autoScrollNative.addEventListener('dbui-event-resize', onAutoScrollExpand);
 
             setTimeout(() => {
               wrapperAutoScrollNative.style.width = '200px';

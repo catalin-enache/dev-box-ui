@@ -584,7 +584,7 @@ export default function getDBUISlider(win) {
         getDraggable(this).addEventListener('dbui-event-dragend', this._onDraggableDragEnd);
         getWrapperMiddle(this).addEventListener('mousedown', this._onSliderMouseDown);
         getWrapperMiddle(this).addEventListener('touchstart', this._onSliderTouchStart);
-        getWrapperMiddle(this).addEventListener('resize', this._onResize);
+        getWrapperMiddle(this).addEventListener('dbui-event-resize', this._onResize);
         this.addEventListener('mouseenter', this._onMouseEnter);
         this.addEventListener('mouseleave', this._onMouseLeave);
         getDraggable(this).percentPrecision = this.percentPrecision;

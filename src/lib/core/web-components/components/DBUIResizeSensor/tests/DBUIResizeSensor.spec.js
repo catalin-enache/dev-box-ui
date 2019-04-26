@@ -66,7 +66,7 @@ describe('DBUIResizeSensor', () => {
           const scrollableContent = contentWindow.document.querySelector('#scrollable-content');
 
           console.log('initial size', resizeSensor.dimensionsAndCoordinates);
-          resizeSensor.addEventListener('resize', (evt) => {
+          resizeSensor.addEventListener('dbui-event-resize', (evt) => {
             console.log('test resize', evt.target.dimensionsAndCoordinates);
           });
 
@@ -142,8 +142,8 @@ describe('DBUIResizeSensor', () => {
               const { width, height } = evt.target.dimensionsAndCoordinates;
               expect(width).to.be.above(initialWidth);
               expect(height).to.be.above(initialHeight);
-              resizeSensor.removeEventListener('resize', onContentExpand);
-              resizeSensor.addEventListener('resize', onContentShrink);
+              resizeSensor.removeEventListener('dbui-event-resize', onContentExpand);
+              resizeSensor.addEventListener('dbui-event-resize', onContentShrink);
               setTimeout(() => {
                 scrollableContent.innerHTML = 'oooooo2';
               }, 0);
@@ -153,8 +153,8 @@ describe('DBUIResizeSensor', () => {
               const { width, height } = evt.target.dimensionsAndCoordinates;
               expect(width).to.be.below(initialWidth);
               expect(height).to.be.below(initialHeight);
-              resizeSensor.removeEventListener('resize', onContentShrink);
-              resizeSensor.addEventListener('resize', onResizeSensorExpand);
+              resizeSensor.removeEventListener('dbui-event-resize', onContentShrink);
+              resizeSensor.addEventListener('dbui-event-resize', onResizeSensorExpand);
               setTimeout(() => {
                 resizeSensor.style.width = '300px';
                 resizeSensor.style.height = '300px';
@@ -165,8 +165,8 @@ describe('DBUIResizeSensor', () => {
               const { width, height } = evt.target.dimensionsAndCoordinates;
               expect(width).to.equal(300);
               expect(height).to.equal(300);
-              resizeSensor.removeEventListener('resize', onResizeSensorExpand);
-              resizeSensor.addEventListener('resize', onResizeSensorShrink);
+              resizeSensor.removeEventListener('dbui-event-resize', onResizeSensorExpand);
+              resizeSensor.addEventListener('dbui-event-resize', onResizeSensorShrink);
               setTimeout(() => {
                 resizeSensor.style.width = '299px';
                 resizeSensor.style.height = '299px';
@@ -177,13 +177,13 @@ describe('DBUIResizeSensor', () => {
               const { width, height } = evt.target.dimensionsAndCoordinates;
               expect(width).to.equal(299);
               expect(height).to.equal(299);
-              resizeSensor.removeEventListener('resize', onResizeSensorShrink);
+              resizeSensor.removeEventListener('dbui-event-resize', onResizeSensorShrink);
               resizeSensor.remove();
               iframe.remove();
               done();
             }
 
-            resizeSensor.addEventListener('resize', onContentExpand);
+            resizeSensor.addEventListener('dbui-event-resize', onContentExpand);
 
             setTimeout(() => {
               scrollableContent.innerHTML += 'oooooooooooooooooooooo1';

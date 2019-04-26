@@ -954,7 +954,7 @@ export default function getDBUIDraggable(win) {
         // should also remove the rest of listeners here
         this._resetTargetToDrag();
         this._constraintNode &&
-          this._constraintNode.removeEventListener('resize', this._onConstraintNodeResize);
+          this._constraintNode.removeEventListener('dbui-event-resize', this._onConstraintNodeResize);
       }
 
       // eslint-disable-next-line
@@ -972,10 +972,10 @@ export default function getDBUIDraggable(win) {
           // constraint attributes
           case 'constraint-selector':
             this._constraintNode &&
-              this._constraintNode.removeEventListener('resize', this._onConstraintNodeResize);
+              this._constraintNode.removeEventListener('dbui-event-resize', this._onConstraintNodeResize);
             this._cachedConstraintNode = null;
             this._constraintNode &&
-              this._constraintNode.addEventListener('resize', this._onConstraintNodeResize);
+              this._constraintNode.addEventListener('dbui-event-resize', this._onConstraintNodeResize);
             break;
           case 'constraint-type':
           case 'constraint-cx':

@@ -30,16 +30,14 @@ const getResizeSensorContent = (self) => {
 
 const dispatchResizeEvent = (self) => {
   const win = self.ownerDocument.defaultView;
-  self.dispatchEvent(new win.CustomEvent('resize', {
-    // TODO: prefix the event with dbui-event
+  self.dispatchEvent(new win.CustomEvent('dbui-event-resize', {
     detail: self._resizeEventDetails
   }));
 };
 
 const dispatchScrollEvent = (self) => {
   const win = self.ownerDocument.defaultView;
-  self.dispatchEvent(new win.CustomEvent('scroll', {
-    // TODO: prefix the event with dbui-event
+  self.dispatchEvent(new win.CustomEvent('dbui-event-scroll', {
     detail: {}
   }));
 };
@@ -441,8 +439,8 @@ export default function getDBUIAutoScrollNative(win) {
       onConnectedCallback() {
         super.onConnectedCallback();
         getResizeSensorOuter(this).addEventListener('scroll', this._onScroll);
-        getResizeSensorOuter(this).addEventListener('resize', this._onResizeOuter);
-        getResizeSensorContent(this).addEventListener('resize', this._onResizeContent);
+        getResizeSensorOuter(this).addEventListener('dbui-event-resize', this._onResizeOuter);
+        getResizeSensorContent(this).addEventListener('dbui-event-resize', this._onResizeContent);
         this._applyOverflow();
         setTimeout(() => {
           // In order to apply initial scroll it is needed to ignore eventual
