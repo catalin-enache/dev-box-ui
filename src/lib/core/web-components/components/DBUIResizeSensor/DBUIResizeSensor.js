@@ -26,12 +26,15 @@ const reset = (self) => {
   const width = self.offsetWidth;
   const height = self.offsetHeight;
 
-  expandChild.style.width = `${width + 10}px`;
-  expandChild.style.height = `${height + 10}px`;
-  expand.scrollLeft = width + 10;
-  expand.scrollTop = height + 10;
-  shrink.scrollLeft = width + 10;
-  shrink.scrollTop = height + 10;
+  const offset = 1; // arbitrary value
+
+  // shrinkChild is always 200%
+  expandChild.style.width = `${width + offset}px`;
+  expandChild.style.height = `${height + offset}px`;
+  expand.scrollLeft = width + offset;
+  expand.scrollTop = height + offset;
+  shrink.scrollLeft = width + offset;
+  shrink.scrollTop = height + offset;
   self._lastWidth = size.width;
   self._lastHeight = size.height;
 };

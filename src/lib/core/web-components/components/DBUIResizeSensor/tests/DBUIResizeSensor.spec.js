@@ -4,8 +4,7 @@ import getDBUIWebComponentRoot from '../../DBUIWebComponentRoot/DBUIWebComponent
 import getDBUIResizeSensor from '../DBUIResizeSensor';
 import dbuiWebComponentsSetUp from '../../../helpers/dbuiWebComponentsSetup';
 
-const content = `
-oooooooooooooooooooo
+const content = `oooooooooooooooooooo
 oooooooooooooooooooo
 oooooooooooooooooooo
 oooooooooooooooooooo
@@ -21,6 +20,11 @@ describe('DBUIResizeSensor', () => {
       headStyle: `
       body {
         background-color: bisque;
+      }
+      
+      #wrapper-resize-sensor {
+        margin-left: 200px;
+        margin-top: 200px;
       }
       
       #dbui-resize-sensor {
@@ -71,17 +75,41 @@ describe('DBUIResizeSensor', () => {
           });
 
           setTimeout(() => {
+            console.log('+ few chars');
             scrollableContent.innerHTML += 'ooooo';
             setTimeout(() => {
+              console.log('+ many chars');
               scrollableContent.innerHTML += 'oooooooooooooooooooooo';
               setTimeout(() => {
+                console.log('- many chars');
+                scrollableContent.innerText = `${content}ooooo`;
                 setTimeout(() => {
-                  iframe.remove();
-                  done();
-                }, 55000);
-              }, 0);
+                  console.log('- few chars');
+                  scrollableContent.innerText = content;
+                  setTimeout(() => {
+                    console.log('- width');
+                    resizeSensor.style.width = `${resizeSensor.offsetWidth - 1}px`;
+                    setTimeout(() => {
+                      console.log('- height');
+                      resizeSensor.style.height = `${resizeSensor.offsetHeight - 1}px`;
+                      setTimeout(() => {
+                        console.log('+ width');
+                        resizeSensor.style.width = `${resizeSensor.offsetWidth + 1}px`;
+                        setTimeout(() => {
+                          console.log('+ height');
+                          resizeSensor.style.height = `${resizeSensor.offsetHeight + 1}px`;
+                          setTimeout(() => {
+                            iframe.remove();
+                            done();
+                          }, 55000);
+                        }, 100);
+                      }, 100);
+                    }, 100);
+                  }, 100);
+                }, 100);
+              }, 100);
             }, 100);
-          }, 0);
+          }, 100);
         });
 
         DBUIResizeSensor.registerSelf();
