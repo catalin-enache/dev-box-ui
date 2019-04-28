@@ -209,12 +209,14 @@ describe('DBUIAutoScroll', () => {
           setTimeout(() => {
             // scrollableContent.appendChild(dynamicContent);
             // autoScroll.style.width = '350px';
-            autoScroll.style.width = '150px';
+            // autoScroll.style.width = '150px';
             // autoScroll.native = true;
+            autoScroll.hScroll = 0.5;
             setTimeout(() => {
-              autoScroll.style.width = '200px';
+              // autoScroll.style.width = '200px';
               // dynamicContent.remove();
               // autoScroll.native = false;
+              autoScroll.hScroll = 0.5001;
               setTimeout(() => {
                 setTimeout(() => {
                   iframe.remove();

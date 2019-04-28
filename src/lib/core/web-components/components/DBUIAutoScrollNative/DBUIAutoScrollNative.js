@@ -168,7 +168,8 @@ export default function getDBUIAutoScrollNative(win) {
        * @param value {number}
        */
       set hScroll(value) {
-        this.setAttribute('h-scroll', (+value || 0).toString());
+        const _value = trunc(this.percentPrecision)(+value || 0);
+        this.setAttribute('h-scroll', _value.toString());
       }
 
       /**
@@ -184,7 +185,8 @@ export default function getDBUIAutoScrollNative(win) {
        * @param value {number}
        */
       set vScroll(value) {
-        this.setAttribute('v-scroll', (+value || 0).toString());
+        const _value = trunc(this.percentPrecision)(+value || 0);
+        this.setAttribute('v-scroll', _value.toString());
       }
 
       /**

@@ -4,7 +4,7 @@ import ensureSingleRegistration from '../../../internals/ensureSingleRegistratio
 import getDBUIAutoScrollNative from '../DBUIAutoScrollNative/DBUIAutoScrollNative';
 import getDBUISlider from '../DBUISlider/DBUISlider';
 
-const DEFAULT_PERCENT_PRECISION = 4;
+const DEFAULT_PERCENT_PRECISION = 2;
 
 // TODO: move this into core as a standard method
 const DBUIAutoScrollCssVars = `
