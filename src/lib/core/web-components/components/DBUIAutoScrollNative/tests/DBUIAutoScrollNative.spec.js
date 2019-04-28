@@ -44,7 +44,7 @@ describe('DBUIAutoScrollNative', () => {
         <div id="container">
           <div id="locale-provider" dir="rtl"></div>
           <div id="wrapper-auto-scroll-native">
-            <dbui-auto-scroll-native id="dbui-auto-scroll-native" _overflow="auto" sync-locale-with="#locale-provider" h-scroll="0.5" v-scroll="0.5">
+            <dbui-auto-scroll-native id="dbui-auto-scroll-native" overflow="auto" sync-locale-with="#locale-provider" h-scroll="1" v-scroll="1">
               <!--<div id="scrollable-content">${content}</div>-->
               <div id="scrollable-content">
                 <dbui-auto-scroll-native id="inner-scroll">
@@ -71,9 +71,9 @@ describe('DBUIAutoScrollNative', () => {
           DBUIRoot.registrationName,
         ].map((localName) => contentWindow.customElements.whenDefined(localName)
         )).then(() => {
-          // const wrapperAutoScrollNative = contentWindow.document.querySelector('#wrapper-auto-scroll-native');
+          const wrapperAutoScrollNative = contentWindow.document.querySelector('#wrapper-auto-scroll-native');
           const autoScrollNative = contentWindow.document.querySelector('#dbui-auto-scroll-native');
-          // const localeProvider = contentWindow.document.querySelector('#locale-provider');
+          const localeProvider = contentWindow.document.querySelector('#locale-provider');
           const scrollableContent = contentWindow.document.querySelector('#scrollable-content');
 
           autoScrollNative.addEventListener('dbui-event-scroll', (evt) => {
@@ -100,29 +100,22 @@ describe('DBUIAutoScrollNative', () => {
           
           
           `;
-          // dynamicContent.tabIndex = 0;
           dynamicContent.setAttribute('contenteditable', 'true');
-
-          // scrollableOne.remove();
-          // wrapperScrollableOne.appendChild(scrollableOne);
-          // scrollableOne.remove();
-          // wrapperScrollableOne.appendChild(scrollableOne);
-          // scrollableOne.remove();
-          // wrapperScrollableOne.appendChild(scrollableOne);
-
-          // scrollableContent.innerHTML = content;
           scrollableContent.appendChild(dynamicContent);
-
+          // autoScrollNative.remove();
 
           setTimeout(() => {
-            // scrollableContent.appendChild(dynamicContent);
+            // wrapperAutoScrollNative.appendChild(autoScrollNative);
             // autoScrollNative.style.width = '350px';
-            // localeProvider.dir = 'rtl';
-            autoScrollNative.hScroll = '0.3463';
+            // localeProvider.dir = 'ltr';
+            // autoScrollNative.hScroll = 0.6;
+            // autoScrollNative.vScroll = 0.6;
             setTimeout(() => {
-              // localeProvider.dir = 'ltr';
+              // autoScrollNative.style.width = '200px';
+              // localeProvider.dir = 'rtl';
               // dynamicContent.remove();
-              autoScrollNative.hScroll = '0.3464';
+              // autoScrollNative.hScroll = 0.6;
+              // autoScrollNative.vScroll = 0.6;
               setTimeout(() => {
                 setTimeout(() => {
                   iframe.remove();
@@ -228,7 +221,7 @@ describe('DBUIAutoScrollNative', () => {
       <dbui-web-component-root id="dbui-web-component-root">
         <dbui-auto-scroll-native
         id="dbui-auto-scroll-native"
-        h-scroll="1" 
+        h-scroll="1"
         >
         <div id="content"></div>
         </dbui-auto-scroll-native>
@@ -239,28 +232,34 @@ describe('DBUIAutoScrollNative', () => {
         const DBUIAutoScrollNative = getDBUIAutoScrollNative(contentWindow);
         const autoScrollNative = contentWindow.document.querySelector('#dbui-auto-scroll-native');
         autoScrollNative.vScroll = '1';
+
+        function scrollOccurred() {
+          autoScrollNative.removeEventListener('dbui-event-scroll-occurred', scrollOccurred);
+
+          const resizeOuter = autoScrollNative.shadowRoot.querySelector('#resize-sensor-outer');
+
+
+          expect(resizeOuter.scrollTop).to.equal(100 + autoScrollNative.vNativeScrollbarThickness);
+          expect(resizeOuter.scrollLeft).to.equal(100 + autoScrollNative.hNativeScrollbarThickness);
+
+          autoScrollNative.hScroll = 0;
+          autoScrollNative.vScroll = 0;
+
+          expect(resizeOuter.scrollTop).to.equal(0);
+          expect(resizeOuter.scrollLeft).to.equal(0);
+
+          setTimeout(() => {
+            iframe.remove();
+            done();
+          }, 0);
+        }
+        autoScrollNative.addEventListener('dbui-event-scroll-occurred', scrollOccurred);
+
         Promise.all([
           DBUIRoot.registrationName,
         ].map((localName) => contentWindow.customElements.whenDefined(localName)
         )).then(() => {
-
-          const resizeOuter = autoScrollNative.shadowRoot.querySelector('#resize-sensor-outer');
-
-          setTimeout(() => {
-            expect(resizeOuter.scrollTop).to.equal(100 + autoScrollNative.vNativeScrollbarThickness);
-            expect(resizeOuter.scrollLeft).to.equal(100 + autoScrollNative.hNativeScrollbarThickness);
-
-            autoScrollNative.hScroll = '0';
-            autoScrollNative.vScroll = '0';
-
-            expect(resizeOuter.scrollTop).to.equal(0);
-            expect(resizeOuter.scrollLeft).to.equal(0);
-
-            setTimeout(() => {
-              iframe.remove();
-              done();
-            }, 0);
-          }, 0);
+          // pass
         });
 
         DBUIAutoScrollNative.registerSelf();

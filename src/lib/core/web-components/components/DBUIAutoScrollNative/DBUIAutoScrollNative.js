@@ -30,7 +30,7 @@ const getResizeSensorContent = (self) => {
 
 /*
 TODO:
-Finish userControlled behavior and do related unittests.
+Do related unittests for different ways to trigger scroll.
 */
 
 /*
@@ -114,15 +114,9 @@ export default function getDBUIAutoScrollNative(win) {
         this._onResizeContent = this._onResizeContent.bind(this);
         this._onScroll = this._onScroll.bind(this);
 
-        ['_onMouseDown', '_onDocumentMouseUp',
-          '_onMouseEnter', '_onMouseLeave',
-          '_onTouchStart', '_onDocumentTouchEnd'].forEach((listener) => {
-          this[listener] = this[listener].bind(this);
-        });
-
-        this._hasNativeScrollControl = false;
-        this._mouseIn = false;
-        this._mouseDown = false;
+        this._lastVScroll = 0;
+        this._lastHScroll = 0;
+        this._initialScrollApplied = false;
       }
 
       /**
@@ -355,74 +349,51 @@ export default function getDBUIAutoScrollNative(win) {
       }
 
       _onResizeOuter() {
+        this._onScroll();
         this.dispatchDbuiEvent('dbui-event-resize', {
           detail: this._resizeEventDetails
         });
       }
 
       _onResizeContent() {
+        this._onScroll();
         this.dispatchDbuiEvent('dbui-event-resize', {
           detail: this._resizeEventDetails
         });
       }
 
+      get _isProgrammaticScroll() {
+        const hScroll = this.hScroll;
+        const vScroll = this.vScroll;
+        const lastHScroll = this._lastHScroll;
+        const lastVScroll = this._lastVScroll;
+        const _isProgrammaticScroll = vScroll !== lastVScroll || hScroll !== lastHScroll;
+        return _isProgrammaticScroll;
+      }
+
       _onScroll() {
+        if (!this._initialScrollApplied) return;
         // When hvScroll was set programmatically resulting in a scroll event
         // there is no need to set hvScroll again from internal calculation
-        if (!this._hasNativeScrollControl) return;
-        this.hScroll = this._convertHScrollPxToPercentage(this.scrollLeft);
-        this.vScroll = this._convertVScrollPxToPercentage(this.scrollTop);
+        const _isProgrammaticScroll = this._isProgrammaticScroll;
+        if (_isProgrammaticScroll) {
+          this._lastHScroll = this.hScroll;
+          this._lastVScroll = this.vScroll;
+          this.dispatchDbuiEvent('dbui-event-scroll-occurred');
+          return;
+        }
+        this._lastHScroll = this._convertHScrollPxToPercentage(this.scrollLeft);
+        this._lastVScroll = this._convertVScrollPxToPercentage(this.scrollTop);
+        this.hScroll = this._lastHScroll;
+        this.vScroll = this._lastVScroll;
+        this.dispatchDbuiEvent('dbui-event-scroll-occurred');
         this.dispatchDbuiEvent('dbui-event-scroll', { detail: {} });
       }
-
-      // =========== controlling the dispatch of scroll event only when _hasNativeScrollControl >> =======
-
-      _onMouseDown(evt) {
-        this._mouseDown = evt.buttons === 1; // so that right click acts like a mouse up
-        win.getSelection && win.getSelection().removeAllRanges();
-        // If not clearing current selection, then, on second mousedown on AutoScrollNative
-        // followed by dragging outside, browser will try to move the current selection and NOT fire mouseup.
-        // We're also listening for dragend as a secondary measure.
-      }
-
-      _onDocumentMouseUp() {
-        this._mouseDown = false;
-        // Addressing the case where mousedown on content,
-        // then moves from content area unto custom scroll and start scrolling.
-        this._hasNativeScrollControl = this._mouseIn;
-      }
-
-      _onMouseEnter(evt) {
-        this._mouseIn = true;
-        this._hasNativeScrollControl = evt.buttons !== 1;
-        // Addressing the case where mouseup is fired outside document.
-        if (evt.buttons !== 1) {
-          this._mouseDown = false;
-        }
-      }
-
-      _onMouseLeave() {
-        this._mouseIn = false;
-        // Addressing the case where mouse moves from content area
-        // unto custom scroll and start scrolling.
-        this._hasNativeScrollControl = this._mouseDown;
-      }
-
-      _onTouchStart() {
-        this._hasNativeScrollControl = true;
-        win.getSelection && win.getSelection().removeAllRanges();
-      }
-
-      _onDocumentTouchEnd() {
-        this._hasNativeScrollControl = false;
-      }
-
-      // =========== << controlling the dispatch of scroll event only when _hasNativeScrollControl =======
 
       onLocaleDirChanged(newDir, oldDir) {
         super.onLocaleDirChanged(newDir, oldDir);
         getResizeSensorOuter(this).dir = newDir;
-        if (!this.isMounted) return;
+        if (!this._initialScrollApplied) return;
         this._applyHVScrollPercentage();
       }
 
@@ -432,60 +403,38 @@ export default function getDBUIAutoScrollNative(win) {
         getResizeSensorOuter(this).addEventListener('dbui-event-resize', this._onResizeOuter);
         getResizeSensorContent(this).addEventListener('dbui-event-resize', this._onResizeContent);
         this._applyOverflow();
+        // _applyHVScrollPercentage when dimensions are established (next frame)
         setTimeout(() => {
-          // In order to apply initial scroll it is needed to ignore eventual
-          // mouse being on top of the this when this was just connected.
-          const hasNativeScrollControl = this._hasNativeScrollControl;
-          this._hasNativeScrollControl = false;
+          if (!this.isMounted) return;
+          this._initialScrollApplied = true;
           this._applyHVScrollPercentage(); // will dispatch a scroll event.
-          setTimeout(() => {
-            // Set back _hasNativeScrollControl to its original value.
-            this._hasNativeScrollControl = hasNativeScrollControl;
-          }, 0);
         }, 0);
-        this.addEventListener('mousedown', this._onMouseDown);
-        this.addEventListener('mouseenter', this._onMouseEnter);
-        this.addEventListener('mouseleave', this._onMouseLeave);
-        this.addEventListener('touchstart', this._onTouchStart);
-        this.ownerDocument.addEventListener('mouseup', this._onDocumentMouseUp);
-        this.ownerDocument.addEventListener('dragend', this._onDocumentMouseUp);
-        this.ownerDocument.addEventListener('touchend', this._onDocumentTouchEnd);
-        this.ownerDocument.addEventListener('touchcancel', this._onDocumentTouchEnd);
       }
 
       onDisconnectedCallback() {
         super.onDisconnectedCallback();
-        getResizeSensorOuter(this).removeEventListener('resize', this._onResizeOuter);
-        getResizeSensorContent(this).removeEventListener('resize', this._onResizeContent);
-        this.removeEventListener('mousedown', this._onMouseDown);
-        this.removeEventListener('mouseenter', this._onMouseEnter);
-        this.removeEventListener('mouseleave', this._onMouseLeave);
-        this.removeEventListener('touchstart', this._onTouchStart);
-        this.ownerDocument.removeEventListener('mouseup', this._onDocumentMouseUp);
-        this.ownerDocument.removeEventListener('dragend', this._onDocumentMouseUp);
-        this.ownerDocument.removeEventListener('touchend', this._onDocumentTouchEnd);
-        this.ownerDocument.removeEventListener('touchcancel', this._onDocumentTouchEnd);
+        getResizeSensorOuter(this).removeEventListener('scroll', this._onScroll);
+        getResizeSensorOuter(this).removeEventListener('dbui-event-resize', this._onResizeOuter);
+        getResizeSensorContent(this).removeEventListener('dbui-event-resize', this._onResizeContent);
       }
 
       onAttributeChangedCallback(name, oldValue, newValue) {
         super.onAttributeChangedCallback(name, oldValue, newValue);
-        if (!this.isMounted) return;
         switch (name) {
           case 'overflow': {
             this._applyOverflow();
             break;
           }
           case 'h-scroll': {
-            // Is hvScroll was NOT set programmatically but was triggered by user (native scroll)
-            // then top/leftScroll are already set (content is already scrolled)
-            // so there is no need to calculate hvScroll again to set it programmatically.
-            if (this._hasNativeScrollControl) return;
-            this._applyHScrollPercentage();
+            if (this._initialScrollApplied && +newValue !== +this._lastHScroll) {
+              this._applyHScrollPercentage();
+            }
             break;
           }
           case 'v-scroll': {
-            if (this._hasNativeScrollControl) return;
-            this._applyVScrollPercentage();
+            if (this._initialScrollApplied && +newValue !== +this._lastVScroll) {
+              this._applyVScrollPercentage();
+            }
             break;
           }
           default:

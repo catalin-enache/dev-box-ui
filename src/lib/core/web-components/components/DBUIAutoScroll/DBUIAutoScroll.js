@@ -32,6 +32,10 @@ const dispatchScrollEvent = (self) => {
   self.dispatchDbuiEvent('dbui-event-scroll', { detail: {} });
 };
 
+const dispatchResizeEvent = (self) => {
+  self.dispatchDbuiEvent('dbui-event-resize', { detail: {} });
+};
+
 const registrationName = 'dbui-auto-scroll';
 
 /*
@@ -348,33 +352,16 @@ export default function getDBUIAutoScroll(win) {
         verticalSlider.debugShowValue = this.debugShowValue;
       }
 
-      _onDBUIAutoScrollNativeResize(evt) {
-        const toScrollHorizontal = evt.target.scrollableWidth - evt.target.scrollLeft;
-        const toScrollVertical = evt.target.scrollableHeight - evt.target.scrollTop;
-        // this behavior can be seen with an inner content-editable
-        const scrollRatioHorizontal =
-          +(
-            1 - +(toScrollHorizontal / evt.target.scrollableWidth)
-              .toFixed(this.percentPrecision)
-          ).toFixed(this.percentPrecision);
-        const scrollRatioVertical =
-          +(
-            1 - +(toScrollVertical / evt.target.scrollableHeight)
-              .toFixed(this.percentPrecision)
-          ).toFixed(this.percentPrecision);
-        this.hScroll = scrollRatioHorizontal;
-        this.vScroll = scrollRatioVertical;
-        getElement(this, 'horizontal-slider').ratio = evt.target.hRatio;
-        getElement(this, 'vertical-slider').ratio = evt.target.vRatio;
-        dispatchScrollEvent(this);
+      _onDBUIAutoScrollNativeResize() {
+        dispatchResizeEvent(this);
       }
 
       _onDBUIAutoScrollNativeScroll(evt) {
+        console.log('_onDBUIAutoScrollNativeScroll', this.id);
         this.hScroll = evt.target.hScroll;
         this.vScroll = evt.target.vScroll;
         // Setting hScroll/vScroll in these methods
-        // (_onDBUIAutoScrollNativeScroll, _onDBUIAutoScrollNativeResize,
-        // _onHorizontalSliderMove, _onVerticalSliderMove)
+        // (_onDBUIAutoScrollNativeScroll, _onHorizontalSliderMove, _onVerticalSliderMove)
         // will trigger _applyHScrollPercentage/_applyVScrollPercentage which in return
         // will set back these values on those components
         // (vertical-slider, horizontal-slider, auto-scroll-native).
@@ -412,6 +399,7 @@ export default function getDBUIAutoScroll(win) {
       }
 
       _applyHVScrollPercentage() {
+        console.log('DBUIAutoScroll#_applyHVScrollPercentage', this.id, { hRatio: this.hRatio, vRatio: this.vRatio });
         this._applyHScrollPercentage();
         this._applyVScrollPercentage();
       }
@@ -436,7 +424,6 @@ export default function getDBUIAutoScroll(win) {
           .addEventListener('dbui-event-slidemove', this._onVerticalSliderMove);
         this._setPercentPrecision();
         setTimeout(() => {
-          console.log(this.hRatio, this.vRatio);
           getElement(this, 'horizontal-slider').ratio = this.hRatio;
           getElement(this, 'vertical-slider').ratio = this.vRatio;
           this._applyHVScrollPercentage();

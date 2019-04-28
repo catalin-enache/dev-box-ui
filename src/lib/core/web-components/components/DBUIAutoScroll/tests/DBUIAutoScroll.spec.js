@@ -167,11 +167,11 @@ describe('DBUIAutoScroll', () => {
         )).then(() => {
           const wrapperAutoScroll = contentWindow.document.querySelector('#wrapper-auto-scroll');
           const autoScroll = contentWindow.document.querySelector('#dbui-auto-scroll');
-          autoScroll.addEventListener('dbui-event-scroll', () => {
-            // console.log('dbui-event-scroll', {
-            //   hScroll: autoScroll.hScroll,
-            //   vScroll: autoScroll.vScroll,
-            // });
+          autoScroll.addEventListener('dbui-event-scroll', (evt) => {
+            console.log('test dbui-event-scroll', {
+              hScroll: evt.target.hScroll,
+              vScroll: evt.target.vScroll
+            });
           });
           const scrollableContent = contentWindow.document.querySelector('#scrollable-content');
           const dynamicContent = contentWindow.document.createElement('div');
@@ -208,10 +208,11 @@ describe('DBUIAutoScroll', () => {
 
           setTimeout(() => {
             // scrollableContent.appendChild(dynamicContent);
-            // autoScrollNative.style.width = '350px';
-            // autoScroll.style.width = '50px';
+            // autoScroll.style.width = '350px';
+            autoScroll.style.width = '150px';
             // autoScroll.native = true;
             setTimeout(() => {
+              autoScroll.style.width = '200px';
               // dynamicContent.remove();
               // autoScroll.native = false;
               setTimeout(() => {
@@ -223,13 +224,10 @@ describe('DBUIAutoScroll', () => {
             }, 3000);
           }, 1000);
         });
-        // DBUIDraggable.registerSelf();
-        // DBUISlider.registerSelf();
+
         DBUIAutoScroll.registerSelf();
         DummyOne.registerSelf();
         DBUIWebComponentRoot.registerSelf();
-
-        console.log('Registrations DONE!');
       }
     });
   });
