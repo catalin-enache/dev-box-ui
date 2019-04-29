@@ -86,6 +86,11 @@ export default function getDBUIAutoScroll(win) {
             width: 100%;
             height: 100%;
             position: relative;
+            /* padding can be set directly on content */
+            padding-top: 0px !important;
+            padding-right: 0px !important;
+            padding-bottom: 0px !important;
+            padding-left: 0px !important;
           }
           
           :host([dbui-dir=ltr]) {
@@ -99,7 +104,8 @@ export default function getDBUIAutoScroll(win) {
           #outer {
             width: 100%;
             height: 100%;
-            /*overflow: hidden;*/
+            _overflow: hidden;
+            outline: 1px solid red;
           }
           
           #auto-scroll-native {
@@ -151,9 +157,9 @@ export default function getDBUIAutoScroll(win) {
           }
 
           </style>
+          <dbui-slider id="horizontal-slider"></dbui-slider>
+          <dbui-slider id="vertical-slider" dir="ltr" vertical></dbui-slider>
           <div id="outer">
-            <dbui-slider id="horizontal-slider"></dbui-slider>
-            <dbui-slider id="vertical-slider" dir="ltr" vertical></dbui-slider>
             <dbui-auto-scroll-native id="auto-scroll-native" overflow="scroll">
               <div id="content">
                 <slot></slot>
@@ -324,6 +330,7 @@ export default function getDBUIAutoScroll(win) {
       }
 
       _customSetupOnNativeSetupOff() {
+        const outer = getElement(this, 'outer');
         const horizontalSlider = getElement(this, 'horizontal-slider');
         const verticalSlider = getElement(this, 'vertical-slider');
         const autoScrollNative = getElement(this, 'auto-scroll-native');
@@ -332,18 +339,30 @@ export default function getDBUIAutoScroll(win) {
         const paddingDir = isRtl ? 'Left' : 'Right';
         const paddingOtherDir = paddingDir === 'Left' ? 'Right' : 'Left';
         const { hNativeScrollbarThickness, vNativeScrollbarThickness } = autoScrollNative;
-        // console.log('_customSetupOnNativeSetupOff', autoScrollNative.constructor.name);
         const customSliderThickness = this._customSliderThickness;
-        autoScrollNative.style.width = `calc(100% + ${vNativeScrollbarThickness}px)`;
-        autoScrollNative.style.height = `calc(100% + ${hNativeScrollbarThickness}px)`;
-        // TODO: need to address border and padding ?
-        autoScrollNative.style.marginLeft = `${(isRtl ? -vNativeScrollbarThickness : 0)}px`;
-        content.style[`padding${paddingDir}`] = `${customSliderThickness}px`;
+        const computedStyle = win.getComputedStyle(this);
+        const borderLeftWidth = win.parseInt(computedStyle.getPropertyValue('border-left-width')) || 0;
+        const borderRightWidth = win.parseInt(computedStyle.getPropertyValue('border-right-width')) || 0;
+        const borderBottomWidth = win.parseInt(computedStyle.getPropertyValue('border-bottom-width')) || 0;
+        const borderSide = isRtl ? borderLeftWidth : borderRightWidth;
+        const borderBottom = borderBottomWidth;
+
+        outer.style.width = `calc(100% - ${customSliderThickness}px)`;
+        outer.style.height = `calc(100% - ${customSliderThickness}px)`;
+        outer.style.marginLeft = isRtl ? `${customSliderThickness}px` : '0px';
+
+        autoScrollNative.style.width = `calc(100% + ${vNativeScrollbarThickness + borderSide + customSliderThickness}px)`;
+        autoScrollNative.style.height = `calc(100% + ${hNativeScrollbarThickness + borderBottom + customSliderThickness}px)`;
+        autoScrollNative.style.marginLeft = `${(isRtl ? -(vNativeScrollbarThickness + borderSide + customSliderThickness) : 0)}px`;
+
+        content.style[`padding${paddingDir}`] = `${customSliderThickness + borderSide}px`;
         content.style[`padding${paddingOtherDir}`] = '0px';
-        content.style.paddingBottom = `${customSliderThickness}px`;
+        content.style.paddingBottom = `${customSliderThickness + borderBottom}px`;
+
         horizontalSlider.style.visibility = 'visible';
         verticalSlider.style.visibility = 'visible';
         horizontalSlider.debugShowValue = this.debugShowValue;
+
         verticalSlider.debugShowValue = this.debugShowValue;
       }
 

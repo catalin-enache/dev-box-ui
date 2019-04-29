@@ -97,25 +97,32 @@ const content = `
 `;
 
 describe('DBUIAutoScroll', () => {
-  xit('behaves as expected - live testing', (done) => {
+  it.only('behaves as expected - live testing', (done) => {
     inIframe({
       headStyle: `
       body {
         background-color: bisque;
+        _background-image: url(https://images.pexels.com/photos/68147/waterfall-thac-dray-nur-buon-me-thuot-daklak-68147.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500);
       }
 
       #dbui-auto-scroll {
         width: 200px;
         height: 200px;
         background-color: rgba(0, 0, 255, 0.2);
-        border: 1px solid black;
-        /*padding: 10px;*/
+        border-color: black;
+        border-style: solid;
+        border-top-width: 0px;
+        border-right-width: 0px;
+        border-bottom-width: 0px;
+        border-left-width: 0px;
+        padding: 40px; /* padding is ignored overwritten with 0 internally */
         /*box-sizing: border-box;*/
         /*--dbui-auto-scroll-custom-slider-thickness: 25px;*/
       }
       
       #scrollable-content {
         border: 2px solid orange;
+        padding: 0px;
       }
       
       input {
