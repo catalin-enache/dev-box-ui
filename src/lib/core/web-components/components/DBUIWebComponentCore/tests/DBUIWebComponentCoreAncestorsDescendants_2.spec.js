@@ -1,9 +1,10 @@
 import { expect } from 'chai';
 import getDBUIWebComponentRoot from '../../DBUIWebComponentRoot/DBUIWebComponentRoot';
 import inIframe from '../../../../../../../testUtils/inIframe';
-import { isSafari } from '../../../../utils/browserDetect';
+import { isSafariOnMac } from '../../../../utils/browserDetect';
 import { randomArrayNum } from '../../../../utils/math';
 import { getDummyX } from '../tests/DBUITestTreeSetup.forSpec';
+// import onScreenConsole from '../../../../utils/onScreenConsole';
 
 /* eslint max-len: 0 */
 /* eslint camelcase: 0 */
@@ -2702,12 +2703,12 @@ describe('DBUIWebComponentBase ancestors/descendants and registrations - 2', () 
             // top is last and is preceded by shadow bottom to top
             // when b is connected c d e f are upgraded and connected
             dbuiBehaviorTestEIsUpgraded = false;
-            dbuiBehaviorTestBIsUpgraded = !isSafari(win);
+            dbuiBehaviorTestBIsUpgraded = !isSafariOnMac(win);
             win.document.body.appendChild(div);
             div.innerHTML = `
             <dbui-behavior-test-a id="dbui-behavior-test-a-light"></dbui-behavior-test-a>
             `;
-            expect(connectedComponents).to.deep.equal(!isSafari(win) ? [
+            expect(connectedComponents).to.deep.equal(!isSafariOnMac(win) ? [
               'dbui-behavior-test-d-shadow', 'dbui-behavior-test-f-shadow', 'dbui-behavior-test-e-light-in-shadow',
               'dbui-behavior-test-c-shadow', 'dbui-behavior-test-b-shadow', 'dbui-behavior-test-a-light',
             ] : [
