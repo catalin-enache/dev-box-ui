@@ -3,6 +3,7 @@ import inIframe from '../../../../../../../testUtils/inIframe';
 import getDBUIWebComponentRoot from '../../DBUIWebComponentRoot/DBUIWebComponentRoot';
 import getDBUIAutoScrollNative from '../DBUIAutoScrollNative';
 import dbuiWebComponentsSetUp from '../../../helpers/dbuiWebComponentsSetup';
+// import onScreenConsole from '../../../../utils/onScreenConsole';
 
 const content = `
 <p>9aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa9</p>
@@ -71,9 +72,9 @@ describe('DBUIAutoScrollNative', () => {
           DBUIRoot.registrationName,
         ].map((localName) => contentWindow.customElements.whenDefined(localName)
         )).then(() => {
-          const wrapperAutoScrollNative = contentWindow.document.querySelector('#wrapper-auto-scroll-native');
+          // const wrapperAutoScrollNative = contentWindow.document.querySelector('#wrapper-auto-scroll-native');
           const autoScrollNative = contentWindow.document.querySelector('#dbui-auto-scroll-native');
-          const localeProvider = contentWindow.document.querySelector('#locale-provider');
+          // const localeProvider = contentWindow.document.querySelector('#locale-provider');
           const scrollableContent = contentWindow.document.querySelector('#scrollable-content');
 
           autoScrollNative.addEventListener('dbui-event-scroll', (evt) => {
@@ -228,6 +229,7 @@ describe('DBUIAutoScrollNative', () => {
       </dbui-web-component-root>
       `,
       onLoad: ({ contentWindow, iframe }) => {
+        // onScreenConsole();
         const DBUIRoot = getDBUIWebComponentRoot(contentWindow);
         const DBUIAutoScrollNative = getDBUIAutoScrollNative(contentWindow);
         const autoScrollNative = contentWindow.document.querySelector('#dbui-auto-scroll-native');
@@ -236,17 +238,18 @@ describe('DBUIAutoScrollNative', () => {
         function scrollOccurred() {
           autoScrollNative.removeEventListener('dbui-event-scroll-occurred', scrollOccurred);
 
-          const resizeOuter = autoScrollNative.shadowRoot.querySelector('#resize-sensor-outer');
+          // const resizeOuter = autoScrollNative.shadowRoot.querySelector('#resize-sensor-outer');
+          // on Chrome on Android scrollTop, scrollLeft is a decimal number: 99.98...
+          // even is explicitly set to integer 100
 
-
-          expect(resizeOuter.scrollTop).to.equal(100 + autoScrollNative.vNativeScrollbarThickness);
-          expect(resizeOuter.scrollLeft).to.equal(100 + autoScrollNative.hNativeScrollbarThickness);
+          expect(autoScrollNative.scrollTop).to.equal(100 + autoScrollNative.vNativeScrollbarThickness);
+          expect(autoScrollNative.scrollLeft).to.equal(100 + autoScrollNative.hNativeScrollbarThickness);
 
           autoScrollNative.hScroll = 0;
           autoScrollNative.vScroll = 0;
 
-          expect(resizeOuter.scrollTop).to.equal(0);
-          expect(resizeOuter.scrollLeft).to.equal(0);
+          expect(autoScrollNative.scrollTop).to.equal(0);
+          expect(autoScrollNative.scrollLeft).to.equal(0);
 
           setTimeout(() => {
             iframe.remove();
@@ -300,12 +303,12 @@ describe('DBUIAutoScrollNative', () => {
         ].map((localName) => contentWindow.customElements.whenDefined(localName)
         )).then(() => {
 
-          const resizeOuter = autoScrollNative.shadowRoot.querySelector('#resize-sensor-outer');
+          // const resizeOuter = autoScrollNative.shadowRoot.querySelector('#resize-sensor-outer');
 
           setTimeout(() => {
             autoScrollNative.addEventListener('dbui-event-scroll', () => {
-              expect(resizeOuter.scrollTop).to.equal(100 + autoScrollNative.vNativeScrollbarThickness);
-              expect(resizeOuter.scrollLeft).to.equal(100 + autoScrollNative.hNativeScrollbarThickness);
+              expect(autoScrollNative.scrollTop).to.equal(100 + autoScrollNative.vNativeScrollbarThickness);
+              expect(autoScrollNative.scrollLeft).to.equal(100 + autoScrollNative.hNativeScrollbarThickness);
               iframe.remove();
               done();
             });
@@ -358,12 +361,15 @@ describe('DBUIAutoScrollNative', () => {
           setTimeout(() => {
             autoScrollNative.addEventListener('dbui-event-scroll', () => {
               if (autoScrollNative.hasNegativeRTLScroll) {
-                expect(resizeOuter.scrollLeft).to.equal(-(100 + autoScrollNative.hNativeScrollbarThickness));
+                expect(Math.round(resizeOuter.scrollLeft)).to.equal(-(100 + autoScrollNative.hNativeScrollbarThickness));
+                expect(autoScrollNative.scrollLeft).to.equal((100 + autoScrollNative.hNativeScrollbarThickness));
               } else {
-                expect(resizeOuter.scrollLeft).to.equal(0);
+                expect(Math.round(resizeOuter.scrollLeft)).to.equal(0);
+                expect(autoScrollNative.scrollLeft).to.equal((100 + autoScrollNative.hNativeScrollbarThickness));
               }
               autoScrollNative.dir = 'ltr';
-              expect(resizeOuter.scrollLeft).to.equal(100 + autoScrollNative.hNativeScrollbarThickness);
+              expect(Math.round(resizeOuter.scrollLeft)).to.equal(100 + autoScrollNative.hNativeScrollbarThickness);
+              expect(autoScrollNative.scrollLeft).to.equal(100 + autoScrollNative.hNativeScrollbarThickness);
 
               iframe.remove();
               done();

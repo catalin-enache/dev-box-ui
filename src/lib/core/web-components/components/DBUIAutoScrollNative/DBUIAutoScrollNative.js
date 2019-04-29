@@ -255,7 +255,7 @@ export default function getDBUIAutoScrollNative(win) {
        */
       get scrollLeft() {
         const resizeOuter = getResizeSensorOuter(this);
-        const _hScroll = resizeOuter.scrollLeft;
+        const _hScroll = Math.round(resizeOuter.scrollLeft);
         const hScroll = this.isDbuiRTL && this.hasNegativeRTLScroll ? -_hScroll :
           this.isDbuiRTL ? this.scrollableWidth - _hScroll :
             _hScroll;
@@ -275,7 +275,9 @@ export default function getDBUIAutoScrollNative(win) {
        * @return {number}
        */
       get scrollTop() {
-        return getResizeSensorOuter(this).scrollTop;
+        // on Chrome on Android scrollTop, scrollLeft is a decimal number => ex: 99.98...
+        // even is explicitly set to integer => ex: 100
+        return Math.round(getResizeSensorOuter(this).scrollTop);
       }
 
       /**
