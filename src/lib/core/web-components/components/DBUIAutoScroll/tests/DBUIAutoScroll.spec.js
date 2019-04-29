@@ -153,8 +153,6 @@ describe('DBUIAutoScroll', () => {
         const DBUIWebComponentRoot = getDBUIWebComponentRoot(contentWindow);
         const DBUIAutoScroll = getDBUIAutoScroll(contentWindow);
         const DummyOne = getDummyOne(contentWindow);
-        const DBUIDraggable = getDBUIDraggable(contentWindow);
-        const DBUISlider = getDBUISlider(contentWindow);
         dbuiWebComponentsSetUp(contentWindow)([{
           registrationName: DBUIAutoScroll.registrationName,
           componentStyle: `

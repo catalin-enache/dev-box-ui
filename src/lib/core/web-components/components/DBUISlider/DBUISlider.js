@@ -109,12 +109,8 @@ const getDraggableLength = (self) => {
   return draggableLength;
 };
 
-const isDbuiRTL = (self) => {
-  return self.getAttribute('dbui-dir') === 'rtl';
-};
-
 const getLocalePercent = (self, percent) => {
-  return +(isDbuiRTL(self) ? 1 - percent : percent).toFixed(self.percentPrecision);
+  return +(self.isDbuiRTL ? 1 - percent : percent).toFixed(self.percentPrecision);
 };
 
 const percentToTranslate = (self, percent) => {
@@ -222,11 +218,8 @@ export default function getDBUISlider(win) {
     const {
       DBUIWebComponentBase,
       defineCommonStaticMethods,
-      Registerable,
-      defineComponentCssVars
+      Registerable
     } = getDBUIWebComponentCore(win);
-
-    defineComponentCssVars(win, DBUISliderCssVars);
 
     const DBUIDraggable = getDBUIDraggable(win);
     const DBUIResizeSensor = getDBUIResizeSensor(win);
@@ -235,6 +228,10 @@ export default function getDBUISlider(win) {
 
       static get registrationName() {
         return registrationName;
+      }
+
+      static get cssVars() {
+        return DBUISliderCssVars;
       }
 
       static get templateInnerHTML() {

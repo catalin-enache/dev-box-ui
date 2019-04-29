@@ -97,6 +97,22 @@ export default function getDBUIWebComponentCore(win) {
 
       /**
        *
+       * @return String CSS
+       */
+      static get cssVars() {
+        return '';
+      }
+
+      /**
+       *
+       * @return String CSS
+       */
+      static get cssClasses() {
+        return '';
+      }
+
+      /**
+       *
        * @return Array<DBUIWebComponent>
        */
       static get dependencies() {
@@ -273,6 +289,10 @@ export default function getDBUIWebComponentCore(win) {
       // ============================ << [Observe Dynamic Attributes] =============================================
 
       // ============================ [Locale] >> =============================================
+
+      get isDbuiRTL() {
+        return this.getAttribute('dbui-dir') === 'rtl';
+      }
 
       // eslint-disable-next-line
       onLocaleDirChanged(newDir, prevDir) {
@@ -1723,8 +1743,9 @@ export default function getDBUIWebComponentCore(win) {
 
     function Registerable(klass) {
       klass.registerSelf = () => {
-        const registrationName = klass.registrationName;
-        const dependencies = klass.dependencies;
+        const {
+          registrationName, dependencies, cssVars, cssClasses
+        } = klass;
 
         if (customElements.get('dbui-web-component-root')) {
           throw new win.Error(`
@@ -1742,6 +1763,8 @@ export default function getDBUIWebComponentCore(win) {
 
         // Don't try to register self if already registered
         if (!customElements.get(registrationName)) {
+          defineComponentCssVars(win, cssVars);
+          defineComponentCssClasses(win, cssClasses);
           // Give a chance to override web-component style if provided before being registered.
           const componentStyle = ((win.DBUIWebComponents || {})[registrationName] || {}).componentStyle;
           if (componentStyle) {
@@ -1780,9 +1803,7 @@ export default function getDBUIWebComponentCore(win) {
     return {
       DBUIWebComponentBase,
       defineCommonStaticMethods,
-      Registerable,
-      defineComponentCssVars,
-      defineComponentCssClasses
+      Registerable
     };
   });
 }

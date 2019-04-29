@@ -6,10 +6,6 @@ import { trunc } from '../../../utils/math';
 
 export const DEFAULT_PERCENT_PRECISION = 4;
 
-const isDbuiRTL = (self) => {
-  return self.getAttribute('dbui-dir') === 'rtl';
-};
-
 const getResizeSensorOuter = (self) => {
   if (self._resizeSensorOuter) {
     return self._resizeSensorOuter;
@@ -260,8 +256,8 @@ export default function getDBUIAutoScrollNative(win) {
       get scrollLeft() {
         const resizeOuter = getResizeSensorOuter(this);
         const _hScroll = resizeOuter.scrollLeft;
-        const hScroll = isDbuiRTL(this) && this.hasNegativeRTLScroll ? -_hScroll :
-          isDbuiRTL(this) ? this.scrollableWidth - _hScroll :
+        const hScroll = this.isDbuiRTL && this.hasNegativeRTLScroll ? -_hScroll :
+          this.isDbuiRTL ? this.scrollableWidth - _hScroll :
             _hScroll;
         return hScroll;
       }
@@ -313,7 +309,7 @@ export default function getDBUIAutoScrollNative(win) {
       }
 
       _normalizeHLocaleScroll(value) {
-        if (isDbuiRTL(this)) {
+        if (this.isDbuiRTL) {
           return this.hasNegativeRTLScroll ? -value : this.scrollableWidth - value;
         }
         return value;

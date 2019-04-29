@@ -6,10 +6,6 @@ import { trunc } from '../../../utils/math';
 
 const SCROLL_PRECISION = 4;
 
-const isDbuiRTL = (self) => {
-  return self.getAttribute('dbui-dir') === 'rtl';
-};
-
 const getOuter = (self) => {
   if (self._outer) {
     return self._outer;
@@ -111,11 +107,8 @@ export default function getDBUIScrollable(win) {
     const {
       DBUIWebComponentBase,
       defineCommonStaticMethods,
-      Registerable,
-      defineComponentCssVars
+      Registerable
     } = getDBUIWebComponentCore(win);
-
-    defineComponentCssVars(win, DBUIScrollableCssVars);
 
     const DBUISlider = getDBUISlider(win);
 
@@ -123,6 +116,10 @@ export default function getDBUIScrollable(win) {
 
       static get registrationName() {
         return registrationName;
+      }
+
+      static get cssVars() {
+        return DBUIScrollableCssVars;
       }
 
       static get templateInnerHTML() {
@@ -510,7 +507,7 @@ export default function getDBUIScrollable(win) {
         const _scrollableWidth = this._scrollableWidth;
         const hScroll = this.hScroll;
         const _hScrollToScrollLeft = Math.round(_scrollableWidth * hScroll);
-        const localeHScrollToScrollLeft = isDbuiRTL(this) ?
+        const localeHScrollToScrollLeft = this.isDbuiRTL ?
           this._scrollableWidth - _hScrollToScrollLeft :
           _hScrollToScrollLeft;
         return localeHScrollToScrollLeft;
@@ -534,7 +531,7 @@ export default function getDBUIScrollable(win) {
       get _hScroll() {
         const middle = getMiddle(this);
         const _scrollableWidth = this._scrollableWidth;
-        const _hScroll = isDbuiRTL(this) ? _scrollableWidth - middle.scrollLeft : middle.scrollLeft;
+        const _hScroll = this.isDbuiRTL ? _scrollableWidth - middle.scrollLeft : middle.scrollLeft;
         return _hScroll;
       }
 
@@ -690,7 +687,7 @@ export default function getDBUIScrollable(win) {
         // Making room for custom scrollbars.
         // Padding one side might make the other side not fitting
         // thus causing the other slider to pop in.
-        content.style.padding = isDbuiRTL(this) ?
+        content.style.padding = this.isDbuiRTL ?
           `0px 0px ${hCustomSliderThickness}px ${vCustomSliderThickness}px` :
           `0px ${vCustomSliderThickness}px ${hCustomSliderThickness}px 0px`;
 

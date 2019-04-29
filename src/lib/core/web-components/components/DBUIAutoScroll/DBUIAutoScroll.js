@@ -6,18 +6,12 @@ import getDBUISlider from '../DBUISlider/DBUISlider';
 
 const DEFAULT_PERCENT_PRECISION = 2;
 
-// TODO: move this into core as a standard method
 const DBUIAutoScrollCssVars = `
   :root {
     --dbui-auto-scroll-custom-slider-thickness: 20px;
     --dbui-auto-scroll-slider-outer-padding: 0px;
   }
 `;
-
-// TODO: move this into core
-const isDbuiRTL = (self) => {
-  return self.getAttribute('dbui-dir') === 'rtl';
-};
 
 const getElement = (self, id) => {
   if (self[`_${id}`]) {
@@ -67,11 +61,8 @@ export default function getDBUIAutoScroll(win) {
     const {
       DBUIWebComponentBase,
       defineCommonStaticMethods,
-      Registerable,
-      defineComponentCssVars
+      Registerable
     } = getDBUIWebComponentCore(win);
-
-    defineComponentCssVars(win, DBUIAutoScrollCssVars);
 
     const DBUIAutoScrollNative = getDBUIAutoScrollNative(win);
     const DBUISlider = getDBUISlider(win);
@@ -80,6 +71,10 @@ export default function getDBUIAutoScroll(win) {
 
       static get registrationName() {
         return registrationName;
+      }
+
+      static get cssVars() {
+        return DBUIAutoScrollCssVars;
       }
 
       static get templateInnerHTML() {
@@ -317,7 +312,7 @@ export default function getDBUIAutoScroll(win) {
         const verticalSlider = getElement(this, 'vertical-slider');
         const autoScrollNative = getElement(this, 'auto-scroll-native');
         const content = getElement(this, 'content');
-        const isRtl = isDbuiRTL(this);
+        const isRtl = this.isDbuiRTL;
         const paddingDir = isRtl ? 'Left' : 'Right';
         autoScrollNative.style.width = '100%';
         autoScrollNative.style.height = '100%';
@@ -333,7 +328,7 @@ export default function getDBUIAutoScroll(win) {
         const verticalSlider = getElement(this, 'vertical-slider');
         const autoScrollNative = getElement(this, 'auto-scroll-native');
         const content = getElement(this, 'content');
-        const isRtl = isDbuiRTL(this);
+        const isRtl = this.isDbuiRTL;
         const paddingDir = isRtl ? 'Left' : 'Right';
         const paddingOtherDir = paddingDir === 'Left' ? 'Right' : 'Left';
         const { hNativeScrollbarThickness, vNativeScrollbarThickness } = autoScrollNative;
