@@ -4,7 +4,7 @@ import ensureSingleRegistration from '../../../internals/ensureSingleRegistratio
 import getDBUIAutoScrollNative from '../DBUIAutoScrollNative/DBUIAutoScrollNative';
 import getDBUISlider from '../DBUISlider/DBUISlider';
 
-const DEFAULT_PERCENT_PRECISION = 2;
+const DEFAULT_PERCENT_PRECISION = 4;
 
 const DBUIAutoScrollCssVars = `
   :root {
@@ -394,19 +394,16 @@ export default function getDBUIAutoScroll(win) {
       }
 
       _applyHVScrollPercentage() {
-        console.log('DBUIAutoScroll#_applyHVScrollPercentage', this.id, { hRatio: this.hRatio, vRatio: this.vRatio });
         this._applyHScrollPercentage();
         this._applyVScrollPercentage();
       }
 
       onLocaleDirChanged(newDir, oldDir) {
         super.onLocaleDirChanged(newDir, oldDir);
-        console.log('DBUIAutoScroll', this.id, 'onLocaleDirChanged', newDir);
         this._nativeSetupOnOff();
       }
 
       onConnectedCallback() {
-        console.log('DBUIAutoScroll', this.id, 'onConnectedCallback');
         super.onConnectedCallback();
         this._nativeSetupOnOff();
         getElement(this, 'auto-scroll-native')

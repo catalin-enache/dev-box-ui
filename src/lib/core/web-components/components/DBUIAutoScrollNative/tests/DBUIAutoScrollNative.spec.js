@@ -309,7 +309,6 @@ describe('DBUIAutoScrollNative', () => {
               iframe.remove();
               done();
             });
-            autoScrollNative._hasNativeScrollControl = true;
             autoScrollNative._onScroll();
 
           }, 0);
@@ -369,7 +368,6 @@ describe('DBUIAutoScrollNative', () => {
               iframe.remove();
               done();
             });
-            autoScrollNative._hasNativeScrollControl = true;
             autoScrollNative._onScroll();
           }, 0);
         });
