@@ -105,7 +105,7 @@ export default function getDBUIAutoScroll(win) {
             width: 100%;
             height: 100%;
             _overflow: hidden;
-            outline: 1px solid red;
+            outline: 1px solid blue;
           }
           
           #auto-scroll-native {
@@ -294,6 +294,23 @@ export default function getDBUIAutoScroll(win) {
       }
 
       /**
+       * @return {boolean}
+       */
+      get _hasHScroll() {
+        const autoScrollNative = getElement(this, 'auto-scroll-native');
+        return (autoScrollNative.scrollWidth - autoScrollNative.clientWidth) > 0;
+      }
+
+      /**
+       * @return {boolean}
+       */
+      get _hasVScroll() {
+        const autoScrollNative = getElement(this, 'auto-scroll-native');
+        // console.log('_hasVScroll', autoScrollNative.scrollHeight, autoScrollNative.clientHeight);
+        return (autoScrollNative.scrollHeight - autoScrollNative.clientHeight) > 0;
+      }
+
+      /**
        * Returns custom slider thickness in pixels.
        * @return {number}
        */
@@ -308,14 +325,13 @@ export default function getDBUIAutoScroll(win) {
       }
 
       _nativeSetupOnOff() {
+        // console.log('_nativeSetupOnOff', this.id);
         this.native ?
           this._nativeSetupOnCustomSetupOff() :
           this._customSetupOnNativeSetupOff();
       }
 
       _nativeSetupOnCustomSetupOff() {
-        const horizontalSlider = getElement(this, 'horizontal-slider');
-        const verticalSlider = getElement(this, 'vertical-slider');
         const autoScrollNative = getElement(this, 'auto-scroll-native');
         const content = getElement(this, 'content');
         const isRtl = this.isDbuiRTL;
@@ -325,14 +341,10 @@ export default function getDBUIAutoScroll(win) {
         autoScrollNative.style.marginLeft = '0px';
         content.style[`padding${paddingDir}`] = '0px';
         content.style.paddingBottom = '0px';
-        horizontalSlider.style.visibility = 'hidden';
-        verticalSlider.style.visibility = 'hidden';
+        this._toggleSliders();
       }
 
       _customSetupOnNativeSetupOff() {
-        const outer = getElement(this, 'outer');
-        const horizontalSlider = getElement(this, 'horizontal-slider');
-        const verticalSlider = getElement(this, 'vertical-slider');
         const autoScrollNative = getElement(this, 'auto-scroll-native');
         const content = getElement(this, 'content');
         const isRtl = this.isDbuiRTL;
@@ -347,31 +359,101 @@ export default function getDBUIAutoScroll(win) {
         const borderSide = isRtl ? borderLeftWidth : borderRightWidth;
         const borderBottom = borderBottomWidth;
 
-        outer.style.width = `calc(100% - ${customSliderThickness}px)`;
-        outer.style.height = `calc(100% - ${customSliderThickness}px)`;
-        outer.style.marginLeft = isRtl ? `${customSliderThickness}px` : '0px';
+        let hasHScroll = this._hasHScroll;
+        let hasVScroll = this._hasVScroll;
+        let hCustomSliderThickness = !this.native && hasHScroll ? customSliderThickness : 0;
+        let vCustomSliderThickness = !this.native && hasVScroll ? customSliderThickness : 0;
 
-        autoScrollNative.style.width = `calc(100% + ${vNativeScrollbarThickness + borderSide + customSliderThickness}px)`;
-        autoScrollNative.style.height = `calc(100% + ${hNativeScrollbarThickness + borderBottom + customSliderThickness}px)`;
-        autoScrollNative.style.marginLeft = `${(isRtl ? -(vNativeScrollbarThickness + borderSide + customSliderThickness) : 0)}px`;
+        // console.log('_customSetupOnNativeSetupOff', this.id, {
+        //   isRtl, customSliderThickness, vCustomSliderThickness, hCustomSliderThickness, hasHScroll, hasVScroll
+        // });
 
-        content.style[`padding${paddingDir}`] = `${customSliderThickness + borderSide}px`;
+        autoScrollNative.style.width = `calc(100% + ${vNativeScrollbarThickness + borderSide + vCustomSliderThickness}px)`;
+        autoScrollNative.style.height = `calc(100% + ${hNativeScrollbarThickness + borderBottom + hCustomSliderThickness}px)`;
+        autoScrollNative.style.marginLeft = `${(isRtl ? -(vNativeScrollbarThickness + borderSide + vCustomSliderThickness) : 0)}px`;
+
+        content.style[`padding${paddingDir}`] = `${vCustomSliderThickness + borderSide}px`;
         content.style[`padding${paddingOtherDir}`] = '0px';
-        content.style.paddingBottom = `${customSliderThickness + borderBottom}px`;
+        content.style.paddingBottom = `${hCustomSliderThickness + borderBottom}px`;
 
-        horizontalSlider.style.visibility = 'visible';
-        verticalSlider.style.visibility = 'visible';
+        this._toggleSliders();
+
+        hasHScroll = this._hasHScroll;
+        hasVScroll = this._hasVScroll;
+        hCustomSliderThickness = !this.native && hasHScroll ? customSliderThickness : 0;
+        vCustomSliderThickness = !this.native && hasVScroll ? customSliderThickness : 0;
+
+        // console.log('_customSetupOnNativeSetupOff', this.id, {
+        //   isRtl, customSliderThickness, vCustomSliderThickness, hCustomSliderThickness, hasHScroll, hasVScroll
+        // });
+
+        autoScrollNative.style.width = `calc(100% + ${vNativeScrollbarThickness + borderSide + vCustomSliderThickness}px)`;
+        autoScrollNative.style.height = `calc(100% + ${hNativeScrollbarThickness + borderBottom + hCustomSliderThickness}px)`;
+        autoScrollNative.style.marginLeft = `${(isRtl ? -(vNativeScrollbarThickness + borderSide + vCustomSliderThickness) : 0)}px`;
+
+        content.style[`padding${paddingDir}`] = `${vCustomSliderThickness + borderSide}px`;
+        content.style[`padding${paddingOtherDir}`] = '0px';
+        content.style.paddingBottom = `${hCustomSliderThickness + borderBottom}px`;
+      }
+
+      _toggleSliders() {
+        const isRtl = this.isDbuiRTL;
+        const outer = getElement(this, 'outer');
+        const horizontalSlider = getElement(this, 'horizontal-slider');
+        const verticalSlider = getElement(this, 'vertical-slider');
+        const customSliderThickness = this._customSliderThickness;
+
+        let hasHScroll = this._hasHScroll;
+        let hasVScroll = this._hasVScroll;
+        let hCustomSliderThickness = !this.native && hasHScroll ? customSliderThickness : 0;
+        let vCustomSliderThickness = !this.native && hasVScroll ? customSliderThickness : 0;
+
         horizontalSlider.debugShowValue = this.debugShowValue;
-
         verticalSlider.debugShowValue = this.debugShowValue;
+
+        // Making room for custom scrollbars.
+        // Changing outer size might make the other side not fitting
+        // thus causing _onDBUIAutoScrollNativeResize to fire again and the other slider to pop in.
+        outer.style.width = `calc(100% - ${vCustomSliderThickness}px)`;
+        outer.style.height = `calc(100% - ${hCustomSliderThickness}px)`;
+        outer.style.marginLeft = isRtl ? `${vCustomSliderThickness}px` : '0px';
+
+        horizontalSlider.style.width = `calc(100% - ${vCustomSliderThickness}px)`;
+        verticalSlider.style.height = `calc(100% - ${hCustomSliderThickness}px)`;
+        horizontalSlider.style.visibility = hCustomSliderThickness ? 'visible' : 'hidden';
+        verticalSlider.style.visibility = vCustomSliderThickness ? 'visible' : 'hidden';
+
+        // console.log('_toggleSliders', this.id, { hasHScroll, hasVScroll });
+
+        hasHScroll = this._hasHScroll;
+        hasVScroll = this._hasVScroll;
+        hCustomSliderThickness = !this.native && hasHScroll ? customSliderThickness : 0;
+        vCustomSliderThickness = !this.native && hasVScroll ? customSliderThickness : 0;
+
+        outer.style.width = `calc(100% - ${vCustomSliderThickness}px)`;
+        outer.style.height = `calc(100% - ${hCustomSliderThickness}px)`;
+        outer.style.marginLeft = isRtl ? `${vCustomSliderThickness}px` : '0px';
+
+        horizontalSlider.style.width = `calc(100% - ${vCustomSliderThickness}px)`;
+        verticalSlider.style.height = `calc(100% - ${hCustomSliderThickness}px)`;
+        horizontalSlider.style.visibility = hCustomSliderThickness ? 'visible' : 'hidden';
+        verticalSlider.style.visibility = vCustomSliderThickness ? 'visible' : 'hidden';
+
+        // console.log('_toggleSliders', this.id, { hasHScroll, hasVScroll });
       }
 
       _onDBUIAutoScrollNativeResize() {
+        if (!this._initialSetupApplied) return;
+        // console.log('_onDBUIAutoScrollNativeResize', this.id);
+        getElement(this, 'horizontal-slider').ratio = this.hRatio;
+        getElement(this, 'vertical-slider').ratio = this.vRatio;
+        this._nativeSetupOnOff();
         dispatchResizeEvent(this);
       }
 
       _onDBUIAutoScrollNativeScroll(evt) {
-        console.log('_onDBUIAutoScrollNativeScroll', this.id);
+        if (!this._initialSetupApplied) return;
+        // console.log('_onDBUIAutoScrollNativeScroll', this.id);
         this.hScroll = evt.target.hScroll;
         this.vScroll = evt.target.vScroll;
         // Setting hScroll/vScroll in these methods
@@ -403,11 +485,13 @@ export default function getDBUIAutoScroll(win) {
       }
 
       _applyHScrollPercentage() {
+        // console.log('_applyHScrollPercentage', this.id);
         getElement(this, 'auto-scroll-native').hScroll = this.hScroll;
         getElement(this, 'horizontal-slider').percent = this.hScroll;
       }
 
       _applyVScrollPercentage() {
+        // console.log('_applyVScrollPercentage', this.id);
         getElement(this, 'auto-scroll-native').vScroll = this.vScroll;
         getElement(this, 'vertical-slider').percent = this.vScroll;
       }
@@ -419,12 +503,13 @@ export default function getDBUIAutoScroll(win) {
 
       onLocaleDirChanged(newDir, oldDir) {
         super.onLocaleDirChanged(newDir, oldDir);
+        if (!this._initialSetupApplied) return;
+        // console.log('onLocaleDirChanged', this.id);
         this._nativeSetupOnOff();
       }
 
       onConnectedCallback() {
         super.onConnectedCallback();
-        this._nativeSetupOnOff();
         getElement(this, 'auto-scroll-native')
           .addEventListener('dbui-event-resize', this._onDBUIAutoScrollNativeResize);
         getElement(this, 'auto-scroll-native')
@@ -437,7 +522,13 @@ export default function getDBUIAutoScroll(win) {
         setTimeout(() => {
           getElement(this, 'horizontal-slider').ratio = this.hRatio;
           getElement(this, 'vertical-slider').ratio = this.vRatio;
-          this._applyHVScrollPercentage();
+          // console.log('onConnectedCallback timeout 1 _nativeSetupOnOff', this.id);
+          this._nativeSetupOnOff();
+          setTimeout(() => {
+            // console.log('onConnectedCallback timeout 2 _applyHVScrollPercentage', this.id);
+            this._applyHVScrollPercentage();
+            this._initialSetupApplied = true;
+          }, 0);
         }, 0);
       }
 
@@ -451,6 +542,7 @@ export default function getDBUIAutoScroll(win) {
           .removeEventListener('dbui-event-slidemove', this._onHorizontalSliderMove);
         getElement(this, 'vertical-slider')
           .removeEventListener('dbui-event-slidemove', this._onVerticalSliderMove);
+        this._initialSetupApplied = false;
       }
 
       onAttributeChangedCallback(name, oldValue, newValue) {
@@ -469,11 +561,11 @@ export default function getDBUIAutoScroll(win) {
             break;
           }
           case 'h-scroll': {
-            this._applyHScrollPercentage();
+            this._initialSetupApplied && this._applyHScrollPercentage();
             break;
           }
           case 'v-scroll': {
-            this._applyVScrollPercentage();
+            this._initialSetupApplied && this._applyVScrollPercentage();
             break;
           }
           default:
