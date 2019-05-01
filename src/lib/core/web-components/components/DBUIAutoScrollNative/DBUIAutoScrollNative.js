@@ -403,6 +403,13 @@ export default function getDBUIAutoScrollNative(win) {
         getResizeSensorOuter(this).addEventListener('dbui-event-resize', this._onResizeOuter);
         getResizeSensorContent(this).addEventListener('dbui-event-resize', this._onResizeContent);
         this._applyOverflow();
+        // For Safari, which, when overflow is changed at runtime,
+        // it thinks it has content to scroll when there is not the case.
+        // Forcing a scroll re-calculation;
+        const div = win.document.createElement('div');
+        this.appendChild(div);
+        div.remove();
+
         // _applyHVScrollPercentage when dimensions are established (next frame)
         setTimeout(() => {
           if (!this.isMounted) return;

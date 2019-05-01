@@ -97,7 +97,7 @@ const content = `
 `;
 
 describe('DBUIAutoScroll', () => {
-  it.only('behaves as expected - live testing', (done) => {
+  xit('behaves as expected - live testing', (done) => {
     inIframe({
       headStyle: `
       body {
@@ -113,7 +113,6 @@ describe('DBUIAutoScroll', () => {
       #dbui-auto-scroll {
         width: 200px;
         height: 200px;
-        background-color: rgba(0, 0, 255, 0.2);
         border-color: black;
         border-style: solid;
         border-top-width: 0px;
@@ -126,6 +125,7 @@ describe('DBUIAutoScroll', () => {
       }
       
       #scrollable-content {
+        background-color: rgba(0, 0, 255, 0.2);
         border: 0px solid yellow;
         padding: 0px;
         box-sizing: border-box;
