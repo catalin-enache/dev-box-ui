@@ -18,11 +18,10 @@ const getElement = (self, id) => {
   return self[`_${id}`];
 };
 
-const reset = (self) => {
+const reset = (self, size) => {
   const expand = getElement(self, 'expand');
   const expandChild = getElement(self, 'expand-child');
   const shrink = getElement(self, 'shrink');
-  const size = self.dimensionsAndCoordinates;
   const width = self.offsetWidth;
   const height = self.offsetHeight;
 
@@ -117,13 +116,13 @@ export default function getDBUIResizeSensor(win) {
         if (dirty) {
           this.dispatchDbuiEvent('dbui-event-resize');
         }
-        reset(this);
+        reset(this, size);
       }
 
       onConnectedCallback() {
         super.onConnectedCallback();
         setTimeout(() => {
-          reset(this);
+          reset(this, this.dimensionsAndCoordinates);
         }, 0);
         getElement(this, 'expand').addEventListener('scroll', this._onExpandScroll);
         getElement(this, 'shrink').addEventListener('scroll', this._onShrinkScroll);
