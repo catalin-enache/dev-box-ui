@@ -106,7 +106,7 @@ describe('DBUIAutoScroll', () => {
       }
       
       #dummy-one {
-        margin-left: 100px;
+        margin-left: 200px;
         margin-bottom: 100px;
       }
 

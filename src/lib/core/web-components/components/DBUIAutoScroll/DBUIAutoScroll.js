@@ -35,12 +35,10 @@ const registrationName = 'dbui-auto-scroll';
 /*
 TODO:
  - should be used as native or custom
- - add an option to add the custom scroll to the external side of content
  - make custom scrolls adapt (show hide - auto) depending on what is to be scrolled.
  - No Scrollbar if mobile, show-scrollbar should be auto or always/never
  - Make a horizontal default scrolling somehow via attributes (ex: for gallery thumbnails).
    https://css-tricks.com/pure-css-horizontal-scrolling/
- - onLocaleDirChanged might not fire at all if no dir specified ?
  - Should dispatch on resize (proxy from DBUIAutoScrollNative)
  - Check correct behavior on dir and native change
 */
@@ -81,16 +79,19 @@ export default function getDBUIAutoScroll(win) {
         return `
           <style>
           :host {
-            /*all: initial;*/
+            /* all: initial; */
             display: block;
             width: 100%;
             height: 100%;
             position: relative;
-            /* padding can be set directly on content */
+            /* padding can be set directly on content; no need to support it on the component */
             padding-top: 0px !important;
             padding-right: 0px !important;
             padding-bottom: 0px !important;
             padding-left: 0px !important;
+            
+            min-width: calc(2 * var(--dbui-auto-scroll-custom-slider-thickness)) !important;
+            min-height: calc(2 * var(--dbui-auto-scroll-custom-slider-thickness)) !important;
           }
           
           :host([dbui-dir=ltr]) {
