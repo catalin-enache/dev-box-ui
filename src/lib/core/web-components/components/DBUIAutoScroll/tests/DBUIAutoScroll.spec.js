@@ -50,7 +50,7 @@ function getDummyOne(win) {
           <div>
             <p>Dummy One</p>
             <div>
-              <_dbui-auto-scroll id="dbui-auto-scroll-shadow"
+              <dbui-auto-scroll id="dbui-auto-scroll-shadow"
               debug-show-value
               h-scroll="1"
               v-scroll="1"
@@ -61,7 +61,7 @@ function getDummyOne(win) {
                 <p>LccccccccccccR</p>
                 <p>LssssssssssssR</p>
                 <p>LaaaaaaaaaaaaR</p>
-              </_dbui-auto-scroll>
+              </dbui-auto-scroll>
             </div>
             <br />
             <br />
@@ -97,7 +97,7 @@ const content = `
 `;
 
 describe('DBUIAutoScroll', () => {
-  xit('behaves as expected - live testing', (done) => {
+  it.only('behaves as expected - live testing', (done) => {
     inIframe({
       headStyle: `
       body {
@@ -126,9 +126,9 @@ describe('DBUIAutoScroll', () => {
       
       #scrollable-content {
         background-color: rgba(0, 0, 255, 0.2);
-        border: 0px solid yellow;
-        padding: 0px;
-        box-sizing: border-box;
+        border: 2px solid yellow;
+        padding: 2px;
+        __box-sizing: border-box;
       }
       
       input {
@@ -155,7 +155,9 @@ describe('DBUIAutoScroll', () => {
           percent-precision=""
           >
             <div id="scrollable-content">${'content'}</div>
-            <!--<input type="text" />-->
+            <!--<input type="text" /><br />-->
+            <!--<input type="text" /><br />-->
+            <!--<input type="text" /><br />-->
           </dbui-auto-scroll>
           </dbui-dummy-one>
         </div>
@@ -206,6 +208,7 @@ describe('DBUIAutoScroll', () => {
           /*border: 1px solid red;*/
           line-height: 18px;
           font-size: 18px;
+          outline: none;
           `;
           dynamicContent.innerText = `kkkkkkkkkkkkkkkkkkkkkkkk
           
