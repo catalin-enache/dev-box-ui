@@ -46,7 +46,6 @@ const registrationName = 'dbui-auto-scroll';
 
 /*
 TODO:
- - No Scrollbar if mobile, show-scrollbar should be auto or always/never
  - Make a horizontal default scrolling somehow via attributes (ex: for gallery thumbnails).
    https://css-tricks.com/pure-css-horizontal-scrolling/
 */
