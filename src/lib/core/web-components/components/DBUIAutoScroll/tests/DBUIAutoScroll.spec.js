@@ -200,9 +200,9 @@ describe('DBUIAutoScroll', () => {
           });
 
           autoScroll.addEventListener('dbui-event-resize', (evt) => {
-            console.log('test dbui-event-resize', {
-              vScroll: evt.target.vScroll
-            });
+            // console.log('test dbui-event-resize', {
+            //   vScroll: evt.target.vScroll
+            // });
           });
 
           const scrollableContent = contentWindow.document.querySelector('#scrollable-content');
@@ -240,7 +240,7 @@ describe('DBUIAutoScroll', () => {
           scrollableContent.appendChild(dynamicContent);
 
           setTimeout(() => {
-            scrollableContent.style.height = '200px';
+            // scrollableContent.style.height = '200px';
             // scrollableContent.appendChild(dynamicContent);
             // autoScroll.style.height = '350px';
             // autoScroll.style.width = '150px';
@@ -249,7 +249,7 @@ describe('DBUIAutoScroll', () => {
             // autoScroll.native = true;
             // autoScroll.dir = 'ltr';
             setTimeout(() => {
-              scrollableContent.style.removeProperty('height');
+              // scrollableContent.style.removeProperty('height');
               // scrollableContent.style.height = '600px';
               // autoScroll.style.height = '200px';
               // dynamicContent.remove();

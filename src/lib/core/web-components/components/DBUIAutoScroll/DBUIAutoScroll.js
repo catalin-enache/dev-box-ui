@@ -101,7 +101,9 @@ export default function getDBUIAutoScroll(win) {
           #outer {
             width: 100%;
             height: 100%;
-            overflow: hidden;
+            /* overflow: hidden is buggy (in Chrome at least) when editable content is expanded by typing */
+            -webkit-clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
             /* border: 1px solid blue; */ /* debug */
           }
           
