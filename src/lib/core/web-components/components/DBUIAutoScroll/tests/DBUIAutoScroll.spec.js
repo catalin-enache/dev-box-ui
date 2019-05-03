@@ -150,7 +150,7 @@ describe('DBUIAutoScroll', () => {
           id="dbui-auto-scroll"
           h-scroll="1"
           v-scroll="1"
-          overflow="scroll"
+          overflow="auto"
           scrollbars="auto"
           _native
           debug-show-value
