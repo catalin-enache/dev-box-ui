@@ -4,6 +4,13 @@ import ensureSingleRegistration from '../../../internals/ensureSingleRegistratio
 import getDBUIAutoScrollNative from '../DBUIAutoScrollNative/DBUIAutoScrollNative';
 import getDBUISlider from '../DBUISlider/DBUISlider';
 
+import {
+  numberBetween,
+  positiveIntegerIncludingZero,
+  setBooleanAttribute,
+  getBooleanAttribute
+} from '../../../utils/attributeNormalization';
+
 const DEFAULT_PERCENT_PRECISION = 4;
 
 const DBUIAutoScrollCssVars = `
@@ -199,13 +206,11 @@ export default function getDBUIAutoScroll(win) {
       }
 
       get debugShowValue() {
-        return this.getAttribute('debug-show-value') !== null;
+        return getBooleanAttribute('debug-show-value', this);
       }
 
       set debugShowValue(value) {
-        const newValue = !!value;
-        newValue && this.setAttribute('debug-show-value', '');
-        !newValue && this.removeAttribute('debug-show-value');
+        setBooleanAttribute(value, 'debug-show-value', this);
       }
 
       /**
@@ -213,7 +218,10 @@ export default function getDBUIAutoScroll(win) {
        * @return {number} integer
        */
       get percentPrecision() {
-        return this.getAttribute('percent-precision') || DEFAULT_PERCENT_PRECISION;
+        return positiveIntegerIncludingZero(
+          this.getAttribute('percent-precision'),
+          DEFAULT_PERCENT_PRECISION
+        );
       }
 
       /**
@@ -221,8 +229,10 @@ export default function getDBUIAutoScroll(win) {
        * @param value {number} integer
        */
       set percentPrecision(value) {
-        const newValue = (Math.round(+value) || 0).toString();
-        this.setAttribute('percent-precision', newValue);
+        this.setAttribute(
+          'percent-precision',
+          positiveIntegerIncludingZero(value, DEFAULT_PERCENT_PRECISION).toString()
+        );
       }
 
       /**
@@ -230,7 +240,7 @@ export default function getDBUIAutoScroll(win) {
        * @return {boolean}
        */
       get native() {
-        return this.getAttribute('native') !== null;
+        return getBooleanAttribute('native', this);
       }
 
       /**
@@ -238,9 +248,7 @@ export default function getDBUIAutoScroll(win) {
        * @param value {boolean}
        */
       set native(value) {
-        const newValue = !!value;
-        newValue && this.setAttribute('native', '');
-        !newValue && this.removeAttribute('native');
+        setBooleanAttribute(value, 'native', this);
       }
 
       /**
@@ -248,7 +256,7 @@ export default function getDBUIAutoScroll(win) {
        * @return {number}
        */
       get hScroll() {
-        return +this.getAttribute('h-scroll') || 0;
+        return numberBetween(this.getAttribute('h-scroll'), 0, 1);
       }
 
       /**
@@ -256,8 +264,7 @@ export default function getDBUIAutoScroll(win) {
        * @param value {number}
        */
       set hScroll(value) {
-        // TODO: force max 1 min 0
-        this.setAttribute('h-scroll', (+value || 0).toString());
+        this.setAttribute('h-scroll', numberBetween(value, 0, 1).toString());
       }
 
       /**
@@ -265,7 +272,7 @@ export default function getDBUIAutoScroll(win) {
        * @return {number}
        */
       get vScroll() {
-        return +this.getAttribute('v-scroll') || 0;
+        return numberBetween(this.getAttribute('v-scroll'), 0, 1);
       }
 
       /**
@@ -273,7 +280,7 @@ export default function getDBUIAutoScroll(win) {
        * @param value {number}
        */
       set vScroll(value) {
-        this.setAttribute('v-scroll', (+value || 0).toString());
+        this.setAttribute('v-scroll', numberBetween(value, 0, 1).toString());
       }
 
       /**
