@@ -3,8 +3,13 @@ import getDBUIWebComponentCore from '../DBUIWebComponentCore/DBUIWebComponentCor
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
 import getDBUIResizeSensor from '../DBUIResizeSensor/DBUIResizeSensor';
 import { trunc } from '../../../utils/math';
+import {
+  enumeration
+} from '../../../utils/attributeNormalization';
 
 export const DEFAULT_PERCENT_PRECISION = 4;
+export const ALLOWED_OVERFLOW_VALUES = ['auto', 'scroll', 'hidden'];
+export const DEFAULT_OVERFLOW_VALUE = 'scroll';
 
 const getResizeSensorOuter = (self) => {
   if (self._resizeSensorOuter) {
@@ -137,8 +142,7 @@ export default function getDBUIAutoScrollNative(win) {
        * @return {string}
        */
       get overflow() {
-        const overflow = this.getAttribute('overflow');
-        return ['auto', 'scroll', 'hidden'].includes(overflow) ? overflow : 'scroll';
+        return enumeration(this.getAttribute('overflow'), ALLOWED_OVERFLOW_VALUES, DEFAULT_OVERFLOW_VALUE);
       }
 
       /**
@@ -147,8 +151,7 @@ export default function getDBUIAutoScrollNative(win) {
        */
       set overflow(value) {
         // setting invalid overflow value will return scroll on read
-        const overflow = ['auto', 'scroll', 'hidden'].includes(value) ? value : '';
-        this.setAttribute('overflow', overflow);
+        this.setAttribute('overflow', enumeration(value, ALLOWED_OVERFLOW_VALUES, ''));
       }
 
       /**

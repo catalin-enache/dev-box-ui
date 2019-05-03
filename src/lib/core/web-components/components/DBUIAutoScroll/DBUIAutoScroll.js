@@ -8,10 +8,15 @@ import {
   numberBetween,
   positiveIntegerIncludingZero,
   setBooleanAttribute,
-  getBooleanAttribute
+  getBooleanAttribute,
+  enumeration
 } from '../../../utils/attributeNormalization';
 
 const DEFAULT_PERCENT_PRECISION = 4;
+export const ALLOWED_OVERFLOW_VALUES = ['auto', 'scroll', 'hidden'];
+export const DEFAULT_OVERFLOW_VALUE = 'auto';
+export const ALLOWED_SCROLLBARS_VALUES = ['auto', 'always'];
+export const DEFAULT_SCROLLBARS_VALUES = 'auto';
 
 const DBUIAutoScrollCssVars = `
   :root {
@@ -183,13 +188,13 @@ export default function getDBUIAutoScroll(win) {
 
       static get propertiesToUpgrade() {
         return [...super.propertiesToUpgrade,
-          'native', 'debugShowValue', 'percentPrecision', 'hScroll', 'vScroll'
+          'native', 'debugShowValue', 'percentPrecision', 'hScroll', 'vScroll', 'overflow', 'scrollbars'
         ];
       }
 
       static get observedAttributes() {
         return [...super.observedAttributes,
-          'native', 'debug-show-value', 'percent-precision', 'h-scroll', 'v-scroll'
+          'native', 'debug-show-value', 'percent-precision', 'h-scroll', 'v-scroll', 'overflow', 'scrollbars'
         ];
       }
 
@@ -211,6 +216,40 @@ export default function getDBUIAutoScroll(win) {
 
       set debugShowValue(value) {
         setBooleanAttribute(value, 'debug-show-value', this);
+      }
+
+      /**
+       * Returns overflow value auto || scroll || hidden
+       * @return {string}
+       */
+      get overflow() {
+        return enumeration(this.getAttribute('overflow'), ALLOWED_OVERFLOW_VALUES, DEFAULT_OVERFLOW_VALUE);
+      }
+
+      /**
+       * Sets overflow value auto || scroll || hidden
+       * @param value {string}
+       */
+      set overflow(value) {
+        // setting invalid overflow value will return scroll on read
+        this.setAttribute('overflow', enumeration(value, ALLOWED_OVERFLOW_VALUES, ''));
+      }
+
+      /**
+       * Returns scrollbars value auto || always
+       * @return {string}
+       */
+      get scrollbars() {
+        return enumeration(this.getAttribute('scrollbars'), ALLOWED_SCROLLBARS_VALUES, DEFAULT_SCROLLBARS_VALUES);
+      }
+
+      /**
+       * Sets scrollbars value auto || always
+       * @param value {string}
+       */
+      set scrollbars(value) {
+        // setting invalid overflow value will return scroll on read
+        this.setAttribute('scrollbars', enumeration(value, ALLOWED_SCROLLBARS_VALUES, ''));
       }
 
       /**
@@ -318,6 +357,28 @@ export default function getDBUIAutoScroll(win) {
       }
 
       /**
+       * Returns horizontal custom slider thickness in pixels.
+       * @return {number}
+       */
+      get _hCustomSliderThickness() {
+        return this.native ||
+          this.overflow === 'hidden' ||
+          (this.isMobileBrowser && this.scrollbars === 'auto') ||
+          (!this._hasHScroll && this.overflow === 'auto') ? 0 : this._customSliderThickness;
+      }
+
+      /**
+       * Returns vertical custom slider thickness in pixels.
+       * @return {number}
+       */
+      get _vCustomSliderThickness() {
+        return this.native ||
+          this.overflow === 'hidden' ||
+          (this.isMobileBrowser && this.scrollbars === 'auto') ||
+          (!this._hasVScroll && this.overflow === 'auto') ? 0 : this._customSliderThickness;
+      }
+
+      /**
        * Returns custom slider thickness in pixels.
        * @return {number}
        */
@@ -357,7 +418,6 @@ export default function getDBUIAutoScroll(win) {
         const paddingDir = isRtl ? 'Left' : 'Right';
         const paddingOtherDir = paddingDir === 'Left' ? 'Right' : 'Left';
         const { hNativeScrollbarThickness, vNativeScrollbarThickness } = autoScrollNative;
-        const customSliderThickness = this._customSliderThickness;
         const computedStyle = win.getComputedStyle(this);
         const borderLeftWidth = win.parseInt(computedStyle.getPropertyValue('border-left-width')) || 0;
         const borderRightWidth = win.parseInt(computedStyle.getPropertyValue('border-right-width')) || 0;
@@ -366,10 +426,8 @@ export default function getDBUIAutoScroll(win) {
         const borderBottom = borderBottomWidth;
 
         const applyDimensions = () => {
-          const hasHScroll = this._hasHScroll;
-          const hasVScroll = this._hasVScroll;
-          const hCustomSliderThickness = !this.native && hasHScroll ? customSliderThickness : 0;
-          const vCustomSliderThickness = !this.native && hasVScroll ? customSliderThickness : 0;
+          const hCustomSliderThickness = this._hCustomSliderThickness;
+          const vCustomSliderThickness = this._vCustomSliderThickness;
 
           autoScrollNative.style.width = `calc(100% + ${vNativeScrollbarThickness + borderSide + vCustomSliderThickness}px)`;
           autoScrollNative.style.height = `calc(100% + ${hNativeScrollbarThickness + borderBottom + hCustomSliderThickness}px)`;
@@ -392,17 +450,13 @@ export default function getDBUIAutoScroll(win) {
         const outer = getElement(this, 'outer');
         const horizontalSlider = getElement(this, 'horizontal-slider');
         const verticalSlider = getElement(this, 'vertical-slider');
-        const customSliderThickness = this._customSliderThickness;
 
         horizontalSlider.debugShowValue = this.debugShowValue;
         verticalSlider.debugShowValue = this.debugShowValue;
 
         const applyDimensions = () => {
-          const hasHScroll = this._hasHScroll;
-          const hasVScroll = this._hasVScroll;
-          // isMobileBrowser
-          const hCustomSliderThickness = !this.native && hasHScroll ? customSliderThickness : 0;
-          const vCustomSliderThickness = !this.native && hasVScroll ? customSliderThickness : 0;
+          const hCustomSliderThickness = this._hCustomSliderThickness;
+          const vCustomSliderThickness = this._vCustomSliderThickness;
 
           // Making room for custom scrollbars.
           outer.style.width = `calc(100% - ${vCustomSliderThickness}px)`;
@@ -522,8 +576,10 @@ export default function getDBUIAutoScroll(win) {
         super.onAttributeChangedCallback(name, oldValue, newValue);
         if (!this.isMounted) return;
         switch (name) {
+          case 'overflow':
+          case 'scrollbars':
           case 'native':
-            this._nativeSetupOnOff();
+            this._initialSetupApplied && this._nativeSetupOnOff();
             break;
           case 'debug-show-value':
             getElement(this, 'horizontal-slider').debugShowValue = newValue !== null;

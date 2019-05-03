@@ -26,3 +26,8 @@ export const positiveIntegerIncludingZero = (value, _default = 0) => {
   return newValue;
 };
 
+export const enumeration = (value, allowedValues, _default = '') => {
+  const _value = allowedValues.includes(value) ? value : _default;
+  return _value;
+};
+

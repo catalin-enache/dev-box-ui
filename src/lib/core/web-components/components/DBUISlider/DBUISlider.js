@@ -181,6 +181,13 @@ const adjustRatio = (self) => {
     return;
   }
   const ratio = self.ratio;
+  if (self.ratio === 1) {
+    draggable.style.display = 'none';
+    self.style.cursor = 'auto';
+  } else {
+    draggable.style.removeProperty('display');
+    self.style.removeProperty('cursor');
+  }
   const dimension = self.vertical ? 'height' : 'width';
   const otherDimension = self.vertical ? 'width' : 'height';
   const newDraggableSize = trunc(self.percentPrecision)(100 * ratio);
