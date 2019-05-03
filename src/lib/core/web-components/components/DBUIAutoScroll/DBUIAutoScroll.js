@@ -34,13 +34,9 @@ const registrationName = 'dbui-auto-scroll';
 
 /*
 TODO:
- - should be used as native or custom
- - make custom scrolls adapt (show hide - auto) depending on what is to be scrolled.
  - No Scrollbar if mobile, show-scrollbar should be auto or always/never
  - Make a horizontal default scrolling somehow via attributes (ex: for gallery thumbnails).
    https://css-tricks.com/pure-css-horizontal-scrolling/
- - Should dispatch on resize (proxy from DBUIAutoScrollNative)
- - Check correct behavior on dir and native change
 */
 
 /*
@@ -258,6 +254,7 @@ export default function getDBUIAutoScroll(win) {
        * @param value {number}
        */
       set hScroll(value) {
+        // TODO: force max 1 min 0
         this.setAttribute('h-scroll', (+value || 0).toString());
       }
 
@@ -394,6 +391,7 @@ export default function getDBUIAutoScroll(win) {
         const applyDimensions = () => {
           const hasHScroll = this._hasHScroll;
           const hasVScroll = this._hasVScroll;
+          // isMobileBrowser
           const hCustomSliderThickness = !this.native && hasHScroll ? customSliderThickness : 0;
           const vCustomSliderThickness = !this.native && hasVScroll ? customSliderThickness : 0;
 

@@ -32,6 +32,10 @@ describe('DBUIResizeSensor', () => {
         box-sizing: border-box;
       }
       
+      #wrapper-scrollable-content {
+        display: inline-block;
+      }
+      
       #scrollable-content {
         margin: 0;
         padding: 0;
@@ -45,7 +49,9 @@ describe('DBUIResizeSensor', () => {
         <div id="container">
           <div id="wrapper-resize-sensor">
             <dbui-resize-sensor id="dbui-resize-sensor">
-              <pre id="scrollable-content" contenteditable="true">${content}</pre>
+              <div id="wrapper-scrollable-content">
+                <pre id="scrollable-content" contenteditable="true">${content}</pre>
+              </div>             
             </dbui-resize-sensor>
           </div>
         </div>
@@ -68,6 +74,7 @@ describe('DBUIResizeSensor', () => {
           // const wrapperResizeSensor = contentWindow.document.querySelector('#wrapper-resize-sensor');
           const resizeSensor = contentWindow.document.querySelector('#dbui-resize-sensor');
           const scrollableContent = contentWindow.document.querySelector('#scrollable-content');
+          // const wrapperScrollableContent = contentWindow.document.querySelector('#wrapper-scrollable-content');
 
           console.log('initial size', resizeSensor.dimensionsAndCoordinates);
           resizeSensor.addEventListener('dbui-event-resize', (evt) => {
@@ -88,20 +95,25 @@ describe('DBUIResizeSensor', () => {
                   scrollableContent.innerText = content;
                   setTimeout(() => {
                     console.log('- width');
-                    resizeSensor.style.width = `${resizeSensor.offsetWidth - 1}px`;
+                    scrollableContent.style.width = `${resizeSensor.offsetWidth - 1}px`;
                     setTimeout(() => {
                       console.log('- height');
-                      resizeSensor.style.height = `${resizeSensor.offsetHeight - 1}px`;
+                      scrollableContent.style.height = `${resizeSensor.offsetHeight - 1}px`;
                       setTimeout(() => {
                         console.log('+ width');
-                        resizeSensor.style.width = `${resizeSensor.offsetWidth + 1}px`;
+                        scrollableContent.style.width = `${resizeSensor.offsetWidth + 1}px`;
                         setTimeout(() => {
                           console.log('+ height');
-                          resizeSensor.style.height = `${resizeSensor.offsetHeight + 1}px`;
+                          scrollableContent.style.height = `${resizeSensor.offsetHeight + 1}px`;
                           setTimeout(() => {
-                            iframe.remove();
-                            done();
-                          }, 55000);
+                            scrollableContent.style.removeProperty('width');
+                            scrollableContent.style.removeProperty('height');
+                            // wrapperScrollableContent.style.height = '200px';
+                            setTimeout(() => {
+                              iframe.remove();
+                              done();
+                            }, 55000);
+                          }, 100);
                         }, 100);
                       }, 100);
                     }, 100);

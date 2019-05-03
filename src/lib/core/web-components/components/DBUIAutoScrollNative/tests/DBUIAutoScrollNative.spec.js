@@ -48,7 +48,7 @@ describe('DBUIAutoScrollNative', () => {
             <dbui-auto-scroll-native id="dbui-auto-scroll-native" overflow="auto" sync-locale-with="#locale-provider" h-scroll="1" v-scroll="1">
               <!--<div id="scrollable-content">${content}</div>-->
               <div id="scrollable-content">
-                <dbui-auto-scroll-native id="inner-scroll">
+                <dbui-auto-scroll-native id="dbui-auto-scroll-native-inner">
                   <div style="width: 500px; height: 500px; background-color: #0C9A9A;"></div>
                 </dbui-auto-scroll-native>
               </div>
@@ -78,10 +78,10 @@ describe('DBUIAutoScrollNative', () => {
           const scrollableContent = contentWindow.document.querySelector('#scrollable-content');
 
           autoScrollNative.addEventListener('dbui-event-scroll', (evt) => {
-            console.log('test autoScrollNative scroll', {
-              hScroll: evt.target.hScroll,
-              vScroll: evt.target.vScroll
-            });
+            // console.log('test autoScrollNative scroll', {
+            //   hScroll: evt.target.hScroll,
+            //   vScroll: evt.target.vScroll
+            // });
           });
 
           const dynamicContent = contentWindow.document.createElement('div');
@@ -106,12 +106,14 @@ describe('DBUIAutoScrollNative', () => {
           // autoScrollNative.remove();
 
           setTimeout(() => {
+            scrollableContent.style.height = '300px';
             // wrapperAutoScrollNative.appendChild(autoScrollNative);
             // autoScrollNative.style.width = '350px';
             // localeProvider.dir = 'ltr';
             // autoScrollNative.hScroll = 0.6;
             // autoScrollNative.vScroll = 0.6;
             setTimeout(() => {
+              scrollableContent.style.removeProperty('height');
               // autoScrollNative.style.width = '200px';
               // localeProvider.dir = 'rtl';
               // dynamicContent.remove();
