@@ -53,13 +53,17 @@ TODO:
 
 /*
 Behavior Extras:
- - Can display native or custom scrolls.
+ - Can display native or custom scrollbars depending on "native" flag attribute being set.
+ - "overflow" can be set to auto | scroll | hidden
+ - "scrollbars" attribute can be set to auto | always. When auto they will not be visible on mobile devices.
  - Custom sliders thickness is configurable via CSS --dbui-auto-scroll-custom-slider-thickness.
- - The scroll (horizontal or vertical) can be set programmatically in percent (0..1).
+ - The scroll (h-scroll or v-scroll) can be set programmatically in percent (0..1).
  - Scroll precision is configurable (percentPrecision) and defaults to 4.
  - Dispatches dbui-event-scroll when resizing DBUIAutoScroll or inner content,
    when user scrolling native with mouse scroll or mobile scroll,
    when user changes horizontal or vertical slider position.
+ - Dispatches dbui-event-resize.
+ - Can scroll horizontally on mouse wheel if "h-wheel" flag attribute is set
 */
 
 export default function getDBUIAutoScroll(win) {
