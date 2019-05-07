@@ -153,6 +153,7 @@ describe('DBUIAutoScroll', () => {
           overflow="auto"
           scrollbars="auto"
           _native
+          _h-wheel
           debug-show-value
           percent-precision=""
           >
@@ -251,6 +252,7 @@ describe('DBUIAutoScroll', () => {
             // autoScroll.native = true;
             // autoScroll.dir = 'ltr';
             // autoScroll.overflow = 'scroll';
+            // autoScroll.hWheel = true;
             setTimeout(() => {
               // scrollableContent.style.removeProperty('height');
               // scrollableContent.style.height = '600px';
@@ -261,6 +263,7 @@ describe('DBUIAutoScroll', () => {
               // autoScroll.native = false;
               // autoScroll.dir = 'rtl';
               // autoScroll.overflow = 'auto';
+              // autoScroll.hWheel = false;
               setTimeout(() => {
                 setTimeout(() => {
                   iframe.remove();

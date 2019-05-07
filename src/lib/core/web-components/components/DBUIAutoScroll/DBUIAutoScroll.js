@@ -11,12 +11,14 @@ import {
   getBooleanAttribute,
   enumeration
 } from '../../../utils/attributeNormalization';
+import { getWheelDelta } from '../../../utils/mouse';
 
 const DEFAULT_PERCENT_PRECISION = 4;
 export const ALLOWED_OVERFLOW_VALUES = ['auto', 'scroll', 'hidden'];
 export const DEFAULT_OVERFLOW_VALUE = 'auto';
 export const ALLOWED_SCROLLBARS_VALUES = ['auto', 'always'];
 export const DEFAULT_SCROLLBARS_VALUES = 'auto';
+const PERCENT_AMOUNT_INCREASE = 0.01;
 
 const DBUIAutoScrollCssVars = `
   :root {
@@ -46,8 +48,7 @@ const registrationName = 'dbui-auto-scroll';
 
 /*
 TODO:
- - Make a horizontal default scrolling somehow via attributes (ex: for gallery thumbnails).
-   https://css-tricks.com/pure-css-horizontal-scrolling/
+  - unit tests
 */
 
 /*
@@ -208,6 +209,9 @@ export default function getDBUIAutoScroll(win) {
           this._onVerticalSliderMove.bind(this);
         this._onDBUIAutoScrollNativeScroll =
           this._onDBUIAutoScrollNativeScroll.bind(this);
+        this._onMouseEnter = this._onMouseEnter.bind(this);
+        this._onMouseLeave = this._onMouseLeave.bind(this);
+        this._onWheel = this._onWheel.bind(this);
       }
 
       get debugShowValue() {
@@ -272,6 +276,22 @@ export default function getDBUIAutoScroll(win) {
           'percent-precision',
           positiveIntegerIncludingZero(value, DEFAULT_PERCENT_PRECISION).toString()
         );
+      }
+
+      /**
+       * Returns whether wheel should scroll horizontally.
+       * @return {boolean}
+       */
+      get hWheel() {
+        return getBooleanAttribute('h-wheel', this);
+      }
+
+      /**
+       * Sets whether wheel should scroll horizontally.
+       * @param value {boolean}
+       */
+      set hWheel(value) {
+        setBooleanAttribute(value, 'h-wheel', this);
       }
 
       /**
@@ -512,6 +532,23 @@ export default function getDBUIAutoScroll(win) {
         dispatchScrollEvent(this);
       }
 
+      _onMouseEnter() {
+        this.addEventListener('wheel', this._onWheel);
+      }
+
+      _onMouseLeave() {
+        this.removeEventListener('wheel', this._onWheel);
+      }
+
+      _onWheel(evt) {
+        if (!this.hWheel) return;
+        evt.preventDefault();
+        const delta = getWheelDelta(evt, true);
+        const nextPercent = this.hScroll + (delta * PERCENT_AMOUNT_INCREASE);
+        const newPercent = Math.max(0, Math.min(1, nextPercent));
+        this.hScroll = newPercent;
+      }
+
       _setPercentPrecision() {
         getElement(this, 'horizontal-slider').percentPrecision = this.percentPrecision;
         getElement(this, 'vertical-slider').percentPrecision = this.percentPrecision;
@@ -549,6 +586,8 @@ export default function getDBUIAutoScroll(win) {
           .addEventListener('dbui-event-slidemove', this._onHorizontalSliderMove);
         getElement(this, 'vertical-slider')
           .addEventListener('dbui-event-slidemove', this._onVerticalSliderMove);
+        getElement(this, 'auto-scroll-native').addEventListener('mouseenter', this._onMouseEnter);
+        getElement(this, 'auto-scroll-native').addEventListener('mouseleave', this._onMouseLeave);
         this._setPercentPrecision();
         setTimeout(() => {
           this._nativeSetupOnOff();
@@ -572,6 +611,8 @@ export default function getDBUIAutoScroll(win) {
           .removeEventListener('dbui-event-slidemove', this._onHorizontalSliderMove);
         getElement(this, 'vertical-slider')
           .removeEventListener('dbui-event-slidemove', this._onVerticalSliderMove);
+        getElement(this, 'auto-scroll-native').removeEventListener('mouseenter', this._onMouseEnter);
+        getElement(this, 'auto-scroll-native').removeEventListener('mouseleave', this._onMouseLeave);
         this._initialSetupApplied = false;
       }
 
