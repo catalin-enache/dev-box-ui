@@ -91,6 +91,7 @@ export default function getDBUIAutoScroll(win) {
             width: 100%;
             height: 100%;
             position: relative;
+            visibility: hidden;
             /* padding can be set directly on content; no need to support it on the component */
             padding-top: 0px !important;
             padding-right: 0px !important;
@@ -402,6 +403,7 @@ export default function getDBUIAutoScroll(win) {
         const content = getElement(this, 'content');
         const isRtl = this.isDbuiRTL;
         const paddingDir = isRtl ? 'Left' : 'Right';
+        autoScrollNative.overflow = this.overflow;
         autoScrollNative.style.width = '100%';
         autoScrollNative.style.height = '100%';
         autoScrollNative.style.marginLeft = '0px';
@@ -428,6 +430,7 @@ export default function getDBUIAutoScroll(win) {
           const hCustomSliderThickness = this._hCustomSliderThickness;
           const vCustomSliderThickness = this._vCustomSliderThickness;
 
+          autoScrollNative.overflow = 'scroll';
           autoScrollNative.style.width = `calc(100% + ${vNativeScrollbarThickness + borderSide + vCustomSliderThickness}px)`;
           autoScrollNative.style.height = `calc(100% + ${hNativeScrollbarThickness + borderBottom + hCustomSliderThickness}px)`;
           autoScrollNative.style.marginLeft = `${(isRtl ? -(vNativeScrollbarThickness + borderSide + vCustomSliderThickness) : 0)}px`;
@@ -549,6 +552,7 @@ export default function getDBUIAutoScroll(win) {
         this._setPercentPrecision();
         setTimeout(() => {
           this._nativeSetupOnOff();
+          this.style.visibility = 'visible';
           getElement(this, 'horizontal-slider').ratio = this.hRatio;
           getElement(this, 'vertical-slider').ratio = this.vRatio;
           setTimeout(() => {

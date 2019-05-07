@@ -121,7 +121,7 @@ describe('DBUIAutoScroll', () => {
         border-left-width: 0px;
         padding: 40px; /* padding is ignored overwritten with 0 internally */
         /*box-sizing: border-box;*/
-        --dbui-auto-scroll-custom-slider-thickness: 10px;
+        --dbui-auto-scroll-custom-slider-thickness: 8px;
       }
       
       #scrollable-content {
