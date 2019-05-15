@@ -29,6 +29,15 @@ const getResizeSensorContent = (self) => {
   return self._resizeSensorContent;
 };
 
+const dispatchReadyEvent = (self) => {
+  self.dispatchDbuiEvent('dbui-event-ready', { detail: {} });
+};
+
+const _innerComponentsReady = {
+  'resize-sensor-outer': false,
+  'resize-sensor-content': false,
+};
+
 /*
 TODO:
 Do related unittests for different ways to trigger scroll.
@@ -114,10 +123,12 @@ export default function getDBUIAutoScrollNative(win) {
         this._onResizeOuter = this._onResizeOuter.bind(this);
         this._onResizeContent = this._onResizeContent.bind(this);
         this._onScroll = this._onScroll.bind(this);
+        this._onInnerComponentsReady = this._onInnerComponentsReady.bind(this);
 
         this._lastVScroll = 0;
         this._lastHScroll = 0;
         this._initialScrollApplied = false;
+        this._innerComponentsReady = _innerComponentsReady;
       }
 
       /**
@@ -393,6 +404,17 @@ export default function getDBUIAutoScrollNative(win) {
         this.dispatchDbuiEvent('dbui-event-scroll', { detail: {} });
       }
 
+      _onInnerComponentsReady(evt) {
+        this._innerComponentsReady[evt.target.id] = true;
+        if (Object.values(this._innerComponentsReady).every(v => v)) {
+          // _applyHVScrollPercentage when dimensions are established
+          if (!this.isMounted) return;
+          this._initialScrollApplied = true;
+          this._applyHVScrollPercentage(); // will dispatch a scroll event.
+          dispatchReadyEvent(this);
+        }
+      }
+
       onLocaleDirChanged(newDir, oldDir) {
         super.onLocaleDirChanged(newDir, oldDir);
         getResizeSensorOuter(this).dir = newDir;
@@ -405,6 +427,8 @@ export default function getDBUIAutoScrollNative(win) {
         getResizeSensorOuter(this).addEventListener('scroll', this._onScroll);
         getResizeSensorOuter(this).addEventListener('dbui-event-resize', this._onResizeOuter);
         getResizeSensorContent(this).addEventListener('dbui-event-resize', this._onResizeContent);
+        getResizeSensorOuter(this).addEventListener('dbui-event-ready', this._onInnerComponentsReady);
+        getResizeSensorContent(this).addEventListener('dbui-event-ready', this._onInnerComponentsReady);
         this._applyOverflow();
         // For Safari, which, when overflow is changed at runtime,
         // it thinks it has content to scroll when there is not the case.
@@ -412,13 +436,6 @@ export default function getDBUIAutoScrollNative(win) {
         const div = win.document.createElement('div');
         this.appendChild(div);
         div.remove();
-
-        // _applyHVScrollPercentage when dimensions are established (next frame)
-        setTimeout(() => {
-          if (!this.isMounted) return;
-          this._initialScrollApplied = true;
-          this._applyHVScrollPercentage(); // will dispatch a scroll event.
-        }, 0);
       }
 
       onDisconnectedCallback() {
@@ -426,6 +443,9 @@ export default function getDBUIAutoScrollNative(win) {
         getResizeSensorOuter(this).removeEventListener('scroll', this._onScroll);
         getResizeSensorOuter(this).removeEventListener('dbui-event-resize', this._onResizeOuter);
         getResizeSensorContent(this).removeEventListener('dbui-event-resize', this._onResizeContent);
+        getResizeSensorOuter(this).removeEventListener('dbui-event-ready', this._onInnerComponentsReady);
+        getResizeSensorContent(this).removeEventListener('dbui-event-ready', this._onInnerComponentsReady);
+        this._innerComponentsReady = _innerComponentsReady;
       }
 
       onAttributeChangedCallback(name, oldValue, newValue) {

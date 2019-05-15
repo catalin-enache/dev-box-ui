@@ -97,7 +97,7 @@ const content = `
 `;
 
 describe('DBUIAutoScroll', () => {
-  it.only('behaves as expected - live testing', (done) => {
+  xit('behaves as expected - live testing', (done) => {
     inIframe({
       headStyle: `
       body {
@@ -279,6 +279,82 @@ describe('DBUIAutoScroll', () => {
         DummyOne.registerSelf();
         DBUIWebComponentRoot.registerSelf();
       }
+    });
+  });
+
+  describe('native scroll behavior', () => {
+    it.only('adjusts custom sliders position', (done) => {
+      inIframe({
+        headStyle: `
+          #dbui-auto-scroll {
+            width: 200px;
+            height: 200px;
+          }
+          
+          #scrollable-content {
+            background-color: rgba(0, 0, 255, 0.2);
+            width: 300px;
+            height: 300px;
+          }
+      `,
+        bodyHTML: `
+          <dbui-web-component-root>
+            <div id="container">
+              <div id="locale-provider" dir="rtl"></div>
+              <div id="wrapper-auto-scroll">
+                <dbui-auto-scroll
+                sync-locale-with="#locale-provider"
+                id="dbui-auto-scroll"
+                h-scroll="0.05" v-scroll="0.05"
+                _overflow="auto" _scrollbars="auto"
+                _native
+                _h-wheel
+                debug-show-value
+                _percent-precision=""
+                ><div id="scrollable-content">${'content'}</div></dbui-auto-scroll>
+              </div>
+            </div>
+          </dbui-web-component-root>
+      `,
+        onLoad: ({ contentWindow, iframe }) => {
+          const DBUIWebComponentRoot = getDBUIWebComponentRoot(contentWindow);
+          const DBUIAutoScroll = getDBUIAutoScroll(contentWindow);
+
+          Promise.all([
+            DBUIWebComponentRoot.registrationName,
+          ].map((localName) => contentWindow.customElements.whenDefined(localName)
+          )).then(() => {
+
+
+            const autoScroll = contentWindow.document.querySelector('#dbui-auto-scroll');
+            const autoScrollNative = autoScroll.shadowRoot.querySelector('dbui-auto-scroll-native');
+            const resizeSensorOuter = autoScrollNative.shadowRoot.querySelector('#resize-sensor-outer');
+
+            autoScroll.addEventListener('dbui-event-ready', (evt) => {
+              const scrollableWidth = resizeSensorOuter.scrollWidth - resizeSensorOuter.clientWidth;
+              console.log('test scrolling', scrollableWidth);
+              // resizeSensorOuter.scrollTop = 10;
+              resizeSensorOuter.scrollLeft = resizeSensorOuter.hasNegativeRTLScroll ? -10 : scrollableWidth - 10;
+              // autoScroll.vScroll = 0.9;
+            });
+
+            autoScroll.addEventListener('dbui-event-scroll', (evt) => {
+              console.log('test dbui-event-scroll', {
+                hScroll: evt.target.hScroll,
+                vScroll: evt.target.vScroll
+              });
+            });
+
+            setTimeout(() => {
+              iframe.remove();
+              done();
+            }, 55000);
+          });
+
+          DBUIAutoScroll.registerSelf();
+          DBUIWebComponentRoot.registerSelf();
+        }
+      });
     });
   });
 });

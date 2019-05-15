@@ -44,26 +44,44 @@ const dispatchResizeEvent = (self) => {
   self.dispatchDbuiEvent('dbui-event-resize', { detail: {} });
 };
 
+const dispatchReadyEvent = (self) => {
+  self.dispatchDbuiEvent('dbui-event-ready', { detail: {} });
+};
+
+const _innerComponentsReady = {
+  'auto-scroll-native': false,
+  'horizontal-slider': false,
+  'vertical-slider': false,
+};
+
+
 const registrationName = 'dbui-auto-scroll';
 
 /*
 TODO:
   - unit tests
+  - onAttributeChangedCallback don't check on this.isMounted, it is handled in core (look in all components)
+  - do we fire scroll event when user is setting hvScroll programmatically ? unit test it.
+  - make sure scroll vent is not fired when programmatically set by user ("hvScroll"),
+    but it does in other cases (ex: resize)
+  - make proxy to all getters of DBUIAutoScrollNative (clientWidth, scrollWidth, scrollableWidth, ...)
 */
 
 /*
 Behavior Extras:
  - Can display native or custom scrollbars depending on "native" flag attribute being set.
- - "overflow" can be set to auto | scroll | hidden
- - "scrollbars" attribute can be set to auto | always. When auto they will not be visible on mobile devices.
+ - "overflow" attribute can be set to auto | scroll | hidden
+ - "scrollbars" attribute can be set to auto | always. When auto they will not be visible on
+    devices mobile devices which wont show a scrollbar (ex: handheld devices).
  - Custom sliders thickness is configurable via CSS --dbui-auto-scroll-custom-slider-thickness.
- - The scroll (h-scroll or v-scroll) can be set programmatically in percent (0..1).
- - Scroll precision is configurable (percentPrecision) and defaults to 4.
+ - The scroll ("h-scroll" or "v-scroll") can be set programmatically in percent (0..1).
+ - Scroll precision is configurable (percent-precision attribute) and defaults to 4.
+ - Can scroll horizontally on mouse wheel if "h-wheel" flag attribute is set
  - Dispatches dbui-event-scroll when resizing DBUIAutoScroll or inner content,
    when user scrolling native with mouse scroll or mobile scroll,
    when user changes horizontal or vertical slider position.
  - Dispatches dbui-event-resize.
- - Can scroll horizontally on mouse wheel if "h-wheel" flag attribute is set
+ - Dispatches dbui-event-ready when initial setup is done.
 */
 
 export default function getDBUIAutoScroll(win) {
@@ -216,6 +234,9 @@ export default function getDBUIAutoScroll(win) {
         this._onMouseEnter = this._onMouseEnter.bind(this);
         this._onMouseLeave = this._onMouseLeave.bind(this);
         this._onWheel = this._onWheel.bind(this);
+        this._onInnerComponentsReady = this._onInnerComponentsReady.bind(this);
+
+        this._innerComponentsReady = _innerComponentsReady;
       }
 
       get debugShowValue() {
@@ -227,7 +248,7 @@ export default function getDBUIAutoScroll(win) {
       }
 
       /**
-       * Returns overflow value auto || scroll || hidden
+       * Returns overflow value. auto || scroll || hidden
        * @return {string}
        */
       get overflow() {
@@ -235,7 +256,7 @@ export default function getDBUIAutoScroll(win) {
       }
 
       /**
-       * Sets overflow value auto || scroll || hidden
+       * Sets overflow value. auto || scroll || hidden
        * @param value {string}
        */
       set overflow(value) {
@@ -244,7 +265,7 @@ export default function getDBUIAutoScroll(win) {
       }
 
       /**
-       * Returns scrollbars value auto || always
+       * Returns scrollbars value. auto || always
        * @return {string}
        */
       get scrollbars() {
@@ -252,7 +273,7 @@ export default function getDBUIAutoScroll(win) {
       }
 
       /**
-       * Sets scrollbars value auto || always
+       * Sets scrollbars value. auto || always
        * @param value {string}
        */
       set scrollbars(value) {
@@ -261,7 +282,7 @@ export default function getDBUIAutoScroll(win) {
       }
 
       /**
-       * Returns precision to be used when calculating percent
+       * Returns precision to be used when calculating percent.
        * @return {number} integer
        */
       get percentPrecision() {
@@ -272,7 +293,7 @@ export default function getDBUIAutoScroll(win) {
       }
 
       /**
-       * Sets precision to be used when calculating percent
+       * Sets precision to be used when calculating percent.
        * @param value {number} integer
        */
       set percentPrecision(value) {
@@ -315,7 +336,7 @@ export default function getDBUIAutoScroll(win) {
       }
 
       /**
-       * Returns horizontal scroll as percentage between 0 and 1
+       * Returns horizontal scroll as percentage between 0 and 1.
        * @return {number}
        */
       get hScroll() {
@@ -323,7 +344,7 @@ export default function getDBUIAutoScroll(win) {
       }
 
       /**
-       * Sets horizontal scroll as percentage between 0 and 1
+       * Sets horizontal scroll as percentage between 0 and 1.
        * @param value {number}
        */
       set hScroll(value) {
@@ -331,7 +352,7 @@ export default function getDBUIAutoScroll(win) {
       }
 
       /**
-       * Returns vertical scroll as percentage between 0 and 1
+       * Returns vertical scroll as percentage between 0 and 1.
        * @return {number}
        */
       get vScroll() {
@@ -339,7 +360,7 @@ export default function getDBUIAutoScroll(win) {
       }
 
       /**
-       * Sets vertical scroll as percentage between 0 and 1
+       * Sets vertical scroll as percentage between 0 and 1.
        * @param value {number}
        */
       set vScroll(value) {
@@ -367,7 +388,7 @@ export default function getDBUIAutoScroll(win) {
       /**
        * @return {boolean}
        */
-      get _hasHScroll() {
+      get hasHScroll() {
         const autoScrollNative = getElement(this, 'auto-scroll-native');
         return (autoScrollNative.scrollWidth - autoScrollNative.clientWidth) > 0;
       }
@@ -375,7 +396,7 @@ export default function getDBUIAutoScroll(win) {
       /**
        * @return {boolean}
        */
-      get _hasVScroll() {
+      get hasVScroll() {
         const autoScrollNative = getElement(this, 'auto-scroll-native');
         return (autoScrollNative.scrollHeight - autoScrollNative.clientHeight) > 0;
       }
@@ -384,29 +405,29 @@ export default function getDBUIAutoScroll(win) {
        * Returns horizontal custom slider thickness in pixels.
        * @return {number}
        */
-      get _hCustomSliderThickness() {
+      get hCustomSliderThickness() {
         return this.native ||
           this.overflow === 'hidden' ||
           (this.isMobileBrowser && this.scrollbars === 'auto') ||
-          (!this._hasHScroll && this.overflow === 'auto') ? 0 : this._customSliderThickness;
+          (!this.hasHScroll && this.overflow === 'auto') ? 0 : this.customSliderThickness;
       }
 
       /**
        * Returns vertical custom slider thickness in pixels.
        * @return {number}
        */
-      get _vCustomSliderThickness() {
+      get vCustomSliderThickness() {
         return this.native ||
           this.overflow === 'hidden' ||
           (this.isMobileBrowser && this.scrollbars === 'auto') ||
-          (!this._hasVScroll && this.overflow === 'auto') ? 0 : this._customSliderThickness;
+          (!this.hasVScroll && this.overflow === 'auto') ? 0 : this.customSliderThickness;
       }
 
       /**
        * Returns custom slider thickness in pixels.
        * @return {number}
        */
-      get _customSliderThickness() {
+      get customSliderThickness() {
         const computedStyle = win.getComputedStyle(this);
         const customSliderThickness = win.parseInt(
           computedStyle.getPropertyValue(
@@ -451,8 +472,8 @@ export default function getDBUIAutoScroll(win) {
         const borderBottom = borderBottomWidth;
 
         const applyDimensions = () => {
-          const hCustomSliderThickness = this._hCustomSliderThickness;
-          const vCustomSliderThickness = this._vCustomSliderThickness;
+          const hCustomSliderThickness = this.hCustomSliderThickness;
+          const vCustomSliderThickness = this.vCustomSliderThickness;
 
           autoScrollNative.overflow = 'scroll';
           autoScrollNative.style.width = `calc(100% + ${vNativeScrollbarThickness + borderSide + vCustomSliderThickness}px)`;
@@ -481,8 +502,8 @@ export default function getDBUIAutoScroll(win) {
         verticalSlider.debugShowValue = this.debugShowValue;
 
         const applyDimensions = () => {
-          const hCustomSliderThickness = this._hCustomSliderThickness;
-          const vCustomSliderThickness = this._vCustomSliderThickness;
+          const hCustomSliderThickness = this.hCustomSliderThickness;
+          const vCustomSliderThickness = this.vCustomSliderThickness;
 
           // Making room for custom scrollbars.
           outer.style.width = `calc(100% - ${vCustomSliderThickness}px)`;
@@ -544,6 +565,24 @@ export default function getDBUIAutoScroll(win) {
         this.removeEventListener('wheel', this._onWheel);
       }
 
+      _onInnerComponentsReady(evt) {
+        this._innerComponentsReady[evt.target.id] = true;
+        if (Object.values(this._innerComponentsReady).every(v => v)) {
+          this._nativeSetupOnOff();
+          this.style.visibility = 'visible';
+          getElement(this, 'horizontal-slider').ratio = this.hRatio;
+          getElement(this, 'vertical-slider').ratio = this.vRatio;
+          this._applyHVScrollPercentage();
+          win.requestAnimationFrame(() => {
+            // _initialSetupApplied is unlocked in next frame,
+            // so that scroll event will not fire when initial
+            // hv-scroll attributes are being set.
+            this._initialSetupApplied = true;
+            dispatchReadyEvent(this);
+          });
+        }
+      }
+
       _onWheel(evt) {
         if (!this.hWheel) return;
         evt.preventDefault();
@@ -592,17 +631,10 @@ export default function getDBUIAutoScroll(win) {
           .addEventListener('dbui-event-slidemove', this._onVerticalSliderMove);
         getElement(this, 'auto-scroll-native').addEventListener('mouseenter', this._onMouseEnter);
         getElement(this, 'auto-scroll-native').addEventListener('mouseleave', this._onMouseLeave);
+        getElement(this, 'horizontal-slider').addEventListener('dbui-event-ready', this._onInnerComponentsReady);
+        getElement(this, 'vertical-slider').addEventListener('dbui-event-ready', this._onInnerComponentsReady);
+        getElement(this, 'auto-scroll-native').addEventListener('dbui-event-ready', this._onInnerComponentsReady);
         this._setPercentPrecision();
-        setTimeout(() => {
-          this._nativeSetupOnOff();
-          this.style.visibility = 'visible';
-          getElement(this, 'horizontal-slider').ratio = this.hRatio;
-          getElement(this, 'vertical-slider').ratio = this.vRatio;
-          setTimeout(() => {
-            this._applyHVScrollPercentage();
-            this._initialSetupApplied = true;
-          }, 0);
-        }, 0);
       }
 
       onDisconnectedCallback() {
@@ -617,7 +649,11 @@ export default function getDBUIAutoScroll(win) {
           .removeEventListener('dbui-event-slidemove', this._onVerticalSliderMove);
         getElement(this, 'auto-scroll-native').removeEventListener('mouseenter', this._onMouseEnter);
         getElement(this, 'auto-scroll-native').removeEventListener('mouseleave', this._onMouseLeave);
+        getElement(this, 'horizontal-slider').removeEventListener('dbui-event-ready', this._onInnerComponentsReady);
+        getElement(this, 'vertical-slider').removeEventListener('dbui-event-ready', this._onInnerComponentsReady);
+        getElement(this, 'auto-scroll-native').removeEventListener('dbui-event-ready', this._onInnerComponentsReady);
         this._initialSetupApplied = false;
+        this._innerComponentsReady = _innerComponentsReady;
       }
 
       onAttributeChangedCallback(name, oldValue, newValue) {

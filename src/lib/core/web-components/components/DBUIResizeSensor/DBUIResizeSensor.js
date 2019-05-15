@@ -38,6 +38,10 @@ const reset = (self, size) => {
   self._lastHeight = size.height;
 };
 
+const dispatchReadyEvent = (self) => {
+  self.dispatchDbuiEvent('dbui-event-ready', { detail: {} });
+};
+
 /*
 TODO: add Behavior Extras
 */
@@ -121,9 +125,10 @@ export default function getDBUIResizeSensor(win) {
 
       onConnectedCallback() {
         super.onConnectedCallback();
-        setTimeout(() => {
+        win.requestAnimationFrame(() => {
           reset(this, this.dimensionsAndCoordinates);
-        }, 0);
+          dispatchReadyEvent(this);
+        });
         getElement(this, 'expand').addEventListener('scroll', this._onExpandScroll);
         getElement(this, 'shrink').addEventListener('scroll', this._onShrinkScroll);
       }

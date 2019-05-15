@@ -36,6 +36,8 @@ Behavior extras:
 TODO:
  - what happens when ratio change while scrolling ? (ex: in scrollable resize event is fired)
  - when size changes independently then ratio and position should auto-update.
+ - make sure slide event is not dispatched when slide was triggered programmatically
+ - when slider is moved and resize happens slider gets out of constraint
 */
 
 const DBUISliderCssVars = `
@@ -220,6 +222,10 @@ const dispatchSlideEvent = (self) => {
   });
 };
 
+const dispatchReadyEvent = (self) => {
+  self.dispatchDbuiEvent('dbui-event-ready', { detail: {} });
+};
+
 export default function getDBUISlider(win) {
   return ensureSingleRegistration(win, registrationName, () => {
     const {
@@ -385,6 +391,7 @@ export default function getDBUISlider(win) {
         this._onSliderTouchStart = this._onSliderTouchStart.bind(this);
         this._onKeyDown = this._onKeyDown.bind(this);
         this._onResize = this._onResize.bind(this);
+        this._onResizeSensorReady = this._onResizeSensorReady.bind(this);
       }
 
       /**
@@ -572,6 +579,10 @@ export default function getDBUISlider(win) {
         adjustPosition(this);
       }
 
+      _onResizeSensorReady() {
+        dispatchReadyEvent(this);
+      }
+
       _toggleCaptureArrowKeys() {
         if (this.captureArrowKeys) {
           win.document.addEventListener('keydown', this._onKeyDown);
@@ -588,6 +599,7 @@ export default function getDBUISlider(win) {
         getWrapperMiddle(this).addEventListener('mousedown', this._onSliderMouseDown);
         getWrapperMiddle(this).addEventListener('touchstart', this._onSliderTouchStart);
         getWrapperMiddle(this).addEventListener('dbui-event-resize', this._onResize);
+        getWrapperMiddle(this).addEventListener('dbui-event-ready', this._onResizeSensorReady);
         this.addEventListener('mouseenter', this._onMouseEnter);
         this.addEventListener('mouseleave', this._onMouseLeave);
         getDraggable(this).percentPrecision = this.percentPrecision;
@@ -601,7 +613,8 @@ export default function getDBUISlider(win) {
         getDraggable(this).removeEventListener('dbui-event-dragend', this._onDraggableDragEnd);
         getWrapperMiddle(this).removeEventListener('mousedown', this._onSliderMouseDown);
         getWrapperMiddle(this).removeEventListener('touchstart', this._onSliderTouchStart);
-        getWrapperMiddle(this).removeEventListener('resize', this._onResize);
+        getWrapperMiddle(this).removeEventListener('dbui-event-resize', this._onResize);
+        getWrapperMiddle(this).removeEventListener('dbui-event-ready', this._onResizeSensorReady);
         this.removeEventListener('mouseenter', this._onMouseEnter);
         this.removeEventListener('mouseleave', this._onMouseLeave);
         this.removeEventListener('wheel', this._onWheel);

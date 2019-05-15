@@ -98,11 +98,17 @@ describe('DBUISlider', () => {
         )).then(() => {
           const wrapperSliderOne = contentWindow.document.querySelector('#wrapper-slider-one');
           const sliderOne = contentWindow.document.querySelector('#slider-one');
+
+          sliderOne.addEventListener('dbui-event-slidemove', (evt) => {
+            console.log('test slidemove', evt);
+          });
+
           sliderOne.remove();
           wrapperSliderOne.appendChild(sliderOne);
 
           setTimeout(() => {
             wrapperSliderOne.style.height = '93px';
+            // sliderOne.percent = 0.5;
             setTimeout(() => {
               iframe.remove();
               done();
