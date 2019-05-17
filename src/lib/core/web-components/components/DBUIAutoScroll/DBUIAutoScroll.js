@@ -532,6 +532,7 @@ export default function getDBUIAutoScroll(win) {
       }
 
       _onDBUIAutoScrollNativeScroll(evt) {
+        console.log('_onDBUIAutoScrollNativeScroll', this._initialSetupApplied, this.hScroll, evt.target.hScroll);
         if (!this._initialSetupApplied) return;
         this.hScroll = evt.target.hScroll;
         this.vScroll = evt.target.vScroll;
