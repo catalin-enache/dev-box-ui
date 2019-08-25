@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import inIframe from '../../../../../../../testUtils/inIframe';
 import getDBUIWebComponentRoot from '../../DBUIWebComponentRoot/DBUIWebComponentRoot';
 import getDBUIDraggable, {
-  extractSingleEvent, getElementBeingDragged
+  extractSingleEvent, getElementBeingDragged, getTransformXYCoordinates
 } from '../DBUIDraggable';
 import getDBUIResizeSensor from '../../DBUIResizeSensor/DBUIResizeSensor';
 import {
@@ -1575,7 +1575,7 @@ describe('DBUIDraggable', () => {
             expect(one.style.transform).to.equal('');
             container.appendChild(draggableOne);
             expect(one.getAttribute('dbui-draggable-target')).to.equal('');
-            expect(one.style.transform).to.equal('translate(1px, 0px)');
+            expect(getTransformXYCoordinates(contentWindow.getComputedStyle(one))[0]).to.equal(1);
             draggableOne.remove();
             expect(one.getAttribute('dbui-draggable-target')).to.equal(null);
 
@@ -1643,7 +1643,7 @@ describe('DBUIDraggable', () => {
     });
   });
 
-  describe('drag-target dragTarget', () => {
+  describe('drag-target dragTarget', () => { // TODO check on firefox
     it(`
     on change it resets old target
     and initializes new target
@@ -1672,28 +1672,43 @@ describe('DBUIDraggable', () => {
           ].map((localName) => contentWindow.customElements.whenDefined(localName)
           )).then(() => {
 
+            // eslint-disable-next-line
+            let oneTransformX, oneTransformY, twoTransformX, twoTransformY;
+
             expect(draggableOne._targetToDrag).to.equal(one);
             expect(one.getAttribute('dbui-draggable-target')).to.equal('');
             expect(two.getAttribute('dbui-draggable-target')).to.equal(null);
-            expect(one.style.transform).to.equal('translate(2px, 0px)');
+            [oneTransformX, oneTransformY] = getTransformXYCoordinates(contentWindow.getComputedStyle(one));
+            expect(oneTransformX).to.equal(2);
+            expect(oneTransformY).to.equal(0);
             expect(one.style.transformOrigin).to.have.string('center center');
-            expect(two.style.transform).to.equal('translate(-2px, -1px)');
+            [twoTransformX, twoTransformY] = getTransformXYCoordinates(contentWindow.getComputedStyle(two));
+            expect(twoTransformX).to.equal(-2);
+            expect(twoTransformY).to.equal(-1);
             expect(two.style.transformOrigin).to.equal('');
 
             draggableOne.dragTarget = '#two';
             expect(one.getAttribute('dbui-draggable-target')).to.equal(null);
             expect(two.getAttribute('dbui-draggable-target')).to.equal('');
-            expect(one.style.transform).to.equal('translate(-1px, -2px)');
+            [oneTransformX, oneTransformY] = getTransformXYCoordinates(contentWindow.getComputedStyle(one));
+            expect(oneTransformX).to.equal(-1);
+            expect(oneTransformY).to.equal(-2);
             expect(one.style.transformOrigin).to.equal('');
-            expect(two.style.transform).to.equal('translate(2px, 0px)');
+            [twoTransformX, twoTransformY] = getTransformXYCoordinates(contentWindow.getComputedStyle(two));
+            expect(twoTransformX).to.equal(2);
+            expect(twoTransformY).to.equal(0);
             expect(two.style.transformOrigin).to.have.string('center center');
 
             draggableOne.dragTarget = '#one';
             expect(one.getAttribute('dbui-draggable-target')).to.equal('');
             expect(two.getAttribute('dbui-draggable-target')).to.equal(null);
-            expect(one.style.transform).to.equal('translate(2px, 0px)');
+            [oneTransformX, oneTransformY] = getTransformXYCoordinates(contentWindow.getComputedStyle(one));
+            expect(oneTransformX).to.equal(2);
+            expect(oneTransformY).to.equal(0);
             expect(one.style.transformOrigin).to.have.string('center center');
-            expect(two.style.transform).to.equal('translate(-2px, -1px)');
+            [twoTransformX, twoTransformY] = getTransformXYCoordinates(contentWindow.getComputedStyle(two));
+            expect(twoTransformX).to.equal(-2);
+            expect(twoTransformY).to.equal(-1);
             expect(two.style.transformOrigin).to.equal('');
 
             setTimeout(() => {

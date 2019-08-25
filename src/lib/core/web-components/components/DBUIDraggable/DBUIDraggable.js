@@ -205,6 +205,11 @@ export function extractSingleEvent(evt) {
     evt;
 }
 
+export function getTransformXYCoordinates(computedStyle) {
+  const matrix = computedStyle.transform.match(/-?\d*\.?\d+/g).map(Number);
+  return [matrix[4], matrix[5]];
+}
+
 /**
  *
  * @param evt MouseEvent || TouchEvent always coming from Draggable
@@ -221,7 +226,7 @@ function getMeasurements(evt) {
   const targetToDrag = self._targetToDrag;
 
   const targetStyle = win.getComputedStyle(targetToDrag, null);
-  const matrix = targetStyle.transform.match(/-?\d*\.?\d+/g).map(Number);
+  const [targetTranslatedXOnStart, targetTranslatedYOnStart] = getTransformXYCoordinates(targetStyle);
   const targetBoundingRect = targetToDrag.getBoundingClientRect();
   const extractedEvent = extractSingleEvent(evt);
   const winScrollX = win.scrollX;
@@ -233,7 +238,6 @@ function getMeasurements(evt) {
   const _targetYOnStart = Math.round(targetBoundingRect.y);
 
   const { clientX: _pointerXOnStart, clientY: _pointerYOnStart } = extractedEvent;
-  const [targetTranslatedXOnStart, targetTranslatedYOnStart] = [matrix[4], matrix[5]];
   const targetXOnStart = _targetXOnStart + winScrollX;
   const targetYOnStart = _targetYOnStart + winScrollY;
   const pointerXOnStart = _pointerXOnStart + winScrollX;
@@ -399,8 +403,7 @@ const getConstraintsForBoundingClientRect = (targetNode, constraintNode) => {
   const targetBoundingClientRect = targetNode.getBoundingClientRect();
   const constraintBoundingRect = constraintNode.getBoundingClientRect();
 
-  const matrix = targetStyle.transform.match(/-?\d*\.?\d+/g).map(Number);
-  const [targetTranslatedX, targetTranslatedY] = [matrix[4], matrix[5]];
+  const [targetTranslatedX, targetTranslatedY] = getTransformXYCoordinates(targetStyle);
 
   const aX = Math.round(targetBoundingClientRect.x);
   const aY = Math.round(targetBoundingClientRect.y);

@@ -65,6 +65,7 @@ TODO:
   - make sure scroll vent is not fired when programmatically set by user ("hvScroll"),
     but it does in other cases (ex: resize)
   - make proxy to all getters of DBUIAutoScrollNative (clientWidth, scrollWidth, scrollableWidth, ...)
+  - move hWheel to the native component ?
 */
 
 /*
@@ -205,6 +206,8 @@ export default function getDBUIAutoScroll(win) {
         `;
       }
 
+      // TODO: why do we have dir=ltr on vertical-slider ?
+
       static get dependencies() {
         return [...super.dependencies, DBUIAutoScrollNative, DBUISlider];
       }
@@ -236,7 +239,7 @@ export default function getDBUIAutoScroll(win) {
         this._onWheel = this._onWheel.bind(this);
         this._onInnerComponentsReady = this._onInnerComponentsReady.bind(this);
 
-        this._innerComponentsReady = _innerComponentsReady;
+        this._innerComponentsReady = { ..._innerComponentsReady };
       }
 
       get debugShowValue() {
@@ -471,18 +474,34 @@ export default function getDBUIAutoScroll(win) {
         const borderSide = isRtl ? borderLeftWidth : borderRightWidth;
         const borderBottom = borderBottomWidth;
 
+        let autoScrollNativeAddedVNativeScrollbarAndBorderSide;
+        let autoScrollNativeAddedHNativeScrollbarAndBorderBottom;
+        let contentPaddingSide;
+        let contentPaddingBottom;
+        let autoScrollNativeAddedWidth;
+        let autoScrollNativeAddedHeight;
+
         const applyDimensions = () => {
           const hCustomSliderThickness = this.hCustomSliderThickness;
           const vCustomSliderThickness = this.vCustomSliderThickness;
 
+          autoScrollNativeAddedVNativeScrollbarAndBorderSide = vNativeScrollbarThickness + borderSide;
+          autoScrollNativeAddedHNativeScrollbarAndBorderBottom = hNativeScrollbarThickness + borderBottom;
+
+          autoScrollNativeAddedWidth = autoScrollNativeAddedVNativeScrollbarAndBorderSide + vCustomSliderThickness;
+          autoScrollNativeAddedHeight = autoScrollNativeAddedHNativeScrollbarAndBorderBottom + hCustomSliderThickness;
+
           autoScrollNative.overflow = 'scroll';
-          autoScrollNative.style.width = `calc(100% + ${vNativeScrollbarThickness + borderSide + vCustomSliderThickness}px)`;
-          autoScrollNative.style.height = `calc(100% + ${hNativeScrollbarThickness + borderBottom + hCustomSliderThickness}px)`;
+          autoScrollNative.style.width = `calc(100% + ${autoScrollNativeAddedWidth}px)`;
+          autoScrollNative.style.height = `calc(100% + ${autoScrollNativeAddedHeight}px)`;
           autoScrollNative.style.marginLeft = `${(isRtl ? -(vNativeScrollbarThickness + borderSide + vCustomSliderThickness) : 0)}px`;
 
-          content.style[`padding${paddingDir}`] = `${vCustomSliderThickness + borderSide}px`;
+          contentPaddingSide = vCustomSliderThickness + borderSide;
+          contentPaddingBottom = hCustomSliderThickness + borderBottom;
+
+          content.style[`padding${paddingDir}`] = `${contentPaddingSide}px`;
           content.style[`padding${paddingOtherDir}`] = '0px';
-          content.style.paddingBottom = `${hCustomSliderThickness + borderBottom}px`;
+          content.style.paddingBottom = `${contentPaddingBottom}px`;
         };
 
         applyDimensions();
@@ -532,7 +551,6 @@ export default function getDBUIAutoScroll(win) {
       }
 
       _onDBUIAutoScrollNativeScroll(evt) {
-        console.log('_onDBUIAutoScrollNativeScroll', this._initialSetupApplied, this.hScroll, evt.target.hScroll);
         if (!this._initialSetupApplied) return;
         this.hScroll = evt.target.hScroll;
         this.vScroll = evt.target.vScroll;
@@ -654,7 +672,7 @@ export default function getDBUIAutoScroll(win) {
         getElement(this, 'vertical-slider').removeEventListener('dbui-event-ready', this._onInnerComponentsReady);
         getElement(this, 'auto-scroll-native').removeEventListener('dbui-event-ready', this._onInnerComponentsReady);
         this._initialSetupApplied = false;
-        this._innerComponentsReady = _innerComponentsReady;
+        this._innerComponentsReady = { ..._innerComponentsReady };
       }
 
       onAttributeChangedCallback(name, oldValue, newValue) {

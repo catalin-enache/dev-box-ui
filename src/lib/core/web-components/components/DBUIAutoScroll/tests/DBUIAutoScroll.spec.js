@@ -14,7 +14,7 @@ import getDBUIWebComponentRoot from '../../DBUIWebComponentRoot/DBUIWebComponent
 import ensureSingleRegistration from '../../../../internals/ensureSingleRegistration';
 
 const dummyOneRegistrationName = 'dbui-dummy-one';
-function getDummyOne(win) {
+function getDummyOne(win, dummyOneDbuiAutoScrollShadow) {
   return ensureSingleRegistration(win, dummyOneRegistrationName, () => {
     const {
       DBUIWebComponentBase,
@@ -48,6 +48,7 @@ function getDummyOne(win) {
           </style>
           <div>
             <p>Dummy One</p>
+            ${dummyOneDbuiAutoScrollShadow ? `
             <div>
               <dbui-auto-scroll id="dbui-auto-scroll-shadow"
               debug-show-value
@@ -65,6 +66,7 @@ function getDummyOne(win) {
             <br />
             <br />
             <br />
+            ` : ''}
             <slot></slot>
           </div>
         `;
@@ -82,18 +84,18 @@ getDummyOne.registrationName = dummyOneRegistrationName;
 
 // eslint-disable-next-line
 const HTMLContent = `
-<p>9aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa9</p>
-<p>0aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa0</p>
-<p>0aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa0</p>
-<p>0aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa0</p>
-<p>0aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa0</p>
-<p>0aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa0</p>
-<p>0aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa0</p>
-<p>0aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa0</p>
-<p>0aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa0</p>
-<p>0aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa0</p>
-<p>0aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa0</p>
-<p>9aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa9</p>
+<p>S12345678912345678912345678912345678912345678912345S</p>
+<p>1123456789123456789123456789123456789123456789123451</p>
+<p>2123456789123456789123456789123456789123456789123452</p>
+<p>3123456789123456789123456789123456789123456789123453</p>
+<p>4123456789123456789123456789123456789123456789123454</p>
+<p>5123456789123456789123456789123456789123456789123455</p>
+<p>6123456789123456789123456789123456789123456789123456</p>
+<p>7123456789123456789123456789123456789123456789123457</p>
+<p>8123456789123456789123456789123456789123456789123458</p>
+<p>9123456789123456789123456789123456789123456789123459</p>
+<p>0123456789123456789123456789123456789123456789123450</p>
+<p>E12345678912345678912345678912345678912345678912345E</p>
 `;
 
 // eslint-disable-next-line
@@ -109,6 +111,7 @@ const editableContent = `kkkkkkkkkkkkkkkkkkkkkkkk
         `;
 
 function testSetup({
+  dummyOneDbuiAutoScrollShadow = false,
   dir = 'ltr',
   hScroll, vScroll, overflow, scrollbars, percentPrecision, native, hWheel,
 
@@ -199,7 +202,7 @@ function testSetup({
     onLoad: ({ contentWindow, iframe }) => {
       const DBUIWebComponentRoot = getDBUIWebComponentRoot(contentWindow);
       const DBUIAutoScroll = getDBUIAutoScroll(contentWindow);
-      const DummyOne = getDummyOne(contentWindow);
+      const DummyOne = getDummyOne(contentWindow, dummyOneDbuiAutoScrollShadow);
       const DBUIDraggable = getDBUIDraggable(contentWindow);
       dbuiWebComponentsSetUp(contentWindow)([{
         registrationName: DBUIAutoScroll.registrationName,
@@ -297,7 +300,7 @@ describe('DBUIAutoScroll', () => {
   });
 
   describe('native scroll behavior', () => {
-    it.only('adjusts custom sliders position', (done) => {
+    xit('adjusts custom sliders position', (done) => {
       testSetup({
         dir: 'rtl',
         hScroll: 0.05, vScroll: 0.05,
@@ -309,7 +312,6 @@ describe('DBUIAutoScroll', () => {
         }) => {
           autoScroll.addEventListener('dbui-event-ready', (evt) => {
             const scrollableWidth = resizeSensorOuter.scrollWidth - resizeSensorOuter.clientWidth;
-            console.log('test dbui-event-ready', scrollableWidth);
             // resizeSensorOuter.scrollTop = 10;
             resizeSensorOuter.scrollLeft = resizeSensorOuter.hasNegativeRTLScroll ? -10 : scrollableWidth - 10;
             // autoScroll.vScroll = 0.9;
@@ -317,16 +319,13 @@ describe('DBUIAutoScroll', () => {
 
           // scroll is not triggered always in mozilla/safari
           autoScroll.addEventListener('dbui-event-scroll', (evt) => {
-            console.log('test dbui-event-scroll', {
-              hScroll: evt.target.hScroll,
-              vScroll: evt.target.vScroll
-            });
+
           });
 
           setTimeout(() => {
             iframe.remove();
             done();
-          }, 55000);
+          }, 0);
         }
       });
     });

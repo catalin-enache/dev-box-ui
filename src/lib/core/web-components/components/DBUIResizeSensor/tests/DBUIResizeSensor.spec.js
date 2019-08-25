@@ -223,11 +223,10 @@ describe('DBUIResizeSensor', () => {
               done();
             }
 
-            resizeSensor.addEventListener('dbui-event-resize', onContentExpand);
-
-            setTimeout(() => {
+            resizeSensor.addEventListener('dbui-event-ready', () => {
+              resizeSensor.addEventListener('dbui-event-resize', onContentExpand);
               scrollableContent.innerHTML += 'oooooooooooooooooooooo1';
-            }, 0);
+            });
           });
 
           DBUIResizeSensor.registerSelf();
