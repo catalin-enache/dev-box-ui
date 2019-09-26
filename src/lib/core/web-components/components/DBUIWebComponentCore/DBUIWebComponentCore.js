@@ -44,6 +44,7 @@ function defineComponentCssClasses(win, cssClasses) {
 
 /*
 TODO:
+ - dimensionsAndCoordinates method should take into consideration rotation matrix ?
  - make setters and getters dynamically to avoid boilerplate ?
  - what behaviour when component is adopted ? what about its dependency on global variables ?
  - inject global css to handle dbui-web-component (hide when not defined, un hide when defined) ?
@@ -1631,6 +1632,7 @@ export default function getDBUIWebComponentCore(win) {
 
       cloneNodeDeep({ idPrefix = '', idSuffix = '' }) {
         const clone = super.cloneNode(true);
+        clone._isSafeToAccessClosestDbuiParent = this._isSafeToAccessClosestDbuiParent;
         if (!idPrefix && !idSuffix) return clone;
         if (clone.hasAttribute('id')) {
           clone.setAttribute('id', `${idPrefix}${clone.getAttribute('id')}${idSuffix}`);
@@ -1640,7 +1642,6 @@ export default function getDBUIWebComponentCore(win) {
             child.setAttribute('id', `${idPrefix}${child.getAttribute('id')}${idSuffix}`);
           }
         });
-        clone._isSafeToAccessClosestDbuiParent = this._isSafeToAccessClosestDbuiParent;
         return clone;
       }
 

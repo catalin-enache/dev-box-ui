@@ -128,7 +128,7 @@ export default function getDBUIAutoScrollNative(win) {
         this._lastVScroll = 0;
         this._lastHScroll = 0;
         this._initialScrollApplied = false;
-        this._innerComponentsReady = _innerComponentsReady;
+        this._innerComponentsReady = { ..._innerComponentsReady };
       }
 
       /**
@@ -445,7 +445,7 @@ export default function getDBUIAutoScrollNative(win) {
         getResizeSensorContent(this).removeEventListener('dbui-event-resize', this._onResizeContent);
         getResizeSensorOuter(this).removeEventListener('dbui-event-ready', this._onInnerComponentsReady);
         getResizeSensorContent(this).removeEventListener('dbui-event-ready', this._onInnerComponentsReady);
-        this._innerComponentsReady = _innerComponentsReady;
+        this._innerComponentsReady = { ..._innerComponentsReady };
       }
 
       onAttributeChangedCallback(name, oldValue, newValue) {
