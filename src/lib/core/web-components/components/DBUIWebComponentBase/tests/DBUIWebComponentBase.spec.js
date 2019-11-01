@@ -38,6 +38,10 @@ function getDummyX(
           return [...super.dependencies, ...dependentClasses];
         }
 
+        static get sharedStyleSheet() {
+          return '* { color: green; }';
+        }
+
         static get observedAttributes() {
           // web components standard API
           return [...super.observedAttributes, 'dbui-dir'];
@@ -321,7 +325,7 @@ function getDbuiXClasses(contentWindow, { onConnectedCallback, onAttributeChange
 
 describe('DBUIWebComponentBase', () => {
   describe('when loaded', () => {
-    xit('does stuff', (done) => {
+    it.only('does stuff', (done) => {
       inIframe({
         bodyHTML: `
         <dbui-dummy-thirty dir="aaa">

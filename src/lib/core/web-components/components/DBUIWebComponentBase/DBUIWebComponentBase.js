@@ -34,16 +34,17 @@ function defineComponentCssClasses(win, cssClasses) {
   commonCSSClassesStyleNode.innerHTML += cssClasses;
 }
 
+const supportsAdoptingStyleSheets =
+    ('adoptedStyleSheets' in Document.prototype) &&
+    ('replace' in CSSStyleSheet.prototype);
+
 /*
 TODO:
- - implement static css and adopt it (see constructable stylesheets)
- - dimensionsAndCoordinates method should take into consideration rotation matrix ?
- - make setters and getters dynamically to avoid boilerplate
  - make properties like in lit-html
- - what behaviour when component is adopted ? what about its dependency on global variables ?
  - inject global css to handle dbui-web-component (hide when not defined, un hide when defined) ?
  - handle locale with a service
  - make context stuff like in React
+ - dimensionsAndCoordinates method should take into consideration rotation matrix ?
 */
 
 /*
@@ -73,6 +74,14 @@ export default function getDBUIWebComponentBase(win) {
        */
       static get registrationName() {
         throw new Error('registrationName must be defined in derived classes');
+      }
+
+      /**
+       *
+       * @return String HTML
+       */
+      static get sharedStyleSheet() {
+        return '';
       }
 
       /**
@@ -153,24 +162,33 @@ export default function getDBUIWebComponentBase(win) {
           registrationName, dependencies, cssVars, cssClasses
         } = this;
 
+        // Don't try to register self if already registered
+        if (customElements.get(registrationName)) { return; }
+
         dependencies.forEach((dependency) => {
           dependency.registerSelf();
         });
 
-        // Don't try to register self if already registered
-        if (!customElements.get(registrationName)) {
-          defineComponentCssVars(win, cssVars);
-          defineComponentCssClasses(win, cssClasses);
-          // Give a chance to override web-component style if provided before being registered.
-          const componentStyle = ((win.DBUIWebComponents || {})[registrationName] || {}).componentStyle;
-          if (componentStyle) {
-            this.componentStyle += '\n\n/* ==== overrides ==== */\n\n';
-            this.componentStyle += componentStyle;
-          }
-          // Do registration
-          // https://html.spec.whatwg.org/multipage/custom-elements.html#concept-upgrade-an-element
-          customElements.define(registrationName, this);
+        defineComponentCssVars(win, cssVars);
+        defineComponentCssClasses(win, cssClasses);
+        // Give a chance to override web-component style if provided before being registered.
+        const componentStyle = ((win.DBUIWebComponents || {})[registrationName] || {}).componentStyle;
+        if (componentStyle) {
+          this.componentStyle += '\n\n/* ==== overrides ==== */\n\n';
+          this.componentStyle += componentStyle;
         }
+
+        if (supportsAdoptingStyleSheets) {
+          this._sharedStyleSheetInstance = new win.CSSStyleSheet();
+          this._sharedStyleSheetInstance.replaceSync(this.sharedStyleSheet);
+        } else {
+          this.componentStyle = `${this.sharedStyleSheet}\n\n${this.componentStyle}`;
+        }
+
+        // Do registration
+        // https://html.spec.whatwg.org/multipage/custom-elements.html#concept-upgrade-an-element
+        customElements.define(registrationName, this);
+
       }
 
       static get prototypeChainInfo() {
@@ -195,6 +213,11 @@ export default function getDBUIWebComponentBase(win) {
         });
 
         this._insertTemplate();
+
+        if (supportsAdoptingStyleSheets) {
+          this.shadowRoot.adoptedStyleSheets =
+            [this.constructor._sharedStyleSheetInstance];
+        }
 
         this.connectedCallback = this.connectedCallback.bind(this);
         this.disconnectedCallback = this.disconnectedCallback.bind(this);
@@ -248,7 +271,6 @@ export default function getDBUIWebComponentBase(win) {
 
       _insertTemplate() {
         const { template } = this.constructor;
-        template &&
         this.shadowRoot.appendChild(template.content.cloneNode(true));
       }
 
