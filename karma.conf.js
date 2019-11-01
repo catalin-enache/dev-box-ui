@@ -42,7 +42,7 @@ module.exports = function (config) {
         reporter: 'html', // change Karma's debug.html to the mocha web reporter
         checkLeaks: true,
         ignoreLeaks: false,
-        timeout: 2000, // 1000
+        timeout: 60000, // 1000
         // accepted global leaks defined here to prevent mocha global leaks error showing on iPad
         // https://stackoverflow.com/questions/8360318/global-leak-errors-in-mocha/10040921
         globals: [

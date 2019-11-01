@@ -42,9 +42,12 @@ export default function inIframe({
       done && done(event.reason);
     });
 
+    const html = target.contentWindow.document.querySelector('html');
+
     onLoad({
       contentWindow: target.contentWindow,
-      iframe
+      iframe,
+      html
     });
 
   });
