@@ -40,7 +40,7 @@ const supportsAdoptingStyleSheets =
 
 /*
 TODO:
- - make properties like in lit-html
+ - make properties like in lit-element
  - inject global css to handle dbui-web-component (hide when not defined, un hide when defined) ?
  - handle locale with a service
  - make context stuff like in React
@@ -223,6 +223,7 @@ export default function getDBUIWebComponentBase(win) {
         this.disconnectedCallback = this.disconnectedCallback.bind(this);
         this.attributeChangedCallback = this.attributeChangedCallback.bind(this);
         this.adoptedCallback = this.adoptedCallback.bind(this);
+        this.onBeforeUnload = this.onBeforeUnload.bind(this);
       }
 
       dispatchDbuiEvent(name, options) {
@@ -272,6 +273,11 @@ export default function getDBUIWebComponentBase(win) {
       _insertTemplate() {
         const { template } = this.constructor;
         this.shadowRoot.appendChild(template.content.cloneNode(true));
+      }
+
+      // Fired when window is closed or refreshed.
+      onBeforeUnload() {
+        // pass
       }
 
       /**
@@ -353,7 +359,7 @@ export default function getDBUIWebComponentBase(win) {
         Object.keys(attributesToDefine).forEach((property) => {
           this._defineAttribute(property, attributesToDefine[property]);
         });
-        win.addEventListener('beforeunload', this.disconnectedCallback, false);
+        win.addEventListener('beforeunload', this.onBeforeUnload, false);
         this.onConnectedCallback();
       }
 
@@ -373,7 +379,7 @@ export default function getDBUIWebComponentBase(win) {
        * @private
        */
       _onDisconnectedCallback() {
-        win.removeEventListener('beforeunload', this.disconnectedCallback, false);
+        win.removeEventListener('beforeunload', this.onBeforeUnload, false);
         // Call public hook.
         this.onDisconnectedCallback();
       }
