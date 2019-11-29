@@ -1,46 +1,27 @@
-
 import ensureSingleRegistration from '../../../internals/ensureSingleRegistration';
-import DBUICommonCssVars from './DBUICommonCssVars';
-import DBUICommonCssClasses from './DBUICommonCssClasses';
+import {
+  defineSettersAndGetters, defineObservedAttributes,
+  setPropertyFromAttribute,
+  handlePropertiesAndAttributesDefinedBeforeFirstTimeConnected,
+  deferOwnProperties, applyDefaultValues
+} from './helpers/propertiesAndAttributes.helpers';
+import { propagateLocaleAttributes } from './helpers/locale.helpers';
+import {
+  defineCommonCSS, defineComponentCssVars, defineComponentCssClasses
+} from './helpers/cssStyle.helpers';
+import { supportsAdoptingStyleSheets } from './constants';
 
-const registrationName = 'DBUIWebComponentBase';
-
-const cssMap = {
-  'dbui-common-css-vars': DBUICommonCssVars,
-  'dbui-common-css-classes': DBUICommonCssClasses,
-};
-
-function defineCommonCSS(win) {
-  const { document } = win;
-  Object.keys(cssMap).forEach((key) => {
-    const commonStyle = document.createElement('style');
-    commonStyle.setAttribute(key, '');
-    commonStyle.innerHTML = cssMap[key];
-    document.querySelector('head').appendChild(commonStyle);
-  });
+/**
+ *
+ * @param self DBUIWebComponentBase instance
+ */
+function insertTemplate(self) {
+  const { template } = self.constructor;
+  self.shadowRoot.appendChild(template.content.cloneNode(true));
 }
-
-/* istanbul ignore next */
-function defineComponentCssVars(win, cssVars) {
-  const { document } = win;
-  const commonCSSVarsStyleNode = document.querySelector('[dbui-common-css-vars]');
-  commonCSSVarsStyleNode.innerHTML += cssVars;
-}
-
-/* istanbul ignore next */
-function defineComponentCssClasses(win, cssClasses) {
-  const { document } = win;
-  const commonCSSClassesStyleNode = document.querySelector('[dbui-common-css-classes]');
-  commonCSSClassesStyleNode.innerHTML += cssClasses;
-}
-
-const supportsAdoptingStyleSheets =
-    ('adoptedStyleSheets' in Document.prototype) &&
-    ('replace' in CSSStyleSheet.prototype);
 
 /*
 TODO:
- - make properties like in lit-element
  - inject global css to handle dbui-web-component (hide when not defined, un hide when defined) ?
  - handle locale with a service
  - make context stuff like in React
@@ -50,6 +31,8 @@ TODO:
 /*
 Behavior Extras:
 */
+
+const registrationName = 'DBUIWebComponentBase';
 
 /**
  *
@@ -72,16 +55,9 @@ export default function getDBUIWebComponentBase(win) {
        *
        * @return String
        */
+      // eslint-disable-next-line
       static get registrationName() {
-        throw new Error('registrationName must be defined in derived classes');
-      }
-
-      /**
-       *
-       * @return String HTML
-       */
-      static get sharedStyleSheet() {
-        return '';
+        this.throwError('registrationName must be defined in derived classes');
       }
 
       /**
@@ -96,7 +72,87 @@ export default function getDBUIWebComponentBase(win) {
        *
        * @return String CSS
        */
+      static get extendedSharedStyleSheet() {
+        return this._extendedSharedStyleSheet || '';
+      }
+
+      /**
+       *
+       * @param value String CSS
+       */
+      static set extendedSharedStyleSheet(value) {
+        this._extendedSharedStyleSheet = value;
+      }
+
+      /**
+       *
+       * @return String CSS
+       */
+      static get defaultSharedStyleSheet() {
+        return '';
+      }
+
+      /**
+       *
+       * @return String CSS
+       */
+      static get sharedStyleSheet() {
+        return this.defaultSharedStyleSheet + this.extendedSharedStyleSheet;
+      }
+
+      /**
+       *
+       * @return String CSS
+       */
+      static get extendedCssVars() {
+        return this._extendedCssVars || '';
+      }
+
+      /**
+       *
+       * @param value String CSS
+       */
+      static set extendedCssVars(value) {
+        this._extendedCssVars = value;
+      }
+
+      /**
+       *
+       * @return String CSS
+       */
+      static get defaultCssVars() {
+        return '';
+      }
+
+      /**
+       *
+       * @return String CSS
+       */
       static get cssVars() {
+        return this.defaultCssVars + this.extendedCssVars;
+      }
+
+      /**
+       *
+       * @return String CSS
+       */
+      static get extendedCssClasses() {
+        return this._extendedCssClasses || '';
+      }
+
+      /**
+       *
+       * @param value String CSS
+       */
+      static set extendedCssClasses(value) {
+        this._extendedCssClasses = value;
+      }
+
+      /**
+       *
+       * @return String CSS
+       */
+      static get defaultCssClasses() {
         return '';
       }
 
@@ -105,7 +161,7 @@ export default function getDBUIWebComponentBase(win) {
        * @return String CSS
        */
       static get cssClasses() {
-        return '';
+        return this.defaultCssClasses + this.extendedCssClasses;
       }
 
       /**
@@ -117,19 +173,33 @@ export default function getDBUIWebComponentBase(win) {
       }
 
       /**
-       *
-       * @return Array<String>
+       * {
+       *   prop: {
+       *     type: String | Number | Boolean | Array | Object,
+       *     attribute: 'some-attr' | true | false,
+       *     toProperty: (value) => { },
+       *     toAttribute: (value) => { },
+       *     noAccessor: true | false,
+       *     allowedValues: func({ self, value }) | undefined,
+       *     defaultValue: any (required)
+       *   }
+       * }
+       * @return Object
        */
-      static get propertiesToUpgrade() {
-        return ['unselectable'];
-      }
-
-      /**
-       *
-       * @return Object { String, String }
-       */
-      static get attributesToDefine() {
-        return { 'dbui-web-component': '' };
+      static get properties() {
+        return {
+          dbuiWebComponent: {
+            type: win.Boolean, attribute: 'dbui-web-component',
+            // eslint-disable-next-line
+            allowedValues: ({ value }) => value === true,
+            defaultValue: true
+          },
+          dir: { type: win.String, attribute: true, defaultValue: null },
+          dbuiDir: { type: win.String, attribute: 'dbui-dir', defaultValue: 'ltr' },
+          lang: { type: win.String, attribute: true, defaultValue: null },
+          dbuiLang: { type: win.String, attribute: 'dbui-lang', defaultValue: 'en' },
+          unselectable: { type: win.Boolean, attribute: true, defaultValue: false }
+        };
       }
 
       /**
@@ -138,7 +208,7 @@ export default function getDBUIWebComponentBase(win) {
        */
       static get observedAttributes() {
         // web components standard API
-        return ['dir', 'lang', 'unselectable'];
+        return this._observedAttributes;
       }
 
       static get template() {
@@ -149,17 +219,26 @@ export default function getDBUIWebComponentBase(win) {
         return this._template;
       }
 
-      static get componentStyle() {
+      static get templateStyle() {
         return this.template.content.querySelector('style').innerHTML;
       }
 
-      static set componentStyle(value) {
+      static set templateStyle(value) {
         this.template.content.querySelector('style').innerHTML = value;
       }
 
       static registerSelf() {
+        // Static internal properties reference
+        // _sharedStyleSheetInstance
+        // _attributesToPropertiesMapper
+        // _extendedCssVars
+        // _extendedCssClasses
+        // _extendedSharedStyleSheet
+        // _observedAttributes
+
         const {
-          registrationName, dependencies, cssVars, cssClasses
+          registrationName, dependencies, templateStyle,
+          cssVars, cssClasses, sharedStyleSheet
         } = this;
 
         // Don't try to register self if already registered
@@ -171,19 +250,16 @@ export default function getDBUIWebComponentBase(win) {
 
         defineComponentCssVars(win, cssVars);
         defineComponentCssClasses(win, cssClasses);
-        // Give a chance to override web-component style if provided before being registered.
-        const componentStyle = ((win.DBUIWebComponents || {})[registrationName] || {}).componentStyle;
-        if (componentStyle) {
-          this.componentStyle += '\n\n/* ==== overrides ==== */\n\n';
-          this.componentStyle += componentStyle;
-        }
 
         if (supportsAdoptingStyleSheets) {
           this._sharedStyleSheetInstance = new win.CSSStyleSheet();
-          this._sharedStyleSheetInstance.replaceSync(this.sharedStyleSheet);
+          this._sharedStyleSheetInstance.replaceSync(sharedStyleSheet);
         } else {
-          this.componentStyle = `${this.sharedStyleSheet}\n\n${this.componentStyle}`;
+          this.templateStyle = `${sharedStyleSheet}\n\n${templateStyle}`;
         }
+
+        defineSettersAndGetters(this);
+        defineObservedAttributes(this);
 
         // Do registration
         // https://html.spec.whatwg.org/multipage/custom-elements.html#concept-upgrade-an-element
@@ -202,6 +278,16 @@ export default function getDBUIWebComponentBase(win) {
         return chain;
       }
 
+      static throwError(msg) {
+        throw new win.Error(msg);
+      }
+
+      throwError(msg) {
+        this._invalidComponentState = true;
+        this.constructor.throwError(msg);
+      }
+
+      // https://html.spec.whatwg.org/multipage/custom-elements.html#custom-element-conformance
       constructor() {
         super();
 
@@ -212,7 +298,7 @@ export default function getDBUIWebComponentBase(win) {
           // by setting "focused" attribute when needed.
         });
 
-        this._insertTemplate();
+        insertTemplate(this);
 
         if (supportsAdoptingStyleSheets) {
           this.shadowRoot.adoptedStyleSheets =
@@ -224,11 +310,51 @@ export default function getDBUIWebComponentBase(win) {
         this.attributeChangedCallback = this.attributeChangedCallback.bind(this);
         this.adoptedCallback = this.adoptedCallback.bind(this);
         this.onBeforeUnload = this.onBeforeUnload.bind(this);
+
+        this._internalProperties = {}; // Stores values for setters ad getters.
+        this._consumerDefinedPropertiesBeforeUpgrade = {};
+        this._attributesChangedBeforeFirstTimeConnected = {};
+        this._componentIsConnected = false;
+        this._componentFirstTimeConnected = false;
+        this._componentHasBeenInitialized = false;
+        this._attributesCanBeDefined = false;
+        // This is for unit-tests only as we cannot throw errors when component is initialized.
+        this._invalidComponentState = false;
+
+        deferOwnProperties(this);
+        applyDefaultValues(this);
+
       }
 
       dispatchDbuiEvent(name, options) {
         this.dispatchEvent(new win.CustomEvent(name, options));
       }
+
+      // ============================ [Parents/Ancestors] >> =============================================
+
+      /**
+       *
+       * @return DBUIWebComponent | null
+       */
+      get shadowDomDbuiParent() {
+        return this.getRootNode().host || null;
+      }
+
+      /**
+       *
+       * @return DBUIWebComponent | null
+       */
+      get shadowDomDbuiAncestor() {
+        let shadowDomDbuiParent = this.shadowDomDbuiParent;
+        let shadowDomDbuiAncestor = null;
+        while (shadowDomDbuiParent !== null) {
+          shadowDomDbuiAncestor = shadowDomDbuiParent;
+          shadowDomDbuiParent = shadowDomDbuiParent.shadowDomDbuiParent;
+        }
+        return shadowDomDbuiAncestor;
+      }
+
+      // ============================ [Parents/Ancestors] >> =============================================
 
       // ============================ [Locale] >> =============================================
 
@@ -238,45 +364,9 @@ export default function getDBUIWebComponentBase(win) {
 
       // ============================ << [Locale]  =============================================
 
-      /**
-       *
-       * @param prop String
-       * @private
-       */
-      _upgradeProperty(prop) {
-        // https://developers.google.com/web/fundamentals/web-components/best-practices#lazy-properties
-        // https://developers.google.com/web/fundamentals/web-components/examples/howto-checkbox
-        /* eslint no-prototype-builtins: 0 */
-        if (this.hasOwnProperty(prop)) {
-          const value = this[prop];
-          // get rid of the property that might shadow a setter/getter
-          delete this[prop];
-          // this time if a setter was defined it will be properly called
-          this[prop] = value;
-          // if a getter was defined, it will be called from now on
-        }
-      }
-
-      /**
-       *
-       * @param key String
-       * @param value String
-       * @private
-       */
-      _defineAttribute(key, value) {
-        // don't override user defined attribute
-        if (!this.hasAttribute(key)) {
-          this.setAttribute(key, value);
-        }
-      }
-
-      _insertTemplate() {
-        const { template } = this.constructor;
-        this.shadowRoot.appendChild(template.content.cloneNode(true));
-      }
-
       // Fired when window is closed or refreshed.
       onBeforeUnload() {
+        // TODO: test this
         // pass
       }
 
@@ -333,10 +423,11 @@ export default function getDBUIWebComponentBase(win) {
       * web components standard API
       * connectedCallback is fired from children to parent in shadow DOM
       * but the order is less predictable in light DOM.
-      * Should not read light/shadowDomDbuiChildren here.
+      * Should not read light DOM children here.
       * Is called after attributeChangedCallback.
       * */
       connectedCallback() {
+        if (this._invalidComponentState) return;
         // https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements#Using_the_lifecycle_callbacks
         if (!this.isConnected) return;
         // Using this pattern as it seems that the component
@@ -352,13 +443,10 @@ export default function getDBUIWebComponentBase(win) {
        * @private
        */
       _onConnectedCallback() {
-        const { propertiesToUpgrade, attributesToDefine } = this.constructor;
-        propertiesToUpgrade.forEach((property) => {
-          this._upgradeProperty(property);
-        });
-        Object.keys(attributesToDefine).forEach((property) => {
-          this._defineAttribute(property, attributesToDefine[property]);
-        });
+        this._componentIsConnected = true;
+
+        handlePropertiesAndAttributesDefinedBeforeFirstTimeConnected(this);
+
         win.addEventListener('beforeunload', this.onBeforeUnload, false);
         this.onConnectedCallback();
       }
@@ -379,6 +467,7 @@ export default function getDBUIWebComponentBase(win) {
        * @private
        */
       _onDisconnectedCallback() {
+        this._componentIsConnected = false;
         win.removeEventListener('beforeunload', this.onBeforeUnload, false);
         // Call public hook.
         this.onDisconnectedCallback();
@@ -398,6 +487,7 @@ export default function getDBUIWebComponentBase(win) {
        * @param newValue String
        */
       attributeChangedCallback(name, oldValue, newValue) {
+        if (this._invalidComponentState) return;
         // web components standard API
         // Scenario 1: component was created in detached tree BEFORE being defined.
         // attributeChangedCallback will not be called when being defined but when inserted into DOM.
@@ -416,13 +506,7 @@ export default function getDBUIWebComponentBase(win) {
         // and not after disconnectedCallback as expected. (Note: Safari behaves as expected here)
         // Though if component is explicitly removed then
         // attributeChangedCallback will be fired after disconnectedCallback as expected.
-        if (this.getAttribute(name) === oldValue) return;
-        if (name === 'dir' || name === 'lang') {
-          [...this.shadowRoot.querySelectorAll('[dbui-web-component]')].forEach((shadowAncestor) => {
-            shadowAncestor.setAttribute(name, newValue);
-          });
-        }
-
+        // if (this.getAttribute(name) === oldValue) return; // not needed since we use withLock
         this._onAttributeChangedCallback(name, oldValue, newValue);
       }
 
@@ -434,19 +518,25 @@ export default function getDBUIWebComponentBase(win) {
        * @private
        */
       _onAttributeChangedCallback(name, oldValue, newValue) {
-        // Call public hook.
-        this.onAttributeChangedCallback(name, oldValue, newValue);
+        if (!this._componentFirstTimeConnected) {
+          this._attributesChangedBeforeFirstTimeConnected[name] = { oldValue, newValue };
+          return;
+        }
+
+        propagateLocaleAttributes(this, name, newValue);
+
+        setPropertyFromAttribute(this, name, newValue);
+
       }
 
       /**
-       * Public hook.
-       *
-       * @param name String
-       * @param oldValue String
-       * @param newValue String
-       */
-      // eslint-disable-next-line
-      onAttributeChangedCallback(name, oldValue, newValue) {
+      * Public hook.
+      *
+      * @param name String
+      * @param oldValue *
+      * @param newValue *
+      */// eslint-disable-next-line
+      onPropertyChangedCallback(name, oldValue, newValue) {
         // pass
       }
 
