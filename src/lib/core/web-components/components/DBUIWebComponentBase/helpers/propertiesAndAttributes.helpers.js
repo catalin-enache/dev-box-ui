@@ -276,7 +276,7 @@ export function deferOwnProperties(self) {
 
 export function applyDefaultValues(self) {
   Object.entries(self.constructor.properties).forEach(([name, { defaultValue }]) => {
-    self[name] = defaultValue;
+    self[name] = typeof defaultValue === 'function' ? defaultValue(self) : defaultValue;
   });
 }
 

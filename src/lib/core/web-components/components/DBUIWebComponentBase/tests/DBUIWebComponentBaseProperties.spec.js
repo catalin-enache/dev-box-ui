@@ -1,83 +1,14 @@
 import { expect } from 'chai';
-import getDBUIWebComponentBase from '../DBUIWebComponentBase';
 import {
   checkValueType, getConverters
 } from '../helpers/propertiesAndAttributes.helpers';
-import ensureSingleRegistration from '../../../../internals/ensureSingleRegistration';
 import inIframe from '../../../../../../../testUtils/inIframe';
 import monkeyPatch from '../../../../../../../testUtils/monkeyPatch';
-
-function getDummyX(
-  registrationName, className,
-  {
-    style = ':host { display: block; } div { padding-left: 10px; }',
-    dependentClasses = [], dependentHTML = '', properties = {},
-    callbacks = {
-      // onConnectedCallback
-    }
-  } = {}
-) {
-  function factory(win) {
-    return ensureSingleRegistration(win, registrationName, () => {
-      const DBUIWebComponentBase = getDBUIWebComponentBase(win);
-
-      const klass = class extends DBUIWebComponentBase {
-        static get registrationName() {
-          return registrationName;
-        }
-
-        static get name() {
-          return className;
-        }
-
-        static get dependencies() {
-          return [...super.dependencies, ...dependentClasses];
-        }
-
-        static get properties() {
-          return {
-            ...super.properties,
-            ...properties
-          };
-        }
-
-        static get templateInnerHTML() {
-          return `
-            <style>${style}</style>
-            <div>
-              <b>${registrationName}</b>
-              ${dependentHTML}
-              ${dependentHTML.includes('<slot></slot>') ? '' : '<slot></slot>'}
-            </div>
-          `;
-        }
-
-        onConnectedCallback() {
-          super.onConnectedCallback();
-          callbacks.onConnectedCallback && callbacks.onConnectedCallback(this);
-        }
-
-        onDisconnectedCallback() {
-          super.onDisconnectedCallback();
-          callbacks.onDisconnectedCallback && callbacks.onDisconnectedCallback(this);
-        }
-
-        onPropertyChangedCallback(name, oldValue, newValue) {
-          super.onPropertyChangedCallback(name, oldValue, newValue);
-          callbacks.onPropertyChangedCallback &&
-            callbacks.onPropertyChangedCallback(this, name, oldValue, newValue);
-        }
-      };
-
-      return klass;
-    });
-  }
-  return factory;
-}
+import { getDummyX } from '../../../../../../../testUtils/dbuiClassFactory';
 
 const baseObservedAttributes = ['dbui-web-component', 'dir', 'dbui-dir', 'lang', 'dbui-lang', 'unselectable'];
 
-describe.only('DBUIWebComponentBase properties and attributes', () => {
+describe('DBUIWebComponentBase properties and attributes', () => {
   describe('getConverters', () => {
     it('returns an object with toProperty and toAttribute properties', () => {
       class A {
@@ -1268,6 +1199,41 @@ describe.only('DBUIWebComponentBase properties and attributes', () => {
           });
 
           DerivedDummy2.registerSelf();
+        }
+      });
+    });
+  });
+
+  describe('defaultValue', () => {
+    it('it returns default value or (if is a function) is called to provide default value', (done) => {
+      inIframe({
+        bodyHTML: `
+        <dbui-dummy></dbui-dummy>
+        `,
+        onLoad: ({ contentWindow, iframe }) => {
+          const DBUIDummy = getDummyX('dbui-dummy', 'DBUIDummy', {
+            properties: {
+              num: { type: Number, attribute: true, defaultValue: 1 },
+              str: { type: String, attribute: true, defaultValue: (self) => self.num.toString() },
+            },
+            callbacks: {}
+          })(contentWindow);
+
+          const dummy = contentWindow.document.querySelector('dbui-dummy');
+          expect(dummy.num).to.equal(undefined);
+          expect(dummy.str).to.equal(undefined);
+
+          contentWindow.customElements.whenDefined(DBUIDummy.registrationName).then(() => {
+            expect(dummy.num).to.equal(1);
+            expect(dummy.str).to.equal('1');
+
+            setTimeout(() => {
+              iframe.remove();
+              done();
+            }, 0);
+          });
+
+          DBUIDummy.registerSelf();
         }
       });
     });

@@ -437,6 +437,7 @@ export default function getDBUIWebComponentBase(win) {
         // latest (monkey patched / runtime evaluated) one.
         // Now, we can monkey patch onConnectedCallback if we want.
         this._onConnectedCallback();
+        this.onConnectedCallback();
       }
 
       /**
@@ -444,11 +445,8 @@ export default function getDBUIWebComponentBase(win) {
        */
       _onConnectedCallback() {
         this._componentIsConnected = true;
-
         handlePropertiesAndAttributesDefinedBeforeFirstTimeConnected(this);
-
         win.addEventListener('beforeunload', this.onBeforeUnload, false);
-        this.onConnectedCallback();
       }
 
       /**
@@ -461,6 +459,8 @@ export default function getDBUIWebComponentBase(win) {
       // web components standard API
       disconnectedCallback() {
         this._onDisconnectedCallback();
+        // Call public hook.
+        this.onDisconnectedCallback();
       }
 
       /**
@@ -469,8 +469,6 @@ export default function getDBUIWebComponentBase(win) {
       _onDisconnectedCallback() {
         this._componentIsConnected = false;
         win.removeEventListener('beforeunload', this.onBeforeUnload, false);
-        // Call public hook.
-        this.onDisconnectedCallback();
       }
 
       /**
@@ -524,9 +522,7 @@ export default function getDBUIWebComponentBase(win) {
         }
 
         propagateLocaleAttributes(this, name, newValue);
-
         setPropertyFromAttribute(this, name, newValue);
-
       }
 
       /**
