@@ -24,12 +24,44 @@ function insertTemplate(self) {
 TODO:
  - inject global css to handle dbui-web-component (hide when not defined, un hide when defined) ?
  - handle locale with a service
- - make context stuff like in React
  - dimensionsAndCoordinates method should take into consideration rotation matrix ?
 */
 
 /*
 Behavior Extras:
+
+Properties:
+ - Properties needs to be declared in static properties getter as a configuration object.
+ - Every property auto-defines its own getter/setter.
+ - Properties are type checked.
+ - Properties are also checked against allowedValues function when declared in property configuration object.
+ - Properties require a default value to be defined in configuration object.
+ - Values for properties can be set on a node before it is upgraded.
+ - Properties can be reflected to attributes and attributes can update properties
+   when attribute flag is set in in property configuration object.
+ - Attributes override default properties and properties overrides attributes before component is upgraded.
+ - There is a lock in place for handling the case of property updating the attribute
+   and the attribute updating the property.
+ - onPropertyChangedCallback is guaranteed to be triggered only when component is already mounted.
+   Attributes changed before component first time connected are deferred then applied at first component mount.
+ - Own properties set before component upgrade are deferred.
+ - Initial values for properties are set in a controlled order:
+   1. Own properties (if any) before component upgrade are deferred/remembered in constructor.
+   2. Default values are applied in constructor (without reflecting to attributes)
+      (if setters are not shadowed they apply validation).
+   3. Attribute changes are deferred.
+   4. At first mount (_onConnectedCallback)
+           a. Deferred attributes are applied if there is no related remembered own property.
+              (will update default values) (if setters are not shadowed they apply validation).
+           b. Own/remembered properties (if any before upgrade) are applied
+              (will update default values) (attributes not reflected yet)
+              (setters validation not applied since setters for this properties are still shadowed).
+           c. Attributes are allowed to be reflected.
+           d. Properties are upgraded (delete own properties (if any) and reveal/un-shadow setters).
+           e. The setters will ensure properties values are checked and reflected to attributes.
+   5. Further attributes changes will update properties and
+      further properties changes will update attributes
+      attributeOrPropertyLock ensure this happens in one way only.
 */
 
 const registrationName = 'DBUIWebComponentBase';
@@ -324,6 +356,10 @@ export default function getDBUIWebComponentBase(win) {
         deferOwnProperties(this);
         applyDefaultValues(this);
 
+      }
+
+      toString() {
+        return `[object ${this.constructor.name}]`;
       }
 
       dispatchDbuiEvent(name, options) {

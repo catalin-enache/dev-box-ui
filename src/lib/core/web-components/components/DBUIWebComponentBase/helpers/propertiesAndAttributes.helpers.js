@@ -7,8 +7,11 @@ import {
 
 export const attributeOrPropertyLock = 'attributeOrPropertyLock';
 
-const invalidValueErrorMessage = (name, value) => {
-  return `Invalid value ${value} for ${name} property.`;
+const invalidValueErrorMessage = (name, value, self) => {
+  return `
+  Invalid value ${value} for ${name} property.
+  (${self.nodeName.toLowerCase()}${self.id ? `#${self.id}` : ''})
+  `;
 };
 
 const defaultValueErrorMessage = (name) => {
@@ -130,7 +133,7 @@ export function defineSettersAndGetters(klass) {
       set(_value) {
         const value = _value === undefined ? (type.name === 'Boolean' ? false : null) : _value;
         if (!checkValueType(value, type) || (allowedValues && !allowedValues({ self: this, value }))) {
-          this.throwError(invalidValueErrorMessage(name, value));
+          this.throwError(invalidValueErrorMessage(name, value, this));
         }
 
         const oldValue = this._internalProperties[name];
